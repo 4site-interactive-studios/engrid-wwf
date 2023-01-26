@@ -1,4 +1,4 @@
-import { Options, App } from "@4site/engrid-common"; // Uses ENGrid via NPM
+import { Options, App, ApplePay } from "@4site/engrid-common"; // Uses ENGrid via NPM
 // import { Options, App } from "../../engrid-scripts/packages/common"; // Uses ENGrid via Visual Studio Workspace
 
 import "./sass/main.scss";
@@ -16,7 +16,7 @@ const options: Options = {
   SrcDefer: true,
   ProgressBar: true,
   Debug: App.getUrlParameter("debug") == "true" ? true : false,
-  onLoad: () => customScript(),
+  onLoad: () => customScript(App),
   onResize: () => console.log("Starter Theme Window Resized"),
 };
 new App(options);

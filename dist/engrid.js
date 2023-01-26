@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, January 26, 2023 @ 15:12:49 ET
+ *  Date: Thursday, January 26, 2023 @ 17:01:33 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.32
  *  ENGrid scripts: v0.13.32
@@ -17319,7 +17319,7 @@ const options = {
   SrcDefer: true,
   ProgressBar: true,
   Debug: App.getUrlParameter("debug") == "true" ? true : false,
-  onLoad: () => customScript(),
+  onLoad: () => customScript(App),
   onResize: () => console.log("Starter Theme Window Resized")
 };
 new App(options);
