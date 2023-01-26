@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, January 26, 2023 @ 15:00:07 ET
+ *  Date: Thursday, January 26, 2023 @ 15:12:49 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.32
  *  ENGrid scripts: v0.13.32
@@ -11248,7 +11248,7 @@ class ProcessingFees {
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/app.js
 
 
-class app_App extends engrid_ENGrid {
+class App extends engrid_ENGrid {
     constructor(options) {
         super();
         // Events
@@ -11304,9 +11304,9 @@ class app_App extends engrid_ENGrid {
             // Add Options to window
             window.EngridOptions = this.options;
         }
-        if (this.options.Debug || app_App.getUrlParameter("debug") == "true")
+        if (this.options.Debug || App.getUrlParameter("debug") == "true")
             // Enable debug if available is the first thing
-            app_App.setBodyData("debug", "");
+            App.setBodyData("debug", "");
         // TODO: Abstract everything to the App class so we can remove custom-methods
         inputPlaceholder();
         preventAutocomplete();
@@ -11492,113 +11492,113 @@ class app_App extends engrid_ENGrid {
     setDataAttributes() {
         // Add the Page Type as a Data Attribute on the Body Tag
         if (engrid_ENGrid.checkNested(window, "pageJson", "pageType")) {
-            app_App.setBodyData("page-type", window.pageJson.pageType);
+            App.setBodyData("page-type", window.pageJson.pageType);
             this.logger.log("Page Type: " + window.pageJson.pageType);
         }
         else {
             this.logger.log("Page Type: Not Found");
         }
         // Add the currency code as a Data Attribute on the Body Tag
-        app_App.setBodyData("currency-code", app_App.getCurrencyCode());
+        App.setBodyData("currency-code", App.getCurrencyCode());
         // Add a body banner data attribute if the banner contains no image or video
         if (!document.querySelector(".body-banner img, .body-banner video")) {
-            app_App.setBodyData("body-banner", "empty");
+            App.setBodyData("body-banner", "empty");
         }
         // Add a page-alert data attribute if it is empty
         if (!document.querySelector(".page-alert *")) {
-            app_App.setBodyData("no-page-alert", "");
+            App.setBodyData("no-page-alert", "");
         }
         // Add a content-header data attribute if it is empty
         if (!document.querySelector(".content-header *")) {
-            app_App.setBodyData("no-content-header", "");
+            App.setBodyData("no-content-header", "");
         }
         // Add a body-headerOutside data attribute if it is empty
         if (!document.querySelector(".body-headerOutside *")) {
-            app_App.setBodyData("no-body-headerOutside", "");
+            App.setBodyData("no-body-headerOutside", "");
         }
         // Add a body-header data attribute if it is empty
         if (!document.querySelector(".body-header *")) {
-            app_App.setBodyData("no-body-header", "");
+            App.setBodyData("no-body-header", "");
         }
         // Add a body-title data attribute if it is empty
         if (!document.querySelector(".body-title *")) {
-            app_App.setBodyData("no-body-title", "");
+            App.setBodyData("no-body-title", "");
         }
         // Add a body-banner data attribute if it is empty
         if (!document.querySelector(".body-banner *")) {
-            app_App.setBodyData("no-body-banner", "");
+            App.setBodyData("no-body-banner", "");
         }
         // Add a body-bannerOverlay data attribute if it is empty
         if (!document.querySelector(".body-bannerOverlay *")) {
-            app_App.setBodyData("no-body-bannerOverlay", "");
+            App.setBodyData("no-body-bannerOverlay", "");
         }
         // Add a body-top data attribute if it is empty
         if (!document.querySelector(".body-top *")) {
-            app_App.setBodyData("no-body-top", "");
+            App.setBodyData("no-body-top", "");
         }
         // Add a body-main data attribute if it is empty
         if (!document.querySelector(".body-main *")) {
-            app_App.setBodyData("no-body-main", "");
+            App.setBodyData("no-body-main", "");
         }
         // Add a body-bottom data attribute if it is empty
         if (!document.querySelector(".body-bottom *")) {
-            app_App.setBodyData("no-body-bottom", "");
+            App.setBodyData("no-body-bottom", "");
         }
         // Add a body-footer data attribute if it is empty
         if (!document.querySelector(".body-footer *")) {
-            app_App.setBodyData("no-body-footer", "");
+            App.setBodyData("no-body-footer", "");
         }
         // Add a body-footerOutside data attribute if it is empty
         if (!document.querySelector(".body-footerOutside *")) {
-            app_App.setBodyData("no-body-footerOutside", "");
+            App.setBodyData("no-body-footerOutside", "");
         }
         // Add a content-footerSpacer data attribute if it is empty
         if (!document.querySelector(".content-footerSpacer *")) {
-            app_App.setBodyData("no-content-footerSpacer", "");
+            App.setBodyData("no-content-footerSpacer", "");
         }
         // Add a content-preFooter data attribute if it is empty
         if (!document.querySelector(".content-preFooter *")) {
-            app_App.setBodyData("no-content-preFooter", "");
+            App.setBodyData("no-content-preFooter", "");
         }
         // Add a content-footer data attribute if it is empty
         if (!document.querySelector(".content-footer *")) {
-            app_App.setBodyData("no-content-footer", "");
+            App.setBodyData("no-content-footer", "");
         }
         // Add a page-backgroundImage banner data attribute if the page background image contains no image or video
         if (!document.querySelector(".page-backgroundImage img, .page-backgroundImage video")) {
-            app_App.setBodyData("no-page-backgroundImage", "");
+            App.setBodyData("no-page-backgroundImage", "");
         }
         // Add a page-backgroundImageOverlay data attribute if it is empty
         if (!document.querySelector(".page-backgroundImageOverlay *")) {
-            app_App.setBodyData("no-page-backgroundImageOverlay", "");
+            App.setBodyData("no-page-backgroundImageOverlay", "");
         }
         // Add a page-customCode data attribute if it is empty
         if (!document.querySelector(".page-customCode *")) {
-            app_App.setBodyData("no-page-customCode", "");
+            App.setBodyData("no-page-customCode", "");
         }
         // Add a country data attribute
         const countrySelect = document.querySelector("#en__field_supporter_country");
         if (countrySelect) {
-            app_App.setBodyData("country", countrySelect.value);
+            App.setBodyData("country", countrySelect.value);
             countrySelect.addEventListener("change", () => {
-                app_App.setBodyData("country", countrySelect.value);
+                App.setBodyData("country", countrySelect.value);
             });
         }
         const otherAmountDiv = document.querySelector(".en__field--donationAmt .en__field__item--other");
         if (otherAmountDiv) {
-            otherAmountDiv.setAttribute("data-currency-symbol", app_App.getCurrencySymbol());
+            otherAmountDiv.setAttribute("data-currency-symbol", App.getCurrencySymbol());
         }
         // Add a payment type data attribute
-        const paymentTypeSelect = app_App.getField("transaction.paymenttype");
+        const paymentTypeSelect = App.getField("transaction.paymenttype");
         if (paymentTypeSelect) {
-            app_App.setBodyData("payment-type", paymentTypeSelect.value);
+            App.setBodyData("payment-type", paymentTypeSelect.value);
             paymentTypeSelect.addEventListener("change", () => {
-                app_App.setBodyData("payment-type", paymentTypeSelect.value);
+                App.setBodyData("payment-type", paymentTypeSelect.value);
             });
         }
         // Add demo data attribute
-        if (app_App.demo)
-            app_App.setBodyData("demo", "");
+        if (App.demo)
+            App.setBodyData("demo", "");
     }
 }
 
@@ -17296,7 +17296,7 @@ const AppVersion = "0.13.32";
 
 
 ;// CONCATENATED MODULE: ./src/scripts/main.js
-const customScript = function () {
+const customScript = function (App) {
   console.log("ENGrid client scripts are executing"); // Add your client scripts here
 
   App.setBodydata("client-js-loading", "finished");
@@ -17318,11 +17318,11 @@ const options = {
   SkipToMainContentLink: true,
   SrcDefer: true,
   ProgressBar: true,
-  Debug: app_App.getUrlParameter("debug") == "true" ? true : false,
+  Debug: App.getUrlParameter("debug") == "true" ? true : false,
   onLoad: () => customScript(),
   onResize: () => console.log("Starter Theme Window Resized")
 };
-new app_App(options);
+new App(options);
 })();
 
 /******/ })()
