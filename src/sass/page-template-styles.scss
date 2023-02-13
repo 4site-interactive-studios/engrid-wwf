@@ -16,6 +16,8 @@
   --engrid__content-header_background-color: #000000;
   --engrid__content-footer_background-color: #ffffff;
 
+  --engrid__body_box-shadow: none;
+
   // TYPOGRAPHY DEFAULT
   // --default_font-family: var(--native-fonts__sans-serif);
   // --default_color: initial;
@@ -186,6 +188,74 @@
       --media-attribution__font-style: italic;
     }
   }
+
+  .radio-to-buttons_donationAmt
+    .en__field--donationAmt
+    .en__field__input--other {
+    --input_padding: var(--donation-amount__button_padding);
+    line-height: normal;
+    font-size: 16.8px; // @TODO there has to be a better way to do this
+  }
+
+  .radio-to-buttons_recurrfreq .en__field--recurrfreq {
+    --recurring-frequency__button_color: #222222;
+    --recurring-frequency__button_border-color: #cccccc;
+    --recurring-frequency__button_background-color: #faf9f7;
+    --recurring-frequency__button_color_hover: #222222;
+    --recurring-frequency__button_border-color_hover: #cccccc;
+    --recurring-frequency__button_background-color_hover: #faf9f7;
+    --recurring-frequency__button_color_checked: #222222;
+    --recurring-frequency__button_border-color_checked: #cccccc;
+    --recurring-frequency__button_background-color_checked: transparent;
+    --fields_spacing-block: 0;
+    flex-basis: calc(100% + 44px);
+    margin-left: -22px;
+    margin-right: -22px;
+    position: relative;
+    top: -27px;
+
+    &.en__field--radio .en__field__item:first-child input + label {
+      border-right: none;
+    }
+
+    &.en__field--radio .en__field__item input[type="radio"]:checked + label {
+      border-bottom-color: transparent;
+      outline: none;
+    }
+  }
+
+  .body-banner img,
+  .body-banner video {
+    background-color: #cccccc;
+  }
+
+  /* Tweet to Target Widget */
+  .en__component--tweetcontactblock {
+    /* @TODO Investigate: For some reason the Tweet button border does not appear solely by setting the correspinding variabels */
+    .en__tweetButton {
+      .en__tweetButton__send a {
+        border: var(--button_border-width) solid var(--button_border-color);
+      }
+
+      .en__tweetButton__sent a {
+        --button_color: #ffffff;
+        --button_background-color: #006ea3;
+        border: var(--button_border-width) solid var(--button_border-color);
+        cursor: default;
+
+        &:hover,
+        &:active {
+          color: #ffffff;
+          background-color: #006ea3;
+        }
+      }
+    }
+
+    .en__twitterTarget__details span {
+      font-weight: var(--label_font-weight);
+      color: var(--label_color);
+    }
+  }
 }
 
 /* Add your custom theme styles here */
@@ -198,8 +268,15 @@
     // STYLES
   }
 
-  @mixin simplified-header {
+  @mixin full-header-footer {
     // STLES
+    .content-header {
+      margin-bottom: 40px;
+    }
+
+    .content-footer {
+      margin-top: 40px;
+    }
   }
 
   // Example Breakpoints Stylings (See engrid-scripts > _engrid-breakpoints.scss for more breakpoints)
@@ -216,45 +293,41 @@
   // Example of Shared Layout Stylings
   &[data-engrid-layout="centerleft1col"] {
     @media screen and (max-width: $centerleft1col_content-column_min-width) {
-      @include simplified-header;
+      @include full-header-footer;
     }
   }
 
   &[data-engrid-layout="centercenter2col"] {
     @media screen and (max-width: calc($centercenter2col_content-column_min-width - 1px)) {
-      @include simplified-header;
+      @include full-header-footer;
+    }
+  }
 
-      .content-header {
-        margin-bottom: 40px;
-      }
+  @media screen and (max-width: 600px) {
+    --engrid__body_margin: 0px;
 
-      .content-footer {
-        margin-top: 40px;
-      }
+    --engrid__page_background-color: #ffffff;
+    --engrid__content-footer_background-color: transparent;
+
+    .body-top {
+      --engrid__body-top_padding: 0 29px;
     }
 
-    @media screen and (max-width: 600px) {
-      --engrid__body_margin: 0px;
+    .body-title {
+      --engrid__body-title_padding: 0 29px;
+    }
 
-      .body-top {
-        --engrid__body-top_padding: 0 29px;
-      }
+    .body-main {
+      border-left: none;
+      border-right: none;
+    }
 
-      .body-title {
-        --engrid__body-title_padding: 0 29px;
-      }
+    .content-footer {
+      margin-top: 0px;
+    }
 
-      .body-main {
-        border: none;
-      }
-
-      .content-footer {
-        margin-top: 0px;
-      }
-
-      figure.media-with-attribution figattribution {
-        --media-attribution__padding: 0 29px;
-      }
+    figure.media-with-attribution figattribution {
+      --media-attribution__padding: 0 29px;
     }
   }
 }
