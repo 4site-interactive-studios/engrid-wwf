@@ -251,6 +251,10 @@
       .content-footer {
         margin-top: 0px;
       }
+
+      figure.media-with-attribution figattribution {
+        --media-attribution__padding: 0 29px;
+      }
     }
   }
 }
