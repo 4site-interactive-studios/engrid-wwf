@@ -1,6 +1,7 @@
 // The most broadly used CSS Custom Properties for quick theming.
 // Uncomment to use and reference engrid-scrips SASS files for more CSS Custom Properties.
 // All CSS Custom Properties should be scoped to the theme using CSS Data Attributes.
+
 [data-engrid-theme="wwf"] {
   --engrid__body_margin: 0 22px;
   --engrid__body-main_padding: 26px 29px 33px 29px;
@@ -9,6 +10,7 @@
 
   --engrid__page_background-color: #f3f7ed;
   --engrid__body-title_background-color: transparent;
+  --engrid__body-banner_background-color: transparent;
   --engrid__body-top_background-color: transparent;
 
   --engrid__content-header_background-color: #000000;
@@ -51,10 +53,10 @@
   // --input_font-size: var(--root_font-size);
   // --input_font-weight: initial;
   // --input_line-height: initial;
-  // --input_background-color: #fafafa;
+  --input_background-color: transparent;
   // --input_border-width: 1px;
-  // --input_border-color: #dfdfe1;
-  // --input_border-radius: 6px;
+  --input_border-color: #808080;
+  --input_border-radius: 0px;
   // --input_placeholder-color: var(--color_light-gray);
   // --input_box-shadow: inset 0 2px 2px -1px rgba(74, 74, 104, 0.1);
 
@@ -68,31 +70,67 @@
 
   // TYPOGRAPHY BUTTON
   // --button_font-family: var(--default_font-family);
-  // --button_color: var(--color_white);
+  --button_color: #006ea3;
   // --button_font-size: var(--root_font-size);
-  // --button_font-weight: initial;
+  --button_font-weight: bold;
   // --button_line-height: initial;
-  // --button_background-color: #535b61;
+  --button_background-color: #ffffff;
   // --button_border-width: 1px;
-  // --button_border-color: var(--color_black);
-  // --button_border-radius: 6px;
+  --button_border-color: #006ea3;
+  --button_border-radius: 0px;
 
   // TYPOGRAPHY BUTTON:HOVER
   // --button_color_hover: var(--button_color);
-  // --button_background-color_hover: var(--color_black);
-  // --button_border-color_hover: var(--button_background-color_hover);
+  --button_background-color_hover: #e5f0f6;
+  --button_border-color_hover: #006ea3;
 
   // TYPOGRAPHY BUTTON:SELECTED
-  // --button_color_checked: var(--button_color_hover);
-  // --button_background-color_checked: var(--button_background-color_hover);
-  // --button_border-color_checked: var(--button_border-color_hover);
+  --button_color_checked: #ffffff;
+  --button_background-color_checked: #006ea3;
+  --button_border-color_checked: #006ea3;
+
+  --submit__button_color: #ffffff;
+  --submit__button_border-color: #e5621a;
+  --submit__button_background-color: #e5621a;
+
+  --submit__button_color_hover: #ffffff;
+  --submit__button_background-color_hover: #000000;
+  --submit__button_border-color_hover: #000000;
+
+  --submit__button_color_checked: #ffffff;
+  --submit__button_background-color_checked: #000000;
+  --submit__button_border-color_checked: #000000;
 
   // DONATION PAGE
   // --give-monthly-donation-amount-appended-label: "/mo";
   // --give-annual-donation-amount-appended-label: "/yr";
-  // --recurring-frequency__button_count: 4;
-  // --donation-amount__button_count: 4;
-  // --give-by-select__button_count: 4;
+  --recurring-frequency__button_count: 2;
+  --donation-amount__button_count: 3;
+  --give-by-select__button_count: 3;
+
+  --label_font-weight: 600;
+  --label_color: #222222;
+
+  --input_placeholder-color: #7a7a7a;
+
+  --radio_height: 32px;
+  --radio_width: 32px;
+  --radio_border-width: 2px;
+
+  //   --radio_background-color_hover: fade-out(grayscale(#006ea3), 0.4);
+  --radio_background-color_hover: #bababa;
+  --radio_box-shadow_hover: inset 0 0 0 4px #ffffff;
+
+  --radio_background-color_selected: #006ea3;
+  --radio_border-color_selected: #006ea3;
+  --radio_box-shadow_selected: inset 0 0 0 4px #ffffff;
+
+  --checkbox_content_checked: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='21px' height='15px' viewBox='0 0 20 15' version='1.1'%3E%3Cg id='surface1'%3E%3Cpath style=' stroke:none;fill-rule:nonzero;fill:rgb(100%25,100%25,100%25);fill-opacity:1;' d='M 12.75 6.117188 L 6.835938 12.234375 L 1.335938 6.546875 L 0 7.929688 L 3.417969 11.464844 L 6.835938 15.003906 L 13.417969 8.191406 L 20 1.382812 L 18.664062 0 Z M 12.75 6.117188 '/%3E%3C/g%3E%3C/svg%3E");
+  --checkbox_border-width: 2px;
+  --checkbox_background-color_hover: #ffffff;
+  --checkbox_border-color_checked: #006ea3;
+  --checkbox_background-color_checked: #006ea3;
+  --checkbox_color_checked: #ffffff;
 
   .content-header {
     color: #ffffff;
@@ -109,6 +147,44 @@
 
   .body-main {
     border: 1px solid #cccccc;
+  }
+
+  /* All Opt-in Questions that are Radio Selects */
+  .en__field--radio.en__field--question .en__field__element--radio {
+    flex-direction: column;
+    align-items: self-start;
+  }
+
+  .white-box {
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    padding: 0 3rem 1.75rem 3rem;
+    > :first-child {
+      margin-top: 1.75rem;
+    }
+
+    > :last-child {
+      margin-bottom: 1.75rem;
+    }
+
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  figure.media-with-attribution {
+    margin-bottom: 4rem;
+
+    figattribution {
+      left: 0;
+      right: auto;
+      top: 100%;
+      --media-attribution__margin: 0.25rem 0 0 0;
+      --media-attribution__background-color: transparent;
+      --media-attribution__padding: 0;
+      --media-attribution__color: #444444;
+      --media-attribution__font-weight: normal;
+      --media-attribution__font-style: italic;
+    }
   }
 }
 

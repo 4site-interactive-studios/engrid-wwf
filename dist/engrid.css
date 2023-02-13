@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Saturday, February 11, 2023 @ 23:45:33 ET
+ *  Date: Sunday, February 12, 2023 @ 21:30:54 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.32
  *  ENGrid scripts: v0.13.32
@@ -6992,9 +6992,52 @@ body:not([data-engrid-debug]) #debug-bar{
   --engrid__body-top_padding:0px;
   --engrid__page_background-color:#f3f7ed;
   --engrid__body-title_background-color:#0000;
+  --engrid__body-banner_background-color:#0000;
   --engrid__body-top_background-color:#0000;
   --engrid__content-header_background-color:#000;
   --engrid__content-footer_background-color:#fff;
+  --input_background-color:#0000;
+  --input_border-color:grey;
+  --input_border-radius:0px;
+  --button_color:#006ea3;
+  --button_font-weight:bold;
+  --button_background-color:#fff;
+  --button_border-color:#006ea3;
+  --button_border-radius:0px;
+  --button_background-color_hover:#e5f0f6;
+  --button_border-color_hover:#006ea3;
+  --button_color_checked:#fff;
+  --button_background-color_checked:#006ea3;
+  --button_border-color_checked:#006ea3;
+  --submit__button_color:#fff;
+  --submit__button_border-color:#e5621a;
+  --submit__button_background-color:#e5621a;
+  --submit__button_color_hover:#fff;
+  --submit__button_background-color_hover:#000;
+  --submit__button_border-color_hover:#000;
+  --submit__button_color_checked:#fff;
+  --submit__button_background-color_checked:#000;
+  --submit__button_border-color_checked:#000;
+  --recurring-frequency__button_count:2;
+  --donation-amount__button_count:3;
+  --give-by-select__button_count:3;
+  --label_font-weight:600;
+  --label_color:#222;
+  --input_placeholder-color:#7a7a7a;
+  --radio_height:32px;
+  --radio_width:32px;
+  --radio_border-width:2px;
+  --radio_background-color_hover:#bababa;
+  --radio_box-shadow_hover:inset 0 0 0 4px #fff;
+  --radio_background-color_selected:#006ea3;
+  --radio_border-color_selected:#006ea3;
+  --radio_box-shadow_selected:inset 0 0 0 4px #fff;
+  --checkbox_content_checked:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='21' height='15' viewBox='0 0 20 15'%3E%3Cpath style='stroke:none;fill-rule:nonzero;fill:%23fff;fill-opacity:1' d='m12.75 6.117-5.914 6.117-5.5-5.687L0 7.93l3.418 3.535 3.418 3.539 6.582-6.813L20 1.383 18.664 0Zm0 0'/%3E%3C/svg%3E");
+  --checkbox_border-width:2px;
+  --checkbox_background-color_hover:#fff;
+  --checkbox_border-color_checked:#006ea3;
+  --checkbox_background-color_checked:#006ea3;
+  --checkbox_color_checked:#fff;
 }
 [data-engrid-theme=wwf] .content-header{
   color:#fff;
@@ -7008,6 +7051,37 @@ body:not([data-engrid-debug]) #debug-bar{
 }
 [data-engrid-theme=wwf] .body-main{
   border:1px solid #ccc;
+}
+[data-engrid-theme=wwf] .en__field--radio.en__field--question .en__field__element--radio{
+  align-items:self-start;
+  flex-direction:column;
+}
+[data-engrid-theme=wwf] .white-box{
+  background-color:#fff;
+  border:1px solid #ccc;
+  margin-bottom:2rem;
+  margin-top:2rem;
+  padding:0 3rem 1.75rem;
+}
+[data-engrid-theme=wwf] .white-box>:first-child{
+  margin-top:1.75rem;
+}
+[data-engrid-theme=wwf] .white-box>:last-child{
+  margin-bottom:1.75rem;
+}
+[data-engrid-theme=wwf] figure.media-with-attribution{
+  margin-bottom:4rem;
+}
+[data-engrid-theme=wwf] figure.media-with-attribution figattribution{
+  --media-attribution__margin:0.25rem 0 0 0;
+  --media-attribution__background-color:#0000;
+  --media-attribution__padding:0;
+  --media-attribution__color:#444;
+  --media-attribution__font-weight:normal;
+  --media-attribution__font-style:italic;
+  left:0;
+  right:auto;
+  top:100%;
 }
 @media screen and (max-width:899px){
   [data-engrid-theme=wwf][data-engrid-layout=centercenter2col] .content-header{
