@@ -127,6 +127,9 @@
   --radio_border-color_selected: #006ea3;
   --radio_box-shadow_selected: inset 0 0 0 4px #ffffff;
 
+  --donation-amount__button_color_checked: #ffffff;
+  --donation-amount__button_background-color_checked: #016da3;
+
   --checkbox_content_checked: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='21px' height='15px' viewBox='0 0 20 15' version='1.1'%3E%3Cg id='surface1'%3E%3Cpath style=' stroke:none;fill-rule:nonzero;fill:rgb(100%25,100%25,100%25);fill-opacity:1;' d='M 12.75 6.117188 L 6.835938 12.234375 L 1.335938 6.546875 L 0 7.929688 L 3.417969 11.464844 L 6.835938 15.003906 L 13.417969 8.191406 L 20 1.382812 L 18.664062 0 Z M 12.75 6.117188 '/%3E%3C/g%3E%3C/svg%3E");
   --checkbox_border-width: 2px;
   --checkbox_background-color_hover: #ffffff;
@@ -157,6 +160,25 @@
     align-items: self-start;
   }
 
+  /* In Honor or Memorium Inform Radio Select */
+  .en__field--NOT_TAGGED_47 .en__field__element--radio {
+    flex-direction: column;
+    align-items: self-start;
+  }
+
+  .divider-top {
+    border-top: 1px solid #cccccc;
+    padding-top: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .divider-bottom {
+    border-bottom: 1px solid #cccccc;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Used to highlight content in the main body */
   .white-box {
     background-color: #ffffff;
     border: 1px solid #cccccc;
@@ -171,6 +193,45 @@
 
     margin-top: 2rem;
     margin-bottom: 2rem;
+  }
+
+  /* Used to highlight an upsell message */
+  .inline-upsell-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1rem 2rem 1rem 2rem;
+    background-color: #f7e6ed;
+    color: #c60060;
+    margin-bottom: 2rem;
+    font-weight: 600;
+
+    --p_font-size: 14px;
+    --p_font-weight: 400;
+    min-height: 86px;
+
+    strong {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    > :first-child {
+      margin-top: 0rem;
+    }
+
+    > :last-child {
+      margin-bottom: 0rem;
+    }
+
+    svg {
+      height: 80px;
+      position: absolute;
+      top: -26px;
+      transform: scaleX(-1);
+      width: 40px;
+      margin-left: 10px;
+    }
   }
 
   figure.media-with-attribution {
@@ -189,12 +250,19 @@
     }
   }
 
-  .radio-to-buttons_donationAmt
-    .en__field--donationAmt
+  .radio-to-buttons_donationAmt .en__field--donationAmt {
+    --fields_spacing-inline: 0.9rem;
+    --fields_spacing-block: 0.9rem;
+    --donation-amount__button_padding: 1.5ch 1.2ch;
+    input[type="radio"] + label {
+      outline: none;
+    }
     .en__field__input--other {
-    --input_padding: var(--donation-amount__button_padding);
-    line-height: normal;
-    font-size: 16.8px; // @TODO there has to be a better way to do this
+      --input_padding: var(--donation-amount__button_padding);
+      line-height: normal;
+      font-size: 16.8px; // @TODO there has to be a better way to do this
+      outline: none;
+    }
   }
 
   .radio-to-buttons_recurrfreq .en__field--recurrfreq {
@@ -210,6 +278,9 @@
       --engrid__body-main_background-color
     );
     --fields_spacing-block: 0;
+
+    --recurring-frequency__button_padding: 2ch 1.2ch;
+
     flex-basis: calc(100% + 44px);
     margin-left: -22px;
     margin-right: -22px;
