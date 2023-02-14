@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, February 13, 2023 @ 17:12:12 ET
+ *  Date: Monday, February 13, 2023 @ 19:08:49 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.32
  *  ENGrid scripts: v0.13.32
@@ -7098,7 +7098,9 @@ body:not([data-engrid-debug]) #debug-bar{
   --recurring-frequency__button_background-color_hover:#faf9f7;
   --recurring-frequency__button_color_checked:#222;
   --recurring-frequency__button_border-color_checked:#ccc;
-  --recurring-frequency__button_background-color_checked:#0000;
+  --recurring-frequency__button_background-color_checked:var(
+    --engrid__body-main_background-color
+  );
   --fields_spacing-block:0;
   flex-basis:calc(100% + 44px);
   margin-left:-22px;

@@ -206,7 +206,9 @@
     --recurring-frequency__button_background-color_hover: #faf9f7;
     --recurring-frequency__button_color_checked: #222222;
     --recurring-frequency__button_border-color_checked: #cccccc;
-    --recurring-frequency__button_background-color_checked: transparent;
+    --recurring-frequency__button_background-color_checked: var(
+      --engrid__body-main_background-color
+    );
     --fields_spacing-block: 0;
     flex-basis: calc(100% + 44px);
     margin-left: -22px;
