@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, February 13, 2023 @ 19:08:49 ET
+ *  Date: Monday, February 13, 2023 @ 19:15:57 ET
  *  By: bryancasler
- *  ENGrid styles: v0.13.32
- *  ENGrid scripts: v0.13.32
+ *  ENGrid styles: v0.13.34
+ *  ENGrid scripts: v0.13.35
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -17240,7 +17240,7 @@ class Autosubmit {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.13.32";
+const AppVersion = "0.13.35";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
