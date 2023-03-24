@@ -3,6 +3,7 @@ import { Options, App, ApplePay } from "@4site/engrid-common"; // Uses ENGrid vi
 
 import "./sass/main.scss";
 import { customScript } from "./scripts/main";
+import { pageHeaderFooter } from "./scripts/page-header-footer";
 
 const options: Options = {
   applePay: false,
@@ -16,7 +17,10 @@ const options: Options = {
   SrcDefer: true,
   ProgressBar: true,
   Debug: App.getUrlParameter("debug") == "true" ? true : false,
-  onLoad: () => customScript(App),
+  onLoad: () => {
+    customScript(App);
+    pageHeaderFooter(App); // Added this line to trigger pageHeaderFooter
+  },
   onResize: () => console.log("Starter Theme Window Resized"),
 };
 new App(options);
