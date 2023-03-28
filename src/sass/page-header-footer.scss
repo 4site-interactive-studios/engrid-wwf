@@ -149,7 +149,6 @@ body,
 #footer blockquote:after,
 #footer q:before,
 #footer q:after {
-  content: "";
   content: none;
 }
 #header table,
@@ -851,7 +850,6 @@ body,
   font-size: 15px;
   line-height: 1.5;
   padding: 12px 23px;
-  width: 81vw;
   width: calc(100vw - 60px);
   z-index: 3;
 }
