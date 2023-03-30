@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, March 30, 2023 @ 14:06:33 ET
+ *  Date: Thursday, March 30, 2023 @ 16:51:37 ET
  *  By: fernando
  *  ENGrid styles: v0.13.44
  *  ENGrid scripts: v0.13.46
@@ -8644,6 +8644,89 @@ body:not([data-engrid-debug]) #debug-bar{
 
   #footer .footer-light .footer-wrapper .footer-list-category.footer-br-bottom__mobile:after{
     bottom:-25px;
+  }
+}
+.shaded-light-pattern{
+  background-color:#e9e8d8;
+}
+.shaded-light-pattern .section-parts{
+  margin:auto;
+  max-width:1200px;
+}
+.shaded-light-pattern #panda-nation-title{
+  align-items:center;
+  display:flex;
+  margin:10px 0 10px 135px;
+  min-height:30px;
+  min-width:395px;
+}
+.shaded-light-pattern #panda-nation-title h2{
+  -webkit-font-smoothing:antialiased;
+  color:#222;
+  font-family:OpenSansRegular,sans-serif;
+  font-size:20px;
+  font-weight:700;
+  line-height:1;
+  margin:0;
+}
+.shaded-light-pattern #panda-nation-title h2 .h2-orange{
+  color:#f05a2b;
+}
+.shaded-light-pattern.panda-nation #panda-nation-title{
+  margin:10px 0 10px 130px;
+  min-height:50px;
+}
+.shaded-light-pattern.panda-nation #panda-nation-title h2{
+  color:#444;
+  font-size:60px;
+  font-weight:700;
+  letter-spacing:-5px;
+  text-shadow:.5px .5px 0 #444, -.5px -.5px 0 #444, .5px -.5px 0 #444, -.5px .5px 0 #444;
+}
+.shaded-light-pattern.panda-nation #panda-nation-title h2 .h2-orange{
+  text-shadow:.5px .5px 0 #f05a2b, -.5px -.5px 0 #f05a2b, .5px -.5px 0 #f05a2b, -.5px .5px 0 #f05a2b;
+}
+
+@media only screen and (max-width:1015px){
+  .shaded-light-pattern #panda-nation-title{
+    margin-left:20px;
+    min-width:309px;
+  }
+}
+@media only screen and (min-width:768px){
+  .shaded-light-pattern #panda-nation-title{
+    margin-left:135px;
+  }
+
+  .shaded-light-pattern.panda-nation #panda-nation-title{
+    margin-left:130px;
+  }
+}
+@media only screen and (max-width:767px){
+  .shaded-light-pattern #panda-nation-title{
+    margin:0 !important;
+    min-width:inherit;
+    padding-bottom:10px;
+    padding-top:10px;
+    width:100%;
+  }
+  .shaded-light-pattern #panda-nation-title h2{
+    margin:0 20px;
+  }
+
+  .shaded-light-pattern.panda-nation #panda-nation-title{
+    margin:0 !important;
+    padding-bottom:10px;
+    padding-top:10px;
+  }
+  .shaded-light-pattern.panda-nation #panda-nation-title h2{
+    font-size:30px;
+    letter-spacing:-2px;
+    margin:0 20px;
+    text-shadow:none;
+  }
+  .shaded-light-pattern.panda-nation #panda-nation-title h2 .h2-orange{
+    text-shadow:none;
   }
 }
 [data-engrid-subtheme=multistep]{

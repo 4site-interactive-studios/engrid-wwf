@@ -1621,3 +1621,95 @@ body,
 }
 /* END Footer */
 /* ----------------------------- */
+
+// 4Site Custom CSS Start
+.shaded-light-pattern {
+  background-color: #e9e8d8;
+  .section-parts {
+    max-width: 1200px;
+    margin: auto;
+  }
+  #panda-nation-title {
+    margin: 10px 0 10px 135px;
+    min-width: 395px;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    h2 {
+      -webkit-font-smoothing: antialiased;
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+      color: #222;
+      font-family: "OpenSansRegular", sans-serif;
+      margin-bottom: 0;
+      line-height: 1;
+
+      .h2-orange {
+        color: #f05a2b;
+      }
+    }
+  }
+  &.panda-nation {
+    #panda-nation-title {
+      min-height: 50px;
+      margin: 10px 0 10px 130px;
+      h2 {
+        font-size: 60px;
+        letter-spacing: -5px;
+        font-weight: 700;
+        color: #444;
+        text-shadow: 0.5px 0.5px 0px #444, -0.5px -0.5px 0px #444,
+          0.5px -0.5px 0px #444, -0.5px 0.5px 0px #444;
+        .h2-orange {
+          text-shadow: 0.5px 0.5px 0px #f05a2b, -0.5px -0.5px 0px #f05a2b,
+            0.5px -0.5px 0px #f05a2b, -0.5px 0.5px 0px #f05a2b;
+        }
+      }
+    }
+  }
+}
+@media only screen and (max-width: 1015px) {
+  .shaded-light-pattern {
+    #panda-nation-title {
+      margin-left: 20px;
+      min-width: 309px;
+    }
+  }
+}
+@media only screen and (min-width: 768px) {
+  .shaded-light-pattern #panda-nation-title {
+    margin-left: 135px;
+  }
+  .shaded-light-pattern.panda-nation #panda-nation-title {
+    margin-left: 130px;
+  }
+}
+@media only screen and (max-width: 767px) {
+  .shaded-light-pattern #panda-nation-title {
+    min-width: inherit;
+    width: 100%;
+    margin: 0 !important;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    h2 {
+      margin: 0 20px;
+    }
+  }
+  .shaded-light-pattern.panda-nation #panda-nation-title {
+    margin: 0 !important;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    h2 {
+      margin: 0 20px;
+      font-size: 30px;
+      letter-spacing: -2px;
+      text-shadow: none;
+      .h2-orange {
+        text-shadow: none;
+      }
+    }
+  }
+}
+
+// 4Site Custom CSS End

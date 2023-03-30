@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, March 30, 2023 @ 14:06:33 ET
+ *  Date: Thursday, March 30, 2023 @ 16:51:37 ET
  *  By: fernando
  *  ENGrid styles: v0.13.44
  *  ENGrid scripts: v0.13.46
@@ -17779,6 +17779,51 @@ const pageHeaderFooter = function (App) {
       e.preventDefault();
       window.location.href = "https://www.worldwildlife.org/search";
     });
+  }
+
+  if ("wwfHeader" in window) {
+    let wwfHeader = window.wwfHeader;
+    const contentHeader = document.querySelector(".content-header");
+
+    if (contentHeader) {
+      const shadedLight = document.createElement("div");
+      shadedLight.classList.add("shaded-light-pattern");
+
+      if (wwfHeader.toLowerCase().includes("panda")) {
+        shadedLight.classList.add("panda-nation");
+        wwfHeader = `Panda<span class='h2-orange'>Nation</span>`;
+      }
+
+      shadedLight.innerHTML = `
+      <div class="section-parts wrapper">
+        <div id="panda-nation-banner-header" class="row">
+          <div id="panda-nation-title" class="span5">
+            <h2>${wwfHeader}</h2>
+          </div>
+        </div>
+      </div>
+      `;
+      contentHeader.appendChild(shadedLight);
+      App.setBodyData("no-content-header", false);
+    }
+  } else if ("pageJson" in window && ["tweetpage", "advocacypetition", "emailtotarget"].includes(window.pageJson.pageType)) {
+    const contentHeader = document.querySelector(".content-header");
+
+    if (contentHeader) {
+      const shadedLight = document.createElement("div");
+      shadedLight.classList.add("shaded-light-pattern");
+      shadedLight.innerHTML = `
+      <div class="section-parts wrapper">
+        <div id="panda-nation-banner-header" class="row">
+          <div id="panda-nation-title" class="span5">
+            <h2>Action Center</h2>
+          </div>
+        </div>
+      </div>
+      `;
+      contentHeader.appendChild(shadedLight);
+      App.setBodyData("no-content-header", false);
+    }
   } // 4Site Code End
 
 
