@@ -1,4 +1,32 @@
 export const pageHeaderFooter = function (App) {
+  // 4Site Code Start
+  const header = document.getElementById("header");
+  const footer = document.getElementById("footer");
+  if (header) {
+    // Move the header to .content-header
+    const contentHeader = document.querySelector(".content-header");
+    if (contentHeader) {
+      contentHeader.appendChild(header);
+      App.setBodyData("no-content-header", false);
+    }
+  }
+  if (footer) {
+    // Move the footer to .content-footer
+    const contentFooter = document.querySelector(".content-footer");
+    if (contentFooter) {
+      contentFooter.appendChild(footer);
+      App.setBodyData("no-content-footer", false);
+    }
+  }
+  const searchBtn = document.querySelector(".search-btn");
+  if (searchBtn) {
+    searchBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      window.location.href = "https://www.worldwildlife.org/search";
+    });
+  }
+
+  // 4Site Code End
   ((window, document) => {
     const WWF = {
       vars: {

@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, March 29, 2023 @ 19:55:12 ET
+ *  Date: Wednesday, March 29, 2023 @ 22:30:51 ET
  *  By: fernando
  *  ENGrid styles: v0.13.44
  *  ENGrid scripts: v0.13.45
@@ -17725,6 +17725,40 @@ const customScript = function (App) {
 };
 ;// CONCATENATED MODULE: ./src/scripts/page-header-footer.js
 const pageHeaderFooter = function (App) {
+  // 4Site Code Start
+  const header = document.getElementById("header");
+  const footer = document.getElementById("footer");
+
+  if (header) {
+    // Move the header to .content-header
+    const contentHeader = document.querySelector(".content-header");
+
+    if (contentHeader) {
+      contentHeader.appendChild(header);
+      App.setBodyData("no-content-header", false);
+    }
+  }
+
+  if (footer) {
+    // Move the footer to .content-footer
+    const contentFooter = document.querySelector(".content-footer");
+
+    if (contentFooter) {
+      contentFooter.appendChild(footer);
+      App.setBodyData("no-content-footer", false);
+    }
+  }
+
+  const searchBtn = document.querySelector(".search-btn");
+
+  if (searchBtn) {
+    searchBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      window.location.href = "https://www.worldwildlife.org/search";
+    });
+  } // 4Site Code End
+
+
   ((window, document) => {
     const WWF = {
       vars: {
