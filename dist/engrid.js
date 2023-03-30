@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, March 29, 2023 @ 22:30:51 ET
+ *  Date: Thursday, March 30, 2023 @ 14:06:33 ET
  *  By: fernando
  *  ENGrid styles: v0.13.44
- *  ENGrid scripts: v0.13.45
+ *  ENGrid scripts: v0.13.46
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -15052,6 +15052,7 @@ class FreshAddress {
         });
     }
     validateResponse(data) {
+        var _a;
         /* ERROR HANDLING: Let through in case of a service error. Enable form submission. */
         if (data.isServiceError()) {
             this.logger.log("Service Error");
@@ -15063,11 +15064,33 @@ class FreshAddress {
             // Set response message. No action required.
             this.writeToFields("Valid", data.getComment());
             engrid_ENGrid.removeError(this.emailWrapper);
+            if (data.hasSuggest()) {
+                // Valid, with Suggestion
+                engrid_ENGrid.setError(this.emailWrapper, `Did you mean ${data.getSuggEmail()}?`);
+                this.emailField.value = data.getSuggEmail();
+            }
         }
-        else if (data.isError() || data.isWarning()) {
+        else if (data.isError()) {
             // Error Condition 1 - the service should always respond with finding E/W/V
             this.writeToFields("Invalid", data.getErrorResponse());
             engrid_ENGrid.setError(this.emailWrapper, data.getErrorResponse());
+            (_a = this.emailField) === null || _a === void 0 ? void 0 : _a.focus();
+            if (data.hasSuggest()) {
+                // Error, with Suggestion
+                engrid_ENGrid.setError(this.emailWrapper, `Did you mean ${data.getSuggEmail()}?`);
+                this.emailField.value = data.getSuggEmail();
+                this.writeToFields("Error", data.getErrorResponse());
+            }
+        }
+        else if (data.isWarning()) {
+            this.writeToFields("Invalid", data.getErrorResponse());
+            engrid_ENGrid.setError(this.emailWrapper, data.getErrorResponse());
+            if (data.hasSuggest()) {
+                // Warning, with Suggestion
+                engrid_ENGrid.setError(this.emailWrapper, `Did you mean ${data.getSuggEmail()}?`);
+                this.emailField.value = data.getSuggEmail();
+                this.writeToFields("Warning", data.getErrorResponse());
+            }
         }
         else {
             // Error Condition 2 - the service should always respond with finding E/W/V
@@ -17659,7 +17682,7 @@ class DebugHiddenFields {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.13.45";
+const AppVersion = "0.13.46";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
@@ -18104,8 +18127,9 @@ const options = {
   SrcDefer: true,
   ProgressBar: true,
   FreshAddress: {
-    dateField: "supporter.NOT_TAGGED_XXX",
-    statusField: "supporter.NOT_TAGGED_YYY",
+    // dateField: "supporter.NOT_TAGGED_XXX",
+    // statusField: "supporter.NOT_TAGGED_YYY",
+    // messageField: "supporter.NOT_TAGGED_ZZZ",
     dateFieldFormat: "YYYY-MM-DD"
   },
   Debug: App.getUrlParameter("debug") == "true" ? true : false,

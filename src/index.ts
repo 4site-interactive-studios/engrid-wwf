@@ -17,8 +17,9 @@ const options: Options = {
   SrcDefer: true,
   ProgressBar: true,
   FreshAddress: {
-    dateField: "supporter.NOT_TAGGED_XXX",
-    statusField: "supporter.NOT_TAGGED_YYY",
+    // dateField: "supporter.NOT_TAGGED_XXX",
+    // statusField: "supporter.NOT_TAGGED_YYY",
+    // messageField: "supporter.NOT_TAGGED_ZZZ",
     dateFieldFormat: "YYYY-MM-DD",
   },
   Debug: App.getUrlParameter("debug") == "true" ? true : false,
