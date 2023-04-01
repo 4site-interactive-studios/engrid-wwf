@@ -19,8 +19,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, March 31, 2023 @ 12:22:30 ET
- *  By: fernando
+ *  Date: Saturday, April 1, 2023 @ 12:10:59 ET
+ *  By: bryancasler
  *  ENGrid styles: v0.13.47
  *  ENGrid scripts: v0.13.47
  *
@@ -7143,15 +7143,47 @@ body:not([data-engrid-debug]) #debug-bar{
 [data-engrid-theme=wwf] .white-box{
   background-color:#fff;
   border:1px solid #ccc;
+  display:flex;
+  flex-direction:column;
   margin-bottom:2rem;
   margin-top:2rem;
   padding:0 3rem 1.75rem;
+}
+[data-engrid-theme=wwf] .white-box.align-items_center{
+  align-items:center;
+}
+[data-engrid-theme=wwf] .white-box.align-items_flex-start{
+  align-items:flex-start;
 }
 [data-engrid-theme=wwf] .white-box>:first-child{
   margin-top:1.75rem;
 }
 [data-engrid-theme=wwf] .white-box>:last-child{
   margin-bottom:1.75rem;
+}
+[data-engrid-theme=wwf] .white-box h2{
+  margin-bottom:1.5rem;
+  margin-left:auto;
+  margin-right:auto;
+}
+[data-engrid-theme=wwf] .white-box .icon-next-label{
+  align-items:center;
+  display:flex;
+  margin-bottom:1rem;
+  width:350px;
+}
+[data-engrid-theme=wwf] .white-box .icon-next-label p{
+  border-bottom:1px solid #ccc;
+  flex-basis:calc(100% - 60px);
+  padding-bottom:1rem;
+  position:relative;
+  top:.5rem;
+}
+[data-engrid-theme=wwf] .white-box .icon-next-label img{
+  flex-basis:60px;
+  height:60px;
+  margin-right:1rem;
+  width:60px;
 }
 [data-engrid-theme=wwf] .inline-upsell-box{
   --p_font-size:14px;

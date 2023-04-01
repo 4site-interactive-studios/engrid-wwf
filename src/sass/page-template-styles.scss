@@ -183,6 +183,17 @@
     background-color: #ffffff;
     border: 1px solid #cccccc;
     padding: 0 3rem 1.75rem 3rem;
+    display: flex;
+    flex-direction: column;
+
+    &.align-items_center {
+      align-items: center;
+    }
+
+    &.align-items_flex-start {
+      align-items: flex-start;
+    }
+
     > :first-child {
       margin-top: 1.75rem;
     }
@@ -191,8 +202,38 @@
       margin-bottom: 1.75rem;
     }
 
+    h2 {
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: 1.5rem;
+    }
+
     margin-top: 2rem;
     margin-bottom: 2rem;
+
+    .icon-next-label {
+      display: flex;
+      align-items: center;
+      width: 350px;
+      margin-bottom: 1rem;
+
+      p {
+        flex-basis: calc(100% - 60px);
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #ccc;
+
+        // Creates an offset so the bottom padding and border are ignored for the vertical positioning
+        position: relative;
+        top: 0.5rem;
+      }
+
+      img {
+        margin-right: 1rem;
+        width: 60px;
+        height: 60px;
+        flex-basis: 60px;
+      }
+    }
   }
 
   /* Used to highlight an upsell message */
@@ -329,6 +370,25 @@
       color: var(--label_color);
     }
   }
+
+  /* Shows the "Read less" button when click-expand-text is expanded */
+  // body:not(#en__pagebuilder) .click-to-expand.expanded .click-to-expand-cta {
+  //   background: var(--click-to-expand__cta-image_url);
+  //   background-position: bottom;
+  //   background-repeat: no-repeat;
+  //   background-size: var(--click-to-expand__cta-image_width)
+  //     var(--click-to-expand__cta-image_height);
+  //   bottom: 0;
+  //   height: var(--click-to-expand__cta-image_height);
+  //   left: 0;
+  //   margin-left: 0;
+  //   margin-right: auto;
+  //   position: absolute;
+  //   right: 0;
+  //   width: var(--click-to-expand__cta-image_width);
+  //   transform: rotate(180deg);
+  //   cursor: pointer;
+  // }
 }
 
 /* Add your custom theme styles here */
