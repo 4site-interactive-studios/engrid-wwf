@@ -137,6 +137,47 @@
   --checkbox_background-color_checked: #006ea3;
   --checkbox_color_checked: #ffffff;
 
+  /* Click to Expand */
+  --click-to-expand__copy-area_height: 210px;
+  --click-to-expand__cta-image_url: url("https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation_show-more.png?v=1680365859000");
+  --click-to-expand__cta-image_width: 129px;
+  --click-to-expand__cta-image_height: 17px;
+
+  &:not(#en__pagebuilder) .click-to-expand:not(.expanded) {
+    .click-to-expand-cta {
+      margin-left: 0;
+    }
+
+    .click-to-expand-text-wrapper {
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  &:not(#en__pagebuilder) .click-to-expand:not(.expanded):not(.faded) {
+    .click-to-expand-text-wrapper {
+      margin-bottom: 2.5rem;
+    }
+
+    .click-to-expand-text-wrapper {
+      line-clamp: 4;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      mask-image: none;
+    }
+  }
+
+  // &:not(#en__pagebuilder) .click-to-expand:not(.expanded).faded {
+  //   .click-to-expand-text-wrapper {
+  //     mask-image: linear-gradient(
+  //       to bottom,
+  //       #000 80%,
+  //       #fff0 calc(100% - var(--click-to-expand__cta-image_height))
+  //     );
+  //   }
+  // }
+
   .content-header {
     color: #ffffff;
     margin-bottom: 120px;
