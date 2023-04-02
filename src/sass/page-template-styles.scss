@@ -216,6 +216,10 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
       mask-image: none;
+
+      > *:first-child {
+        margin-bottom: 0; // For some reason this causes problems in Safari and on iOS browsers
+      }
     }
   }
 
@@ -306,7 +310,8 @@
     .icon-next-label {
       display: flex;
       align-items: center;
-      width: 350px;
+      width: 100%;
+      max-width: 350px;
       margin-bottom: 1rem;
 
       p {
@@ -326,6 +331,14 @@
         flex-basis: 60px;
       }
     }
+  }
+
+  // When the email field has a non-invalid error caused by FreshAddress, we want to keep the label in its normal color state
+  .en__field--emailAddress.en__field--validationFailed:not(
+      [data-freshaddress-safetosendstatus="invalid"]
+    )
+    > label {
+    color: var(--label_color);
   }
 
   /* Used to highlight an upsell message */
