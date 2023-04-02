@@ -22,6 +22,15 @@ const options: Options = {
     // messageField: "supporter.NOT_TAGGED_ZZZ",
     dateFieldFormat: "YYYY-MM-DD",
   },
+  CountryDisable: [
+    "Belarus",
+    "Cuba",
+    "Iran",
+    "North Korea",
+    "Russia",
+    "Syria",
+    "Ukraine",
+  ],
   Debug: App.getUrlParameter("debug") == "true" ? true : false,
   onLoad: () => {
     customScript(App);
