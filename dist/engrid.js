@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Sunday, April 2, 2023 @ 24:06:43 ET
+ *  Date: Sunday, April 2, 2023 @ 24:42:31 ET
  *  By: fernando
  *  ENGrid styles: v0.13.47
- *  ENGrid scripts: v0.13.49
+ *  ENGrid scripts: v0.13.50
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -15060,6 +15060,8 @@ class FreshAddress {
         this.faDate.value = engrid_ENGrid.formatDate(new Date(), this.options.dateFieldFormat || "yyyy-MM-dd");
         this.faStatus.value = status;
         this.faMessage.value = message;
+        this.emailWrapper.dataset.freshaddressSafetosendstatus =
+            status.toLowerCase();
     }
     addEventListeners() {
         var _a;
@@ -18310,7 +18312,7 @@ class PremiumGift {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.13.49";
+const AppVersion = "0.13.50";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
