@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Sunday, April 2, 2023 @ 24:42:31 ET
+ *  Date: Sunday, April 2, 2023 @ 24:53:38 ET
  *  By: fernando
  *  ENGrid styles: v0.13.47
- *  ENGrid scripts: v0.13.50
+ *  ENGrid scripts: v0.13.51
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -15089,19 +15089,9 @@ class FreshAddress {
         const email = (_a = this.emailField) === null || _a === void 0 ? void 0 : _a.value;
         const options = { emps: false, rtc_timeout: 1200 };
         engrid_ENGrid.disableSubmit("Validating Your Email");
-        const ret = window.FreshAddress.validateEmail(email, options)
-            .then((response) => {
+        const ret = window.FreshAddress.validateEmail(email, options).then((response) => {
             this.logger.log("Validate API Response", JSON.parse(JSON.stringify(response)));
             return this.validateResponse(response);
-        })
-            .catch((error) => {
-            if (error.toString().includes("AbortError")) {
-                // fetch aborted due to timeout
-                this.logger.log("Fetch aborted");
-            }
-            engrid_ENGrid.enableSubmit();
-            // network error or json parsing error
-            engrid_ENGrid.setError(this.emailWrapper, error.toString());
         });
     }
     validateResponse(data) {
@@ -18312,7 +18302,7 @@ class PremiumGift {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.13.50";
+const AppVersion = "0.13.51";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
