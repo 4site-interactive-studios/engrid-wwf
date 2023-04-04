@@ -485,8 +485,14 @@
 
     .en__pg__body {
       grid-template-columns: min-content auto 135px;
+
+      // Hide images on mobile
       @media screen and (max-width: $centercenter1col_body-column_max-width) {
-        grid-template-columns: auto auto 0px;
+        --premium__image_max-width: 0px;
+        grid-template-columns: min-content auto 0px;
+        .en__pg__display {
+          display: none;
+        }
       }
     }
   }
