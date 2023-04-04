@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Sunday, April 2, 2023 @ 17:32:51 ET
+ *  Date: Tuesday, April 4, 2023 @ 16:39:53 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.47
  *  ENGrid scripts: v0.13.51
@@ -8497,6 +8497,10 @@ class engrid_ENGrid {
           return "UNSUBSCRIBE";
           break;
 
+        case "tweetpage":
+          return "TWEETPAGE";
+          break;
+
         default:
           return "UNKNOWN";
       }
@@ -9240,7 +9244,7 @@ class App extends engrid_ENGrid {
     }
 
     if (engrid_ENGrid.getUrlParameter("development") === "branding") {
-      new BrandingHtml();
+      new BrandingHtml().show();
     }
 
     engrid_ENGrid.setBodyData("data-engrid-scripts-js-loading", "finished");
@@ -16102,6 +16106,7 @@ class DebugPanel {
     var _a, _b;
 
     this.logger = new EngridLogger("Debug Panel", "#f0f0f0", "#ff0000", "💥");
+    this.brandingHtml = new BrandingHtml();
     this.element = null;
     this.currentTimestamp = this.getCurrentTimestamp();
     this.quickFills = {
@@ -16259,23 +16264,9 @@ class DebugPanel {
             </div>
             <div class="debug-panel__options">
               <div class="debug-panel__option">
-                <label for="engrid-layout-switch">Switch layout</label>
-                <select name="engrid-layout" id="engrid-layout-switch">
-                </select>
-              </div>
-              <div class="debug-panel__option">
-                <div class="debug-panel__checkbox">
-                  <input type="checkbox" name="engrid-embedded-layout" id="engrid-embedded-layout">
-                  <label for="engrid-embedded-layout">Embedded layout</label>            
-                </div>
-              </div>
-              <div class="debug-panel__option">
-                <label for="engrid-theme">Theme</label>
-                <input type="text" id="engrid-theme">
-              </div>
-              <div class="debug-panel__option">
-                <label for="engrid-theme">Sub-theme</label>
-                <input type="text" id="engrid-subtheme">
+                <label class="debug-panel__link-label link-left">
+                  <a class="debug-panel__edit-link">Edit page</a>
+                </label>
               </div>
               <div class="debug-panel__option">
                 <label for="engrid-form-quickfill">Form Quick-fill</label>
@@ -16292,10 +16283,15 @@ class DebugPanel {
                 </select>
               </div>
               <div class="debug-panel__option">
-                <button class="btn debug-panel__btn debug-panel__btn--edit" type="button">Open edit page</button>
+                <label for="engrid-layout-switch">Switch layout</label>
+                <select name="engrid-layout" id="engrid-layout-switch">
+                </select>
               </div>
               <div class="debug-panel__option">
-                <button class="btn debug-panel__btn debug-panel__btn--submit" type="button">Submit form</button>
+                <div class="debug-panel__checkbox">
+                  <input type="checkbox" name="engrid-embedded-layout" id="engrid-embedded-layout">
+                  <label for="engrid-embedded-layout">Embedded layout</label>            
+                </div>
               </div>
               <div class="debug-panel__option debug-panel__option--local">
                 <div class="debug-panel__checkbox">
@@ -16304,10 +16300,31 @@ class DebugPanel {
                 </div>
               </div>
               <div class="debug-panel__option debug-panel__option--local">
-                <button class="btn debug-panel__btn debug-panel__btn--branding" type="button">Insert branding HTML</button>
+                <div class="debug-panel__checkbox">
+                  <input type="checkbox" name="engrid-branding" id="engrid-branding">
+                  <label for="engrid-branding">Branding HTML</label>            
+                </div>
               </div>
               <div class="debug-panel__option">
-                <button class="btn debug-panel__btn debug-panel__btn--end" type="button">End debug session</button>
+                <label for="engrid-theme">Theme</label>
+                <input type="text" id="engrid-theme">
+              </div>
+              <div class="debug-panel__option">
+                <label for="engrid-theme">Sub-theme</label>
+                <input type="text" id="engrid-subtheme">
+              </div>
+              <div class="debug-panel__option">
+                <button class="btn debug-panel__btn debug-panel__btn--submit" type="button">Submit form</button>
+              </div>
+              <div class="debug-panel__option">
+                <label class="debug-panel__link-label">
+                  <a class="debug-panel__force-submit-link">Force submit form</a>
+                </label>
+              </div>
+             <div class="debug-panel__option">
+                <label class="debug-panel__link-label">
+                  <a class="debug-panel__end-debug-link">End debug</a>
+                </label>
               </div>
             </div>
           </div>
@@ -16321,6 +16338,7 @@ class DebugPanel {
     this.setupDebugLayoutSwitcher();
     this.setupBrandingHtmlHandler();
     this.setupEditBtnHandler();
+    this.setupForceSubmitLinkHandler();
     this.setupSubmitBtnHandler();
   }
 
@@ -16433,7 +16451,7 @@ class DebugPanel {
   }
 
   createDebugSessionEndHandler() {
-    const debugSessionEndBtn = document.querySelector(".debug-panel__btn--end");
+    const debugSessionEndBtn = document.querySelector(".debug-panel__end-debug-link");
     debugSessionEndBtn === null || debugSessionEndBtn === void 0 ? void 0 : debugSessionEndBtn.addEventListener("click", () => {
       var _a;
 
@@ -16473,31 +16491,37 @@ class DebugPanel {
   }
 
   setupBrandingHtmlHandler() {
-    const brandingHtmlBtn = document.querySelector(".debug-panel__btn--branding");
-
-    if (engrid_ENGrid.getUrlParameter("development") === "branding") {
-      brandingHtmlBtn.setAttribute("disabled", "");
-    }
-
-    brandingHtmlBtn === null || brandingHtmlBtn === void 0 ? void 0 : brandingHtmlBtn.addEventListener("click", e => {
-      new BrandingHtml();
-      const el = e.target;
-      el.setAttribute("disabled", "");
+    const brandingInput = document.getElementById("engrid-branding");
+    brandingInput.checked = engrid_ENGrid.getUrlParameter("development") === "branding";
+    brandingInput.addEventListener("change", e => {
+      if (brandingInput.checked) {
+        this.brandingHtml.show();
+      } else {
+        this.brandingHtml.hide();
+      }
     });
   }
 
   setupEditBtnHandler() {
-    const editBtn = document.querySelector(".debug-panel__btn--edit");
+    const editBtn = document.querySelector(".debug-panel__edit-link");
     editBtn === null || editBtn === void 0 ? void 0 : editBtn.addEventListener("click", () => {
       window.open(`https://${engrid_ENGrid.getDataCenter()}.engagingnetworks.app/index.html#pages/${engrid_ENGrid.getPageID()}/edit`, "_blank");
+    });
+  }
+
+  setupForceSubmitLinkHandler() {
+    const submitBtn = document.querySelector(".debug-panel__force-submit-link");
+    submitBtn === null || submitBtn === void 0 ? void 0 : submitBtn.addEventListener("click", () => {
+      const enForm = document.querySelector("form.en__component");
+      enForm === null || enForm === void 0 ? void 0 : enForm.submit();
     });
   }
 
   setupSubmitBtnHandler() {
     const submitBtn = document.querySelector(".debug-panel__btn--submit");
     submitBtn === null || submitBtn === void 0 ? void 0 : submitBtn.addEventListener("click", () => {
-      const enForm = document.querySelector("form.en__component");
-      enForm === null || enForm === void 0 ? void 0 : enForm.submit();
+      const enForm = document.querySelector(".en__submit button");
+      enForm === null || enForm === void 0 ? void 0 : enForm.click();
     });
   }
 
@@ -16586,11 +16610,7 @@ class BrandingHtml {
     this.assetBaseUrl = "https://cdn.jsdelivr.net/gh/4site-interactive-studios/engrid-scripts@main/reference-materials/html/brand-guide-markup/";
     this.brandingHtmlFiles = ["click-to-call.html", "donation-page.html", "ecards.html", "ecommerce.html", "email-to-target.html", "en-common-fields-with-errors.html", "en-common-fields-with-fancy-errors.html", "en-common-fields.html", "event.html", "html5-tags.html", "membership.html", "petition.html", "premium-donation.html", "styles.html", "survey.html", "tweet-to-target.html"];
     this.bodyMain = document.querySelector(".body-main");
-    this.fetchHtml().then(html => html.forEach(h => {
-      var _a;
-
-      return (_a = this.bodyMain) === null || _a === void 0 ? void 0 : _a.insertAdjacentHTML("beforeend", h);
-    }));
+    this.htmlFetched = false;
   }
 
   fetchHtml() {
@@ -16602,6 +16622,33 @@ class BrandingHtml {
       const brandingHtmls = yield Promise.all(htmlRequests);
       return brandingHtmls;
     });
+  }
+
+  appendHtml() {
+    this.fetchHtml().then(html => html.forEach(h => {
+      var _a;
+
+      const brandingSection = document.createElement("div");
+      brandingSection.classList.add("brand-guide-section");
+      brandingSection.innerHTML = h;
+      (_a = this.bodyMain) === null || _a === void 0 ? void 0 : _a.insertAdjacentElement("beforeend", brandingSection);
+    }));
+    this.htmlFetched = true;
+  }
+
+  show() {
+    if (!this.htmlFetched) {
+      this.appendHtml();
+      return;
+    }
+
+    const guides = document.querySelectorAll(".brand-guide-section");
+    guides === null || guides === void 0 ? void 0 : guides.forEach(g => g.style.display = "block");
+  }
+
+  hide() {
+    const guides = document.querySelectorAll(".brand-guide-section");
+    guides === null || guides === void 0 ? void 0 : guides.forEach(g => g.style.display = "none");
   }
 
 }
@@ -16727,7 +16774,7 @@ class PremiumGift {
 
 }
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/version.js
-const AppVersion = "0.13.51";
+const AppVersion = "0.13.52";
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
 

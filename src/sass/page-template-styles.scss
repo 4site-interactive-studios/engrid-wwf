@@ -233,6 +233,13 @@
   //   }
   // }
 
+  // Hide the label even when there is an error on the filed (e.g. Amount entered is below the threshold)
+  &:not(#en__pagebuilder):not([data-engrid-debug])
+    .en__field--donationAmt.en__field--validationFailed
+    > .en__field__label {
+    display: none;
+  }
+
   .content-header {
     color: #ffffff;
     margin-bottom: 120px;
@@ -397,9 +404,11 @@
   }
 
   .radio-to-buttons_donationAmt .en__field--donationAmt {
-    --fields_spacing-inline: 0.9rem;
-    --fields_spacing-block: 0.9rem;
-    --donation-amount__button_padding: 1.5ch 1.2ch;
+    .en__field__element--radio {
+      --fields_spacing-inline: 0.9rem;
+      --fields_spacing-block: 0.9rem;
+      --donation-amount__button_padding: 1.5ch 1.2ch;
+    }
     input[type="radio"] + label {
       outline: none;
     }
@@ -446,6 +455,37 @@
   .body-banner img,
   .body-banner video {
     background-color: #cccccc;
+  }
+
+  .en__pgList {
+    --radio_height: 20px;
+    --radio_width: 20px;
+    --radio_box-shadow_selected: inset 0 0 0 3px #ffffff;
+
+    // When the no gift option is present, move it from the last premium option to being the first premium option
+    &[data-nogift] {
+      display: grid;
+
+      .en__pg:last-child {
+        grid-row: 1 / 2;
+        .en__pg__display {
+          height: 100px;
+          background-image: url("https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-gift_maximize-my-gift-placeholder.jpg?v=1680364148000");
+          background-size: cover;
+        }
+      }
+    }
+
+    .en__pg--selected {
+      --premium__item_background-color: #e9f7f6;
+    }
+
+    .en__pg__body {
+      grid-template-columns: min-content auto 135px;
+      @media screen and (max-width: $centercenter1col_body-column_max-width) {
+        grid-template-columns: auto auto 0px;
+      }
+    }
   }
 
   /* Tweet to Target Widget */
