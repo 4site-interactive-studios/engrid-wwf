@@ -469,9 +469,12 @@
       .en__pg:last-child {
         grid-row: 1 / 2;
         .en__pg__display {
-          height: 100px;
           background-image: url("https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-gift_maximize-my-gift-placeholder.jpg?v=1680364148000");
-          background-size: cover;
+          background-size: contain;
+          min-width: 100%;
+          background-position: center center;
+          background-repeat: no-repeat;
+          height: 100px;
         }
       }
     }

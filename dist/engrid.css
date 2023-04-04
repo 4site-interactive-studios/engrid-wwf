@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, April 4, 2023 @ 16:39:53 ET
+ *  Date: Tuesday, April 4, 2023 @ 16:49:51 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.47
  *  ENGrid scripts: v0.13.51
@@ -4650,7 +4650,7 @@ div[id^=nb-field-].nb-success input{
   grid-auto-flow:row;
   grid-auto-rows:min-content;
   grid-template-areas:"en__pg__select en__pg__detail en__pg__display";
-  grid-template-columns:min-content auto auto;
+  grid-template-columns:min-content auto var(--premium__image_max-width);
   grid-template-rows:min-content;
   padding:calc(var(--fields_spacing-block)*2) calc(var(--fields_spacing-inline)*2);
 }
@@ -7414,8 +7414,11 @@ body:not([data-engrid-debug]) #debug-bar{
 }
 [data-engrid-theme=wwf] .en__pgList[data-nogift] .en__pg:last-child .en__pg__display{
   background-image:url(https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-gift_maximize-my-gift-placeholder.jpg?v=1680364148000);
-  background-size:cover;
+  background-position:50%;
+  background-repeat:no-repeat;
+  background-size:contain;
   height:100px;
+  min-width:100%;
 }
 [data-engrid-theme=wwf] .en__pgList .en__pg--selected{
   --premium__item_background-color:#e9f7f6;
