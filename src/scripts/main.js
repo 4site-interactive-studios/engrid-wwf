@@ -47,6 +47,18 @@ export const customScript = function (App, DonationFrequency) {
         premiumTitle.style.display = "block";
       }
     };
+    const addCountryNotice = () => {
+      if (!document.querySelector(".en__field--country .en__field__notice")) {
+        App.addHtml(
+          '<div class="en__field__notice">Note: We are unable to mail thank-you gifts to donors outside the United States and its territories.</div>',
+          'select[name="supporter.country"]',
+          "after"
+        );
+      }
+    };
+    const removeCountryNotice = () => {
+      App.removeHtml(".en__field--country .en__field__notice");
+    };
     if (
       !window.EngagingNetworks.require._defined.enjs.checkSubmissionFailed()
     ) {
@@ -56,13 +68,16 @@ export const customScript = function (App, DonationFrequency) {
       if (country.value !== "US") {
         maxMyGift();
         hidePremiumBlock();
+        addCountryNotice();
       }
       country.addEventListener("change", () => {
         if (country.value !== "US") {
           maxMyGift();
           hidePremiumBlock();
+          addCountryNotice();
         } else {
           showPremiumBlock();
+          removeCountryNotice();
         }
       });
       freq.onFrequencyChange.subscribe((s) => {

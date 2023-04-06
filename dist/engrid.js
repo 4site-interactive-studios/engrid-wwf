@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, April 5, 2023 @ 23:31:54 ET
- *  By: bryancasler
+ *  Date: Thursday, April 6, 2023 @ 09:37:41 ET
+ *  By: fernando
  *  ENGrid styles: v0.13.52
  *  ENGrid scripts: v0.13.52
  *
@@ -16884,6 +16884,16 @@ const customScript = function (App, DonationFrequency) {
       }
     };
 
+    const addCountryNotice = () => {
+      if (!document.querySelector(".en__field--country .en__field__notice")) {
+        App.addHtml('<div class="en__field__notice">Note: We are unable to mail thank-you gifts to donors outside the United States and its territories.</div>', 'select[name="supporter.country"]', "after");
+      }
+    };
+
+    const removeCountryNotice = () => {
+      App.removeHtml(".en__field--country .en__field__notice");
+    };
+
     if (!window.EngagingNetworks.require._defined.enjs.checkSubmissionFailed()) {
       maxMyGift();
     }
@@ -16892,14 +16902,17 @@ const customScript = function (App, DonationFrequency) {
       if (country.value !== "US") {
         maxMyGift();
         hidePremiumBlock();
+        addCountryNotice();
       }
 
       country.addEventListener("change", () => {
         if (country.value !== "US") {
           maxMyGift();
           hidePremiumBlock();
+          addCountryNotice();
         } else {
           showPremiumBlock();
+          removeCountryNotice();
         }
       });
       freq.onFrequencyChange.subscribe(s => {
