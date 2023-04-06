@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, April 5, 2023 @ 12:29:59 ET
- *  By: bryancasler
+ *  Date: Wednesday, April 5, 2023 @ 22:19:46 ET
+ *  By: fernando
  *  ENGrid styles: v0.13.47
  *  ENGrid scripts: v0.13.51
  *
@@ -16837,9 +16837,82 @@ const AppVersion = "0.13.52";
 
 
 ;// CONCATENATED MODULE: ./src/scripts/main.js
-const customScript = function (App) {
+const customScript = function (App, DonationFrequency) {
   console.log("ENGrid client scripts are executing"); // Add your client scripts here
-  // App.setBodydata("client-js-loading", "finished");
+
+  if ("pageJson" in window && "pageType" in window.pageJson && window.pageJson.pageType === "premiumgift") {
+    const freq = DonationFrequency.getInstance();
+    const country = App.getField("supporter.country");
+
+    const maxMyGift = () => {
+      const maxRadio = document.querySelector("input[type='radio'][name='en__pg'][value='0']");
+
+      if (maxRadio) {
+        maxRadio.checked = true;
+        maxRadio.click();
+        App.setFieldValue("transaction.selprodvariantid", "");
+      }
+    };
+
+    const hidePremiumBlock = () => {
+      const premiumBlock = document.querySelectorAll(".en__component--premiumgiftblock > div");
+      const premiumTitle = document.querySelector(".engrid_premium_title");
+
+      if (premiumBlock) {
+        premiumBlock.forEach(block => {
+          block.style.display = "none";
+        });
+      }
+
+      if (premiumTitle) {
+        premiumTitle.style.display = "none";
+      }
+    };
+
+    const showPremiumBlock = () => {
+      const premiumBlock = document.querySelectorAll(".en__component--premiumgiftblock > div");
+      const premiumTitle = document.querySelector(".engrid_premium_title");
+
+      if (premiumBlock) {
+        premiumBlock.forEach(block => {
+          block.style.display = "block";
+        });
+      }
+
+      if (premiumTitle) {
+        premiumTitle.style.display = "block";
+      }
+    };
+
+    if (!window.EngagingNetworks.require._defined.enjs.checkSubmissionFailed()) {
+      maxMyGift();
+    }
+
+    if (App.getUrlParameter("premium") !== "international" && country) {
+      if (country.value !== "US") {
+        maxMyGift();
+        hidePremiumBlock();
+      }
+
+      country.addEventListener("change", () => {
+        if (country.value !== "US") {
+          maxMyGift();
+          hidePremiumBlock();
+        } else {
+          showPremiumBlock();
+        }
+      });
+      freq.onFrequencyChange.subscribe(s => {
+        if (country.value !== "US") {
+          maxMyGift();
+          hidePremiumBlock();
+        } else {
+          showPremiumBlock();
+        }
+      });
+    }
+  } // App.setBodydata("client-js-loading", "finished");
+
 };
 ;// CONCATENATED MODULE: ./src/scripts/page-header-footer.js
 const pageHeaderFooter = function (App) {
@@ -17249,7 +17322,7 @@ const pageHeaderFooter = function (App) {
   })(window, document);
 };
 ;// CONCATENATED MODULE: ./src/index.ts
-// import { Options, App } from "@4site/engrid-common"; // Uses ENGrid via NPM
+// import { Options, App, DonationFrequency } from "@4site/engrid-common"; // Uses ENGrid via NPM
  // Uses ENGrid via Visual Studio Workspace
 
 
@@ -17275,10 +17348,25 @@ const options = {
   CountryDisable: ["Belarus", "Cuba", "Iran", "North Korea", "Russia", "Syria", "Ukraine"],
   Debug: App.getUrlParameter("debug") == "true" ? true : false,
   onLoad: () => {
-    customScript(App);
+    customScript(App, DonationFrequency);
     pageHeaderFooter(App); // Added this line to trigger pageHeaderFooter
   },
-  onResize: () => console.log("Starter Theme Window Resized")
+  onResize: () => console.log("Starter Theme Window Resized"),
+  onSubmit: () => {
+    if ("pageJson" in window && "pageType" in window.pageJson && window.pageJson.pageType === "premiumgift" && App.getUrlParameter("premium") !== "international") {
+      const country = App.getField("supporter.country");
+
+      if (country && country.value !== "US") {
+        const maxRadio = document.querySelector("input[type='radio'][name='en__pg'][value='0']");
+
+        if (maxRadio) {
+          maxRadio.checked = true;
+          maxRadio.click();
+          App.setFieldValue("transaction.selprodvariantid", "");
+        }
+      }
+    }
+  }
 };
 new App(options);
 })();

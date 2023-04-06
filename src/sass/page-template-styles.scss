@@ -341,9 +341,7 @@
   }
 
   // When the email field has a non-invalid error caused by FreshAddress, we want to keep the label in its normal color state
-  .en__field--emailAddress.en__field--validationFailed:not(
-      [data-freshaddress-safetosendstatus="invalid"]
-    )
+  .en__field--emailAddress.en__field--validationFailed:not([data-freshaddress-safetosendstatus="invalid"])
     > label {
     color: var(--label_color);
   }
@@ -494,6 +492,17 @@
           display: none;
         }
       }
+    }
+  }
+  .en__component--premiumgiftblock {
+    border: 0;
+    margin-bottom: 0;
+    .en__pgHeader,
+    .en__pgList {
+      border: 1px solid #bfbfbf;
+    }
+    .en__pgList {
+      margin-bottom: 0.75rem;
     }
   }
 
