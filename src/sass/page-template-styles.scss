@@ -341,7 +341,9 @@
   }
 
   // When the email field has a non-invalid error caused by FreshAddress, we want to keep the label in its normal color state
-  .en__field--emailAddress.en__field--validationFailed:not([data-freshaddress-safetosendstatus="invalid"])
+  .en__field--emailAddress.en__field--validationFailed:not(
+      [data-freshaddress-safetosendstatus="invalid"]
+    )
     > label {
     color: var(--label_color);
   }
@@ -588,17 +590,6 @@
 
     .content-footer {
       margin-top: 40px;
-    }
-  }
-
-  // Example Breakpoints Stylings (See engrid-scripts > _engrid-breakpoints.scss for more breakpoints)
-  &[data-engrid-layout] {
-    @include mq($until: mobile-l) {
-      @include until-mobile-l;
-    }
-
-    @include mq($from: mobile-l) {
-      @include from-mobile-l;
     }
   }
 
