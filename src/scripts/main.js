@@ -10,7 +10,7 @@ export const customScript = function (App, DonationFrequency) {
     const country = App.getField("supporter.country");
     const maxMyGift = () => {
       const maxRadio = document.querySelector(
-        "input[type='radio'][name='en__pg'][value='0']"
+        ".en__pg:last-child input[type='radio'][name='en__pg'][value='0']"
       );
       if (maxRadio) {
         maxRadio.checked = true;
@@ -26,11 +26,11 @@ export const customScript = function (App, DonationFrequency) {
       const premiumTitle = document.querySelector(".engrid_premium_title");
       if (premiumBlock) {
         premiumBlock.forEach((block) => {
-          block.style.display = "none";
+          block.setAttribute("data-non-us-donor", "");
         });
       }
       if (premiumTitle) {
-        premiumTitle.style.display = "none";
+        premiumTitle.setAttribute("data-non-us-donor", "");
       }
     };
     const showPremiumBlock = () => {
@@ -40,11 +40,11 @@ export const customScript = function (App, DonationFrequency) {
       const premiumTitle = document.querySelector(".engrid_premium_title");
       if (premiumBlock) {
         premiumBlock.forEach((block) => {
-          block.style.display = "block";
+          block.removeAttribute("data-non-us-donor");
         });
       }
       if (premiumTitle) {
-        premiumTitle.style.display = "block";
+        premiumTitle.removeAttribute("data-non-us-donor");
       }
     };
     const addCountryNotice = () => {

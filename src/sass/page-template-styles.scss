@@ -499,9 +499,14 @@
   .en__component--premiumgiftblock {
     border: 0;
     margin-bottom: 0;
-    .en__pgHeader,
-    .en__pgList {
-      border: 1px solid #bfbfbf;
+    .en__pgHeader[data-non-us-donor],
+    .en__pgList[data-non-us-donor] {
+      // border: 1px solid #bfbfbf;
+      pointer-events: none;
+      .en__pg:not(.en__pg--selected) {
+        opacity: 0.8;
+        filter: grayscale(1);
+      }
     }
     .en__pgList {
       margin-bottom: 0.75rem;

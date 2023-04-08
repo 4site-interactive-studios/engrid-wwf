@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, April 6, 2023 @ 09:37:41 ET
- *  By: fernando
+ *  Date: Friday, April 7, 2023 @ 20:01:34 ET
+ *  By: bryancasler
  *  ENGrid styles: v0.13.52
  *  ENGrid scripts: v0.13.52
  *
@@ -16845,7 +16845,7 @@ const customScript = function (App, DonationFrequency) {
     const country = App.getField("supporter.country");
 
     const maxMyGift = () => {
-      const maxRadio = document.querySelector("input[type='radio'][name='en__pg'][value='0']");
+      const maxRadio = document.querySelector(".en__pg:last-child input[type='radio'][name='en__pg'][value='0']");
 
       if (maxRadio) {
         maxRadio.checked = true;
@@ -16860,12 +16860,12 @@ const customScript = function (App, DonationFrequency) {
 
       if (premiumBlock) {
         premiumBlock.forEach(block => {
-          block.style.display = "none";
+          block.setAttribute("data-non-us-donor", "");
         });
       }
 
       if (premiumTitle) {
-        premiumTitle.style.display = "none";
+        premiumTitle.setAttribute("data-non-us-donor", "");
       }
     };
 
@@ -16875,12 +16875,12 @@ const customScript = function (App, DonationFrequency) {
 
       if (premiumBlock) {
         premiumBlock.forEach(block => {
-          block.style.display = "block";
+          block.removeAttribute("data-non-us-donor");
         });
       }
 
       if (premiumTitle) {
-        premiumTitle.style.display = "block";
+        premiumTitle.removeAttribute("data-non-us-donor");
       }
     };
 
