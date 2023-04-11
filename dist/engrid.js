@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, April 7, 2023 @ 20:01:34 ET
+ *  Date: Tuesday, April 11, 2023 @ 16:49:53 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.52
  *  ENGrid scripts: v0.13.52
@@ -14735,7 +14735,7 @@ class RequiredIfVisible {
         this.logger.log(`${field.getAttribute("class")} is visible`);
         const fieldElement = field.querySelector("input, select, textarea");
 
-        if (fieldElement && !engrid_ENGrid.getFieldValue(fieldElement.getAttribute("name"))) {
+        if (fieldElement && fieldElement.closest("[data-unhidden]") === null && !engrid_ENGrid.getFieldValue(fieldElement.getAttribute("name"))) {
           const fieldLabel = field.querySelector(".en__field__label");
 
           if (fieldLabel) {
@@ -16554,7 +16554,7 @@ class DebugHiddenFields {
 
         const fieldContainer = document.createElement("div");
         fieldContainer.classList.add("en__field", "en__field--text", "hide");
-        fieldContainer.setAttribute("unhidden", "");
+        fieldContainer.dataset.unhidden = "";
         fieldContainer.appendChild(label);
         fieldContainer.appendChild(fieldElement); // Insert the new field container before the original input element and move the input element into the field element div
 
@@ -16774,7 +16774,7 @@ class PremiumGift {
 
 }
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/version.js
-const AppVersion = "0.13.52";
+const AppVersion = "0.13.53";
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
 
