@@ -962,7 +962,7 @@ body,
   }
   #header .logo {
     background: #fff
-      url("https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo.png")
+      url("https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo.png?1")
       no-repeat;
     -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
@@ -973,6 +973,7 @@ body,
     top: -20px;
     width: 100px;
     z-index: 3;
+    background-size: cover;
   }
   #header .logo a {
     display: block;

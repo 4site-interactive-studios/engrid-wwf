@@ -23,7 +23,7 @@
   // --default_color: initial;
   --default_font-size: 20px;
   // --default_font-weight: initial;
-  // --default_line-height: initial;
+  --default_line-height: 32px;
 
   // TYPOGRAPHY H1
   // --h1_font-family: var(--default_font-family);
@@ -269,7 +269,7 @@
 
   .content-header {
     color: #ffffff;
-    margin-bottom: 120px;
+    margin-bottom: 114px;
   }
 
   .content-footer {
@@ -277,7 +277,7 @@
   }
 
   .body-title > .en__component > *:first-child {
-    margin-top: 0px;
+    margin-top: -10px;
   }
 
   .body-main {
@@ -295,6 +295,30 @@
   //   flex-direction: column;
   //   align-items: self-start;
   // }
+
+  .give-by-select {
+    --button_background-color_hover: var(
+      --donation-amount__button_background-color_hover
+    );
+    --button_background-color_checked: var(
+      --donation-amount__button_background-color_hover
+    );
+    --button_color_checked: var(--button_color);
+    .en__field__label {
+      outline: none;
+      height: 64px;
+    }
+
+    img {
+      max-height: 35px;
+      height: auto;
+      width: auto;
+    }
+
+    img.applepay-googlepay {
+      max-width: 171px;
+    }
+  }
 
   .divider-top {
     border-top: 1px solid #cccccc;
@@ -381,7 +405,7 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 1rem 2rem 1rem 2rem;
+    padding: 1rem 1ch;
     background-color: #f7e6ed;
     color: #c60060;
     margin-bottom: 1.25rem;
@@ -409,10 +433,10 @@
     svg {
       height: 80px;
       position: absolute;
-      top: -26px;
+      top: -24px;
       // transform: scaleX(-1);
       width: 40px;
-      margin-left: 10px;
+      margin-left: 53px;
     }
   }
 
@@ -505,6 +529,18 @@
       border-bottom-color: transparent;
       outline: none;
     }
+
+    .en__field__element.en__field__element--radio {
+      align-items: stretch;
+
+      .en__field__item {
+        display: flex;
+
+        label {
+          flex-basis: 100%;
+        }
+      }
+    }
   }
 
   .body-banner img,
@@ -539,7 +575,7 @@
     }
 
     .en__pg__body {
-      grid-template-columns: min-content auto 135px;
+      grid-template-columns: min-content auto var(--premium__image_max-width);
 
       // Hide images on mobile
       @media screen and (max-width: $centercenter1col_body-column_max-width) {
@@ -552,7 +588,10 @@
     }
   }
   .en__component--premiumgiftblock {
-    border: 0;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+    border-top: 1px solid #cccccc;
     margin-bottom: 0;
     .en__pgHeader[data-non-us-donor],
     .en__pgList[data-non-us-donor] {
@@ -653,7 +692,6 @@
     }
   }
 
-  // Example of Shared Layout Stylings
   &[data-engrid-layout="centerleft1col"] {
     @media screen and (max-width: $centerleft1col_content-column_min-width) {
       @include full-header-footer;
@@ -666,11 +704,47 @@
     }
   }
 
+  @media screen and (max-width: 1024px) and (min-width: 900px) {
+    .inline-upsell-box svg {
+      margin-left: 36px;
+    }
+  }
+
   @media screen and (max-width: 600px) {
+    --default_font-size: 15px;
+    --default_line-height: 24px;
+    --h1_font-size: 24px;
+    --h1_line-height: 33.6px;
     --engrid__body_margin: 0px;
 
     --engrid__page_background-color: #ffffff;
     --engrid__content-footer_background-color: transparent;
+    --engrid__body-main_padding: 13px 21px;
+
+    --button_font-size: 20px;
+    --button_line-height: 30px;
+
+    --recurring-frequency__button_font-size: 16px;
+    --recurring-frequency__button_line-height: 24px;
+
+    .inline-upsell-box {
+      margin-left: -29px;
+      border-radius: 0;
+      margin-right: -30px;
+      padding: 1rem 0.5rem;
+      strong {
+        font-size: 15px;
+        line-height: 24px;
+      }
+      svg {
+        margin-left: 30px;
+      }
+    }
+
+    .white-box {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
 
     .body-top {
       --engrid__body-top_padding: 0 29px;

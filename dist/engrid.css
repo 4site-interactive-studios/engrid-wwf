@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, April 11, 2023 @ 19:13:27 ET
+ *  Date: Wednesday, April 12, 2023 @ 12:42:56 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.52
  *  ENGrid scripts: v0.13.52
@@ -3893,7 +3893,10 @@ body:not[data-engrid-show-ecard-options] .show-if-ecard{
 }
 .en__component .en__field__error{
   color:var(--error__color);
+  font-family:var(--p_font-family);
   font-size:max(75%, 10px);
+  font-weight:var(--p_font-weight);
+  line-height:var(--p_line-height);
   order:3;
 }
 [class*=validationFail]:not(.has-focus):not(.has-value){
@@ -4637,6 +4640,12 @@ div[id^=nb-field-].nb-success input{
 [data-engrid-theme] .en__pg__detail{
   grid-area:en__pg__detail;
   padding:0;
+}
+[data-engrid-theme] .en__pg__description{
+  font-family:var(--p_font-family);
+  font-size:var(--p_font-size);
+  font-weight:var(--p_font-weight);
+  line-height:var(--p_line-height);
 }
 [data-engrid-theme] .en__pg__name{
   margin-top:0;
@@ -7473,6 +7482,7 @@ body:not([data-engrid-debug]) #debug-bar{
   --engrid__body_box-shadow:none;
   --default_font-family:"Open Sans", sans-serif;
   --default_font-size:20px;
+  --default_line-height:32px;
   --h1_font-size:46px;
   --h1_font-weight:700;
   --h1_line-height:55.2px;
@@ -7587,13 +7597,13 @@ body:not([data-engrid-debug]) #debug-bar{
 }
 [data-engrid-theme=wwf] .content-header{
   color:#fff;
-  margin-bottom:120px;
+  margin-bottom:114px;
 }
 [data-engrid-theme=wwf] .content-footer{
   margin-top:120px;
 }
 [data-engrid-theme=wwf] .body-title>.en__component>:first-child{
-  margin-top:0;
+  margin-top:-10px;
 }
 [data-engrid-theme=wwf] .body-main{
   border:1px solid #ccc;
@@ -7601,6 +7611,27 @@ body:not([data-engrid-debug]) #debug-bar{
 [data-engrid-theme=wwf] .en__field--radio.en__field--question .en__field__element--radio{
   align-items:self-start;
   flex-direction:column;
+}
+[data-engrid-theme=wwf] .give-by-select{
+  --button_background-color_hover:var(
+    --donation-amount__button_background-color_hover
+  );
+  --button_background-color_checked:var(
+    --donation-amount__button_background-color_hover
+  );
+  --button_color_checked:var(--button_color);
+}
+[data-engrid-theme=wwf] .give-by-select .en__field__label{
+  height:64px;
+  outline:none;
+}
+[data-engrid-theme=wwf] .give-by-select img{
+  height:auto;
+  max-height:35px;
+  width:auto;
+}
+[data-engrid-theme=wwf] .give-by-select img.applepay-googlepay{
+  max-width:171px;
 }
 [data-engrid-theme=wwf] .divider-top{
   border-top:1px solid #ccc;
@@ -7674,7 +7705,7 @@ body:not([data-engrid-debug]) #debug-bar{
   justify-content:center;
   margin-bottom:1.25rem;
   min-height:88px;
-  padding:1rem 2rem;
+  padding:1rem 1ch;
   text-align:center;
 }
 [data-engrid-theme=wwf] .inline-upsell-box strong{
@@ -7690,9 +7721,9 @@ body:not([data-engrid-debug]) #debug-bar{
 }
 [data-engrid-theme=wwf] .inline-upsell-box svg{
   height:80px;
-  margin-left:10px;
+  margin-left:53px;
   position:absolute;
-  top:-26px;
+  top:-24px;
   width:40px;
 }
 [data-engrid-theme=wwf] figure.media-with-attribution{
@@ -7772,6 +7803,15 @@ body:not([data-engrid-debug]) #debug-bar{
   border-bottom-color:#0000;
   outline:none;
 }
+[data-engrid-theme=wwf] .radio-to-buttons_recurrfreq .en__field--recurrfreq .en__field__element.en__field__element--radio{
+  align-items:stretch;
+}
+[data-engrid-theme=wwf] .radio-to-buttons_recurrfreq .en__field--recurrfreq .en__field__element.en__field__element--radio .en__field__item{
+  display:flex;
+}
+[data-engrid-theme=wwf] .radio-to-buttons_recurrfreq .en__field--recurrfreq .en__field__element.en__field__element--radio .en__field__item label{
+  flex-basis:100%;
+}
 [data-engrid-theme=wwf] .body-banner img,[data-engrid-theme=wwf] .body-banner video{
   background-color:#ccc;
 }
@@ -7797,7 +7837,7 @@ body:not([data-engrid-debug]) #debug-bar{
   --premium__item_background-color:#e9f7f6;
 }
 [data-engrid-theme=wwf] .en__pgList .en__pg__body{
-  grid-template-columns:min-content auto 135px;
+  grid-template-columns:min-content auto var(--premium__image_max-width);
 }
 @media screen and (max-width:569px){
   [data-engrid-theme=wwf] .en__pgList .en__pg__body{
@@ -7810,6 +7850,7 @@ body:not([data-engrid-debug]) #debug-bar{
 }
 [data-engrid-theme=wwf] .en__component--premiumgiftblock{
   border:0;
+  border-top:1px solid #ccc;
   margin-bottom:0;
 }
 [data-engrid-theme=wwf] .en__component--premiumgiftblock .en__pgHeader[data-non-us-donor],[data-engrid-theme=wwf] .en__component--premiumgiftblock .en__pgList[data-non-us-donor]{
@@ -7863,11 +7904,42 @@ body:not([data-engrid-debug]) #debug-bar{
     margin-top:40px;
   }
 }
+@media screen and (max-width:1024px) and (min-width:900px){
+  [data-engrid-theme=wwf] .inline-upsell-box svg{
+    margin-left:36px;
+  }
+}
 @media screen and (max-width:600px){
   [data-engrid-theme=wwf]{
+    --default_font-size:15px;
+    --default_line-height:24px;
+    --h1_font-size:24px;
+    --h1_line-height:33.6px;
     --engrid__body_margin:0px;
     --engrid__page_background-color:#fff;
     --engrid__content-footer_background-color:#0000;
+    --engrid__body-main_padding:13px 21px;
+    --button_font-size:20px;
+    --button_line-height:30px;
+    --recurring-frequency__button_font-size:16px;
+    --recurring-frequency__button_line-height:24px;
+  }
+  [data-engrid-theme=wwf] .inline-upsell-box{
+    border-radius:0;
+    margin-left:-29px;
+    margin-right:-30px;
+    padding:1rem .5rem;
+  }
+  [data-engrid-theme=wwf] .inline-upsell-box strong{
+    font-size:15px;
+    line-height:24px;
+  }
+  [data-engrid-theme=wwf] .inline-upsell-box svg{
+    margin-left:30px;
+  }
+  [data-engrid-theme=wwf] .white-box{
+    padding-left:1.5rem;
+    padding-right:1.5rem;
   }
   [data-engrid-theme=wwf] .body-top{
     --engrid__body-top_padding:0 29px;
@@ -8667,7 +8739,8 @@ body:not([data-engrid-debug]) #debug-bar{
   }
 
   #header .logo{
-    background:#fff url(https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo.png) no-repeat;
+    background:#fff url(https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo.png?1) no-repeat;
+    background-size:cover;
     box-shadow:0 1px 3px #00000014;
     height:120px;
     margin:0;
