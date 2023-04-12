@@ -244,6 +244,15 @@
       overflow: hidden;
       mask-image: none;
 
+      // Targets Safari 9+ only
+      // Line Clamp is not working properly in Safari and this most fixes it
+      // REF: https://browserstrangeness.bitbucket.io/css_hacks.html#safari
+      @supports (-webkit-hyphens: none) {
+        > *:not(:first-child) {
+          display: none;
+        }
+      }
+
       > *:first-child {
         margin-bottom: 0; // For some reason this causes problems in Safari and on iOS browsers
       }
