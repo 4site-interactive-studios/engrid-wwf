@@ -1,13 +1,15 @@
-// import { Options, App, DonationFrequency } from "@4site/engrid-common"; // Uses ENGrid via NPM
+// import { Options, App, DonationFrequency, DonationAmount } from "@4site/engrid-common"; // Uses ENGrid via NPM
 import {
   Options,
   App,
   DonationFrequency,
+  DonationAmount,
 } from "../../engrid-scripts/packages/common"; // Uses ENGrid via Visual Studio Workspace
 
 import "./sass/main.scss";
 import { customScript } from "./scripts/main";
 import { pageHeaderFooter } from "./scripts/page-header-footer";
+import DonationLightboxForm from "./scripts/donation-lightbox-form";
 
 const options: Options = {
   applePay: false,
@@ -37,6 +39,8 @@ const options: Options = {
   ],
   Debug: App.getUrlParameter("debug") == "true" ? true : false,
   onLoad: () => {
+    (<any>window).DonationLightboxForm = DonationLightboxForm;
+    new DonationLightboxForm(DonationAmount, DonationFrequency);
     customScript(App, DonationFrequency);
     pageHeaderFooter(App); // Added this line to trigger pageHeaderFooter
   },
