@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, April 12, 2023 @ 18:37:04 ET
+ *  Date: Wednesday, April 12, 2023 @ 20:55:29 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.52
  *  ENGrid scripts: v0.13.52
@@ -7470,7 +7470,7 @@ body:not([data-engrid-debug]) #debug-bar{
 }
 [data-engrid-theme=wwf]{
   --engrid__body_margin:0 22px;
-  --engrid__body-main_padding:26px 29px 33px 29px;
+  --engrid__body-main_padding:26px 29px 20px 29px;
   --engrid__body-title_padding:0px 0px 28px 0px;
   --engrid__body-top_padding:0px;
   --engrid__page_background-color:#f3f7ed;
@@ -7518,7 +7518,7 @@ body:not([data-engrid-debug]) #debug-bar{
   --submit__button_border-color_checked:#000;
   --recurring-frequency__button_count:2;
   --donation-amount__button_count:3;
-  --give-by-select__button_count:3;
+  --give-by-select__button_count:2;
   --label_font-size:16px;
   --label_line-height:24px;
   --label_font-weight:700;
@@ -7630,6 +7630,9 @@ body:not([data-engrid-debug]) #debug-bar{
   height:64px;
   outline:none;
 }
+[data-engrid-theme=wwf] .give-by-select.ach{
+  flex-grow:1;
+}
 [data-engrid-theme=wwf] .give-by-select img{
   height:auto;
   max-height:35px;
@@ -7637,6 +7640,9 @@ body:not([data-engrid-debug]) #debug-bar{
 }
 [data-engrid-theme=wwf] .give-by-select img.applepay-googlepay{
   max-width:171px;
+}
+[data-engrid-theme=wwf] .en__component--formblock .en__field .en__field__element.en__field__element--radio .en__field__item.give-by-select{
+  padding:.95rem;
 }
 [data-engrid-theme=wwf] .divider-top{
   border-top:1px solid #ccc;
@@ -7647,6 +7653,54 @@ body:not([data-engrid-debug]) #debug-bar{
   border-bottom:1px solid #ccc;
   margin-bottom:1.5rem;
   padding-bottom:1rem;
+}
+[data-engrid-theme=wwf] .alternative-donation-methods,[data-engrid-theme=wwf] .donation-summary,[data-engrid-theme=wwf] .en__component--premiumgiftblock,[data-engrid-theme=wwf] .your-information{
+  border-top:1px solid #ccc;
+}
+[data-engrid-theme=wwf] .your-information h2:first-child{
+  margin-top:20px;
+}
+[data-engrid-theme=wwf] .donation-summary{
+  --p_font-size:17px;
+  --p_line-height:27.2px;
+  --p_font-weight:700;
+  margin-top:14px;
+}
+[data-engrid-theme=wwf] .donation-summary p:first-child{
+  margin-top:39px;
+}
+[data-engrid-theme=wwf] .donation-summary p:last-child{
+  margin-bottom:39px;
+}
+[data-engrid-theme=wwf] .alternative-donation-methods{
+  --p_font-size:17px;
+  --p_line-height:27.2px;
+}
+[data-engrid-theme=wwf] .alternative-donation-methods p:first-child{
+  margin-top:31px;
+}
+[data-engrid-theme=wwf] .alternative-donation-methods a{
+  color:#006da4;
+  font-weight:700;
+  text-decoration:none;
+}
+[data-engrid-theme=wwf] .cn-bbb-badges{
+  margin-top:13px;
+}
+[data-engrid-theme=wwf] .grey-box{
+  --p_font-size:17px;
+  --p_line-height:27.2px;
+  background-color:#f6f5f3;
+  padding:12px 16px;
+}
+[data-engrid-theme=wwf] .grey-box p{
+  margin:0;
+}
+[data-engrid-theme=wwf] .grey-box a{
+  --p_font-weight:400;
+  color:#006da4;
+  font-weight:700;
+  text-decoration:none;
 }
 [data-engrid-theme=wwf] .white-box{
   background-color:#fff;
@@ -7854,8 +7908,9 @@ body:not([data-engrid-debug]) #debug-bar{
   }
 }
 [data-engrid-theme=wwf] .en__component--premiumgiftblock{
-  border:0;
-  border-top:1px solid #ccc;
+  border-bottom:0;
+  border-left:0;
+  border-right:0;
   margin-bottom:0;
 }
 [data-engrid-theme=wwf] .en__component--premiumgiftblock .en__pgHeader[data-non-us-donor],[data-engrid-theme=wwf] .en__component--premiumgiftblock .en__pgList[data-non-us-donor]{
@@ -7867,6 +7922,25 @@ body:not([data-engrid-debug]) #debug-bar{
 }
 [data-engrid-theme=wwf] .en__component--premiumgiftblock .en__pgList{
   margin-bottom:.75rem;
+}
+[data-engrid-theme=wwf] .en__component--premiumgiftblock .en__pg__name{
+  --h2_font-size:20px;
+  --h2_line-height:30px;
+  --h2_font-weight:400;
+  margin-bottom:0;
+}
+[data-engrid-theme=wwf] .en__component--premiumgiftblock .en__pg__description{
+  --p_font-size:14px;
+  --p_line-height:18.2px;
+  max-width:238px;
+}
+[data-engrid-theme=wwf] .en__component--premiumgiftblock .en__pg:last-child .en__pg__description{
+  font-size:20px;
+  line-height:30px;
+}
+[data-engrid-theme=wwf] .en__component--premiumgiftblock .en__pg:last-child .en__pg__description:after{
+  font-size:14px;
+  line-height:18.2px;
 }
 [data-engrid-theme=wwf]:not([data-engrid-country=US]) .en__pg:last-child .en__pg__description{
   display:flex;
