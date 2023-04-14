@@ -336,6 +336,10 @@
       width: auto;
     }
 
+    img.paypal {
+      max-width: min(91px, 100%);
+    }
+
     img.apple-pay-google-pay {
       max-width: min(171px, 100%);
     }
@@ -637,6 +641,7 @@
 
         label {
           flex-basis: 100%;
+          align-content: flex-end;
         }
       }
     }
@@ -684,6 +689,9 @@
           display: none;
         }
       }
+    }
+    .en__pg__optionType select {
+      --input_padding: 0.7ch 0.6ch;
     }
   }
   .en__component--premiumgiftblock {
@@ -849,10 +857,41 @@
     --recurring-frequency__button_line-height: 24px;
   }
 
+  .radio-to-buttons_donationAmt {
+    --donation-amount__button_count: 2;
+  }
+
+  .give-by-select-wrapper {
+    --radio-to-buttons__button_count: 1;
+  }
+
+  .radio-to-buttons_recurrfreq .en__field--recurrfreq {
+    margin-left: -13px;
+    margin-right: -13px;
+    .en__field__item:first-child .en__field__label {
+      border-left: none;
+    }
+    .en__field__item:last-child .en__field__label {
+      border-right: none;
+    }
+  }
+
+  .en__component--premiumgiftblock .en__pg__description {
+    max-width: 100%;
+  }
+
+  // Hide Paypal Button if PayPal One Touch / Venmo is enabled
+  &:not(#en__pagebuilder):not([data-engrid-debug]) {
+    &[data-engrid-payment-type-option-paypal-one-touch="true"]
+      .give-by-select.paypal {
+      display: none;
+    }
+  }
+
   .inline-upsell-box {
-    margin-left: -29px;
+    margin-left: -21px;
     border-radius: 0;
-    margin-right: -30px;
+    margin-right: -21px;
     padding: 1rem 0.5rem;
     strong {
       font-size: 15px;

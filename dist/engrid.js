@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, April 13, 2023 @ 16:42:36 ET
- *  By: fernando
+ *  Date: Friday, April 14, 2023 @ 11:19:03 ET
+ *  By: bryancasler
  *  ENGrid styles: v0.13.52
  *  ENGrid scripts: v0.13.52
  *
@@ -9683,7 +9683,12 @@ class App extends engrid_ENGrid {
 
     new CountryDisable(); // Premium Gift Features
 
-    new PremiumGift(); // Data Layer Events
+    new PremiumGift(); // Digital Wallets Features
+
+    if (engrid_ENGrid.getPageType() === "DONATION") {
+      new DigitalWallets();
+    } // Data Layer Events
+
 
     new DataLayer();
     this.setDataAttributes(); //Debug panel
@@ -10903,10 +10908,11 @@ const watchGiveBySelectField = () => {
   const enFieldPaymentType = document.querySelector("#en__field_transaction_paymenttype");
   let enFieldGiveBySelectCurrentValue = document.querySelector('input[name="transaction.giveBySelect"]:checked');
   const prefix = "has-give-by-";
+  /* prettier-ignore */
 
-  const handleEnFieldGiveBySelect = e => {
+  const handleEnFieldGiveBySelect = () => {
     enFieldGiveBySelectCurrentValue = document.querySelector('input[name="transaction.giveBySelect"]:checked');
-    console.log("enFieldGiveBySelectCurrentValue:", enFieldGiveBySelectCurrentValue);
+    console.log("enFieldGiveBySelectCurrentValue:", enFieldGiveBySelectCurrentValue); // Give By Card
 
     if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "card") {
       if (enGrid) {
@@ -10915,75 +10921,61 @@ const watchGiveBySelectField = () => {
       } // enFieldPaymentType.value = "card";
 
 
-      handleCCUpdate();
+      handleCCUpdate(); // Give By ACH
     } else if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "ach") {
       if (enGrid) {
         removeClassesByPrefix(enGrid, prefix);
         enGrid.classList.add("has-give-by-ach");
       }
 
-      enFieldPaymentType.value = "ACH";
+      enFieldPaymentType.value = "ach"; // Give By Check
     } else if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "check") {
       if (enGrid) {
         removeClassesByPrefix(enGrid, prefix);
         enGrid.classList.add("has-give-by-check");
       }
 
-      enFieldPaymentType.value = "check";
+      enFieldPaymentType.value = "check"; // Give By PayPal
     } else if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "paypal") {
       if (enGrid) {
         removeClassesByPrefix(enGrid, prefix);
         enGrid.classList.add("has-give-by-paypal");
       }
 
-      enFieldPaymentType.value = "paypal";
+      enFieldPaymentType.value = "paypal"; // Give By Paypal One Touch or Venmo
+    } else if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "paypaltouch") {
+      if (enGrid) {
+        removeClassesByPrefix(enGrid, prefix);
+        enGrid.classList.add("has-give-by-paypaltouch");
+      }
+
+      enFieldPaymentType.value = "paypaltouch"; // Give By Apple Pay via Vantiv
     } else if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "applepay") {
       if (enGrid) {
         removeClassesByPrefix(enGrid, prefix);
         enGrid.classList.add("has-give-by-applepay");
       }
 
-      enFieldPaymentType.value = "applepay";
+      enFieldPaymentType.value = "applepay"; // Give By Apple Pay or Google Pay via Stripe
+    } else if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "stripedigitalwallet") {
+      if (enGrid) {
+        removeClassesByPrefix(enGrid, prefix);
+        enGrid.classList.add("has-give-by-stripedigitalwallet");
+      }
+
+      enFieldPaymentType.value = "stripedigitalwallet";
     }
 
+    ;
     const event = new Event("change");
     enFieldPaymentType.dispatchEvent(event);
-  }; // Check Giving Frequency on page load
+  };
+  /* prettier-ignore */
+  // Check Giving Frequency on page load
 
 
   if (enFieldGiveBySelect) {
-    enFieldGiveBySelectCurrentValue = document.querySelector('input[name="transaction.giveBySelect"]:checked');
-
-    if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "card") {
-      if (enGrid) {
-        removeClassesByPrefix(enGrid, prefix);
-        enGrid.classList.add("has-give-by-card");
-      } // enFieldPaymentType.value = "card";
-
-
-      handleCCUpdate();
-    } else if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "ach") {
-      if (enGrid) {
-        removeClassesByPrefix(enGrid, prefix);
-        enGrid.classList.add("has-give-by-check");
-      }
-
-      enFieldPaymentType.value = "ACH";
-    } else if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "paypal") {
-      if (enGrid) {
-        removeClassesByPrefix(enGrid, prefix);
-        enGrid.classList.add("has-give-by-paypal");
-      }
-
-      enFieldPaymentType.value = "paypal";
-    } else if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "applepay") {
-      if (enGrid) {
-        removeClassesByPrefix(enGrid, prefix);
-        enGrid.classList.add("has-give-by-applepay");
-      }
-
-      enFieldPaymentType.value = "applepay";
-    }
+    handleEnFieldGiveBySelect();
   } // Watch each Giving Frequency radio input for a change
 
 
@@ -14807,6 +14799,13 @@ class DataLayer {
     this.logger = new EngridLogger("DataLayer", "#f1e5bc", "#009cdc", "📊");
     this.dataLayer = window.dataLayer || [];
     this._form = EnForm.getInstance();
+    this.excludedFields = [// Credit Card
+    "transaction.ccnumber", "transaction.ccexpire.delimiter", "transaction.ccexpire", "transaction.ccvv", "supporter.creditCardHolderName", // Bank Account
+    "supporter.bankAccountNumber", "supporter.bankAccountType", "transaction.bankname", "supporter.bankRoutingNumber"];
+    this.hashedFields = [// Supporter Address, Phone Numbers, and Address
+    "supporter.emailAddress", "supporter.phoneNumber", "supporter.phoneNumber2", "supporter.address1", "supporter.address2", "supporter.address3", // In Honor/Memory Inform Email and Address
+    "transaction.infemail", "transaction.infadd1", "transaction.infadd2", "transaction.infadd3", // Billing Address
+    "supporter.billingAddress1", "supporter.billingAddress2", "supporter.billingAddress3"];
     this.onLoad();
 
     this._form.onSubmit.subscribe(() => this.onSubmit());
@@ -14856,7 +14855,37 @@ class DataLayer {
           });
         }
       }
+
+      if (engrid_ENGrid.getPageCount() === engrid_ENGrid.getPageNumber()) {
+        this.dataLayer.push({
+          event: "EN_SUBMISSION_SUCCESS_" + pageJson.pageType.toUpperCase()
+        });
+        this.dataLayer.push({
+          [`'EN_SUBMISSION_SUCCESS_${pageJson.pageType.toUpperCase()}'`]: "TRUE"
+        });
+      }
     }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.forEach((value, key) => {
+      this.dataLayer.push({
+        event: `EN_URLPARAM_${key.toUpperCase()}-${this.transformJSON(value)}`
+      });
+      this.dataLayer.push({
+        [`'EN_URLPARAM_${key.toUpperCase()}'`]: this.transformJSON(value)
+      });
+    });
+
+    if (engrid_ENGrid.getPageType() === "DONATION") {
+      const recurrFreqEls = document.querySelectorAll('[name="transaction.recurrfreq"]');
+      const recurrValues = [...recurrFreqEls].map(el => el.value);
+      this.dataLayer.push({
+        event: "EN_RECURRING_FREQUENCIES",
+        [`'EN_RECURRING_FREQEUENCIES'`]: recurrValues
+      });
+    }
+
+    this.attachEventListeners();
   }
 
   onSubmit() {
@@ -14873,6 +14902,75 @@ class DataLayer {
         event: "EN_SUBMISSION_WITHOUT_EMAIL_OPTIN"
       });
     }
+  }
+
+  attachEventListeners() {
+    const textInputs = document.querySelectorAll(".en__component--advrow input:not([type=checkbox]):not([type=radio]):not([type=submit]):not([type=button]):not([type=hidden]):not([unhidden]), .en__component--advrow textarea");
+    textInputs.forEach(el => {
+      el.addEventListener("blur", e => {
+        this.handleFieldValueChange(e.target);
+      });
+    });
+    const radioAndCheckboxInputs = document.querySelectorAll(".en__component--advrow input[type=checkbox], .en__component--advrow input[type=radio]");
+    radioAndCheckboxInputs.forEach(el => {
+      el.addEventListener("change", e => {
+        this.handleFieldValueChange(e.target);
+      });
+    });
+    const selectInputs = document.querySelectorAll(".en__component--advrow select");
+    selectInputs.forEach(el => {
+      el.addEventListener("change", e => {
+        this.handleFieldValueChange(e.target);
+      });
+    });
+  }
+
+  handleFieldValueChange(el) {
+    var _a, _b, _c;
+
+    if (el.value === "" || this.excludedFields.includes(el.name)) return;
+    const value = this.hashedFields.includes(el.name) ? this.hash(el.value) : el.value;
+
+    if (["checkbox", "radio"].includes(el.type)) {
+      if (el.checked) {
+        if (el.name === "en__pg") {
+          //Premium gift handling
+          this.dataLayer.push({
+            event: "EN_FORM_VALUE_UPDATED",
+            enFieldName: el.name,
+            enFieldLabel: "Premium Gift",
+            enFieldValue: (_b = (_a = el.closest(".en__pg__body")) === null || _a === void 0 ? void 0 : _a.querySelector(".en__pg__name")) === null || _b === void 0 ? void 0 : _b.textContent,
+            enProductId: (_c = document.querySelector('[name="transaction.selprodvariantid"]')) === null || _c === void 0 ? void 0 : _c.value
+          });
+        } else {
+          this.dataLayer.push({
+            event: "EN_FORM_VALUE_UPDATED",
+            enFieldName: el.name,
+            enFieldLabel: this.getFieldLabel(el),
+            enFieldValue: value
+          });
+        }
+      }
+
+      return;
+    }
+
+    this.dataLayer.push({
+      event: "EN_FORM_VALUE_UPDATED",
+      enFieldName: el.name,
+      enFieldLabel: this.getFieldLabel(el),
+      enFieldValue: value
+    });
+  }
+
+  hash(value) {
+    return btoa(value);
+  }
+
+  getFieldLabel(el) {
+    var _a, _b;
+
+    return ((_b = (_a = el.closest(".en__field")) === null || _a === void 0 ? void 0 : _a.querySelector("label")) === null || _b === void 0 ? void 0 : _b.textContent) || "";
   }
 
 }
@@ -17112,7 +17210,12 @@ var branding_html_awaiter = undefined && undefined.__awaiter || function (thisAr
 class BrandingHtml {
   constructor() {
     this.assetBaseUrl = "https://cdn.jsdelivr.net/gh/4site-interactive-studios/engrid-scripts@main/reference-materials/html/brand-guide-markup/";
-    this.brandingHtmlFiles = ["click-to-call.html", "donation-page.html", "ecards.html", "ecommerce.html", "email-to-target.html", "en-common-fields-with-errors.html", "en-common-fields-with-fancy-errors.html", "en-common-fields.html", "event.html", "html5-tags.html", "membership.html", "petition.html", "premium-donation.html", "styles.html", "survey.html", "tweet-to-target.html"];
+    this.brandingHtmlFiles = ["html5-tags.html", "en-common-fields.html", "survey.html", // "en-common-fields-with-errors.html",
+    // "en-common-fields-with-fancy-errors.html",
+    "donation-page.html", "premium-donation.html", "ecards.html", "email-to-target.html", "tweet-to-target.html", // "click-to-call.html",
+    "petition.html", "event.html", // "ecommerce.html",
+    // "membership.html",
+    "styles.html"];
     this.bodyMain = document.querySelector(".body-main");
     this.htmlFetched = false;
   }
@@ -17277,10 +17380,127 @@ class PremiumGift {
   }
 
 }
+;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/digital-wallets.js
+
+class DigitalWallets {
+  constructor() {
+    //digital wallets not enabled.
+    if (!document.getElementById("en__digitalWallet")) {
+      engrid_ENGrid.setBodyData("payment-type-option-apple-pay", "false");
+      engrid_ENGrid.setBodyData("payment-type-option-google-pay", "false");
+      engrid_ENGrid.setBodyData("payment-type-option-paypal-one-touch", "false");
+      engrid_ENGrid.setBodyData("payment-type-option-venmo", "false");
+      return;
+    } // Add giveBySelect classes to the separate wallet containers
+    // and hide them on load.
+
+
+    const stripeButtons = document.getElementById("en__digitalWallet__stripeButtons__container");
+
+    if (stripeButtons) {
+      stripeButtons.classList.add("giveBySelect-stripedigitalwallet");
+      stripeButtons.style.display = "none";
+    }
+
+    const paypalTouchButtons = document.getElementById("en__digitalWallet__paypalTouch__container");
+
+    if (paypalTouchButtons) {
+      paypalTouchButtons.classList.add("giveBySelect-paypaltouch");
+      paypalTouchButtons.style.display = "none";
+    }
+    /**
+     * Check for presence of elements that indicated Stripe digital wallets
+     * (Google Pay, Apple Pay) have loaded, and add functionality for them.
+     * If they haven't yet loaded, set up a Mutation Observer to check for
+     * when they do.
+     */
+
+
+    if (document.querySelector("#en__digitalWallet__stripeButtons__container > *")) {
+      this.addStripeDigitalWallets();
+    } else {
+      engrid_ENGrid.setBodyData("payment-type-option-apple-pay", "false");
+      engrid_ENGrid.setBodyData("payment-type-option-google-pay", "false");
+      const stripeContainer = document.getElementById("en__digitalWallet__stripeButtons__container");
+
+      if (stripeContainer) {
+        this.checkForWalletsBeingAdded(stripeContainer, "stripe");
+      }
+    }
+    /**
+     * Check for presence of elements that indicated Paypal digital wallets
+     * (Paypal One Touch, Venmo, Etc) have loaded, and add functionality for them.
+     * If they haven't yet loaded, set up a Mutation Observer to check for
+     * when they do.
+     */
+
+
+    if (document.querySelector("#en__digitalWallet__paypalTouch__container > *")) {
+      this.addPaypalTouchDigitalWallets();
+    } else {
+      engrid_ENGrid.setBodyData("payment-type-option-paypal-one-touch", "false");
+      engrid_ENGrid.setBodyData("payment-type-option-venmo", "false");
+      const paypalContainer = document.getElementById("en__digitalWallet__paypalTouch__container");
+
+      if (paypalContainer) {
+        this.checkForWalletsBeingAdded(paypalContainer, "paypalTouch");
+      }
+    }
+  }
+
+  addStripeDigitalWallets() {
+    this.addOptionToPaymentTypeField("stripedigitalwallet", "GooglePay / ApplePay");
+    engrid_ENGrid.setBodyData("payment-type-option-apple-pay", "true");
+    engrid_ENGrid.setBodyData("payment-type-option-google-pay", "true");
+  }
+
+  addPaypalTouchDigitalWallets() {
+    this.addOptionToPaymentTypeField("paypaltouch", "Paypal / Venmo");
+    engrid_ENGrid.setBodyData("payment-type-option-paypal-one-touch", "true");
+    engrid_ENGrid.setBodyData("payment-type-option-venmo", "true");
+  }
+
+  addOptionToPaymentTypeField(value, label) {
+    const paymentTypeField = document.querySelector('[name="transaction.paymenttype"]');
+
+    if (paymentTypeField) {
+      const walletOption = document.createElement("option");
+      walletOption.value = value;
+      walletOption.innerText = label;
+      paymentTypeField.appendChild(walletOption);
+    }
+  }
+
+  checkForWalletsBeingAdded(node, walletType) {
+    const callback = (mutationList, observer) => {
+      for (const mutation of mutationList) {
+        //Once a child node has been added, set up the appropriate digital wallet
+        if (mutation.type === "childList" && mutation.addedNodes.length) {
+          if (walletType === "stripe") {
+            this.addStripeDigitalWallets();
+          } else if (walletType === "paypalTouch") {
+            this.addPaypalTouchDigitalWallets();
+          } //Disconnect observer to prevent multiple additions
+
+
+          observer.disconnect();
+        }
+      }
+    };
+
+    const observer = new MutationObserver(callback);
+    observer.observe(node, {
+      childList: true,
+      subtree: true
+    });
+  }
+
+}
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/version.js
-const AppVersion = "0.13.53";
+const AppVersion = "0.13.54";
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
+
 
 
 
