@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, April 13, 2023 @ 21:33:50 ET
+ *  Date: Thursday, April 13, 2023 @ 21:38:11 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.52
  *  ENGrid scripts: v0.13.52
@@ -7490,7 +7490,7 @@ body:not([data-engrid-debug]) #debug-bar{
   --h2_font-size:20px;
   --h2_font-weight:700;
   --h2_line-height:32px;
-  --input_background-color:#0000;
+  --input_background-color:#fff;
   --input_border-color:grey;
   --input_border-radius:0px;
   --input_padding:1.4ch 1.2ch;
