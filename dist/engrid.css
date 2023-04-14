@@ -19,8 +19,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, April 13, 2023 @ 16:42:36 ET
- *  By: fernando
+ *  Date: Thursday, April 13, 2023 @ 21:33:50 ET
+ *  By: bryancasler
  *  ENGrid styles: v0.13.52
  *  ENGrid scripts: v0.13.52
  *
@@ -1995,6 +1995,7 @@ a:focus,a:hover{
   --select_border-radius:var(--input_border-radius);
   --select_box-shadow:var(--input_box-shadow);
   --select_padding:var(--input_padding);
+  --select_padding-right:2.4ch;
   --select_box-shadow_hover:var(--input_box-shadow_hover);
   --textarea_font-family:var(--input_font-family);
   --textarea_font-size:var(--input_font-size);
@@ -2378,7 +2379,7 @@ select,select.en__field__input--select,select.en__field__input--splitselect,sele
   max-width:100%;
   min-width:auto;
   padding:var(--select_padding);
-  padding-right:2.4ch;
+  padding-right:var(--select_padding-right);
   transition:box-shadow .25s,border-color .25s ease-in-out;
   width:100%;
 }
@@ -7492,6 +7493,7 @@ body:not([data-engrid-debug]) #debug-bar{
   --input_background-color:#0000;
   --input_border-color:grey;
   --input_border-radius:0px;
+  --input_padding:1.4ch 1.2ch;
   --button_color:#006ea3;
   --button_font-size:24px;
   --button_font-weight:700;
@@ -7540,6 +7542,7 @@ body:not([data-engrid-debug]) #debug-bar{
   --checkbox_border-color_checked:#006ea3;
   --checkbox_background-color_checked:#006ea3;
   --checkbox_color_checked:#fff;
+  --select_padding-right:3.75ch;
   --click-to-expand__copy-area_height:210px;
   --click-to-expand__cta-image_url:url(https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation_show-more.png?v=1680365859000);
   --click-to-expand__cta-image_width:129px;
@@ -7572,6 +7575,11 @@ body:not([data-engrid-debug]) #debug-bar{
   opacity:1;
   position:relative;
   top:2px;
+}
+[data-engrid-theme=wwf] .payment-method{
+  align-items:center;
+  display:flex;
+  justify-content:space-between;
 }
 [data-engrid-theme=wwf]:not(#en__pagebuilder) .click-to-expand:not(.expanded) .click-to-expand-cta{
   margin-left:0;
@@ -7638,11 +7646,22 @@ body:not([data-engrid-debug]) #debug-bar{
   max-height:35px;
   width:auto;
 }
-[data-engrid-theme=wwf] .give-by-select img.applepay-googlepay{
-  max-width:171px;
+[data-engrid-theme=wwf] .give-by-select img.apple-pay-google-pay{
+  max-width:min(171px, 100%);
 }
-[data-engrid-theme=wwf] .en__component--formblock .en__field .en__field__element.en__field__element--radio .en__field__item.give-by-select{
-  padding:.95rem;
+[data-engrid-theme=wwf] .give-by-select img.paypal-venmo{
+  max-width:min(214px, 100%);
+}
+[data-engrid-theme=wwf] .give-by-select img.credit-card-logos{
+  max-width:min(220px, 100%);
+}
+[data-engrid-theme=wwf] .en__component--formblock.give-by-select-wrapper .en__field .en__field__element.en__field__element--radio{
+  margin-left:calc(var(--fields_spacing-inline)*2*-1);
+  margin-right:calc(var(--fields_spacing-inline)*2*-1);
+}
+[data-engrid-theme=wwf] .en__component--formblock.give-by-select-wrapper .en__field .en__field__element.en__field__element--radio .en__field__item.give-by-select{
+  --fields_spacing-inline:0.9rem;
+  --fields_spacing-block:1.2rem;
 }
 [data-engrid-theme=wwf] .divider-top{
   border-top:1px solid #ccc;
@@ -7736,7 +7755,7 @@ body:not([data-engrid-debug]) #debug-bar{
   width:100%;
 }
 [data-engrid-theme=wwf] .white-box .icon-next-label p{
-  border-bottom:1px solid #ccc;
+  border-bottom:1px solid #e9e8da;
   flex-basis:calc(100% - 60px);
   padding-bottom:1rem;
   position:relative;

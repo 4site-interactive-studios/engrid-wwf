@@ -68,6 +68,7 @@
   --input_border-radius: 0px;
   // --input_placeholder-color: var(--color_light-gray);
   // --input_box-shadow: inset 0 2px 2px -1px rgba(74, 74, 104, 0.1);
+  --input_padding: 1.4ch 1.2ch;
 
   // TYPOGRAPHY INPUT:FOCUS
   // TYPOGRAPHY INPUT:HOVER
@@ -150,6 +151,8 @@
   --checkbox_background-color_checked: #006ea3;
   --checkbox_color_checked: #ffffff;
 
+  --select_padding-right: 3.75ch;
+
   /* Recurring Frequency Button Heart Icon */
   // .radio-to-buttons_recurrfreq
   //   .en__field--recurrfreq.en__field--radio
@@ -211,6 +214,12 @@
     top: 2px;
     font-size: 19px;
     line-height: 19px;
+  }
+
+  .payment-method {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   /* Click to Expand */
@@ -327,16 +336,30 @@
       width: auto;
     }
 
-    img.applepay-googlepay {
-      max-width: 171px;
+    img.apple-pay-google-pay {
+      max-width: min(171px, 100%);
+    }
+
+    img.paypal-venmo {
+      max-width: min(214px, 100%);
+    }
+
+    img.credit-card-logos {
+      max-width: min(220px, 100%);
     }
   }
 
-  .en__component--formblock
+  .en__component--formblock.give-by-select-wrapper
     .en__field
-    .en__field__element.en__field__element--radio
+    .en__field__element.en__field__element--radio {
+    margin-left: calc(2 * var(--fields_spacing-inline) * -1);
+    margin-right: calc(2 * var(--fields_spacing-inline) * -1);
     .en__field__item.give-by-select {
-    padding: 0.95rem;
+      // --fields_spacing-block: 0.95rem;
+      // --fields_spacing-inline: 0.95rem;
+      --fields_spacing-inline: 0.9rem;
+      --fields_spacing-block: 1.2rem;
+    }
   }
 
   .divider-top {
@@ -451,7 +474,7 @@
       p {
         flex-basis: calc(100% - 60px);
         padding-bottom: 1rem;
-        border-bottom: 1px solid #ccc;
+        border-bottom: 1px solid #e9e8da;
 
         // Creates an offset so the bottom padding and border are ignored for the vertical positioning
         position: relative;
@@ -468,7 +491,9 @@
   }
 
   // When the email field has a non-invalid error caused by FreshAddress, we want to keep the label in its normal color state
-  .en__field--emailAddress.en__field--validationFailed:not([data-freshaddress-safetosendstatus="invalid"])
+  .en__field--emailAddress.en__field--validationFailed:not(
+      [data-freshaddress-safetosendstatus="invalid"]
+    )
     > label {
     color: var(--label_color);
   }

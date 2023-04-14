@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, April 13, 2023 @ 16:42:36 ET
- *  By: fernando
+ *  Date: Thursday, April 13, 2023 @ 21:33:50 ET
+ *  By: bryancasler
  *  ENGrid styles: v0.13.52
  *  ENGrid scripts: v0.13.52
  *
@@ -10937,6 +10937,13 @@ const watchGiveBySelectField = () => {
       }
 
       enFieldPaymentType.value = "paypal";
+    } else if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "paypalvenmo") {
+      if (enGrid) {
+        removeClassesByPrefix(enGrid, prefix);
+        enGrid.classList.add("has-give-by-paypal-venmo");
+      }
+
+      enFieldPaymentType.value = "paypal";
     } else if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "applepay") {
       if (enGrid) {
         removeClassesByPrefix(enGrid, prefix);
@@ -10969,10 +10976,24 @@ const watchGiveBySelectField = () => {
       }
 
       enFieldPaymentType.value = "ACH";
+    } else if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "check") {
+      if (enGrid) {
+        removeClassesByPrefix(enGrid, prefix);
+        enGrid.classList.add("has-give-by-check");
+      }
+
+      enFieldPaymentType.value = "check";
     } else if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "paypal") {
       if (enGrid) {
         removeClassesByPrefix(enGrid, prefix);
         enGrid.classList.add("has-give-by-paypal");
+      }
+
+      enFieldPaymentType.value = "paypal";
+    } else if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "paypalvenmo") {
+      if (enGrid) {
+        removeClassesByPrefix(enGrid, prefix);
+        enGrid.classList.add("has-give-by-paypal-venmo");
       }
 
       enFieldPaymentType.value = "paypal";
@@ -14807,6 +14828,13 @@ class DataLayer {
     this.logger = new EngridLogger("DataLayer", "#f1e5bc", "#009cdc", "📊");
     this.dataLayer = window.dataLayer || [];
     this._form = EnForm.getInstance();
+    this.excludedFields = [// Credit Card
+    "transaction.ccnumber", "transaction.ccexpire.delimiter", "transaction.ccexpire", "transaction.ccvv", "supporter.creditCardHolderName", // Bank Account
+    "supporter.bankAccountNumber", "supporter.bankAccountType", "transaction.bankname", "supporter.bankRoutingNumber"];
+    this.hashedFields = [// Supporter Address, Phone Numbers, and Address
+    "supporter.emailAddress", "supporter.phoneNumber", "supporter.phoneNumber2", "supporter.address1", "supporter.address2", "supporter.address3", // In Honor/Memory Inform Email and Address
+    "transaction.infemail", "transaction.infadd1", "transaction.infadd2", "transaction.infadd3", // Billing Address
+    "supporter.billingAddress1", "supporter.billingAddress2", "supporter.billingAddress3"];
     this.onLoad();
 
     this._form.onSubmit.subscribe(() => this.onSubmit());
@@ -14856,7 +14884,37 @@ class DataLayer {
           });
         }
       }
+
+      if (engrid_ENGrid.getPageCount() === engrid_ENGrid.getPageNumber()) {
+        this.dataLayer.push({
+          event: "EN_SUBMISSION_SUCCESS_" + pageJson.pageType.toUpperCase()
+        });
+        this.dataLayer.push({
+          [`'EN_SUBMISSION_SUCCESS_${pageJson.pageType.toUpperCase()}'`]: "TRUE"
+        });
+      }
     }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.forEach((value, key) => {
+      this.dataLayer.push({
+        event: `EN_URLPARAM_${key.toUpperCase()}-${this.transformJSON(value)}`
+      });
+      this.dataLayer.push({
+        [`'EN_URLPARAM_${key.toUpperCase()}'`]: this.transformJSON(value)
+      });
+    });
+
+    if (engrid_ENGrid.getPageType() === "DONATION") {
+      const recurrFreqEls = document.querySelectorAll('[name="transaction.recurrfreq"]');
+      const recurrValues = [...recurrFreqEls].map(el => el.value);
+      this.dataLayer.push({
+        event: "EN_RECURRING_FREQUENCIES",
+        [`'EN_RECURRING_FREQEUENCIES'`]: recurrValues
+      });
+    }
+
+    this.attachEventListeners();
   }
 
   onSubmit() {
@@ -14873,6 +14931,75 @@ class DataLayer {
         event: "EN_SUBMISSION_WITHOUT_EMAIL_OPTIN"
       });
     }
+  }
+
+  attachEventListeners() {
+    const textInputs = document.querySelectorAll(".en__component--advrow input:not([type=checkbox]):not([type=radio]):not([type=submit]):not([type=button]):not([type=hidden]):not([unhidden]), .en__component--advrow textarea");
+    textInputs.forEach(el => {
+      el.addEventListener("blur", e => {
+        this.handleFieldValueChange(e.target);
+      });
+    });
+    const radioAndCheckboxInputs = document.querySelectorAll(".en__component--advrow input[type=checkbox], .en__component--advrow input[type=radio]");
+    radioAndCheckboxInputs.forEach(el => {
+      el.addEventListener("change", e => {
+        this.handleFieldValueChange(e.target);
+      });
+    });
+    const selectInputs = document.querySelectorAll(".en__component--advrow select");
+    selectInputs.forEach(el => {
+      el.addEventListener("change", e => {
+        this.handleFieldValueChange(e.target);
+      });
+    });
+  }
+
+  handleFieldValueChange(el) {
+    var _a, _b, _c;
+
+    if (el.value === "" || this.excludedFields.includes(el.name)) return;
+    const value = this.hashedFields.includes(el.name) ? this.hash(el.value) : el.value;
+
+    if (["checkbox", "radio"].includes(el.type)) {
+      if (el.checked) {
+        if (el.name === "en__pg") {
+          //Premium gift handling
+          this.dataLayer.push({
+            event: "EN_FORM_VALUE_UPDATED",
+            enFieldName: el.name,
+            enFieldLabel: "Premium Gift",
+            enFieldValue: (_b = (_a = el.closest(".en__pg__body")) === null || _a === void 0 ? void 0 : _a.querySelector(".en__pg__name")) === null || _b === void 0 ? void 0 : _b.textContent,
+            enProductId: (_c = document.querySelector('[name="transaction.selprodvariantid"]')) === null || _c === void 0 ? void 0 : _c.value
+          });
+        } else {
+          this.dataLayer.push({
+            event: "EN_FORM_VALUE_UPDATED",
+            enFieldName: el.name,
+            enFieldLabel: this.getFieldLabel(el),
+            enFieldValue: value
+          });
+        }
+      }
+
+      return;
+    }
+
+    this.dataLayer.push({
+      event: "EN_FORM_VALUE_UPDATED",
+      enFieldName: el.name,
+      enFieldLabel: this.getFieldLabel(el),
+      enFieldValue: value
+    });
+  }
+
+  hash(value) {
+    return btoa(value);
+  }
+
+  getFieldLabel(el) {
+    var _a, _b;
+
+    return ((_b = (_a = el.closest(".en__field")) === null || _a === void 0 ? void 0 : _a.querySelector("label")) === null || _b === void 0 ? void 0 : _b.textContent) || "";
   }
 
 }
@@ -17112,7 +17239,12 @@ var branding_html_awaiter = undefined && undefined.__awaiter || function (thisAr
 class BrandingHtml {
   constructor() {
     this.assetBaseUrl = "https://cdn.jsdelivr.net/gh/4site-interactive-studios/engrid-scripts@main/reference-materials/html/brand-guide-markup/";
-    this.brandingHtmlFiles = ["click-to-call.html", "donation-page.html", "ecards.html", "ecommerce.html", "email-to-target.html", "en-common-fields-with-errors.html", "en-common-fields-with-fancy-errors.html", "en-common-fields.html", "event.html", "html5-tags.html", "membership.html", "petition.html", "premium-donation.html", "styles.html", "survey.html", "tweet-to-target.html"];
+    this.brandingHtmlFiles = ["html5-tags.html", "en-common-fields.html", "survey.html", // "en-common-fields-with-errors.html",
+    // "en-common-fields-with-fancy-errors.html",
+    "donation-page.html", "premium-donation.html", "ecards.html", "email-to-target.html", "tweet-to-target.html", // "click-to-call.html",
+    "petition.html", "event.html", // "ecommerce.html",
+    // "membership.html",
+    "styles.html"];
     this.bodyMain = document.querySelector(".body-main");
     this.htmlFetched = false;
   }
