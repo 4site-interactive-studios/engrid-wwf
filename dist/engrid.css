@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, April 14, 2023 @ 11:19:03 ET
+ *  Date: Friday, April 14, 2023 @ 19:31:34 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.52
  *  ENGrid scripts: v0.13.52
@@ -5611,9 +5611,9 @@ body:not(#en__pagebuilder)[data-engrid-no-body-bannerOverlay] .en__component--ad
     --engrid__body_box-shadow:none;
   }
 }
-@media screen and (min-width:900px){
+@media screen and (min-width:1024px){
   [data-engrid-layout=centercenter2col] #engrid>.en__component--advrow,[data-engrid-layout=centercenter2col] form>.en__component--advrow{
-    grid-template-columns:[pc-start lpc-start] minmax(0, 1fr) [lpc-end cc-start lcc-start] minmax(0, 0) [lcc-end bc-start lbc-start] minmax(450px, 569px) [lbc-end rbc-start] minmax(450px, 674px) [rbc-end bc-end rcc-start] minmax(0, 0) [rcc-end cc-end rpc-start] minmax(0, 1fr) [rpc-end pc-end];
+    grid-template-columns:[pc-start lpc-start] minmax(0, 1fr) [lpc-end cc-start lcc-start] minmax(0, 0) [lcc-end bc-start lbc-start] minmax(512px, 569px) [lbc-end rbc-start] minmax(512px, 674px) [rbc-end bc-end rcc-start] minmax(0, 0) [rcc-end cc-end rpc-start] minmax(0, 1fr) [rpc-end pc-end];
   }
   [data-engrid-layout=centercenter2col] form>.en__component--advrow>*{
     grid-template-columns:[pc-start lpc-start] minmax(0, 1fr) [lpc-end cc-start lcc-start] minmax(0, 0) [lcc-end bc-start lbc-start] minmax(0, 569px) [lbc-end rbc-start] minmax(0, 569px) [rbc-end bc-end rcc-start] minmax(0, 0) [rcc-end cc-end rpc-start] minmax(0, 1fr) [rpc-end pc-end];
@@ -5652,7 +5652,7 @@ body:not(#en__pagebuilder)[data-engrid-no-body-bannerOverlay] .en__component--ad
     display:none !important;
   }
 }
-@media screen and (max-width:899px){
+@media screen and (max-width:1023px){
   [data-engrid-layout=centercenter2col] .page-backgroundImage,[data-engrid-layout=centercenter2col] .page-backgroundImage:before,[data-engrid-layout=centercenter2col][data-replace-banner-with-background=if-background-exists][data-engrid-page-background=image] .body-banner,[data-engrid-layout=centercenter2col][data-replace-banner-with-background=if-background-exists][data-engrid-page-background=image] .body-bannerOverlay,[data-engrid-layout=centercenter2col][data-replace-banner-with-background=if-background-exists][data-engrid-page-background=video] .body-banner,[data-engrid-layout=centercenter2col][data-replace-banner-with-background=if-background-exists][data-engrid-page-background=video] .body-bannerOverlay,[data-engrid-layout=centercenter2col][data-replace-banner-with-background=if-background-image][data-engrid-page-background=image] .body-banner,[data-engrid-layout=centercenter2col][data-replace-banner-with-background=if-background-image][data-engrid-page-background=image] .body-bannerOverlay,[data-engrid-layout=centercenter2col][data-replace-banner-with-background=if-background-video][data-engrid-page-background=video] .body-banner,[data-engrid-layout=centercenter2col][data-replace-banner-with-background=if-background-video][data-engrid-page-background=video] .body-bannerOverlay,[data-engrid-layout=centercenter2col][data-replace-banner-with-background=if-banner-empty-or-background-video][data-engrid-body-banner=empty][data-engrid-page-background=image] .body-banner,[data-engrid-layout=centercenter2col][data-replace-banner-with-background=if-banner-empty-or-background-video][data-engrid-body-banner=empty][data-engrid-page-background=image] .body-bannerOverlay,[data-engrid-layout=centercenter2col][data-replace-banner-with-background=if-banner-empty-or-background-video][data-engrid-body-banner=empty][data-engrid-page-background=video] .body-banner,[data-engrid-layout=centercenter2col][data-replace-banner-with-background=if-banner-empty-or-background-video][data-engrid-body-banner=empty][data-engrid-page-background=video] .body-bannerOverlay,[data-engrid-layout=centercenter2col][data-replace-banner-with-background=if-banner-empty-or-background-video][data-engrid-page-background=video] .body-banner,[data-engrid-layout=centercenter2col][data-replace-banner-with-background=if-banner-empty-or-background-video][data-engrid-page-background=video] .body-bannerOverlay,[data-engrid-layout=centercenter2col][data-replace-banner-with-background=if-banner-empty][data-engrid-body-banner=empty][data-engrid-page-background=image] .body-banner,[data-engrid-layout=centercenter2col][data-replace-banner-with-background=if-banner-empty][data-engrid-body-banner=empty][data-engrid-page-background=image] .body-bannerOverlay,[data-engrid-layout=centercenter2col][data-replace-banner-with-background=if-banner-empty][data-engrid-body-banner=empty][data-engrid-page-background=video] .body-banner,[data-engrid-layout=centercenter2col][data-replace-banner-with-background=if-banner-empty][data-engrid-body-banner=empty][data-engrid-page-background=video] .body-bannerOverlay{
     display:none;
   }
@@ -6152,7 +6152,7 @@ body:not(#en__pagebuilder)[data-engrid-no-body-bannerOverlay] .en__component--ad
 [data-engrid-theme=flex2][data-engrid-layout=rightright1col] .en__component--row--2>.en__component--column{
   width:100%;
 }
-@media screen and (max-width:900px){
+@media screen and (max-width:1024px){
   [data-engrid-theme=flex2][data-engrid-layout=centercenter2col]{
     --engrid__body_padding:0 1.5rem;
     --engrid__body_border-radius:0px;
@@ -6170,7 +6170,7 @@ body:not(#en__pagebuilder)[data-engrid-no-body-bannerOverlay] .en__component--ad
     width:100%;
   }
 }
-@media screen and (min-width:900px){
+@media screen and (min-width:1024px){
   [data-engrid-theme=flex2][data-engrid-layout=centercenter2col] .en__component--row--2 .en__component--column--2>*{
     background-color:#d3d3d3;
     margin-left:1rem;
@@ -8006,7 +8006,7 @@ body:not([data-engrid-debug]) #debug-bar{
     margin-top:40px;
   }
 }
-@media screen and (max-width:899px){
+@media screen and (max-width:1023px){
   [data-engrid-theme=wwf][data-engrid-layout=centercenter2col] .content-header{
     margin-bottom:40px;
   }
@@ -8014,7 +8014,7 @@ body:not([data-engrid-debug]) #debug-bar{
     margin-top:40px;
   }
 }
-@media screen and (max-width:1024px) and (min-width:900px){
+@media screen and (max-width:1024px) and (min-width:1024px){
   [data-engrid-theme=wwf] .inline-upsell-box svg{
     margin-left:36px;
   }
@@ -9558,6 +9558,14 @@ body:not([data-engrid-debug]) #debug-bar{
     justify-content:flex-end;
   }
 }
+
+@media only screen and (min-width:925px){
+    #header .nav-items{
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
 @media only screen and (min-width:768px){
   #header .nav{
     display:flex;
@@ -9575,6 +9583,7 @@ body:not([data-engrid-debug]) #debug-bar{
     padding-top:13px;
   }
 }
+
 @media only screen and (min-width:768px) and (min-width:1200px){
   #header .primary-nav{
     flex-grow:1;
