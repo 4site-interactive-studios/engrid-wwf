@@ -1,8 +1,14 @@
 & {
+  .body-main {
+    border: 0;
+  }
   .radio-to-buttons_donationAmt .en__field--donationAmt {
+    .en__field__item--other:before {
+      top: 50%;
+    }
     .en__field__element--radio {
-      --fields_spacing-inline: 2px;
-      --fields_spacing-block: 2px;
+      --fields_spacing-inline: 5px;
+      --fields_spacing-block: 6px;
       --p_font-size: 16px;
     }
   }
@@ -145,54 +151,6 @@
     #engrid {
       zoom: 0.85;
     }
-  }
-
-  .radio-to-buttons_recurrfreq {
-    --recurring-frequency__button_count: 2;
-  }
-
-  .radio-to-buttons_donationAmt {
-    --donation-amount__button_count: 2;
-
-    // .en__field--radio.en__field--withOther.en__field--donationAmt
-    //   .en__field__item--other {
-    //   flex-basis: 100%;
-    //   position: relative;
-
-    //   &:before {
-    //     content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="11" height="20" fill="none" viewBox="0 0 11 20"><path fill="%23ffffff" d="M10.268 12.176c-.097-.327-.214-.612-.352-.853-.138-.242-.335-.478-.591-.71-.257-.23-.488-.416-.692-.557-.205-.142-.486-.3-.843-.475s-.64-.305-.848-.39c-.208-.086-.51-.203-.904-.352-.35-.134-.61-.236-.782-.307-.17-.07-.396-.17-.675-.301-.279-.13-.487-.246-.625-.346-.137-.1-.284-.223-.44-.368-.157-.145-.267-.3-.33-.463-.063-.164-.095-.343-.095-.536 0-.506.223-.919.67-1.239.446-.32 1.023-.48 1.73-.48.312 0 .63.043.954.129.324.085.6.182.831.29.231.108.449.227.654.357.204.13.35.229.435.296.085.067.14.111.162.134.097.074.197.1.301.078.112-.008.197-.067.257-.179l.904-1.63c.09-.148.07-.29-.056-.423-.044-.045-.1-.097-.167-.157s-.212-.167-.436-.323c-.223-.157-.46-.296-.708-.419-.25-.123-.573-.247-.972-.374-.397-.126-.809-.212-1.233-.256V.357c0-.104-.033-.19-.1-.257C6.25.034 6.164 0 6.06 0H4.553c-.096 0-.18.035-.25.106-.071.07-.107.154-.107.251v2.01c-1.168.222-2.117.72-2.846 1.495-.729.773-1.094 1.674-1.094 2.7 0 .306.032.596.095.87.063.276.142.524.235.743.093.22.225.435.396.648.171.212.333.394.485.546.153.153.352.311.597.475.246.163.456.296.631.396.175.1.408.216.698.346.29.13.519.229.686.296.168.066.396.16.687.278.401.157.7.278.893.363.193.086.439.205.736.357.298.153.515.292.653.419.138.126.262.283.374.469.112.186.168.383.168.591 0 .588-.23 1.042-.687 1.361-.457.32-.988.48-1.59.48-.275 0-.55-.03-.826-.089-.967-.193-1.871-.658-2.712-1.395l-.022-.022c-.067-.082-.157-.115-.268-.1-.12.014-.205.06-.257.134l-1.15 1.506c-.111.149-.104.302.023.458.037.044.102.112.195.2.093.09.266.23.52.42.252.19.527.368.825.535.298.168.675.333 1.133.497.458.163.932.279 1.423.346v1.953c0 .097.035.18.106.251.07.07.154.106.251.106h1.507c.104 0 .19-.033.257-.1s.1-.153.1-.257V17.69c1.183-.194 2.145-.702 2.885-1.524.74-.822 1.11-1.802 1.11-2.94 0-.373-.048-.722-.146-1.05z"/></svg>');
-    //     width: 11px;
-    //     height: 20px;
-    //     font-size: 20px;
-    //     font-weight: 700;
-    //     left: 19px;
-    //     line-height: 0;
-    //     position: absolute;
-    //     top: 50%;
-    //     transform: translateY(-50%);
-    //     color: var(--h1_color);
-    //   }
-
-    //   &:after {
-    //     content: "USD";
-    //     display: block;
-    //     font-size: 12px;
-    //     font-weight: 500;
-    //     height: 0;
-    //     right: 19px;
-    //     line-height: 0;
-    //     position: absolute;
-    //     top: 50%;
-    //     color: #ffffff;
-    //     opacity: 0.8;
-    //   }
-
-    //   input {
-    //     padding-left: 39px;
-    //     padding-right: 58px;
-    //     background-image: none !important;
-    //   }
-    // }
   }
 
   .monthly-upsell-message {
@@ -576,7 +534,7 @@
       line-height: 0.83;
       letter-spacing: normal;
       text-align: left;
-      color: var(--color_primary);
+      color: var(--h1_color);
       margin-bottom: 15px;
       white-space: nowrap;
     }
@@ -661,6 +619,99 @@
       }
     }
   }
+  .mobile-logo {
+    margin-top: -15px;
+  }
+  .mobile-title-block {
+    h2 {
+      margin-top: 0;
+      margin-bottom: 5px;
+    }
+    p {
+      margin: 0;
+    }
+  }
+  .inline-upsell-box {
+    margin: 0;
+    margin-bottom: 10px;
+    max-height: 92px;
+    strong {
+      font-weight: 600;
+    }
+    &.recurring-frequency-y-show {
+      padding: 4px 8px;
+      strong,
+      em {
+        font-size: 12px;
+        line-height: 1.6;
+      }
+    }
+  }
+
+  .radio-to-buttons_recurrfreq {
+    --recurring-frequency__button_count: 2;
+    .en__field--recurrfreq {
+      --recurring-frequency__button_color: #006da4;
+      --recurring-frequency__button_border-color: #006da4;
+      --recurring-frequency__button_background-color: #ffffff;
+      --recurring-frequency__button_color_hover: #006da4;
+      --recurring-frequency__button_border-color_hover: #006da4;
+      --recurring-frequency__button_background-color_hover: var(
+        --donation-amount__button_background-color_hover
+      );
+      --recurring-frequency__button_color_checked: #ffffff;
+      --recurring-frequency__button_border-color_checked: #006da4;
+      --recurring-frequency__button_background-color_checked: #006da4;
+      --fields_spacing-block: 3px;
+
+      --recurring-frequency__button_padding: 1.5ch 0;
+
+      flex-basis: 100%;
+      margin-left: 0;
+      margin-right: 0;
+      position: relative;
+      top: -10px;
+
+      &.en__field--radio .en__field__item:first-child input + label {
+        border-right: 1px solid #006da4;
+      }
+
+      &.en__field--radio .en__field__item input[type="radio"]:checked + label {
+        border-bottom-color: #006da4;
+        outline: none;
+      }
+
+      .en__field__element.en__field__element--radio {
+        align-items: flex-start;
+        flex-wrap: nowrap;
+        gap: 10px;
+        width: 100%;
+        margin: auto;
+
+        .en__field__item {
+          display: flex;
+          padding: 0;
+          label {
+            flex-basis: 100%;
+            width: auto;
+          }
+          &:last-child {
+            label {
+              width: 150px;
+              flex-basis: 150px;
+              &::before {
+                width: 15px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .radio-to-buttons_donationAmt {
+    --donation-amount__button_count: 2;
+  }
 }
 
 #en__field_transaction_paycurrency {
@@ -679,4 +730,49 @@
 .highlight:after,
 .highlight:before {
   display: none;
+}
+.show-on-mobile {
+  display: none;
+}
+.hide-on-mobile {
+  display: block;
+}
+&.is-mobile {
+  .show-on-mobile {
+    display: block;
+  }
+  .hide-on-mobile {
+    display: none;
+  }
+  .inline-upsell-box {
+    max-height: 100%;
+    min-height: 65px;
+    font-size: 14px;
+    padding: 5px;
+    p {
+      margin: 0;
+      line-height: 1.3;
+    }
+    strong,
+    em {
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 1.3;
+    }
+    &.recurring-frequency-y-show {
+      padding: 4px 8px;
+      strong,
+      em {
+        font-size: 12px;
+        line-height: 1;
+      }
+    }
+  }
+  form.en__component > .en__component {
+    padding: 35px 40px;
+  }
+  .radio-to-buttons_recurrfreq .en__field--recurrfreq {
+    top: 0;
+    margin: 13px auto;
+  }
 }

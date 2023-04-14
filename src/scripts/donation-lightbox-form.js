@@ -188,12 +188,24 @@ export default class DonationLightboxForm {
         this.canadaOnly();
       });
     }
+    window.addEventListener("message", this.receiveMessage.bind(this), false);
+    this.sendMessage("isMobile");
   }
   // Send iframe message to parent
   sendMessage(key, value) {
     const message = { key: key, value: value };
     window.parent.postMessage(message, "*");
   }
+  // Receive iframe message from parent
+  receiveMessage(event) {
+    if (event.data.key === "isMobile" && event.data.value === true) {
+      document.body.classList.add("is-mobile");
+    }
+    if (event.data.key === "isMobile" && event.data.value === false) {
+      document.body.classList.remove("is-mobile");
+    }
+  }
+
   // Check if is iFrame
   isIframe() {
     return window.self !== window.top;
