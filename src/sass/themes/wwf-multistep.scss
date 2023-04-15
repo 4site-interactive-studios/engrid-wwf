@@ -712,6 +712,9 @@
   .radio-to-buttons_donationAmt {
     --donation-amount__button_count: 2;
   }
+  .radio-to-buttons > .en__field > .en__field__element > .en__field__item {
+    flex-basis: 100%;
+  }
 }
 
 #en__field_transaction_paycurrency {
@@ -731,48 +734,50 @@
 .highlight:before {
   display: none;
 }
-.show-on-mobile {
-  display: none;
-}
-.hide-on-mobile {
-  display: block;
-}
-&.is-mobile {
+&:not(#en__pagebuilder) {
   .show-on-mobile {
-    display: block;
-  }
-  .hide-on-mobile {
     display: none;
   }
-  .inline-upsell-box {
-    max-height: 100%;
-    min-height: 65px;
-    font-size: 14px;
-    padding: 5px;
-    p {
-      margin: 0;
-      line-height: 1.3;
+  .hide-on-mobile {
+    display: block;
+  }
+  &.is-mobile {
+    .show-on-mobile {
+      display: block;
     }
-    strong,
-    em {
-      font-weight: 400;
+    .hide-on-mobile {
+      display: none;
+    }
+    .inline-upsell-box {
+      max-height: 100%;
+      min-height: 65px;
       font-size: 14px;
-      line-height: 1.3;
-    }
-    &.recurring-frequency-y-show {
-      padding: 4px 8px;
+      padding: 5px;
+      p {
+        margin: 0;
+        line-height: 1.3;
+      }
       strong,
       em {
-        font-size: 12px;
-        line-height: 1;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 1.3;
+      }
+      &.recurring-frequency-y-show {
+        padding: 4px 8px;
+        strong,
+        em {
+          font-size: 12px;
+          line-height: 1;
+        }
       }
     }
-  }
-  form.en__component > .en__component {
-    padding: 35px 40px;
-  }
-  .radio-to-buttons_recurrfreq .en__field--recurrfreq {
-    top: 0;
-    margin: 13px auto;
+    form.en__component > .en__component {
+      padding: 35px 40px;
+    }
+    .radio-to-buttons_recurrfreq .en__field--recurrfreq {
+      top: 0;
+      margin: 13px auto;
+    }
   }
 }

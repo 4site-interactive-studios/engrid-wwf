@@ -152,15 +152,7 @@ export default class DonationLightboxForm {
     this.putArrowUpSVG();
     this.bounceArrow(this.frequency.getInstance().frequency);
 
-    DonationFrequency.getInstance().onFrequencyChange.subscribe((s) =>
-      this.bounceArrow(s)
-    );
-    DonationFrequency.getInstance().onFrequencyChange.subscribe(() =>
-      this.changeSubmitButton()
-    );
-    DonationAmount.getInstance().onAmountChange.subscribe(() =>
-      this.changeSubmitButton()
-    );
+    this.addEvents();
     this.changeSubmitButton();
     this.sendMessage("status", "loaded");
     // Check if theres a color value in the url
@@ -171,25 +163,9 @@ export default class DonationLightboxForm {
         urlParams.get("color")
       );
     }
-    // Check your IP Country
-    fetch("https://www.cloudflare.com/cdn-cgi/trace")
-      .then((res) => res.text())
-      .then((t) => {
-        let data = t.replace(/[\r\n]+/g, '","').replace(/\=+/g, '":"');
-        data = '{"' + data.slice(0, data.lastIndexOf('","')) + '"}';
-        const jsondata = JSON.parse(data);
-        this.ipCountry = jsondata.loc;
-        this.canadaOnly();
-        console.log("Country:", this.ipCountry);
-      });
-    const countryField = document.querySelector("#en__field_supporter_country");
-    if (countryField) {
-      countryField.addEventListener("change", (e) => {
-        this.canadaOnly();
-      });
-    }
     window.addEventListener("message", this.receiveMessage.bind(this), false);
     this.sendMessage("isMobile");
+    this.showHideCCSection(false);
   }
   // Send iframe message to parent
   sendMessage(key, value) {
@@ -275,7 +251,7 @@ export default class DonationLightboxForm {
         .querySelector(".section-navigation__previous")
         ?.addEventListener("click", (e) => {
           e.preventDefault();
-          this.scrollToSection(key - 1);
+          this.scrollToSection(key - 1, key);
         });
 
       sectionNavigation
@@ -283,7 +259,7 @@ export default class DonationLightboxForm {
         ?.addEventListener("click", (e) => {
           e.preventDefault();
           if (this.validateForm(key)) {
-            this.scrollToSection(key + 1);
+            this.scrollToSection(key + 1, key);
           }
         });
 
@@ -335,9 +311,25 @@ export default class DonationLightboxForm {
     });
   }
   // Scroll to a section
-  scrollToSection(sectionId) {
+  scrollToSection(sectionId, fromSectionId) {
     console.log("DonationLightboxForm: scrollToSection", sectionId);
     const section = document.querySelector(`[data-section-id="${sectionId}"]`);
+    // Check if we're scrolling to an invisible section
+    if (section && !this.isVisible(section)) {
+      console.log(
+        "DonationLightboxForm: scrollToSection: Section is not visible"
+      );
+      // If we're scrolling to a section that's not visible, check fromSectionId to see if we're scrolling left or right
+      if (fromSectionId > sectionId) {
+        // If we're scrolling left, scroll to the previous section
+        this.scrollToSection(sectionId - 1, sectionId);
+      } else {
+        // If we're scrolling right, scroll to the next section
+        this.scrollToSection(sectionId + 1, sectionId);
+      }
+      return;
+    }
+
     if (this.sections[sectionId]) {
       console.log(section);
       this.currentSectionId = sectionId;
@@ -354,9 +346,10 @@ export default class DonationLightboxForm {
     if (element) {
       const sectionId = this.getSectionId(element);
       if (sectionId) {
+        const oldSectionId = this.currentSectionId;
         this.currentSectionId = sectionId;
         console.log("Changed current section ID to", sectionId);
-        this.scrollToSection(sectionId);
+        this.scrollToSection(sectionId, oldSectionId);
       }
     }
   }
@@ -723,7 +716,8 @@ export default class DonationLightboxForm {
           paymentType.value = btn.className.substr(15);
           // Go to the next section
           this.scrollToSection(
-            parseInt(btn.closest("[data-section-id]").dataset.sectionId) + 1
+            parseInt(btn.closest("[data-section-id]").dataset.sectionId) + 1,
+            this.currentSectionId
           );
         }
       });
@@ -780,33 +774,7 @@ export default class DonationLightboxForm {
     }
     return false;
   }
-  // Display and check the class canada-only if you are in Canada
-  canadaOnly() {
-    const canadaOnly = document.querySelectorAll(".canada-only");
-    if (canadaOnly.length) {
-      if (this.isCanada()) {
-        canadaOnly.forEach((item) => {
-          item.style.display = "";
-          const input = item.querySelectorAll("input[type='checkbox']");
-          if (input.length) {
-            input.forEach((input) => {
-              input.checked = false;
-            });
-          }
-        });
-      } else {
-        canadaOnly.forEach((item) => {
-          item.style.display = "none";
-          const input = item.querySelectorAll("input[type='checkbox']");
-          if (input.length) {
-            input.forEach((input) => {
-              input.checked = true;
-            });
-          }
-        });
-      }
-    }
-  }
+
   checkNested(obj, level, ...rest) {
     if (obj === undefined) return false;
     if (rest.length == 0 && obj.hasOwnProperty(level)) return true;
@@ -820,5 +788,68 @@ export default class DonationLightboxForm {
     labels.forEach((label) => {
       label.tabIndex = 0;
     });
+  }
+  isVisible(element) {
+    return !!(
+      element.offsetWidth ||
+      element.offsetHeight ||
+      element.getClientRects().length
+    );
+  }
+  addEvents() {
+    this.frequency
+      .getInstance()
+      .onFrequencyChange.subscribe((s) => this.bounceArrow(s));
+    this.frequency
+      .getInstance()
+      .onFrequencyChange.subscribe(() => this.changeSubmitButton());
+    this.amount
+      .getInstance()
+      .onAmountChange.subscribe(() => this.changeSubmitButton());
+    // Payment Type Radio Change
+    const paymentType = document.querySelectorAll(
+      "input[name='transaction.giveBySelect']"
+    );
+    if (paymentType.length) {
+      paymentType.forEach((item) => {
+        item.addEventListener("change", () => {
+          this.showHideCCSection(item.value);
+          if (item.value === "card") {
+            const paymentType = document.querySelector(
+              "#en__field_transaction_paymenttype"
+            );
+            if (paymentType) {
+              paymentType.value = "visa";
+            }
+          }
+        });
+      });
+    }
+  }
+  showHideCCSection(paymentType) {
+    let ptValue = paymentType;
+    if (!paymentType) {
+      const payment = document.querySelector(
+        "#en__field_transaction_paymenttype"
+      );
+      if (
+        payment &&
+        ["visa", "mastercard", "amex", "discover", "diners", "jcb"].includes(
+          payment.value
+        )
+      ) {
+        ptValue = "card";
+      }
+    }
+    const ccnumberBlock = document.querySelector(
+      "#en__field_transaction_ccnumber"
+    );
+    console.log(ccnumberBlock);
+    const ccnumberSection = this.getSectionId(ccnumberBlock);
+    if (ptValue === "card") {
+      this.sections[ccnumberSection].style.display = "block";
+    } else {
+      this.sections[ccnumberSection].style.display = "none";
+    }
   }
 }
