@@ -45,6 +45,17 @@ const options: Options = {
     pageHeaderFooter(App); // Added this line to trigger pageHeaderFooter
   },
   onResize: () => console.log("Starter Theme Window Resized"),
+  onValidate: () => {
+    const plaidLink = document.querySelector(
+      "#plaid-link-button"
+    ) as HTMLLinkElement;
+    if (plaidLink) {
+      // Click the Plaid Link button
+      plaidLink.click();
+      return false;
+    }
+  },
+
   onSubmit: () => {
     if (
       "pageJson" in (window as any) &&
