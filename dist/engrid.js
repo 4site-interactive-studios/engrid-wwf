@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, April 13, 2023 @ 16:42:36 ET
- *  By: fernando
- *  ENGrid styles: v0.13.52
- *  ENGrid scripts: v0.13.52
+ *  Date: Friday, April 14, 2023 @ 24:43:13 ET
+ *  By: bryancasler
+ *  ENGrid styles: v0.13.55
+ *  ENGrid scripts: v0.13.55
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -17385,8 +17385,15 @@ class PremiumGift {
 class DigitalWallets {
   constructor() {
     //digital wallets not enabled.
-    if (!document.getElementById("en__digitalWallet")) return; // Add giveBySelect classes to the separate wallet containers
+    if (!document.getElementById("en__digitalWallet")) {
+      engrid_ENGrid.setBodyData("payment-type-option-apple-pay", "false");
+      engrid_ENGrid.setBodyData("payment-type-option-google-pay", "false");
+      engrid_ENGrid.setBodyData("payment-type-option-paypal-one-touch", "false");
+      engrid_ENGrid.setBodyData("payment-type-option-venmo", "false");
+      return;
+    } // Add giveBySelect classes to the separate wallet containers
     // and hide them on load.
+
 
     const stripeButtons = document.getElementById("en__digitalWallet__stripeButtons__container");
 
@@ -17490,7 +17497,7 @@ class DigitalWallets {
 
 }
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/version.js
-const AppVersion = "0.13.54";
+const AppVersion = "0.13.55";
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
 
