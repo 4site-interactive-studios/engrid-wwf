@@ -1,12 +1,30 @@
 export const customScript = function (App, DonationFrequency) {
   console.log("ENGrid client scripts are executing");
   // Add your client scripts here
+  const freq = DonationFrequency.getInstance();
+  freq.onFrequencyChange.subscribe((s) => {
+    console.log("frequency changed", s);
+    const otherAmount = document.querySelector(
+      "[name='transaction.donationAmt.other']"
+    );
+    if (otherAmount) {
+      switch (s) {
+        case "monthly":
+          otherAmount.placeholder = "Other /mo";
+          break;
+        case "annual":
+          otherAmount.placeholder = "Other /yr";
+          break;
+        default:
+          otherAmount.placeholder = "Other";
+      }
+    }
+  });
   if (
     "pageJson" in window &&
     "pageType" in window.pageJson &&
     window.pageJson.pageType === "premiumgift"
   ) {
-    const freq = DonationFrequency.getInstance();
     const country = App.getField("supporter.country");
     const maxMyGift = () => {
       const maxRadio = document.querySelector(

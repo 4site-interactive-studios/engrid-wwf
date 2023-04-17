@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, April 17, 2023 @ 16:20:33 ET
+ *  Date: Monday, April 17, 2023 @ 16:45:45 ET
  *  By: fernando
  *  ENGrid styles: v0.13.52
  *  ENGrid scripts: v0.13.52
@@ -17566,8 +17566,28 @@ const AppVersion = "0.13.58";
 const customScript = function (App, DonationFrequency) {
   console.log("ENGrid client scripts are executing"); // Add your client scripts here
 
+  const freq = DonationFrequency.getInstance();
+  freq.onFrequencyChange.subscribe(s => {
+    console.log("frequency changed", s);
+    const otherAmount = document.querySelector("[name='transaction.donationAmt.other']");
+
+    if (otherAmount) {
+      switch (s) {
+        case "monthly":
+          otherAmount.placeholder = "Other /mo";
+          break;
+
+        case "annual":
+          otherAmount.placeholder = "Other /yr";
+          break;
+
+        default:
+          otherAmount.placeholder = "Other";
+      }
+    }
+  });
+
   if ("pageJson" in window && "pageType" in window.pageJson && window.pageJson.pageType === "premiumgift") {
-    const freq = DonationFrequency.getInstance();
     const country = App.getField("supporter.country");
 
     const maxMyGift = () => {
