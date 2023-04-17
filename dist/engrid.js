@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, April 17, 2023 @ 16:45:45 ET
+ *  Date: Monday, April 17, 2023 @ 18:39:37 ET
  *  By: fernando
  *  ENGrid styles: v0.13.52
  *  ENGrid scripts: v0.13.52
@@ -13823,14 +13823,16 @@ class FreshAddress {
     if (!this.options) return; // Add event listeners to fields
 
     (_a = this.emailField) === null || _a === void 0 ? void 0 : _a.addEventListener("change", () => {
-      var _a;
+      var _a, _b;
 
-      if (!this.shouldRun) {
+      if (!this.shouldRun || ((_a = this.emailField) === null || _a === void 0 ? void 0 : _a.value.includes("@4sitestudios.com"))) {
+        engrid_ENGrid.removeError(this.emailWrapper);
+        this.writeToFields("Valid", "Skipped");
         this.logger.log("Skipping E-mail Validation");
         return;
       }
 
-      this.logger.log("Validating " + ((_a = this.emailField) === null || _a === void 0 ? void 0 : _a.value));
+      this.logger.log("Validating " + ((_b = this.emailField) === null || _b === void 0 ? void 0 : _b.value));
       this.callAPI();
     }); // Add event listener to submit
 
@@ -18077,7 +18079,7 @@ if (isSafari) {
 smoothscroll_default().polyfill();
 class DonationLightboxForm {
   constructor(DonationAmount, DonationFrequency) {
-    if (!this.isIframe()) return;
+    if (!this.isIframe() || document.querySelector("body").dataset.engridSubtheme !== "multistep") return;
     this.amount = DonationAmount;
     this.frequency = DonationFrequency;
     this.ipCountry = "";

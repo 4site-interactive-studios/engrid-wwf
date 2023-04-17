@@ -6,7 +6,11 @@ import smoothscroll from "smoothscroll-polyfill";
 smoothscroll.polyfill();
 export default class DonationLightboxForm {
   constructor(DonationAmount, DonationFrequency) {
-    if (!this.isIframe()) return;
+    if (
+      !this.isIframe() ||
+      document.querySelector("body").dataset.engridSubtheme !== "multistep"
+    )
+      return;
     this.amount = DonationAmount;
     this.frequency = DonationFrequency;
     this.ipCountry = "";
