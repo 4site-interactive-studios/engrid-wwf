@@ -50,7 +50,7 @@ export const customScript = function (App, DonationFrequency) {
     const addCountryNotice = () => {
       if (!document.querySelector(".en__field--country .en__field__notice")) {
         App.addHtml(
-          '<div class="en__field__notice">Note: We are unable to mail thank-you gifts to donors outside the United States and its territories.</div>',
+          '<div class="en__field__notice">Note: We are unable to mail thank-you gifts to donors outside the United States and its territories and have selected the "Mazimize my gift" option for you.</div>',
           'select[name="supporter.country"]',
           "after"
         );

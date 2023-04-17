@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, April 14, 2023 @ 24:43:13 ET
+ *  Date: Friday, April 14, 2023 @ 11:19:03 ET
  *  By: bryancasler
- *  ENGrid styles: v0.13.55
- *  ENGrid scripts: v0.13.55
+ *  ENGrid styles: v0.13.52
+ *  ENGrid scripts: v0.13.52
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -17610,7 +17610,7 @@ const customScript = function (App, DonationFrequency) {
 
     const addCountryNotice = () => {
       if (!document.querySelector(".en__field--country .en__field__notice")) {
-        App.addHtml('<div class="en__field__notice">Note: We are unable to mail thank-you gifts to donors outside the United States and its territories.</div>', 'select[name="supporter.country"]', "after");
+        App.addHtml('<div class="en__field__notice">Note: We are unable to mail thank-you gifts to donors outside the United States and its territories and have selected the "Mazimize my gift" option for you.</div>', 'select[name="supporter.country"]', "after");
       }
     };
 

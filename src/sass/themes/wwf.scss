@@ -20,7 +20,7 @@
 
   // TYPOGRAPHY DEFAULT
   --default_font-family: "Open Sans", sans-serif;
-  // --default_color: initial;
+  --default_color: ##1f2937;
   --default_font-size: 20px;
   // --default_font-weight: initial;
   --default_line-height: 32px;
@@ -65,7 +65,7 @@
   --input_background-color: #ffffff;
   // --input_border-width: 1px;
   --input_border-color: #808080;
-  --input_border-radius: 0px;
+  --input_border-radius: 2px;
   // --input_placeholder-color: var(--color_light-gray);
   // --input_box-shadow: inset 0 2px 2px -1px rgba(74, 74, 104, 0.1);
   --input_padding: 1.4ch 1.2ch;
@@ -87,7 +87,7 @@
   --button_background-color: #ffffff;
   // --button_border-width: 1px;
   --button_border-color: #006ea3;
-  --button_border-radius: 0px;
+  --button_border-radius: 2px;
 
   // TYPOGRAPHY BUTTON:HOVER
   // --button_color_hover: var(--button_color);
@@ -153,6 +153,8 @@
 
   --select_padding-right: 3.75ch;
 
+  --premium__image_max-height: 100px;
+
   /* Recurring Frequency Button Heart Icon */
   // .radio-to-buttons_recurrfreq
   //   .en__field--recurrfreq.en__field--radio
@@ -161,6 +163,18 @@
 
   // }
 
+  // Base styling
+  font-family: "Open Sans", sans-serif;
+  color: #1f2937;
+  font-size: 20px;
+  line-height: 32px;
+
+  .body-main {
+    --p_font-size: 17px;
+    --p_line-height: 27.2px;
+  }
+
+  // Add a Heart Icon to the Monthly Donation Button
   .radio-to-buttons_recurrfreq
     .en__field--recurrfreq.en__field--radio
     input[type="radio"][value="MONTHLY"]
@@ -584,6 +598,7 @@
       input {
         padding-left: 34px;
         font-weight: 400;
+        border-color: var(--donation-amount__button_border-color);
       }
       &:before {
         content: "$";
@@ -600,9 +615,16 @@
         // line-height: var(--donation-amount__button_line-height);
       }
     }
+
+    &.en__field--radio.en__field--withOther--active .en__field__item:before {
+      --donation-amount__button_color: #ffffff;
+      --input_placeholder-color: #ffffff;
+    }
   }
 
-  .radio-to-buttons_recurrfreq .en__field--recurrfreq {
+  // Style the recurring frequency buttons to look like tabs
+  .radio-to-buttons_recurrfreq.radio-to-buttons_recurrfreq_to-tabs
+    .en__field--recurrfreq {
     --recurring-frequency__button_color: #222222;
     --recurring-frequency__button_border-color: #cccccc;
     --recurring-frequency__button_background-color: #faf9f7;
@@ -615,22 +637,46 @@
       --engrid__body-main_background-color
     );
     --fields_spacing-block: 0;
-
     --recurring-frequency__button_padding: 1.5ch 1.2ch;
-
+    margin-left: -12px;
+    margin-right: -12px; // Was -12px but left a 1px gap on the rigth edge and couldn't figure out why
     flex-basis: calc(100% + 44px);
-    margin-left: -22px;
-    margin-right: -22px;
+
     position: relative;
     top: -27px;
 
-    &.en__field--radio .en__field__item:first-child input + label {
-      border-right: none;
+    label {
+      padding-left: 8px;
+      padding-right: 8px;
     }
 
-    &.en__field--radio .en__field__item input[type="radio"]:checked + label {
-      border-bottom-color: transparent;
-      outline: none;
+    @media screen and (max-width: 601px) {
+      label {
+        position: relative;
+        top: -5px;
+        margin-left: -8px;
+        margin-right: -8px;
+      }
+    }
+
+    @media screen and (min-width: 601px) {
+      margin-left: -21px;
+      margin-right: -21px;
+      label {
+        margin-left: -8px;
+        margin-right: -8px;
+      }
+    }
+
+    &.en__field--radio .en__field__item {
+      &:first-child input + label {
+        border-right: none;
+      }
+
+      input[type="radio"]:checked + label {
+        border-bottom-color: transparent;
+        outline: none;
+      }
     }
 
     .en__field__element.en__field__element--radio {
@@ -638,6 +684,14 @@
 
       .en__field__item {
         display: flex;
+
+        &:first-child .en__field__label {
+          border-left: none;
+        }
+
+        &:last-child .en__field__label {
+          border-right: none;
+        }
 
         label {
           flex-basis: 100%;
@@ -656,6 +710,7 @@
     --radio_height: 20px;
     --radio_width: 20px;
     --radio_box-shadow_selected: inset 0 0 0 3px #ffffff;
+    --radio_border-width: 1px;
 
     // When the no gift option is present, move it from the last premium option to being the first premium option
     &[data-nogift] {
@@ -680,6 +735,9 @@
 
     .en__pg__body {
       grid-template-columns: min-content auto var(--premium__image_max-width);
+      gap: 0 max(calc(var(--fields_spacing-inline) * 2), 0.5rem);
+      padding: calc(var(--fields_spacing-block))
+        calc(var(--fields_spacing-inline) * 2);
 
       // Hide images on mobile
       @media screen and (max-width: $centercenter1col_body-column_max-width) {
@@ -690,31 +748,75 @@
         }
       }
     }
+
+    .en__pg__detail {
+      margin-bottom: 4px;
+    }
     .en__pg__optionType select {
       --input_padding: 0.7ch 0.6ch;
     }
   }
   .en__component--premiumgiftblock {
+    --h2_font-size: 20px;
+    --h2_line-height: 30px;
+    --h2_font-weight: 400;
     border-left: 0;
     border-right: 0;
     border-bottom: 0;
     margin-bottom: 0;
-    .en__pgHeader[data-non-us-donor],
-    .en__pgList[data-non-us-donor] {
+    // [data-engrid-premium-gift-maximize="true"]
+
+    .en__pgList[data-non-us-donor][data-nogift] {
       // border: 1px solid #bfbfbf;
-      pointer-events: none;
-      .en__pg:not(.en__pg--selected) {
-        opacity: 0.8;
+      // pointer-events: none;
+      .en__pg:not(:last-child):not(.en__pg--selected) {
+        opacity: 0.5;
         filter: grayscale(1);
+      }
+
+      .en__pg.en__pg--selected:not(:last-child) {
+        --premium__item_background-color: var(--error__color_faded);
+        --h2_color: var(--error__color);
+
+        input:checked:before {
+          background-color: var(--error__color);
+          border-color: var(--error__color);
+          box-shadow: inset 0 0 0 3px var(--error__color_faded);
+          color: var(--error__color);
+        }
+
+        .en__pg__display,
+        .en__pg__detail {
+          opacity: 0.75;
+        }
+
+        .en__pg__optionType {
+          label {
+            color: var(--error__color);
+          }
+
+          select {
+            background-color: var(--error__color_faded);
+            border-color: var(--error__color);
+            color: var(--error__color);
+          }
+        }
+        .en__pg__description {
+          color: var(--error__color);
+        }
+
+        .en__pg__images {
+          filter: brightness(60%) sepia(100%) hue-rotate(-50deg) saturate(250%)
+            contrast(0.9) opacity(0.5);
+          // opacity: 0.5;
+          // filter: grayscale(1);
+        }
       }
     }
     .en__pgList {
       margin-bottom: 0.75rem;
     }
     .en__pg__name {
-      --h2_font-size: 20px;
-      --h2_line-height: 30px;
-      --h2_font-weight: 400;
       margin-bottom: 0px;
     }
     .en__pg__description {
@@ -725,9 +827,10 @@
 
     // Styles the Maximize my gift option
     // @TODO: See if there is a way to apply this only when there is a maximize my gift option.
-    .en__pg:last-child .en__pg__description {
-      font-size: 20px;
-      line-height: 30px;
+    [data-nogift] .en__pg:last-child .en__pg__description {
+      font-size: var(--h2_font-size);
+      line-height: var(--h2_line-height);
+      font-weight: var(--h2_font-weight);
 
       &:after {
         font-size: 14px;
@@ -744,13 +847,12 @@
         flex-direction: column;
 
         &:after {
-          content: "We are unable to mail thank-you gifts to donors outside the United States and its territories.";
-          color: var(--error__color);
+          content: "We are unable to mail thank-you gifts to donors outside the United States and its territories and have selected the 'Mazimize my gift' option for you.";
+          // color: var(--error__color);
         }
       }
     }
   }
-  [data-engrid-premium-gift-maximize="true"]
 
   /* Tweet to Target Widget */
   .en__component--tweetcontactblock {
@@ -848,32 +950,92 @@
 
     --engrid__page_background-color: #ffffff;
     --engrid__content-footer_background-color: transparent;
-    --engrid__body-main_padding: 13px 21px;
+    --engrid__body-main_padding: 13px 20px;
+    --engrid__body-banner_padding: 0 20px;
+    --engrid__body-title_padding: 0 20px;
+    --engrid__body-top_padding: 0 20px;
+    --media-attribution__padding: 0 20px;
 
     --button_font-size: 20px;
     --button_line-height: 30px;
 
     --recurring-frequency__button_font-size: 16px;
     --recurring-frequency__button_line-height: 24px;
+
+    --click-to-expand__cta-image_width: 96px;
+    --click-to-expand__cta-image_height: 13px;
+
+    --p_line-height: 24px;
+
+    --label_font-size: 14px;
+    --label_line-height: 18.2px;
+  }
+
+  // Define all the named rows of the ENGrid
+  /* prettier-ignore */
+  form > .en__component--advrow,
+  #engrid > .en__component--advrow{
+    /* autoprefixer grid: off */
+    grid-template-rows:
+    [
+      page-start page-alert-start]        min-content        [page-alert-end
+      content-header-start]               min-content        [content-header-end
+      body-headerOutside-start]           min-content        [body-headerOutside-end
+      body-header-start]                  min-content        [body-header-end
+      body-banner-start]                  min-content        [body-banner-end
+      body-bannerOverlay-start]           min-content        [body-bannerOverlay-end
+      body-title-start]                   min-content        [body-title-end
+      body-top-start]                     min-content        [body-top-end
+      body-side-start]                    min-content        [body-side-end  
+      body-main-start]                    min-content        [body-main-end  
+      body-bottom-start]                  min-content        [body-bottom-end  
+      body-footer-start]                  min-content        [body-footer-end
+      body-footerOutside-start]           min-content        [body-footerOutside-end  
+      content-footerSpacer-start]         minmax(0px, 1fr)   [content-footerSpacer-end
+      content-preFooter-start]            min-content        [content-preFooter-end
+      content-footer-start]               min-content        [content-footer-end
+      page-backgroundImage-start]         min-content        [page-backgroundImage-end
+      page-backgroundImageOverlay-start]  min-content        [page-backgroundImageOverlay-end page-end
+      page-customCode-start]              min-content        [page-customCode-end        
+    ];        
+  }
+
+  &[data-engrid-layout] .content-header {
+    margin-bottom: 20px;
+  }
+
+  .radio-to-buttons_donationAmt
+    .en__field--donationAmt
+    .en__field__element--radio {
+    --fields_spacing-inline: 0.62rem;
+    --fields_spacing-block: 0.9rem;
+  }
+
+  figure.media-with-attribution {
+    margin-bottom: 3rem;
   }
 
   .radio-to-buttons_donationAmt {
     --donation-amount__button_count: 2;
   }
 
-  .give-by-select-wrapper {
-    --radio-to-buttons__button_count: 1;
+  &[data-engrid-transaction-recurring-frequency]
+    .radio-to-buttons_donationAmt
+    .en__field--donationAmt
+    div:not(.en__field__item--other)
+    .en__field__label--item:after {
+    font-size: 15px;
   }
 
-  .radio-to-buttons_recurrfreq .en__field--recurrfreq {
-    margin-left: -13px;
-    margin-right: -13px;
-    .en__field__item:first-child .en__field__label {
-      border-left: none;
-    }
-    .en__field__item:last-child .en__field__label {
-      border-right: none;
-    }
+  .radio-to-buttons_recurrfreq
+    .en__field--recurrfreq.en__field--radio
+    input[type="radio"][value="MONTHLY"]
+    + label:before {
+    width: 16px;
+  }
+
+  .give-by-select-wrapper {
+    --radio-to-buttons__button_count: 1;
   }
 
   .en__component--premiumgiftblock .en__pg__description {
@@ -908,11 +1070,9 @@
   }
 
   .body-top {
-    --engrid__body-top_padding: 0 29px;
   }
 
   .body-title {
-    --engrid__body-title_padding: 0 29px;
   }
 
   .body-main {
@@ -925,6 +1085,5 @@
   }
 
   figure.media-with-attribution figattribution {
-    --media-attribution__padding: 0 29px;
   }
 }
