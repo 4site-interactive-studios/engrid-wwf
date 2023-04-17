@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, April 17, 2023 @ 06:59:38 ET
- *  By: bryancasler
- *  ENGrid styles: v0.13.56
- *  ENGrid scripts: v0.13.55
+ *  Date: Monday, April 17, 2023 @ 11:31:44 ET
+ *  By: fernando
+ *  ENGrid styles: v0.13.52
+ *  ENGrid scripts: v0.13.52
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -9093,7 +9093,7 @@ class engrid_ENGrid {
 
     if (submit.dataset.originalText) {
       submit.disabled = false;
-      submit.innerText = submit.dataset.originalText;
+      submit.innerHTML = submit.dataset.originalText;
       delete submit.dataset.originalText;
       return true;
     }
@@ -11548,9 +11548,9 @@ class LiveVariables {
 
     this._frequency.onFrequencyChange.subscribe(() => this.changeSubmitButton());
 
-    this._form.onSubmit.subscribe(() => this.loadingSubmitButton());
+    this._form.onSubmit.subscribe(() => engrid_ENGrid.disableSubmit("Processing..."));
 
-    this._form.onError.subscribe(() => this.changeSubmitButton()); // Watch the monthly-upsell links
+    this._form.onError.subscribe(() => engrid_ENGrid.enableSubmit()); // Watch the monthly-upsell links
 
 
     document.addEventListener("click", e => {
@@ -11617,20 +11617,6 @@ class LiveVariables {
     if (submit && label) {
       submit.innerHTML = label;
     }
-  }
-
-  loadingSubmitButton() {
-    const submit = document.querySelector(".en__submit button"); // Don't add the Loading element if the button is from an Ajax form (like the supporter hub)
-
-    if (submit.closest(".en__hubOverlay") !== null) {
-      return true;
-    }
-
-    let submitButtonOriginalHTML = submit.innerHTML;
-    let submitButtonProcessingHTML = "<span class='loader-wrapper'><span class='loader loader-quart'></span><span class='submit-button-text-wrapper'>" + submitButtonOriginalHTML + "</span></span>";
-    submitButtonOriginalHTML = submit.innerHTML;
-    submit.innerHTML = submitButtonProcessingHTML;
-    return true;
   }
 
   changeLiveAmount() {
@@ -15280,7 +15266,7 @@ class RequiredIfVisible {
 
       if (engrid_ENGrid.isVisible(field)) {
         this.logger.log(`${field.getAttribute("class")} is visible`);
-        const fieldElement = field.querySelector("input, select, textarea");
+        const fieldElement = field.querySelector("input:not([type=hidden]) , select, textarea");
 
         if (fieldElement && fieldElement.closest("[data-unhidden]") === null && !engrid_ENGrid.getFieldValue(fieldElement.getAttribute("name"))) {
           const fieldLabel = field.querySelector(".en__field__label");
@@ -17497,7 +17483,7 @@ class DigitalWallets {
 
 }
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/version.js
-const AppVersion = "0.13.56";
+const AppVersion = "0.13.58";
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
 
@@ -18906,7 +18892,7 @@ class DonationLightboxForm {
 
 }
 ;// CONCATENATED MODULE: ./src/index.ts
-// import { Options, App, DonationFrequency, DonationAmount } from "@4site/engrid-common"; // Uses ENGrid via NPM
+// import { Options, App, DonationFrequency, DonationAmount, EnForm } from "@4site/engrid-common"; // Uses ENGrid via NPM
  // Uses ENGrid via Visual Studio Workspace
 
 
@@ -18940,15 +18926,6 @@ const options = {
     pageHeaderFooter(App); // Added this line to trigger pageHeaderFooter
   },
   onResize: () => console.log("Starter Theme Window Resized"),
-  onValidate: () => {
-    const plaidLink = document.querySelector("#plaid-link-button");
-
-    if (plaidLink) {
-      // Click the Plaid Link button
-      plaidLink.click();
-      return false;
-    }
-  },
   onSubmit: () => {
     if ("pageJson" in window && "pageType" in window.pageJson && window.pageJson.pageType === "premiumgift" && App.getUrlParameter("premium") !== "international") {
       const country = App.getField("supporter.country");
@@ -18962,6 +18939,41 @@ const options = {
           App.setFieldValue("transaction.selprodvariantid", "");
         }
       }
+    }
+
+    const plaidLink = document.querySelector("#plaid-link-button");
+
+    if (plaidLink && plaidLink.textContent === "Link Account") {
+      const form = EnForm.getInstance(); // Click the Plaid Link button
+
+      plaidLink.click();
+      form.submit = false; // Create a observer to watch the Link ID #plaid-link-button for a new Text Node
+
+      const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+          if (mutation.type === "childList") {
+            mutation.addedNodes.forEach(node => {
+              if (node.nodeType === Node.TEXT_NODE) {
+                // If the Text Node is "Link Account" then the Link has failed
+                if (node.nodeValue === "Account Linked") {
+                  form.submit = true;
+                  form.submitForm();
+                } else {
+                  form.submit = true;
+                }
+              }
+            });
+          }
+        });
+      }); // Start observing the Link ID #plaid-link-button
+
+      observer.observe(plaidLink, {
+        childList: true,
+        subtree: true
+      });
+      window.setTimeout(() => {
+        App.enableSubmit();
+      }, 1000);
     }
   }
 };
