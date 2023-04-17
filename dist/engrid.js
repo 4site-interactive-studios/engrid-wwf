@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, April 14, 2023 @ 11:19:03 ET
+ *  Date: Monday, April 17, 2023 @ 03:48:28 ET
  *  By: bryancasler
- *  ENGrid styles: v0.13.52
- *  ENGrid scripts: v0.13.52
+ *  ENGrid styles: v0.13.55
+ *  ENGrid scripts: v0.13.55
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -17399,14 +17399,14 @@ class DigitalWallets {
 
     if (stripeButtons) {
       stripeButtons.classList.add("giveBySelect-stripedigitalwallet");
-      stripeButtons.style.display = "none";
+      stripeButtons.classList.add("showif-stripedigitalwallet-selected"); // stripeButtons.style.display = "none";
     }
 
     const paypalTouchButtons = document.getElementById("en__digitalWallet__paypalTouch__container");
 
     if (paypalTouchButtons) {
       paypalTouchButtons.classList.add("giveBySelect-paypaltouch");
-      paypalTouchButtons.style.display = "none";
+      paypalTouchButtons.classList.add("showif-paypaltouch-selected"); // paypalTouchButtons.style.display = "none";
     }
     /**
      * Check for presence of elements that indicated Stripe digital wallets
@@ -17497,7 +17497,7 @@ class DigitalWallets {
 
 }
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/version.js
-const AppVersion = "0.13.55";
+const AppVersion = "0.13.56";
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
 
