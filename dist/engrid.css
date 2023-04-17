@@ -3155,7 +3155,6 @@ body:not(#en__pagebuilder):not([data-engrid-debug]) .i1-hide-label .en__field:no
 }
 [data-engrid-theme] #en__digitalWallet{
   flex-basis:100%;
-  margin-bottom:var(--fields_spacing-block);
   padding:0;
 }
 [data-engrid-theme] #en__digitalWallet>div[style]:not([class]){
@@ -3166,14 +3165,14 @@ body:not(#en__pagebuilder):not([data-engrid-debug]) .i1-hide-label .en__field:no
   flex-basis:50%;
   flex-grow:1;
   height:auto;
-  margin-bottom:var(--fields_spacing-block);
-  margin-top:calc(var(--fields_spacing-inline)*.5);
-  padding-left:var(--fields_spacing-inline);
-  padding-right:var(--fields_spacing-inline);
   width:auto !important;
 }
 [data-engrid-theme] #en__digitalWallet .en__digitalWallet__button .en__digitalWallet__container{
   margin-bottom:0;
+  margin-bottom:var(--fields_spacing-block);
+  margin-top:calc(var(--fields_spacing-inline)*.5);
+  padding-left:var(--fields_spacing-inline);
+  padding-right:var(--fields_spacing-inline);
   width:100%;
 }
 [data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug]):not([data-engrid-payment-type-option-apple-pay=true]) .showif-apple-pay-available,[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug]):not([data-engrid-payment-type-option-google-pay=true]) .showif-google-pay-available,[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug]):not([data-engrid-payment-type-option-paypal-one-touch=true]) .showif-paypal-one-touch-available,[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug]):not([data-engrid-payment-type-option-venmo=true]) .showif-venmo-available{
