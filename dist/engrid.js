@@ -17,9 +17,9 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, April 17, 2023 @ 03:48:28 ET
+ *  Date: Monday, April 17, 2023 @ 06:59:38 ET
  *  By: bryancasler
- *  ENGrid styles: v0.13.55
+ *  ENGrid styles: v0.13.56
  *  ENGrid scripts: v0.13.55
  *
  *  Created by 4Site Studios
@@ -17648,7 +17648,13 @@ const customScript = function (App, DonationFrequency) {
         }
       });
     }
-  } // App.setBodydata("client-js-loading", "finished");
+  } // let enFieldPhoneNumber = document.querySelectorAll(
+  //   ".en__field--phoneNumber2.en__mandatory input#en__field_supporter_phoneNumber2"
+  // )[0];
+  // if (enFieldPhoneNumber) {
+  //   enFieldPhoneNumber.placeholder = "000-000-0000 (Optional)";
+  // }
+  // App.setBodydata("client-js-loading", "finished");
 
 };
 ;// CONCATENATED MODULE: ./src/scripts/page-header-footer.js
@@ -18925,6 +18931,7 @@ const options = {
     dateFieldFormat: "YYYY-MM-DD"
   },
   CountryDisable: ["Belarus", "Cuba", "Iran", "North Korea", "Russia", "Syria", "Ukraine"],
+  PageLayouts: ["centerleft1col", "centercenter1col", "centercenter2col", "centerright1col"],
   Debug: App.getUrlParameter("debug") == "true" ? true : false,
   onLoad: () => {
     window.DonationLightboxForm = DonationLightboxForm;

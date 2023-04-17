@@ -37,6 +37,12 @@ const options: Options = {
     "Syria",
     "Ukraine",
   ],
+  PageLayouts: [
+    "centerleft1col",
+    "centercenter1col",
+    "centercenter2col",
+    "centerright1col",
+  ],
   Debug: App.getUrlParameter("debug") == "true" ? true : false,
   onLoad: () => {
     (<any>window).DonationLightboxForm = DonationLightboxForm;

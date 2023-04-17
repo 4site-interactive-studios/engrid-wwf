@@ -68,7 +68,7 @@
   --input_border-radius: 2px;
   // --input_placeholder-color: var(--color_light-gray);
   // --input_box-shadow: inset 0 2px 2px -1px rgba(74, 74, 104, 0.1);
-  --input_padding: 1.4ch 1.2ch;
+  --input_padding: 1.3ch 1.2ch;
 
   // TYPOGRAPHY INPUT:FOCUS
   // TYPOGRAPHY INPUT:HOVER
@@ -337,6 +337,10 @@
     margin-top: -10px;
   }
 
+  .body-title > .en__component > *:last-child {
+    margin-bottom: 0px;
+  }
+
   .body-main {
     border: 1px solid #cccccc;
   }
@@ -418,7 +422,6 @@
   }
 
   .en__component--premiumgiftblock,
-  .your-information,
   .donation-summary,
   .alternative-donation-methods {
     border-top: 1px solid #cccccc;
@@ -426,6 +429,53 @@
 
   .your-information h2:first-child {
     margin-top: 20px;
+  }
+
+  .enWidget--progressBar {
+    margin-top: -27px;
+    margin-right: -30px;
+    margin-left: -30px;
+    margin-bottom: 2rem;
+    padding-top: 26px;
+    padding-right: 30px;
+    padding-left: 30px;
+    width: calc(100% + 60px);
+    background-color: #275937;
+    border: 1px solid #6cc028;
+    color: #ffffff;
+    .enWidget__copy--above {
+      display: none;
+    }
+    .progress-bar_text {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 20px;
+      font-weight: 400;
+      line-height: 32px;
+
+      p {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+
+      strong {
+        font-size: 28px;
+        font-weight: 700;
+        line-height: 45px;
+      }
+    }
+
+    .enWidget__progress {
+      background-color: #6cc0284d !important;
+      border: 3px solid #6cc0284d !important;
+      height: 19px !important;
+      min-height: 19px;
+      border-radius: 9999px;
+      .enWidget__fill {
+        background-color: #ffffff !important;
+      }
+    }
   }
 
   .donation-summary {
@@ -734,6 +784,13 @@
   .body-banner img,
   .body-banner video {
     background-color: #cccccc;
+  }
+
+  &[data-engrid-layout*="1col"]
+    .body-banner
+    *:not(figure.media-with-attribution)
+    img {
+    margin-bottom: 3rem;
   }
 
   .en__pgList {

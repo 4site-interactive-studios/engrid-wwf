@@ -19,9 +19,9 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, April 17, 2023 @ 03:48:28 ET
+ *  Date: Monday, April 17, 2023 @ 06:59:38 ET
  *  By: bryancasler
- *  ENGrid styles: v0.13.55
+ *  ENGrid styles: v0.13.56
  *  ENGrid scripts: v0.13.55
  *
  *  Created by 4Site Studios
@@ -7519,7 +7519,7 @@ body:not([data-engrid-debug]) #debug-bar{
   --input_background-color:#fff;
   --input_border-color:grey;
   --input_border-radius:2px;
-  --input_padding:1.4ch 1.2ch;
+  --input_padding:1.3ch 1.2ch;
   --button_color:#006ea3;
   --button_font-size:24px;
   --button_font-weight:700;
@@ -7672,6 +7672,9 @@ body:not([data-engrid-debug]) #debug-bar{
 [data-engrid-theme=wwf] .body-title>.en__component>:first-child{
   margin-top:-10px;
 }
+[data-engrid-theme=wwf] .body-title>.en__component>:last-child{
+  margin-bottom:0;
+}
 [data-engrid-theme=wwf] .body-main{
   border:1px solid #ccc;
 }
@@ -7728,11 +7731,51 @@ body:not([data-engrid-debug]) #debug-bar{
   border-bottom:1px solid #ccc;
   padding-bottom:1rem;
 }
-[data-engrid-theme=wwf] .alternative-donation-methods,[data-engrid-theme=wwf] .donation-summary,[data-engrid-theme=wwf] .en__component--premiumgiftblock,[data-engrid-theme=wwf] .your-information{
+[data-engrid-theme=wwf] .alternative-donation-methods,[data-engrid-theme=wwf] .donation-summary,[data-engrid-theme=wwf] .en__component--premiumgiftblock{
   border-top:1px solid #ccc;
 }
 [data-engrid-theme=wwf] .your-information h2:first-child{
   margin-top:20px;
+}
+[data-engrid-theme=wwf] .enWidget--progressBar{
+  background-color:#275937;
+  border:1px solid #6cc028;
+  color:#fff;
+  margin:-27px -30px 2rem;
+  padding-left:30px;
+  padding-right:30px;
+  padding-top:26px;
+  width:calc(100% + 60px);
+}
+[data-engrid-theme=wwf] .enWidget--progressBar .enWidget__copy--above{
+  display:none;
+}
+[data-engrid-theme=wwf] .enWidget--progressBar .progress-bar_text{
+  align-items:center;
+  display:flex;
+  font-size:20px;
+  font-weight:400;
+  justify-content:space-between;
+  line-height:32px;
+}
+[data-engrid-theme=wwf] .enWidget--progressBar .progress-bar_text p{
+  margin-bottom:0;
+  margin-top:0;
+}
+[data-engrid-theme=wwf] .enWidget--progressBar .progress-bar_text strong{
+  font-size:28px;
+  font-weight:700;
+  line-height:45px;
+}
+[data-engrid-theme=wwf] .enWidget--progressBar .enWidget__progress{
+  background-color:#6cc0284d !important;
+  border:3px solid #6cc0284d !important;
+  border-radius:9999px;
+  height:19px !important;
+  min-height:19px;
+}
+[data-engrid-theme=wwf] .enWidget--progressBar .enWidget__progress .enWidget__fill{
+  background-color:#fff !important;
 }
 [data-engrid-theme=wwf] .donation-summary{
   --p_font-size:17px;
@@ -7984,6 +8027,9 @@ body:not([data-engrid-debug]) #debug-bar{
 }
 [data-engrid-theme=wwf] .body-banner img,[data-engrid-theme=wwf] .body-banner video{
   background-color:#ccc;
+}
+[data-engrid-theme=wwf][data-engrid-layout*="1col"] .body-banner :not(figure.media-with-attribution) img{
+  margin-bottom:3rem;
 }
 [data-engrid-theme=wwf] .en__pgList{
   --radio_height:20px;

@@ -90,5 +90,12 @@ export const customScript = function (App, DonationFrequency) {
       });
     }
   }
+
+  // let enFieldPhoneNumber = document.querySelectorAll(
+  //   ".en__field--phoneNumber2.en__mandatory input#en__field_supporter_phoneNumber2"
+  // )[0];
+  // if (enFieldPhoneNumber) {
+  //   enFieldPhoneNumber.placeholder = "000-000-0000 (Optional)";
+  // }
   // App.setBodydata("client-js-loading", "finished");
 };
