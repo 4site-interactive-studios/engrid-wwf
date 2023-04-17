@@ -110,4 +110,11 @@ const options: Options = {
     }
   },
 };
+(window as any).EngridTranslate = {
+  US: [
+    { field: "supporter.postcode", translation: "ZIP Code" },
+    { field: "transaction.shippostcode", translation: "Shipping ZIP Code" },
+    { field: "transaction.infpostcd", translation: "Recipient ZIP Code" },
+  ],
+};
 new App(options);

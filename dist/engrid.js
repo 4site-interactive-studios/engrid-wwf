@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, April 17, 2023 @ 11:31:44 ET
+ *  Date: Monday, April 17, 2023 @ 16:07:26 ET
  *  By: fernando
  *  ENGrid styles: v0.13.52
  *  ENGrid scripts: v0.13.52
@@ -12219,7 +12219,7 @@ class TranslateFields {
 
     if (options) {
       for (let key in options) {
-        this.options[key] = [...this.options[key], ...options[key]];
+        this.options[key] = this.options[key] ? [...this.options[key], ...options[key]] : options[key];
       }
     }
 
@@ -14682,6 +14682,13 @@ class MinMaxAmount {
 
   liveValidate() {
     const amount = engrid_ENGrid.cleanAmount(this._amount.amount.toString());
+    const activeElement = document.activeElement;
+
+    if (activeElement && activeElement.tagName === "INPUT" && "name" in activeElement && activeElement.name === "transaction.donationAmt.other" && amount === 0) {
+      // Don't validate if the other amount has focus and the amount is 0
+      return;
+    }
+
     this.logger.log(`Amount: ${amount}`);
 
     if (amount < this.minAmount) {
@@ -17317,16 +17324,15 @@ class PremiumGift {
   }
 
   checkPremiumGift() {
-    var _a;
-
     const premiumGift = document.querySelector('[name="en__pg"]:checked');
 
     if (premiumGift) {
       const premiumGiftValue = premiumGift.value;
       this.logger.log("Premium Gift Value: " + premiumGiftValue);
+      const premiumGiftContainer = premiumGift.closest(".en__pg");
 
       if (premiumGiftValue !== "0") {
-        const premiumGiftName = (_a = premiumGift.closest(".en__pg__body")) === null || _a === void 0 ? void 0 : _a.querySelector(".en__pg__name");
+        const premiumGiftName = premiumGiftContainer.querySelector(".en__pg__name");
         engrid_ENGrid.setBodyData("premium-gift-maximize", "false");
         engrid_ENGrid.setBodyData("premium-gift-name", engrid_ENGrid.slugify(premiumGiftName.innerText));
         this.setPremiumTitle(premiumGiftName.innerText);
@@ -17334,6 +17340,16 @@ class PremiumGift {
         engrid_ENGrid.setBodyData("premium-gift-maximize", "true");
         engrid_ENGrid.setBodyData("premium-gift-name", false);
         this.setPremiumTitle("");
+      }
+
+      if (!premiumGiftContainer.classList.contains("en__pg--selected")) {
+        const checkedPremiumGift = document.querySelector(".en__pg--selected");
+
+        if (checkedPremiumGift) {
+          checkedPremiumGift.classList.remove("en__pg--selected");
+        }
+
+        premiumGiftContainer.classList.add("en__pg--selected");
       }
     }
   }
@@ -18976,6 +18992,18 @@ const options = {
       }, 1000);
     }
   }
+};
+window.EngridTranslate = {
+  US: [{
+    field: "supporter.postcode",
+    translation: "ZIP Code"
+  }, {
+    field: "transaction.shippostcode",
+    translation: "Shipping ZIP Code"
+  }, {
+    field: "transaction.infpostcd",
+    translation: "Recipient ZIP Code"
+  }]
 };
 new App(options);
 })();
