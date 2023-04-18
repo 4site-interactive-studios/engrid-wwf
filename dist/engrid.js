@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, April 18, 2023 @ 11:01:04 ET
- *  By: fernando
- *  ENGrid styles: v0.13.52
- *  ENGrid scripts: v0.13.52
+ *  Date: Tuesday, April 18, 2023 @ 11:58:21 ET
+ *  By: bryancasler
+ *  ENGrid styles: v0.13.56
+ *  ENGrid scripts: v0.13.55
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -17501,7 +17501,7 @@ class DigitalWallets {
 
 }
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/version.js
-const AppVersion = "0.13.58";
+const AppVersion = "0.13.59";
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
 
