@@ -19,10 +19,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, April 18, 2023 @ 11:58:21 ET
- *  By: bryancasler
- *  ENGrid styles: v0.13.56
- *  ENGrid scripts: v0.13.55
+ *  Date: Tuesday, April 18, 2023 @ 15:09:02 ET
+ *  By: fernando
+ *  ENGrid styles: v0.13.59
+ *  ENGrid scripts: v0.13.59
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -2696,7 +2696,7 @@ body{
   --submit__button_text-transform:var(--button_text-transform);
 }
 .button,.en__button,.pseduo__en__submit_button,button,button.en__eventOccurrence__select,button.en__ticketRecurring__select,button.en__ticketSummary__checkout{
-  -webkit-appearance:none;
+  appearance:none;
   background-color:var(--button_background-color);
   border:var(--button_border-width) solid var(--button_border-color);
   border-radius:var(--button_border-radius);
@@ -2731,7 +2731,7 @@ a.button,a.button.active,a.button:active,a.button:focus,a.button:hover{
   width:100%;
 }
 
-.en__submit .button,.en__submit button,.pseduo__en__submit_button{
+.en__submit .button,.en__submit button,.pseduo__en__submit_button,button.primary{
   background-color:var(--submit__button_background-color);
   border-color:var(--submit__button_border-color);
   color:var(--submit__button_color);
@@ -2743,21 +2743,15 @@ a.button,a.button.active,a.button:active,a.button:focus,a.button:hover{
   text-transform:var(--submit__button_text-transform);
   width:100%;
 }
-.en__submit .button:focus,.en__submit .button:hover,.en__submit button:focus,.en__submit button:hover,.pseduo__en__submit_button:focus,.pseduo__en__submit_button:hover{
+.en__submit .button:focus,.en__submit .button:hover,.en__submit button:focus,.en__submit button:hover,.pseduo__en__submit_button:focus,.pseduo__en__submit_button:hover,button.primary:focus,button.primary:hover{
   background-color:var(--submit__button_background-color_hover);
   border-color:var(--submit__button_border-color_hover);
   color:var(--submit__button_color_hover);
 }
-.en__submit .button:active,.en__submit button:active,.pseduo__en__submit_button:active{
+.en__submit .button:active,.en__submit button:active,.pseduo__en__submit_button:active,button.primary:active{
   background-color:var(--submit__button_background-color_checked);
   border-color:var(--submit__button_border-color_checked);
   color:var(--submit__button_color_checked);
-}
-
-.button.primary:focus,.button.primary:hover,button.primary:focus,button.primary:hover{
-  background-color:var(--button_background-color_checked);
-  border-color:var(--button_border-color_checked);
-  color:var(--button_color_checked);
 }
 
 .arrow .en__submit .button:after,.arrow .en__submit button:after{
@@ -5162,6 +5156,28 @@ body:not(#en__pagebuilder):not([data-engrid-debug]):not([data-engrid-merge-tags-
 
 .en__ticket__currency__hidden{
   display:none;
+}
+
+.engrid-mobile-cta-container{
+  bottom:0;
+  display:none;
+  left:0;
+  padding:10px 0;
+  position:fixed;
+  text-align:center;
+  width:100%;
+  z-index:9999;
+}
+.engrid-mobile-cta-container .primary{
+  box-sizing:initial;
+  display:inline-block;
+  margin:0 10px;
+  width:80%;
+}
+@media screen and (max-width:767px){
+  .engrid-mobile-cta-container{
+    display:block;
+  }
 }
 [data-engrid-theme]{
   --engrid__page_padding:0px;

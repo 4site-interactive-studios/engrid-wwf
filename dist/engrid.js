@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, April 18, 2023 @ 11:58:21 ET
- *  By: bryancasler
- *  ENGrid styles: v0.13.56
- *  ENGrid scripts: v0.13.55
+ *  Date: Tuesday, April 18, 2023 @ 15:09:02 ET
+ *  By: fernando
+ *  ENGrid styles: v0.13.59
+ *  ENGrid scripts: v0.13.59
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -8167,6 +8167,7 @@ const OptionsDefaults = {
   TidyContact: false,
   RegionLongFormat: "",
   CountryDisable: [],
+  MobileCTA: false,
   PageLayouts: ["leftleft1col", "centerleft1col", "centercenter1col", "centercenter2col", "centerright1col", "rightright1col", "none"]
 };
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/interfaces/upsell-options.js
@@ -9690,7 +9691,9 @@ class App extends engrid_ENGrid {
     } // Data Layer Events
 
 
-    new DataLayer();
+    new DataLayer(); // Mobile CTA
+
+    new MobileCTA();
     this.setDataAttributes(); //Debug panel
 
     if (this.options.Debug || window.sessionStorage.hasOwnProperty(DebugPanel.debugSessionStorageKey)) {
@@ -17500,10 +17503,66 @@ class DigitalWallets {
   }
 
 }
+;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/mobile-cta.js
+// This component adds a floating CTA button to the page, which can be used to scroll to the top of the form
+
+class MobileCTA {
+  constructor() {
+    var _a, _b, _c;
+
+    this.options = engrid_ENGrid.getOption("MobileCTA") || false;
+    this.buttonLabel = "";
+    if (this.options === false || !((_b = (_a = this.options) === null || _a === void 0 ? void 0 : _a.pages) === null || _b === void 0 ? void 0 : _b.includes(engrid_ENGrid.getPageType()))) return;
+    this.buttonLabel = ((_c = this.options) === null || _c === void 0 ? void 0 : _c.label) || "Take Action";
+    this.renderButton();
+    this.addEventListeners();
+  }
+
+  renderButton() {
+    const engridDiv = document.querySelector("#engrid");
+    const buttonContainer = document.createElement("div");
+    const button = document.createElement("button");
+    const formBlock = document.querySelector(".body-main, .en__component--formblock");
+    buttonContainer.classList.add("engrid-mobile-cta-container");
+    button.classList.add("primary");
+    button.innerHTML = this.buttonLabel;
+    button.addEventListener("click", () => {
+      formBlock.scrollIntoView({
+        behavior: "smooth"
+      });
+    });
+    buttonContainer.appendChild(button);
+    if (engridDiv) engridDiv.appendChild(buttonContainer);
+  }
+
+  addEventListeners() {
+    const formBlock = document.querySelector(".en__component--formblock"); // When the form block is scrolled into view, hide the button
+
+    window.addEventListener("scroll", () => {
+      if (formBlock.getBoundingClientRect().top <= window.innerHeight - 100) {
+        this.hideButton();
+      } else {
+        this.showButton();
+      }
+    });
+  }
+
+  hideButton() {
+    const buttonContainer = document.querySelector(".engrid-mobile-cta-container");
+    if (buttonContainer) buttonContainer.style.display = "none";
+  }
+
+  showButton() {
+    const buttonContainer = document.querySelector(".engrid-mobile-cta-container");
+    if (buttonContainer) buttonContainer.style.display = "block";
+  }
+
+}
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/version.js
 const AppVersion = "0.13.59";
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
+
 
 
 
@@ -19003,6 +19062,10 @@ const options = {
   CountryDisable: ["Belarus", "Cuba", "Iran", "North Korea", "Russia", "Syria", "Ukraine"],
   PageLayouts: ["centerleft1col", "centercenter1col", "centercenter2col", "centerright1col"],
   Debug: App.getUrlParameter("debug") == "true" ? true : false,
+  MobileCTA: {
+    label: "Add Your Name",
+    pages: ["ADVOCACY", "EMAILTOTARGET", "TWEETPAGE"]
+  },
   onLoad: () => {
     window.DonationLightboxForm = DonationLightboxForm;
     new DonationLightboxForm(DonationAmount, DonationFrequency);

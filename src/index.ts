@@ -45,6 +45,10 @@ const options: Options = {
     "centerright1col",
   ],
   Debug: App.getUrlParameter("debug") == "true" ? true : false,
+  MobileCTA: {
+    label: "Add Your Name",
+    pages: ["ADVOCACY", "EMAILTOTARGET", "TWEETPAGE"],
+  },
   onLoad: () => {
     (<any>window).DonationLightboxForm = DonationLightboxForm;
     new DonationLightboxForm(DonationAmount, DonationFrequency);
