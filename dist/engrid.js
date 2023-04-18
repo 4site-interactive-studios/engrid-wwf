@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, April 18, 2023 @ 15:09:02 ET
+ *  Date: Tuesday, April 18, 2023 @ 15:27:33 ET
  *  By: fernando
  *  ENGrid styles: v0.13.59
  *  ENGrid scripts: v0.13.59
@@ -17536,7 +17536,7 @@ class MobileCTA {
   }
 
   addEventListeners() {
-    const formBlock = document.querySelector(".en__component--formblock"); // When the form block is scrolled into view, hide the button
+    const formBlock = document.querySelector(".body-main, .en__component--formblock"); // When the form block is scrolled into view, hide the button
 
     window.addEventListener("scroll", () => {
       if (formBlock.getBoundingClientRect().top <= window.innerHeight - 100) {
@@ -17806,6 +17806,13 @@ const customScript = function (App, DonationFrequency) {
         }
       });
     });
+  }
+
+  const fillCount = document.querySelector(".enWidget__fill__count") ? document.querySelector(".enWidget__fill__count").innerText : 0;
+  const supportersBar = document.querySelector(".progress-bar_supporters strong");
+
+  if (supportersBar) {
+    supportersBar.innerText = fillCount;
   }
 };
 ;// CONCATENATED MODULE: ./src/scripts/page-header-footer.js

@@ -207,4 +207,13 @@ export const customScript = function (App, DonationFrequency) {
       });
     });
   }
+  const fillCount = document.querySelector(".enWidget__fill__count")
+    ? document.querySelector(".enWidget__fill__count").innerText
+    : 0;
+  const supportersBar = document.querySelector(
+    ".progress-bar_supporters strong"
+  );
+  if (supportersBar) {
+    supportersBar.innerText = fillCount;
+  }
 };
