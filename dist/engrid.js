@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, April 18, 2023 @ 10:53:31 ET
+ *  Date: Tuesday, April 18, 2023 @ 11:01:04 ET
  *  By: fernando
  *  ENGrid styles: v0.13.52
  *  ENGrid scripts: v0.13.52
@@ -17703,50 +17703,51 @@ const customScript = function (App, DonationFrequency) {
   // App.setBodydata("client-js-loading", "finished");
 
 
-  App.loadJS("https://unpkg.com/@popperjs/core@2", () => {
-    App.loadJS("https://unpkg.com/tippy.js@6", () => {
-      // Add "what's this" markup to the CVV field
-      let ccvvLabel = document.querySelectorAll(".en__field--ccvv > label")[0];
+  const ccvvLabel = document.querySelector(".en__field--ccvv > label");
+  const titleLabel = document.querySelector(".en__field--title.en__mandatory > label");
 
-      if (ccvvLabel) {
-        let el = document.createElement("span");
-        let childEl = document.createElement("a");
-        childEl.href = "#";
-        childEl.id = "ccv-tooltip";
-        childEl.className = "label-tooltip";
-        childEl.tabIndex = "-1";
-        childEl.innerText = "What's this?";
-        childEl.addEventListener("click", e => e.preventDefault());
-        el.appendChild(childEl);
-        ccvvLabel.appendChild(el);
-        tippy("#ccv-tooltip", {
-          theme: "light",
-          content: "The three or four digit security code on your debit or credit card to verify transactions when your card is not present."
-        });
-      } // Add "Why is this required?" markup to the Title field
-      // Only show it if the Title field is marked as required
+  if (ccvvLabel || titleLabel) {
+    App.loadJS("https://unpkg.com/@popperjs/core@2", () => {
+      App.loadJS("https://unpkg.com/tippy.js@6", () => {
+        // Add "what's this" markup to the CVV field
+        if (ccvvLabel) {
+          let el = document.createElement("span");
+          let childEl = document.createElement("a");
+          childEl.href = "#";
+          childEl.id = "ccv-tooltip";
+          childEl.className = "label-tooltip";
+          childEl.tabIndex = "-1";
+          childEl.innerText = "What's this?";
+          childEl.addEventListener("click", e => e.preventDefault());
+          el.appendChild(childEl);
+          ccvvLabel.appendChild(el);
+          tippy("#ccv-tooltip", {
+            theme: "light",
+            content: "The three or four digit security code on your debit or credit card to verify transactions when your card is not present."
+          });
+        } // Add "Why is this required?" markup to the Title field
+        // Only show it if the Title field is marked as required
 
 
-      let titleLabel = document.querySelectorAll(".en__field--title.en__mandatory > label")[0];
-
-      if (titleLabel) {
-        let el = document.createElement("span");
-        let childEl = document.createElement("a");
-        childEl.href = "#";
-        childEl.id = "title-tooltip";
-        childEl.className = "label-tooltip";
-        childEl.tabIndex = "-1";
-        childEl.innerText = "Why is this required?";
-        childEl.addEventListener("click", e => e.preventDefault());
-        el.appendChild(childEl);
-        titleLabel.appendChild(el);
-        tippy("#title-tooltip", {
-          theme: "light",
-          content: "The U.S. Senate is now requiring that all letters include a title. Please select one in order to ensure that your action lands in the inbox of your Senator."
-        });
-      }
+        if (titleLabel) {
+          let el = document.createElement("span");
+          let childEl = document.createElement("a");
+          childEl.href = "#";
+          childEl.id = "title-tooltip";
+          childEl.className = "label-tooltip";
+          childEl.tabIndex = "-1";
+          childEl.innerText = "Why is this required?";
+          childEl.addEventListener("click", e => e.preventDefault());
+          el.appendChild(childEl);
+          titleLabel.appendChild(el);
+          tippy("#title-tooltip", {
+            theme: "light",
+            content: "The U.S. Senate is now requiring that all letters include a title. Please select one in order to ensure that your action lands in the inbox of your Senator."
+          });
+        }
+      });
     });
-  });
+  }
 };
 ;// CONCATENATED MODULE: ./src/scripts/page-header-footer.js
 const pageHeaderFooter = function (App) {
