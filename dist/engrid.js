@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, April 18, 2023 @ 15:27:33 ET
- *  By: fernando
- *  ENGrid styles: v0.13.59
- *  ENGrid scripts: v0.13.59
+ *  Date: Tuesday, April 18, 2023 @ 19:38:51 ET
+ *  By: bryancasler
+ *  ENGrid styles: v0.13.56
+ *  ENGrid scripts: v0.13.55
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -17508,49 +17508,67 @@ class DigitalWallets {
 
 class MobileCTA {
   constructor() {
-    var _a, _b, _c;
+    var _a, _b, _c; // Initialize options with the MobileCTA value or false
 
-    this.options = engrid_ENGrid.getOption("MobileCTA") || false;
-    this.buttonLabel = "";
-    if (this.options === false || !((_b = (_a = this.options) === null || _a === void 0 ? void 0 : _a.pages) === null || _b === void 0 ? void 0 : _b.includes(engrid_ENGrid.getPageType()))) return;
-    this.buttonLabel = ((_c = this.options) === null || _c === void 0 ? void 0 : _c.label) || "Take Action";
+
+    this.options = (_a = engrid_ENGrid.getOption("MobileCTA")) !== null && _a !== void 0 ? _a : false;
+    this.buttonLabel = ""; // Return early if the options object is falsy or the current page type is not in the options.pages array
+
+    if (!this.options || !((_b = this.options.pages) === null || _b === void 0 ? void 0 : _b.includes(engrid_ENGrid.getPageType()))) return; // Set the button label using the options.label or the default value "Take Action"
+
+    this.buttonLabel = (_c = this.options.label) !== null && _c !== void 0 ? _c : "Take Action";
     this.renderButton();
     this.addEventListeners();
   }
 
   renderButton() {
     const engridDiv = document.querySelector("#engrid");
+    const formBlock = document.querySelector(".en__component--formblock"); // Return early if engridDiv or formBlock are not found
+
+    if (!engridDiv || !formBlock) return;
     const buttonContainer = document.createElement("div");
-    const button = document.createElement("button");
-    const formBlock = document.querySelector(".body-main, .en__component--formblock");
+    const button = document.createElement("button"); // Add necessary classes and set the initial display style for the button container
+
     buttonContainer.classList.add("engrid-mobile-cta-container");
-    button.classList.add("primary");
+    buttonContainer.style.display = "none";
+    button.classList.add("primary"); // Set the button's innerHTML and add a click event listener
+
     button.innerHTML = this.buttonLabel;
     button.addEventListener("click", () => {
       formBlock.scrollIntoView({
         behavior: "smooth"
       });
-    });
+    }); // Append the button to the button container and the container to engridDiv
+
     buttonContainer.appendChild(button);
-    if (engridDiv) engridDiv.appendChild(buttonContainer);
+    engridDiv.appendChild(buttonContainer);
   }
 
   addEventListeners() {
-    const formBlock = document.querySelector(".body-main, .en__component--formblock"); // When the form block is scrolled into view, hide the button
+    const formBlock = document.querySelector(".body-main"); // Return early if formBlock is not found
 
-    window.addEventListener("scroll", () => {
+    if (!formBlock) return; // Define a function to toggle the button visibility based on the formBlock position
+
+    const toggleButton = () => {
       if (formBlock.getBoundingClientRect().top <= window.innerHeight - 100) {
         this.hideButton();
       } else {
         this.showButton();
       }
-    });
-  }
+    }; // Add event listeners for load, resize, and scroll events to toggle the button visibility
+
+
+    window.addEventListener("load", toggleButton);
+    window.addEventListener("resize", toggleButton);
+    window.addEventListener("scroll", toggleButton);
+  } // Hide the button by setting the container's display style to "none"
+
 
   hideButton() {
     const buttonContainer = document.querySelector(".engrid-mobile-cta-container");
     if (buttonContainer) buttonContainer.style.display = "none";
-  }
+  } // Show the button by setting the container's display style to "block"
+
 
   showButton() {
     const buttonContainer = document.querySelector(".engrid-mobile-cta-container");
@@ -17814,6 +17832,52 @@ const customScript = function (App, DonationFrequency) {
   if (supportersBar) {
     supportersBar.innerText = fillCount;
   }
+
+  function LauncherWidthWatcher() {
+    // Select the #launcher and .engrid-mobile-cta-container elements
+    this.launcher = document.querySelector("#launcher");
+    this.engridMobileCTAContainer = document.querySelector(".engrid-mobile-cta-container"); // If both elements are present, set the custom property and add event listeners
+
+    if (this.launcher && this.engridMobileCTAContainer) {
+      this.setCustomProperty();
+      this.addEventListeners();
+    }
+  } // Set the CSS custom property on .engrid-mobile-cta-container based on the width of #launcher
+
+
+  LauncherWidthWatcher.prototype.setCustomProperty = function () {
+    if (!this.launcher || !this.engridMobileCTAContainer) return;
+    var launcherWidth = this.launcher.clientWidth;
+    this.engridMobileCTAContainer.style.setProperty("--launcher-width", launcherWidth + "px");
+  }; // Add event listeners to update the custom property when the width of #launcher changes
+
+
+  LauncherWidthWatcher.prototype.addEventListeners = function () {
+    if (!this.launcher) return; // Create a ResizeObserver to listen for changes in the width of #launcher
+
+    var resizeObserver = new ResizeObserver(function () {
+      // Update the custom property when the width of #launcher changes
+      this.setCustomProperty();
+    }.bind(this)); // Observe the #launcher element for changes in its size
+
+    resizeObserver.observe(this.launcher);
+  }; // Function to initialize the LauncherWidthWatcher when the #launcher element is present
+
+
+  function initLauncherWidthWatcher() {
+    if (document.querySelector("#launcher")) {
+      var launcherWidthWatcher = new LauncherWidthWatcher();
+    } else {
+      setTimeout(initLauncherWidthWatcher, 100);
+    }
+  } // Use a MutationObserver to watch for changes in the DOM
+
+
+  var observer = new MutationObserver(initLauncherWidthWatcher);
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
 };
 ;// CONCATENATED MODULE: ./src/scripts/page-header-footer.js
 const pageHeaderFooter = function (App) {

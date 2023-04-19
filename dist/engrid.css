@@ -19,10 +19,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, April 18, 2023 @ 15:27:33 ET
- *  By: fernando
- *  ENGrid styles: v0.13.59
- *  ENGrid scripts: v0.13.59
+ *  Date: Tuesday, April 18, 2023 @ 19:38:51 ET
+ *  By: bryancasler
+ *  ENGrid styles: v0.13.56
+ *  ENGrid scripts: v0.13.55
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -5159,24 +5159,20 @@ body:not(#en__pagebuilder):not([data-engrid-debug]):not([data-engrid-merge-tags-
 }
 
 .engrid-mobile-cta-container{
-  bottom:0;
-  display:none;
-  left:0;
-  padding:10px 0;
+  bottom:1rem;
+  left:2rem;
   position:fixed;
-  text-align:center;
-  width:100%;
+  width:calc(100% - 4rem);
   z-index:9999;
 }
 .engrid-mobile-cta-container .primary{
-  box-sizing:initial;
   display:inline-block;
-  margin:0 10px;
-  width:80%;
+  margin:0;
 }
-@media screen and (max-width:767px){
+
+@media screen and (min-width:768px){
   .engrid-mobile-cta-container{
-    display:block;
+    display:none !important;
   }
 }
 [data-engrid-theme]{
@@ -6706,13 +6702,13 @@ body[data-engrid-debug]:before{
   height:100px;
   position:fixed;
   right:min(10vw, 10vh, 50px);
+  transform-origin:bottom right;
   width:100px;
   z-index:1000;
 }
 @media screen and (max-height:760px){
   .debug-panel{
     transform:scale(.9);
-    transform-origin:bottom right;
   }
 }
 @media screen and (max-height:700px){
@@ -7759,20 +7755,34 @@ body:not([data-engrid-debug]) #debug-bar{
 [data-engrid-theme=wwf] .countdown{
   margin-block-end:1em;
 }
-[data-engrid-theme=wwf] .enWidget--progressBar{
-  background-color:#275937;
-  border:1px solid #6cc028;
-  color:#fff;
-  margin:-27px -30px 2rem;
-  padding-left:30px;
-  padding-right:30px;
+[data-engrid-theme=wwf] .body-main .en__component--widgetblock:first-child .enWidget--progressBar{
+  margin-top:-27px;
   padding-top:26px;
-  width:calc(100% + 60px);
 }
-[data-engrid-theme=wwf] .enWidget--progressBar .enWidget__copy--above{
+[data-engrid-theme=wwf] .debug-panel{
+  bottom:70px;
+  right:20px;
+  transform:scale(.8);
+}
+[data-engrid-theme=wwf] .en__component--widgetblock .enWidget--progressBar{
+  background-color:#275937;
+  color:#fff;
+  margin-bottom:2rem;
+  margin-top:1rem;
+  padding:1rem 30px 20px;
+  width:100%;
+}
+@media screen and (min-width:600px){
+  [data-engrid-theme=wwf] .en__component--widgetblock .enWidget--progressBar{
+    margin-left:-30px;
+    margin-right:-30px;
+    width:calc(100% + 60px);
+  }
+}
+[data-engrid-theme=wwf] .en__component--widgetblock .enWidget--progressBar .enWidget__copy--above{
   display:none;
 }
-[data-engrid-theme=wwf] .enWidget--progressBar .progress-bar_text{
+[data-engrid-theme=wwf] .en__component--widgetblock .enWidget--progressBar .progress-bar_text{
   align-items:center;
   display:flex;
   font-size:20px;
@@ -7780,26 +7790,29 @@ body:not([data-engrid-debug]) #debug-bar{
   justify-content:space-between;
   line-height:32px;
 }
-[data-engrid-theme=wwf] .enWidget--progressBar .progress-bar_text p{
+[data-engrid-theme=wwf] .en__component--widgetblock .enWidget--progressBar .progress-bar_text p{
   margin-bottom:0;
   margin-top:0;
 }
-[data-engrid-theme=wwf] .enWidget--progressBar .progress-bar_text strong{
+[data-engrid-theme=wwf] .en__component--widgetblock .enWidget--progressBar .progress-bar_text strong{
   font-size:28px;
   font-weight:700;
   line-height:45px;
 }
-[data-engrid-theme=wwf] .enWidget--progressBar .enWidget__progress{
+[data-engrid-theme=wwf] .en__component--widgetblock .enWidget--progressBar .progress-bar_goal{
+  text-align:right;
+}
+[data-engrid-theme=wwf] .en__component--widgetblock .enWidget--progressBar .enWidget__progress{
   background-color:#6cc0284d !important;
   border:3px solid #6cc0284d !important;
   border-radius:9999px;
   height:19px !important;
   min-height:19px;
 }
-[data-engrid-theme=wwf] .enWidget--progressBar .enWidget__progress .enWidget__fill{
+[data-engrid-theme=wwf] .en__component--widgetblock .enWidget--progressBar .enWidget__progress .enWidget__fill{
   background-color:#fff !important;
 }
-[data-engrid-theme=wwf] .enWidget--progressBar .enWidget__progress .enWidget__fill .enWidget__fill__count{
+[data-engrid-theme=wwf] .en__component--widgetblock .enWidget--progressBar .enWidget__progress .enWidget__fill .enWidget__fill__count{
   display:none;
 }
 [data-engrid-theme=wwf] .en__component--copyblock{
@@ -8292,6 +8305,12 @@ body:not([data-engrid-debug]) #debug-bar{
     margin-left:36px;
   }
 }
+@media screen and (max-width:768px){
+  [data-engrid-theme=wwf] .engrid-mobile-cta-container{
+    bottom:14px;
+    width:calc(100% - 4rem - 20px - var(--launcher-width));
+  }
+}
 @media screen and (max-width:600px){
   [data-engrid-theme=wwf]{
     --default_font-size:15px;
@@ -8380,8 +8399,14 @@ body:not([data-engrid-debug]) #debug-bar{
     border-left:none;
     border-right:none;
   }
-  [data-engrid-theme=wwf] .content-footer{
+  [data-engrid-theme=wwf] .body-main .en__component--widgetblock:first-child .enWidget--progressBar,[data-engrid-theme=wwf] .content-footer{
     margin-top:0;
+  }
+  [data-engrid-theme=wwf] .en__component--widgetblock .enWidget--progressBar{
+    margin-left:0;
+    margin-right:0;
+    padding:var(--engrid__body-main_padding);
+    width:100%;
   }
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=multistep] .body-main{

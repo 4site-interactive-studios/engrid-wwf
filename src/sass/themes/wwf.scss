@@ -437,21 +437,61 @@
     margin-block-end: 1em;
   }
 
-  .enWidget--progressBar {
-    margin-top: -27px;
-    margin-right: -30px;
-    margin-left: -30px;
+  .body-main .en__component--widgetblock:first-child {
+    .enWidget--progressBar {
+      margin-top: -27px;
+      padding-top: 26px;
+    }
+  }
+
+  .debug-panel {
+    bottom: 70px;
+    right: 20px;
+    transform: scale(0.8);
+
+    &:not(.debug-panel--open) {
+      // background-color: #e98300;
+    }
+
+    // @media screen and (max-height: 760px) {
+    //   transform: scale(0.75);
+    // }
+
+    // @media screen and (max-height: 700px) {
+    //   transform: scale(0.7);
+    // }
+
+    // @media screen and (max-height: 625px) {
+    //   transform: scale(0.6);
+    // }
+  }
+
+  .en__component--widgetblock .enWidget--progressBar {
+    padding: 1rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    color: #ffffff;
+    background-color: #275937;
+    // border: 1px solid #6cc028;
+    width: 100%;
+    margin-top: 1rem;
+
     margin-bottom: 2rem;
-    padding-top: 26px;
     padding-right: 30px;
     padding-left: 30px;
-    width: calc(100% + 60px);
-    background-color: #275937;
-    border: 1px solid #6cc028;
-    color: #ffffff;
+    padding-bottom: 20px;
+
+    @media screen and (min-width: 600px) {
+      margin-right: -30px;
+      margin-left: -30px;
+      width: calc(100% + 60px);
+      // border-bottom: none;
+    }
+
     .enWidget__copy--above {
       display: none;
     }
+
     .progress-bar_text {
       display: flex;
       justify-content: space-between;
@@ -470,6 +510,10 @@
         font-weight: 700;
         line-height: 45px;
       }
+    }
+
+    .progress-bar_goal {
+      text-align: right;
     }
 
     .enWidget__progress {
@@ -1155,6 +1199,13 @@
   }
 }
 
+@media screen and (max-width: 768px) {
+  .engrid-mobile-cta-container {
+    bottom: 14px;
+    width: calc(100% - 4rem - 20px - var(--launcher-width));
+  }
+}
+
 @media screen and (max-width: 600px) {
   & {
     --default_font-size: 15px;
@@ -1315,5 +1366,18 @@
   }
 
   figure.media-with-attribution figattribution {
+  }
+
+  .body-main .en__component--widgetblock:first-child {
+    .enWidget--progressBar {
+      margin-top: 0px;
+    }
+  }
+
+  .en__component--widgetblock .enWidget--progressBar {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    padding: var(--engrid__body-main_padding);
   }
 }

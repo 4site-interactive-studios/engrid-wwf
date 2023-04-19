@@ -216,4 +216,58 @@ export const customScript = function (App, DonationFrequency) {
   if (supportersBar) {
     supportersBar.innerText = fillCount;
   }
+
+  function LauncherWidthWatcher() {
+    // Select the #launcher and .engrid-mobile-cta-container elements
+    this.launcher = document.querySelector("#launcher");
+    this.engridMobileCTAContainer = document.querySelector(
+      ".engrid-mobile-cta-container"
+    );
+
+    // If both elements are present, set the custom property and add event listeners
+    if (this.launcher && this.engridMobileCTAContainer) {
+      this.setCustomProperty();
+      this.addEventListeners();
+    }
+  }
+
+  // Set the CSS custom property on .engrid-mobile-cta-container based on the width of #launcher
+  LauncherWidthWatcher.prototype.setCustomProperty = function () {
+    if (!this.launcher || !this.engridMobileCTAContainer) return;
+
+    var launcherWidth = this.launcher.clientWidth;
+    this.engridMobileCTAContainer.style.setProperty(
+      "--launcher-width",
+      launcherWidth + "px"
+    );
+  };
+
+  // Add event listeners to update the custom property when the width of #launcher changes
+  LauncherWidthWatcher.prototype.addEventListeners = function () {
+    if (!this.launcher) return;
+
+    // Create a ResizeObserver to listen for changes in the width of #launcher
+    var resizeObserver = new ResizeObserver(
+      function () {
+        // Update the custom property when the width of #launcher changes
+        this.setCustomProperty();
+      }.bind(this)
+    );
+
+    // Observe the #launcher element for changes in its size
+    resizeObserver.observe(this.launcher);
+  };
+
+  // Function to initialize the LauncherWidthWatcher when the #launcher element is present
+  function initLauncherWidthWatcher() {
+    if (document.querySelector("#launcher")) {
+      var launcherWidthWatcher = new LauncherWidthWatcher();
+    } else {
+      setTimeout(initLauncherWidthWatcher, 100);
+    }
+  }
+
+  // Use a MutationObserver to watch for changes in the DOM
+  var observer = new MutationObserver(initLauncherWidthWatcher);
+  observer.observe(document.body, { childList: true, subtree: true });
 };
