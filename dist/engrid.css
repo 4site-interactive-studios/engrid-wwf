@@ -7664,7 +7664,7 @@ body:not([data-engrid-debug]) #debug-bar{
   margin-block-end:1em;
 }
 [data-engrid-theme=wwf]:not(#en__pagebuilder) .click-to-expand:not(.expanded) .click-to-expand-cta{
-  margin-left:0;
+  margin-left:var(--fields_spacing-inline);
 }
 [data-engrid-theme=wwf]:not(#en__pagebuilder) .click-to-expand:not(.expanded) .click-to-expand-text-wrapper{
   margin-bottom:1.5rem;
@@ -8128,9 +8128,6 @@ body:not([data-engrid-debug]) #debug-bar{
 [data-engrid-theme=wwf] .body-banner img,[data-engrid-theme=wwf] .body-banner video{
   background-color:#ccc;
 }
-[data-engrid-theme=wwf][data-engrid-layout*="1col"] .body-banner :not(figure.media-with-attribution) img{
-  margin-bottom:3rem;
-}
 [data-engrid-theme=wwf] .en__pgList{
   --radio_height:20px;
   --radio_width:20px;
@@ -8351,6 +8348,7 @@ body:not([data-engrid-debug]) #debug-bar{
     --radio_width:20px;
     --radio_box-shadow_selected:inset 0 0 0 3px #fff;
     --radio_border-width:1px;
+    --checkbox_content_checked:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='11' viewBox='0 0 20 15'%3E%3Cpath style='stroke:none;fill-rule:nonzero;fill:%23fff;fill-opacity:1' d='m12.75 6.117-5.914 6.117-5.5-5.687L0 7.93l3.418 3.535 3.418 3.539 6.582-6.813L20 1.383 18.664 0Zm0 0'/%3E%3C/svg%3E");
   }
   [data-engrid-theme=wwf] #engrid>.en__component--advrow,[data-engrid-theme=wwf] form>.en__component--advrow{
     grid-template-rows:[page-start page-alert-start] min-content [page-alert-end content-header-start] min-content [content-header-end body-headerOutside-start] min-content [body-headerOutside-end body-header-start] min-content [body-header-end body-banner-start] min-content [body-banner-end body-bannerOverlay-start] min-content [body-bannerOverlay-end body-title-start] min-content [body-title-end body-top-start] min-content [body-top-end body-side-start] min-content [body-side-end body-main-start] min-content [body-main-end body-bottom-start] min-content [body-bottom-end body-footer-start] min-content [body-footer-end body-footerOutside-start] min-content [body-footerOutside-end content-footerSpacer-start] minmax(0, 1fr) [content-footerSpacer-end content-preFooter-start] min-content [content-preFooter-end content-footer-start] min-content [content-footer-end page-backgroundImage-start] min-content [page-backgroundImage-end page-backgroundImageOverlay-start] min-content [page-backgroundImageOverlay-end page-end page-customCode-start] min-content [page-customCode-end];
