@@ -163,6 +163,29 @@
 
   // }
 
+  .page-alert,
+  .body-headerOutside,
+  .body-header,
+  .body-bannerOverlay,
+  .body-bottom,
+  .body-footer,
+  .body-footerOutside,
+  .content-footerSpacer,
+  .content-preFooter,
+  .page-backgroundImageOverlay {
+    display: none !important;
+  }
+
+  &#en__pagebuilder .body-title,
+  &#en__pagebuilder .body-main {
+    margin-top: 114px;
+  }
+
+  &#en__pagebuilder .content-header,
+  &#en__pagebuilder .content-footer {
+    display: none !important;
+  }
+
   // Base styling
   font-family: "Open Sans", sans-serif;
   color: #1f2937;
@@ -343,9 +366,9 @@
     margin-bottom: 0px;
   }
 
-  .body-main {
-    border: 1px solid #cccccc;
-  }
+  // .body-main {
+  //   border: 1px solid #cccccc;
+  // }
 
   /* All Opt-in Questions that are Radio Selects */
   .en__field--radio.en__field--question .en__field__element--radio {

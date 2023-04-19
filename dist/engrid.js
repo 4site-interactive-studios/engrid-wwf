@@ -17545,12 +17545,12 @@ class MobileCTA {
   }
 
   addEventListeners() {
-    const formBlock = document.querySelector(".body-main"); // Return early if formBlock is not found
+    const bodyMain = document.querySelector(".body-main"); // Return early if formBlock is not found
 
-    if (!formBlock) return; // Define a function to toggle the button visibility based on the formBlock position
+    if (!bodyMain) return; // Define a function to toggle the button visibility based on the bodyMain position
 
     const toggleButton = () => {
-      if (formBlock.getBoundingClientRect().top <= window.innerHeight - 100) {
+      if (bodyMain.getBoundingClientRect().top <= window.innerHeight - 100) {
         this.hideButton();
       } else {
         this.showButton();

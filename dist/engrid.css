@@ -7604,6 +7604,15 @@ body:not([data-engrid-debug]) #debug-bar{
   font-size:20px;
   line-height:32px;
 }
+[data-engrid-theme=wwf] .body-bannerOverlay,[data-engrid-theme=wwf] .body-bottom,[data-engrid-theme=wwf] .body-footer,[data-engrid-theme=wwf] .body-footerOutside,[data-engrid-theme=wwf] .body-header,[data-engrid-theme=wwf] .body-headerOutside,[data-engrid-theme=wwf] .content-footerSpacer,[data-engrid-theme=wwf] .content-preFooter,[data-engrid-theme=wwf] .page-alert,[data-engrid-theme=wwf] .page-backgroundImageOverlay{
+  display:none !important;
+}
+[data-engrid-theme=wwf]#en__pagebuilder .body-main,[data-engrid-theme=wwf]#en__pagebuilder .body-title{
+  margin-top:114px;
+}
+[data-engrid-theme=wwf]#en__pagebuilder .content-footer,[data-engrid-theme=wwf]#en__pagebuilder .content-header{
+  display:none !important;
+}
 [data-engrid-theme=wwf] .body-main{
   --p_font-size:17px;
   --p_line-height:27.2px;
@@ -7702,9 +7711,6 @@ body:not([data-engrid-debug]) #debug-bar{
 }
 [data-engrid-theme=wwf] .body-title>.en__component>:last-child{
   margin-bottom:0;
-}
-[data-engrid-theme=wwf] .body-main{
-  border:1px solid #ccc;
 }
 [data-engrid-theme=wwf] .en__field--radio.en__field--question .en__field__element--radio{
   align-items:self-start;
