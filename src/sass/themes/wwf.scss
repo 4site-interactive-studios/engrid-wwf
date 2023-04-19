@@ -472,9 +472,9 @@
     right: 20px;
     transform: scale(0.8);
 
-    &:not(.debug-panel--open) {
-      // background-color: #e98300;
-    }
+    // &:not(.debug-panel--open) {
+    //   // background-color: #e98300;
+    // }
 
     // @media screen and (max-height: 760px) {
     //   transform: scale(0.75);
@@ -491,8 +491,6 @@
 
   .en__component--widgetblock .enWidget--progressBar {
     padding: 1rem;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
     color: #ffffff;
     background-color: #275937;
     // border: 1px solid #6cc028;
@@ -729,9 +727,7 @@
   }
 
   // When the email field has a non-invalid error caused by FreshAddress, we want to keep the label in its normal color state
-  .en__field--emailAddress.en__field--validationFailed:not(
-      [data-freshaddress-safetosendstatus="invalid"]
-    )
+  .en__field--emailAddress.en__field--validationFailed:not([data-freshaddress-safetosendstatus="invalid"])
     > label {
     color: var(--label_color);
   }
@@ -1184,6 +1180,13 @@
   // }
 }
 
+.showif-mobile {
+  display: none;
+}
+.showif-desktop {
+  display: block;
+}
+
 /* Add your custom theme styles here */
 @mixin until-mobile-l {
   // STYLES
@@ -1226,6 +1229,21 @@
   .engrid-mobile-cta-container {
     bottom: 14px;
     width: calc(100% - 4rem - 20px - var(--launcher-width));
+  }
+  &[data-engrid-page-type="premiumgift"],
+  &[data-engrid-page-type="donation"] {
+    ul.nav-actions.-mobile {
+      display: none !important;
+    }
+    #header {
+      margin-bottom: 0 !important;
+    }
+  }
+  .showif-mobile {
+    display: block;
+  }
+  .showif-desktop {
+    display: none;
   }
 }
 
@@ -1375,11 +1393,11 @@
     padding-right: 1.5rem;
   }
 
-  .body-top {
-  }
+  // .body-top {
+  // }
 
-  .body-title {
-  }
+  // .body-title {
+  // }
 
   .body-main {
     border-left: none;
@@ -1390,8 +1408,8 @@
     margin-top: 0px;
   }
 
-  figure.media-with-attribution figattribution {
-  }
+  // figure.media-with-attribution figattribution {
+  // }
 
   .body-main .en__component--widgetblock:first-child {
     .enWidget--progressBar {
