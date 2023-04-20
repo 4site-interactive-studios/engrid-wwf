@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, April 20, 2023 @ 11:48:11 ET
- *  By: bryancasler
- *  ENGrid styles: v0.13.56
- *  ENGrid scripts: v0.13.55
+ *  Date: Thursday, April 20, 2023 @ 16:12:59 ET
+ *  By: fernando
+ *  ENGrid styles: v0.13.59
+ *  ENGrid scripts: v0.13.59
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -9693,7 +9693,9 @@ class App extends engrid_ENGrid {
 
     new DataLayer(); // Mobile CTA
 
-    new MobileCTA();
+    new MobileCTA(); // Live Frequency
+
+    new LiveFrequency();
     this.setDataAttributes(); //Debug panel
 
     if (this.options.Debug || window.sessionStorage.hasOwnProperty(DebugPanel.debugSessionStorageKey)) {
@@ -17576,10 +17578,120 @@ class MobileCTA {
   }
 
 }
+;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/live-frequency.js
+// This script creates merge tags: [[frequency]], [[Frequency]], or [[FREQUENCY]]
+// that gets replaced with the donation frequency
+// and can be used on any Code Block, Text Block, or Form Block
+
+class LiveFrequency {
+  constructor() {
+    this.logger = new EngridLogger("LiveFrequency", "#00ff00", "#000000", "🧾");
+    this.elementsFound = false;
+    this._amount = DonationAmount.getInstance();
+    this._frequency = DonationFrequency.getInstance();
+    this.searchElements();
+    if (!this.shouldRun()) return;
+    this.updateFrequency();
+    this.addEventListeners();
+  }
+
+  searchElements() {
+    const enElements = document.querySelectorAll(`
+      .en__component--copyblock,
+      .en__component--codeblock,
+      .en__field label,
+      .en__submit
+      `);
+
+    if (enElements.length > 0) {
+      const pattern = /\[\[(frequency)\]\]/gi;
+      let totalFound = 0;
+      enElements.forEach(item => {
+        const match = item.innerHTML.match(pattern);
+
+        if (item instanceof HTMLElement && match) {
+          this.elementsFound = true;
+          match.forEach(matchedSubstring => {
+            totalFound++;
+            this.replaceMergeTags(matchedSubstring, item);
+          });
+        }
+      });
+
+      if (totalFound > 0) {
+        this.logger.log(`Found ${totalFound} merge tag${totalFound > 1 ? "s" : ""} in the page.`);
+      }
+    }
+  }
+
+  shouldRun() {
+    return this.elementsFound;
+  }
+
+  addEventListeners() {
+    this._amount.onAmountChange.subscribe(() => {
+      setTimeout(() => {
+        this.updateFrequency();
+      }, 10);
+    });
+
+    this._frequency.onFrequencyChange.subscribe(() => {
+      setTimeout(() => {
+        this.searchElements();
+        this.updateFrequency();
+      }, 10);
+    });
+  }
+
+  updateFrequency() {
+    const frequency = this._frequency.frequency === "onetime" ? "" : this._frequency.frequency;
+    const elemenst = document.querySelectorAll(".engrid-frequency");
+    elemenst.forEach(item => {
+      if (item.classList.contains("engrid-frequency--lowercase")) {
+        item.innerHTML = frequency.toLowerCase();
+      } else if (item.classList.contains("engrid-frequency--capitalized")) {
+        item.innerHTML = frequency.charAt(0).toUpperCase() + frequency.slice(1);
+      } else if (item.classList.contains("engrid-frequency--uppercase")) {
+        item.innerHTML = frequency.toUpperCase();
+      } else {
+        item.innerHTML = frequency;
+      }
+    });
+  }
+
+  replaceMergeTags(tag, element) {
+    const frequency = this._frequency.frequency === "onetime" ? "" : this._frequency.frequency;
+    const frequencyElement = document.createElement("span");
+    frequencyElement.classList.add("engrid-frequency");
+    frequencyElement.innerHTML = frequency;
+
+    switch (tag) {
+      case "[[frequency]]":
+        frequencyElement.classList.add("engrid-frequency--lowercase");
+        frequencyElement.innerHTML = frequencyElement.innerHTML.toLowerCase();
+        element.innerHTML = element.innerHTML.replace(tag, frequencyElement.outerHTML);
+        break;
+
+      case "[[Frequency]]":
+        frequencyElement.classList.add("engrid-frequency--capitalized");
+        frequencyElement.innerHTML = frequencyElement.innerHTML.charAt(0).toUpperCase() + frequencyElement.innerHTML.slice(1);
+        element.innerHTML = element.innerHTML.replace(tag, frequencyElement.outerHTML);
+        break;
+
+      case "[[FREQUENCY]]":
+        frequencyElement.classList.add("engrid-frequency--uppercase");
+        frequencyElement.innerHTML = frequencyElement.innerHTML.toUpperCase();
+        element.innerHTML = element.innerHTML.replace(tag, frequencyElement.outerHTML);
+        break;
+    }
+  }
+
+}
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/version.js
 const AppVersion = "0.13.59";
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
+
 
 
 
@@ -17676,6 +17788,23 @@ const customScript = function (App, DonationFrequency) {
 
         default:
           otherAmount.placeholder = "Other";
+      }
+    } // Get selected payment method
+
+
+    const selectedPaymentMethod = document.querySelector("[name='transaction.giveBySelect']:checked"); // Get selected payment method value
+
+    const selectedPaymentMethodValue = selectedPaymentMethod ? selectedPaymentMethod.value : null;
+    const paypalOneTouch = document.querySelector("[name='transaction.giveBySelect'][value='paypaltouch'] + label");
+    const paypal = document.querySelector("[name='transaction.giveBySelect'][value='paypal'] + label");
+
+    if (App.isVisible(paypalOneTouch) && App.isVisible(paypal)) {
+      if (selectedPaymentMethodValue === "paypaltouch" && s === "monthly") {
+        paypal.click();
+      }
+
+      if (selectedPaymentMethodValue === "paypal" && s === "onetime") {
+        paypalOneTouch.click();
       }
     }
   });
