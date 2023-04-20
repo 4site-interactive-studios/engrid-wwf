@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, April 20, 2023 @ 03:27:39 ET
+ *  Date: Thursday, April 20, 2023 @ 11:48:11 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.56
  *  ENGrid scripts: v0.13.55
@@ -8260,7 +8260,7 @@ body:not([data-engrid-debug]) #debug-bar{
   grid-row:1 /  2;
 }
 [data-engrid-theme=wwf] .en__pgList[data-nogift] .en__pg:last-child .en__pg__display{
-  background-image:url(https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-gift_maximize-my-gift-placeholder.jpg?v=1680364148000);
+  background-image:url(https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/2401_Premiums_NoPremTiger_1050.jpg-250x250.jpg?v=1682005678000);
   background-position:50%;
   background-repeat:no-repeat;
   background-size:contain;
