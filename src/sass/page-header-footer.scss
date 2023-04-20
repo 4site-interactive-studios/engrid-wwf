@@ -403,6 +403,10 @@ body,
 
 #footer .gutter-top-in-fixed-3 {
   padding-top: 30px;
+
+  @media screen and (max-width: 600px) {
+    padding-top: 0px;
+  }
 }
 
 #footer .gutter-bottom-in-fixed-4 {
@@ -1656,7 +1660,7 @@ body,
       min-height: 50px;
       margin: 10px 0 10px 130px;
       h2 {
-        font-size: 60px;
+        font-size: 48px; // 60px;
         letter-spacing: -5px;
         font-weight: 700;
         color: #444;

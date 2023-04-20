@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, April 18, 2023 @ 19:38:51 ET
+ *  Date: Thursday, April 20, 2023 @ 03:20:59 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.56
  *  ENGrid scripts: v0.13.55
@@ -17514,7 +17514,7 @@ class MobileCTA {
     this.options = (_a = engrid_ENGrid.getOption("MobileCTA")) !== null && _a !== void 0 ? _a : false;
     this.buttonLabel = ""; // Return early if the options object is falsy or the current page type is not in the options.pages array
 
-    if (!this.options || !((_b = this.options.pages) === null || _b === void 0 ? void 0 : _b.includes(engrid_ENGrid.getPageType()))) return; // Set the button label using the options.label or the default value "Take Action"
+    if (!this.options || !((_b = this.options.pages) === null || _b === void 0 ? void 0 : _b.includes(engrid_ENGrid.getPageType())) || engrid_ENGrid.getPageNumber() !== 1) return; // Set the button label using the options.label or the default value "Take Action"
 
     this.buttonLabel = (_c = this.options.label) !== null && _c !== void 0 ? _c : "Take Action";
     this.renderButton();
@@ -17523,7 +17523,7 @@ class MobileCTA {
 
   renderButton() {
     const engridDiv = document.querySelector("#engrid");
-    const formBlock = document.querySelector(".en__component--formblock"); // Return early if engridDiv or formBlock are not found
+    const formBlock = document.querySelector(".body-main .en__component--widgetblock:first-child, .en__component--formblock"); // Return early if engridDiv or formBlock are not found
 
     if (!engridDiv || !formBlock) return;
     const buttonContainer = document.createElement("div");
