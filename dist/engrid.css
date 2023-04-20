@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, April 20, 2023 @ 03:20:59 ET
+ *  Date: Thursday, April 20, 2023 @ 03:26:21 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.56
  *  ENGrid scripts: v0.13.55
@@ -8437,6 +8437,12 @@ body:not([data-engrid-debug]) #debug-bar{
   color:var(--label_color);
   font-weight:var(--label_font-weight);
 }
+[data-engrid-theme=wwf] .showif-mobile{
+  display:none;
+}
+[data-engrid-theme=wwf] .showif-desktop{
+  display:block;
+}
 @media screen and (max-width:500px){
   [data-engrid-theme=wwf][data-engrid-layout=centerleft1col] .content-header{
     margin-bottom:40px;
@@ -8463,6 +8469,18 @@ body:not([data-engrid-debug]) #debug-bar{
     bottom:12px;
     left:calc(20px + 1rem);
     width:calc(100% - 40px - 3rem - var(--launcher-width));
+  }
+  [data-engrid-theme=wwf][data-engrid-page-type=donation] ul.nav-actions.-mobile,[data-engrid-theme=wwf][data-engrid-page-type=premiumgift] ul.nav-actions.-mobile{
+    display:none !important;
+  }
+  [data-engrid-theme=wwf][data-engrid-page-type=donation] #header,[data-engrid-theme=wwf][data-engrid-page-type=premiumgift] #header{
+    margin-bottom:0 !important;
+  }
+  [data-engrid-theme=wwf] .showif-mobile{
+    display:block;
+  }
+  [data-engrid-theme=wwf] .showif-desktop{
+    display:none;
   }
   [data-engrid-theme=wwf] iframe#launcher{
     margin-right:calc(20px + 1rem) !important;
