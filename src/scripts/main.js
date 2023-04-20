@@ -48,6 +48,28 @@ export const customScript = function (App, DonationFrequency) {
           otherAmount.placeholder = "Other";
       }
     }
+    // Get selected payment method
+    const selectedPaymentMethod = document.querySelector(
+      "[name='transaction.giveBySelect']:checked"
+    );
+    // Get selected payment method value
+    const selectedPaymentMethodValue = selectedPaymentMethod
+      ? selectedPaymentMethod.value
+      : null;
+    const paypalOneTouch = document.querySelector(
+      "[name='transaction.giveBySelect'][value='paypaltouch'] + label"
+    );
+    const paypal = document.querySelector(
+      "[name='transaction.giveBySelect'][value='paypal'] + label"
+    );
+    if (App.isVisible(paypalOneTouch) && App.isVisible(paypal)) {
+      if (selectedPaymentMethodValue === "paypaltouch" && s === "monthly") {
+        paypal.click();
+      }
+      if (selectedPaymentMethodValue === "paypal" && s === "onetime") {
+        paypalOneTouch.click();
+      }
+    }
   });
 
   const addMobilePhoneNotice = () => {
