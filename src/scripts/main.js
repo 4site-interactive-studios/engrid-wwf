@@ -29,6 +29,11 @@ export const customScript = function (App, DonationFrequency) {
     // inlineGiftAmountHeader.style.visibility='visible';
   }
 
+  // Legacy Gated Content Donwload Links
+  if (pageJson.pageNumber === 2) {
+    document.body.setAttribute("ty-asset-download-links", "true");
+  }
+
   // Add your client scripts here
   const freq = DonationFrequency.getInstance();
   freq.onFrequencyChange.subscribe((s) => {

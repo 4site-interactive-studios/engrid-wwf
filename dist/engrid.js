@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, April 21, 2023 @ 23:05:43 ET
- *  By: fernando
- *  ENGrid styles: v0.13.60
- *  ENGrid scripts: v0.13.60
+ *  Date: Friday, April 21, 2023 @ 10:23:28 ET
+ *  By: bryancasler
+ *  ENGrid styles: v0.13.56
+ *  ENGrid scripts: v0.13.55
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -17787,6 +17787,11 @@ const customScript = function (App, DonationFrequency) {
 
   if (inlineDonationAmountHeader && donationAmtField) {
     donationAmtField.insertAdjacentElement("afterbegin", inlineDonationAmountHeader); // inlineGiftAmountHeader.style.visibility='visible';
+  } // Legacy Gated Content Donwload Links
+
+
+  if (pageJson.pageNumber === 2) {
+    document.body.setAttribute("ty-asset-download-links", "true");
   } // Add your client scripts here
 
 
