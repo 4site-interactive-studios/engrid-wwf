@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, April 18, 2023 @ 19:38:51 ET
- *  By: bryancasler
- *  ENGrid styles: v0.13.56
- *  ENGrid scripts: v0.13.55
+ *  Date: Friday, April 21, 2023 @ 23:05:43 ET
+ *  By: fernando
+ *  ENGrid styles: v0.13.60
+ *  ENGrid scripts: v0.13.60
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -9693,7 +9693,9 @@ class App extends engrid_ENGrid {
 
     new DataLayer(); // Mobile CTA
 
-    new MobileCTA();
+    new MobileCTA(); // Live Frequency
+
+    new LiveFrequency();
     this.setDataAttributes(); //Debug panel
 
     if (this.options.Debug || window.sessionStorage.hasOwnProperty(DebugPanel.debugSessionStorageKey)) {
@@ -12210,13 +12212,19 @@ function remove(name, attributes) {
   }));
 }
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/translate-fields.js
+// Component to translate fields based on the country selected
+// It will also adapt the state field to the country selected
 
- // This class works when the user has added ".simple_country_select" as a class in page builder for the Country select
 
 class TranslateFields {
   constructor() {
-    this.countrySelect = document.querySelector("#en__field_supporter_country");
-    this.stateField = document.querySelector("#en__field_supporter_region");
+    this.countryToStateFields = {
+      "supporter.country": "supporter.region",
+      "transaction.shipcountry": "transaction.shipregion",
+      "supporter.billingCountry": "supporter.billingRegion",
+      "transaction.infcountry": "transaction.infreg"
+    };
+    this.countriesSelect = document.querySelectorAll('select[name="supporter.country"], select[name="transaction.shipcountry"], select[name="supporter.billingCountry"], select[name="transaction.infcountry"]');
     let options = "EngridTranslate" in window ? window.EngridTranslate : {};
     this.options = TranslateOptionsDefaults;
 
@@ -12226,53 +12234,59 @@ class TranslateFields {
       }
     }
 
-    if (this.countrySelect) {
-      this.countrySelect.addEventListener("change", this.translateFields.bind(this));
-      this.translateFields();
-    }
+    if (this.countriesSelect) {
+      this.countriesSelect.forEach(select => {
+        select.addEventListener("change", this.translateFields.bind(this, select.name));
+        const stateField = document.querySelector(`select[name="${this.countryToStateFields[select.name]}"]`);
 
-    if (this.stateField) {
-      this.stateField.addEventListener("change", this.rememberState.bind(this));
+        if (stateField) {
+          stateField.addEventListener("change", this.rememberState.bind(this, select.name));
+        }
+      });
+      this.translateFields("supporter.country");
     }
   }
 
   translateFields() {
+    let countryName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "supporter.country";
     this.resetTranslatedFields();
+    const countryValue = engrid_ENGrid.getFieldValue(countryName); // Translate the State Field
 
-    if (this.countrySelect.value in this.options) {
-      this.options[this.countrySelect.value].forEach(field => {
-        // console.log(field);
-        this.translateField(field.field, field.translation);
-      });
-    } // Translate the "To:"
+    this.setStateField(countryValue, this.countryToStateFields[countryName]);
+
+    if (countryName === "supporter.country") {
+      if (countryValue in this.options) {
+        this.options[countryValue].forEach(field => {
+          // console.log(field);
+          this.translateField(field.field, field.translation);
+        });
+      } // Translate the "To:"
 
 
-    const recipient_block = document.querySelectorAll(".recipient-block");
+      const recipient_block = document.querySelectorAll(".recipient-block");
 
-    if (!!recipient_block.length) {
-      switch (this.countrySelect.value) {
-        case "FR":
-        case "FRA":
-        case "France":
-          recipient_block.forEach(elem => elem.innerHTML = "À:");
-          break;
+      if (!!recipient_block.length) {
+        switch (countryValue) {
+          case "FR":
+          case "FRA":
+          case "France":
+            recipient_block.forEach(elem => elem.innerHTML = "À:");
+            break;
 
-        case "DE":
-        case "DEU":
-        case "Germany":
-          recipient_block.forEach(elem => elem.innerHTML = "Zu:");
-          break;
+          case "DE":
+          case "DEU":
+          case "Germany":
+            recipient_block.forEach(elem => elem.innerHTML = "Zu:");
+            break;
 
-        case "NL":
-        case "NLD":
-        case "Netherlands":
-          recipient_block.forEach(elem => elem.innerHTML = "Aan:");
-          break;
+          case "NL":
+          case "NLD":
+          case "Netherlands":
+            recipient_block.forEach(elem => elem.innerHTML = "Aan:");
+            break;
+        }
       }
-    } // Translate the State Field
-
-
-    this.setStateField(this.countrySelect.value);
+    }
   }
 
   translateField(name, translation) {
@@ -12284,8 +12298,8 @@ class TranslateFields {
       if (fieldWrapper) {
         const fieldLabel = fieldWrapper.querySelector(".en__field__label"); // Check if there's the simple country select class
 
-        const simpleCountrySelect = fieldLabel.querySelector(".engrid-simple-country");
-        let simpleCountrySelectClone = simpleCountrySelect ? simpleCountrySelect.cloneNode(true) : null;
+        const simplecountriesSelect = fieldLabel.querySelector(".engrid-simple-country");
+        let simplecountriesSelectClone = simplecountriesSelect ? simplecountriesSelect.cloneNode(true) : null;
 
         if (field instanceof HTMLInputElement && field.placeholder != "") {
           if (!fieldLabel || fieldLabel.innerHTML == field.placeholder) {
@@ -12298,8 +12312,8 @@ class TranslateFields {
           fieldLabel.dataset.original = fieldLabel.innerHTML;
           fieldLabel.innerHTML = translation;
 
-          if (simpleCountrySelectClone) {
-            fieldLabel.appendChild(simpleCountrySelectClone);
+          if (simplecountriesSelectClone) {
+            fieldLabel.appendChild(simplecountriesSelectClone);
           }
         }
       }
@@ -12313,12 +12327,12 @@ class TranslateFields {
         field.placeholder = field.dataset.original;
       } else {
         // Check if there's the simple country select class
-        const simpleCountrySelect = field.querySelector(".engrid-simple-country");
-        let simpleCountrySelectClone = simpleCountrySelect ? simpleCountrySelect.cloneNode(true) : null;
+        const simplecountriesSelect = field.querySelector(".engrid-simple-country");
+        let simplecountriesSelectClone = simplecountriesSelect ? simplecountriesSelect.cloneNode(true) : null;
         field.innerHTML = field.dataset.original;
 
-        if (simpleCountrySelectClone) {
-          field.appendChild(simpleCountrySelectClone);
+        if (simplecountriesSelectClone) {
+          field.appendChild(simplecountriesSelectClone);
         }
       }
 
@@ -12326,41 +12340,41 @@ class TranslateFields {
     });
   }
 
-  setStateField(country) {
+  setStateField(country, state) {
     switch (country) {
       case "BR":
       case "BRA":
       case "Brazil":
-        this.setStateValues("Estado", null);
+        this.setStateValues(state, "Estado", null);
         break;
 
       case "FR":
       case "FRA":
       case "France":
-        this.setStateValues("Région", null);
+        this.setStateValues(state, "Région", null);
         break;
 
       case "GB":
       case "GBR":
       case "United Kingdom":
-        this.setStateValues("State/Region", null);
+        this.setStateValues(state, "State/Region", null);
         break;
 
       case "DE":
       case "DEU":
       case "Germany":
-        this.setStateValues("Bundesland", null);
+        this.setStateValues(state, "Bundesland", null);
         break;
 
       case "NL":
       case "NLD":
       case "Netherlands":
-        this.setStateValues("Provincie", null);
+        this.setStateValues(state, "Provincie", null);
         break;
 
       case "AU":
       case "AUS":
-        this.setStateValues("Province / State", [{
+        this.setStateValues(state, "Province / State", [{
           label: "Select",
           value: ""
         }, {
@@ -12391,7 +12405,7 @@ class TranslateFields {
         break;
 
       case "Australia":
-        this.setStateValues("Province / State", [{
+        this.setStateValues(state, "Province / State", [{
           label: "Select",
           value: ""
         }, {
@@ -12423,7 +12437,7 @@ class TranslateFields {
 
       case "US":
       case "USA":
-        this.setStateValues("State", [{
+        this.setStateValues(state, "State", [{
           label: "Select State",
           value: ""
         }, {
@@ -12583,7 +12597,7 @@ class TranslateFields {
         break;
 
       case "United States":
-        this.setStateValues("State", [{
+        this.setStateValues(state, "State", [{
           label: "Select State",
           value: ""
         }, {
@@ -12744,7 +12758,7 @@ class TranslateFields {
 
       case "CA":
       case "CAN":
-        this.setStateValues("Province / Territory", [{
+        this.setStateValues(state, "Province / Territory", [{
           label: "Select",
           value: ""
         }, {
@@ -12790,7 +12804,7 @@ class TranslateFields {
         break;
 
       case "Canada":
-        this.setStateValues("Province / Territory", [{
+        this.setStateValues(state, "Province / Territory", [{
           label: "Select",
           value: ""
         }, {
@@ -12837,7 +12851,7 @@ class TranslateFields {
 
       case "MX":
       case "MEX":
-        this.setStateValues("Estado", [{
+        this.setStateValues(state, "Estado", [{
           label: "Seleccione Estado",
           value: ""
         }, {
@@ -12937,7 +12951,7 @@ class TranslateFields {
         break;
 
       case "Mexico":
-        this.setStateValues("Estado", [{
+        this.setStateValues(state, "Estado", [{
           label: "Seleccione Estado",
           value: ""
         }, {
@@ -13037,13 +13051,13 @@ class TranslateFields {
         break;
 
       default:
-        this.setStateValues("Province / State", null);
+        this.setStateValues(state, "Province / State", null);
         break;
     }
   }
 
-  setStateValues(label, values) {
-    const stateField = document.querySelector("#en__field_supporter_region");
+  setStateValues(state, label, values) {
+    const stateField = engrid_ENGrid.getField(state);
     const stateWrapper = stateField ? stateField.closest(".en__field") : null;
 
     if (stateWrapper) {
@@ -13055,12 +13069,12 @@ class TranslateFields {
       }
 
       if (elementWrapper) {
-        const selectedState = get("engrid-state");
+        const selectedState = get(`engrid-state-${state}`);
 
         if (values === null || values === void 0 ? void 0 : values.length) {
           const select = document.createElement("select");
-          select.name = "supporter.region";
-          select.id = "en__field_supporter_region";
+          select.name = state;
+          select.id = "en__field_" + state.toLowerCase().replace(".", "_");
           select.classList.add("en__field__input");
           select.classList.add("en__field__input--select");
           select.autocomplete = "address-level1";
@@ -13077,14 +13091,14 @@ class TranslateFields {
           });
           elementWrapper.innerHTML = "";
           elementWrapper.appendChild(select);
-          select.addEventListener("change", this.rememberState.bind(this));
+          select.addEventListener("change", this.rememberState.bind(this, state));
         } else {
           elementWrapper.innerHTML = "";
           const input = document.createElement("input");
           input.type = "text";
-          input.name = "supporter.region";
+          input.name = state;
           input.placeholder = label;
-          input.id = "en__field_supporter_region";
+          input.id = "en__field_" + state.toLowerCase().replace(".", "_");
           input.classList.add("en__field__input");
           input.classList.add("en__field__input--text");
           input.autocomplete = "address-level1";
@@ -13094,17 +13108,17 @@ class TranslateFields {
           }
 
           elementWrapper.appendChild(input);
-          input.addEventListener("change", this.rememberState.bind(this));
+          input.addEventListener("change", this.rememberState.bind(this, state));
         }
       }
     }
   }
 
-  rememberState() {
-    const stateField = document.querySelector("#en__field_supporter_region");
+  rememberState(state) {
+    const stateField = engrid_ENGrid.getField(state);
 
     if (stateField) {
-      set("engrid-state", stateField.value, {
+      set(`engrid-state-${stateField.name}`, stateField.value, {
         expires: 1,
         sameSite: "none",
         secure: true
@@ -17263,16 +17277,18 @@ class BrandingHtml {
 class CountryDisable {
   constructor() {
     this.logger = new EngridLogger("CountryDisable", "#f0f0f0", "#333333", "🌎");
-    const country = engrid_ENGrid.getField("supporter.country");
+    const countries = document.querySelectorAll('select[name="supporter.country"], select[name="transaction.shipcountry"], select[name="supporter.billingCountry"], select[name="transaction.infcountry"]');
     const CountryDisable = engrid_ENGrid.getOption("CountryDisable"); // Remove the countries from the dropdown list
 
-    if (country && CountryDisable.length > 0) {
+    if (countries.length > 0 && CountryDisable.length > 0) {
       const countriesLower = CountryDisable.map(country => country.toLowerCase());
-      country.querySelectorAll("option").forEach(option => {
-        if (countriesLower.includes(option.value.toLowerCase()) || countriesLower.includes(option.text.toLowerCase())) {
-          this.logger.log(`Removing ${option.text}`);
-          option.remove();
-        }
+      countries.forEach(country => {
+        country.querySelectorAll("option").forEach(option => {
+          if (countriesLower.includes(option.value.toLowerCase()) || countriesLower.includes(option.text.toLowerCase())) {
+            this.logger.log(`Removing ${option.text} from ${country.getAttribute("name")}`);
+            option.remove();
+          }
+        });
       });
     }
   }
@@ -17576,10 +17592,125 @@ class MobileCTA {
   }
 
 }
+;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/live-frequency.js
+// This script creates merge tags: [[frequency]], [[Frequency]], or [[FREQUENCY]]
+// that gets replaced with the donation frequency
+// and can be used on any Code Block, Text Block, or Form Block
+
+class LiveFrequency {
+  constructor() {
+    this.logger = new EngridLogger("LiveFrequency", "#00ff00", "#000000", "🧾");
+    this.elementsFound = false;
+    this._amount = DonationAmount.getInstance();
+    this._frequency = DonationFrequency.getInstance();
+    this.searchElements();
+    if (!this.shouldRun()) return;
+    this.updateFrequency();
+    this.addEventListeners();
+  }
+
+  searchElements() {
+    const enElements = document.querySelectorAll(`
+      .en__component--copyblock,
+      .en__component--codeblock,
+      .en__field label,
+      .en__submit
+      `);
+
+    if (enElements.length > 0) {
+      const pattern = /\[\[(frequency)\]\]/gi;
+      let totalFound = 0;
+      enElements.forEach(item => {
+        const match = item.innerHTML.match(pattern);
+
+        if (item instanceof HTMLElement && match) {
+          this.elementsFound = true;
+          match.forEach(matchedSubstring => {
+            totalFound++;
+            this.replaceMergeTags(matchedSubstring, item);
+          });
+        }
+      });
+
+      if (totalFound > 0) {
+        this.logger.log(`Found ${totalFound} merge tag${totalFound > 1 ? "s" : ""} in the page.`);
+      }
+    }
+  }
+
+  shouldRun() {
+    if (!this.elementsFound) {
+      this.logger.log("No merge tags found. Skipping.");
+      return false;
+    }
+
+    return true;
+  }
+
+  addEventListeners() {
+    this._amount.onAmountChange.subscribe(() => {
+      setTimeout(() => {
+        this.updateFrequency();
+      }, 10);
+    });
+
+    this._frequency.onFrequencyChange.subscribe(() => {
+      setTimeout(() => {
+        this.searchElements();
+        this.updateFrequency();
+      }, 10);
+    });
+  }
+
+  updateFrequency() {
+    const frequency = this._frequency.frequency === "onetime" ? "" : this._frequency.frequency;
+    const elemenst = document.querySelectorAll(".engrid-frequency");
+    elemenst.forEach(item => {
+      if (item.classList.contains("engrid-frequency--lowercase")) {
+        item.innerHTML = frequency.toLowerCase();
+      } else if (item.classList.contains("engrid-frequency--capitalized")) {
+        item.innerHTML = frequency.charAt(0).toUpperCase() + frequency.slice(1);
+      } else if (item.classList.contains("engrid-frequency--uppercase")) {
+        item.innerHTML = frequency.toUpperCase();
+      } else {
+        item.innerHTML = frequency;
+      }
+    });
+  }
+
+  replaceMergeTags(tag, element) {
+    const frequency = this._frequency.frequency === "onetime" ? "" : this._frequency.frequency;
+    const frequencyElement = document.createElement("span");
+    frequencyElement.classList.add("engrid-frequency");
+    frequencyElement.innerHTML = frequency;
+
+    switch (tag) {
+      case "[[frequency]]":
+        frequencyElement.classList.add("engrid-frequency--lowercase");
+        frequencyElement.innerHTML = frequencyElement.innerHTML.toLowerCase();
+        element.innerHTML = element.innerHTML.replace(tag, frequencyElement.outerHTML);
+        break;
+
+      case "[[Frequency]]":
+        frequencyElement.classList.add("engrid-frequency--capitalized");
+        frequencyElement.innerHTML = frequencyElement.innerHTML.charAt(0).toUpperCase() + frequencyElement.innerHTML.slice(1);
+        element.innerHTML = element.innerHTML.replace(tag, frequencyElement.outerHTML);
+        break;
+
+      case "[[FREQUENCY]]":
+        frequencyElement.classList.add("engrid-frequency--uppercase");
+        frequencyElement.innerHTML = frequencyElement.innerHTML.toUpperCase();
+        element.innerHTML = element.innerHTML.replace(tag, frequencyElement.outerHTML);
+        break;
+    }
+  }
+
+}
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/version.js
-const AppVersion = "0.13.59";
+const AppVersion = "0.13.60";
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
+
 
 
 
@@ -17676,6 +17807,23 @@ const customScript = function (App, DonationFrequency) {
 
         default:
           otherAmount.placeholder = "Other";
+      }
+    } // Get selected payment method
+
+
+    const selectedPaymentMethod = document.querySelector("[name='transaction.giveBySelect']:checked"); // Get selected payment method value
+
+    const selectedPaymentMethodValue = selectedPaymentMethod ? selectedPaymentMethod.value : null;
+    const paypalOneTouch = document.querySelector("[name='transaction.giveBySelect'][value='paypaltouch'] + label");
+    const paypal = document.querySelector("[name='transaction.giveBySelect'][value='paypal'] + label");
+
+    if (App.isVisible(paypalOneTouch) && App.isVisible(paypal)) {
+      if (selectedPaymentMethodValue === "paypaltouch" && s === "monthly") {
+        paypal.click();
+      }
+
+      if (selectedPaymentMethodValue === "paypal" && s === "onetime") {
+        paypalOneTouch.click();
       }
     }
   });
