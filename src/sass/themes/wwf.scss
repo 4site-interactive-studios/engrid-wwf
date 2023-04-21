@@ -301,7 +301,8 @@
     margin-block-end: 1em;
 
     .click-to-expand-cta {
-      margin-left: var(--fields_spacing-inline);
+      // margin-left: var(--fields_spacing-inline);
+      margin: 0;
     }
 
     .click-to-expand-text-wrapper {
@@ -365,6 +366,16 @@
 
   .body-title > .en__component > *:first-child {
     margin-top: 0px;
+  }
+
+  // Aligns the top of the title with the top of the main-body column
+  @media screen and (min-width: 1000px) {
+    &[data-engrid-layout="centercenter2col"]
+      .body-title
+      > .en__component
+      > *:first-child {
+      margin-top: -10px;
+    }
   }
 
   .body-title > .en__component > *:last-child {
@@ -579,12 +590,18 @@
     }
   }
 
-  //@TODO This should probably go in ENgrid scripts where we define the negative margin on .en__component--formblock
-  .en__component--copyblock {
-    margin-left: calc(var(--fields_spacing-inline) * -1);
-    margin-right: calc(var(--fields_spacing-inline) * -1);
-    padding-left: var(--fields_spacing-inline);
-    padding-right: var(--fields_spacing-inline);
+  @media screen and (min-width: 1024px) {
+    .en__component--copyblock > * {
+      padding-left: var(--fields_spacing-inline);
+      padding-right: var(--fields_spacing-inline);
+      margin-left: calc(var(--fields_spacing-inline) * -1);
+      margin-right: calc(var(--fields_spacing-inline) * -1);
+    }
+  }
+  @media screen and (max-width: 1023px) {
+    .body-main {
+      --engrid__body-main_padding: 26px 0px 20px 0px;
+    }
   }
 
   #en__upsellModal {
@@ -1529,7 +1546,7 @@
     margin: 15px 0 0;
   }
 
-  @media screen and (max-width: 1024px) {
+  @media screen and (max-width: 1023px) {
     .wallpapers > div {
       flex-basis: calc(25% - 0.75rem);
     }
@@ -1584,6 +1601,7 @@
   }
 }
 
+// @TODO This can't be right
 @media screen and (max-width: 1024px) and (min-width: 1024px) {
   .inline-upsell-box svg {
     margin-left: 36px;
@@ -1603,6 +1621,7 @@
     }
     #header {
       margin-bottom: 0 !important;
+      border-bottom: 1px solid #cccccc;
     }
   }
 
@@ -1611,13 +1630,44 @@
   }
 }
 
-@media screen and (max-width: 1024px) {
+&[data-engrid-embedded="true"] {
+  @media screen and (max-width: 1024px) {
+    --engrid__body_margin: 0px;
+  }
+
+  --engrid__body-main_margin: 0;
+  // --engrid__body-main_padding: 13px 0px;
+  --engrid__body-banner_padding: 0px;
+  --engrid__body-title_padding: 0px;
+  --engrid__body-top_padding: 0px;
+
+  // .content-header,
+  // .content-footer {
+  //   display: none;
+  // }
+
+  .body-title,
+  .body-banner,
+  .body-top {
+    margin-left: 0;
+  }
+
+  @media screen and (max-width: 1023px) {
+    .body-title,
+    .body-banner,
+    .body-top {
+      margin-right: 0;
+    }
+  }
+}
+
+@media screen and (max-width: 1023px) {
   &:not(#en__pagebuilder):not([data-engrid-debug]) .showif-desktop {
     display: none;
   }
 }
 
-@media screen and (min-width: 1024px) {
+@media screen and (min-width: 1023px) {
   &:not(#en__pagebuilder):not([data-engrid-debug]) .showif-mobile {
     display: none;
   }
