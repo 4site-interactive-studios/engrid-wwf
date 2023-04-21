@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, April 21, 2023 @ 13:30:56 ET
+ *  Date: Friday, April 21, 2023 @ 15:05:23 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.56
  *  ENGrid scripts: v0.13.55
@@ -7795,9 +7795,10 @@ body:not([data-engrid-debug]) #debug-bar{
   padding-top:26px;
 }
 [data-engrid-theme=wwf] .debug-panel{
-  bottom:70px;
-  right:20px;
+  bottom:14px;
+  left:14px;
   transform:scale(.8);
+  transform-origin:bottom left;
 }
 [data-engrid-theme=wwf] .en__component--widgetblock .enWidget--progressBar{
   background-color:#275937;
