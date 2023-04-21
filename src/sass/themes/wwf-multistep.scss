@@ -18,13 +18,17 @@
 
 &#en__pagebuilder,
 &:not(#en__pagebuilder):not([data-engrid-embedded]) {
-  .en__component--row {
+  #engrid > .en__component--row {
     width: 430px;
     padding-left: 40px;
     padding-right: 40px;
     background-color: #ffffff;
     margin-left: auto;
     margin-right: auto;
+    .en__component {
+      width: 100%;
+      padding: 0;
+    }
   }
 }
 @keyframes float {
