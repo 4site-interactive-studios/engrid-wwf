@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, April 21, 2023 @ 17:11:09 ET
- *  By: bryancasler
- *  ENGrid styles: v0.13.56
- *  ENGrid scripts: v0.13.55
+ *  Date: Friday, April 21, 2023 @ 16:39:52 ET
+ *  By: fernando
+ *  ENGrid styles: v0.13.60
+ *  ENGrid scripts: v0.13.60
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -17663,7 +17663,7 @@ class LiveFrequency {
   }
 
   updateFrequency() {
-    const frequency = this._frequency.frequency === "onetime" ? "" : this._frequency.frequency;
+    const frequency = this._frequency.frequency === "onetime" ? "one-time" : this._frequency.frequency;
     const elemenst = document.querySelectorAll(".engrid-frequency");
     elemenst.forEach(item => {
       if (item.classList.contains("engrid-frequency--lowercase")) {
@@ -17679,7 +17679,7 @@ class LiveFrequency {
   }
 
   replaceMergeTags(tag, element) {
-    const frequency = this._frequency.frequency === "onetime" ? "" : this._frequency.frequency;
+    const frequency = this._frequency.frequency === "onetime" ? "one-time" : this._frequency.frequency;
     const frequencyElement = document.createElement("span");
     frequencyElement.classList.add("engrid-frequency");
     frequencyElement.innerHTML = frequency;

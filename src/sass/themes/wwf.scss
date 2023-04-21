@@ -182,14 +182,16 @@
     display: none !important;
   }
 
-  &#en__pagebuilder .body-title,
-  &#en__pagebuilder .body-main {
-    margin-top: 114px;
-  }
+  &:not([data-engrid-subtheme="multistep"]) {
+    &#en__pagebuilder .body-title,
+    &#en__pagebuilder .body-main {
+      margin-top: 114px;
+    }
 
-  &#en__pagebuilder .content-header,
-  &#en__pagebuilder .content-footer {
-    display: none !important;
+    &#en__pagebuilder .content-header,
+    &#en__pagebuilder .content-footer {
+      display: none !important;
+    }
   }
 
   // Base styling
@@ -868,9 +870,7 @@
   }
 
   // When the email field has a non-invalid error caused by FreshAddress, we want to keep the label in its normal color state
-  .en__field--emailAddress.en__field--validationFailed:not(
-      [data-freshaddress-safetosendstatus="invalid"]
-    )
+  .en__field--emailAddress.en__field--validationFailed:not([data-freshaddress-safetosendstatus="invalid"])
     > label {
     color: var(--label_color);
   }
@@ -1096,9 +1096,7 @@
   // }
 
   // On premium pages, when the visitor is not in the US, hide the premium gift options other than the no gift option
-  &:not([data-engrid-demo])[data-engrid-page-type="premiumgift"]:not(
-      [data-engrid-country="US"]
-    )
+  &:not([data-engrid-demo])[data-engrid-page-type="premiumgift"]:not([data-engrid-country="US"])
     .en__pgList[data-nogift] {
     // Force the no gift option to always appear selected
     .en__pg__select input:before {
@@ -1334,7 +1332,6 @@
     display: inline-block;
     margin: 0;
     --submit__button_font-size: 12px;
-    padding: 0;
     height: 46px;
     --submit__button_background-color: #e98300;
     min-width: max-content;
@@ -1449,7 +1446,6 @@
     font-size: var(--h2_font-size);
     font-weight: var(--h2_font-weight);
     line-height: var(--h2_line-height);
-    margin-bottom: calc(1rem * var(--scale-down_20pct));
     margin-top: calc(2rem * var(--scale-down_20pct));
     text-transform: var(--h2_text-transform);
     margin-bottom: 0;

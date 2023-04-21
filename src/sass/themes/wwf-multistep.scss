@@ -1,6 +1,8 @@
 & {
   .body-main {
     border: 0;
+    margin: 0;
+    padding: 0;
   }
   .radio-to-buttons_donationAmt .en__field--donationAmt {
     .en__field__item--other:before {
@@ -669,6 +671,8 @@
       flex-basis: 100%;
       margin-left: 0;
       margin-right: 0;
+      margin-top: 0;
+      padding-top: 0;
       position: relative;
       top: -10px;
 
