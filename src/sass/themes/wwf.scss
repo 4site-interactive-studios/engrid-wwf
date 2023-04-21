@@ -168,7 +168,6 @@
   //   + .en__field__label:before {
 
   // }
-
   .page-alert,
   .body-headerOutside,
   .body-header,
@@ -271,7 +270,7 @@
     .en__field__label--item:after {
     opacity: 1;
     position: relative;
-    top: 2px;
+    // top: 2px;
     font-size: 19px;
     line-height: 19px;
   }
@@ -815,6 +814,8 @@
     padding: 0 3rem 1.75rem 3rem;
     display: flex;
     flex-direction: column;
+    margin-left: 0;
+    margin-right: 0;
 
     &.align-items_center {
       align-items: center;
@@ -870,7 +871,9 @@
   }
 
   // When the email field has a non-invalid error caused by FreshAddress, we want to keep the label in its normal color state
-  .en__field--emailAddress.en__field--validationFailed:not([data-freshaddress-safetosendstatus="invalid"])
+  .en__field--emailAddress.en__field--validationFailed:not(
+      [data-freshaddress-safetosendstatus="invalid"]
+    )
     > label {
     color: var(--label_color);
   }
@@ -939,7 +942,7 @@
     .en__field__element--radio {
       --fields_spacing-inline: 0.9rem;
       --fields_spacing-block: 1.2rem;
-      --donation-amount__button_padding: 1ch 1.2ch;
+      --donation-amount__button_padding: 1ch calc(1.2ch - 38px);
     }
 
     input[type="radio"] + label {
@@ -1012,11 +1015,15 @@
     label {
       padding-left: 8px;
       padding-right: 8px;
+      margin-left: -8px;
+      margin-right: -8px;
     }
 
-    .en__field__element--radio {
-      margin-left: -21px;
-      margin-right: -21px;
+    @media screen and (min-width: 601px) {
+      .en__field__element--radio {
+        margin-left: -21px;
+        margin-right: -21px;
+      }
     }
 
     .inline-upsell-box {
@@ -1096,7 +1103,9 @@
   // }
 
   // On premium pages, when the visitor is not in the US, hide the premium gift options other than the no gift option
-  &:not([data-engrid-demo])[data-engrid-page-type="premiumgift"]:not([data-engrid-country="US"])
+  &:not([data-engrid-demo])[data-engrid-page-type="premiumgift"]:not(
+      [data-engrid-country="US"]
+    )
     .en__pgList[data-nogift] {
     // Force the no gift option to always appear selected
     .en__pg__select input:before {
@@ -1598,6 +1607,10 @@
 }
 
 @media screen and (max-width: 768px) {
+  .radio-to-buttons_donationAmt {
+    --donation-amount__button_count: 2;
+  }
+
   .engrid-mobile-cta-container {
     bottom: 12px;
     width: calc(100% - 40px - 3rem - var(--launcher-width));
@@ -1711,10 +1724,6 @@
 
   figure.media-with-attribution {
     margin-bottom: 3rem;
-  }
-
-  .radio-to-buttons_donationAmt {
-    --donation-amount__button_count: 2;
   }
 
   &[data-engrid-transaction-recurring-frequency]
