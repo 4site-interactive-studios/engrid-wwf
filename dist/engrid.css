@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, April 21, 2023 @ 10:23:28 ET
+ *  Date: Friday, April 21, 2023 @ 12:58:11 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.56
  *  ENGrid scripts: v0.13.55
@@ -7711,7 +7711,7 @@ body:not([data-engrid-debug]) #debug-bar{
   margin-top:120px;
 }
 [data-engrid-theme=wwf] .body-title>.en__component>:first-child{
-  margin-top:-10px;
+  margin-top:0;
 }
 [data-engrid-theme=wwf] .body-title>.en__component>:last-child{
   margin-bottom:0;
@@ -8502,6 +8502,9 @@ body:not([data-engrid-debug]) #debug-bar{
     flex:0 0 100%;
   }
 }
+[data-engrid-theme=wwf] .wallpapers{
+  margin-bottom:1rem;
+}
 [data-engrid-theme=wwf] .wallpapers a{
   color:#006ea5;
   font-size:14px;
@@ -8552,6 +8555,16 @@ body:not([data-engrid-debug]) #debug-bar{
   font-size:16px;
   margin:15px 0 0;
 }
+@media screen and (max-width:1024px){
+  [data-engrid-theme=wwf] .wallpapers>div{
+    flex-basis:calc(25% - 0.75rem);
+  }
+}
+@media screen and (max-width:600px){
+  [data-engrid-theme=wwf] .wallpapers>div>span{
+    display:none;
+  }
+}
 [data-engrid-theme=wwf] p.difficulty{
   background-color:#000;
   bottom:30px;
@@ -8560,14 +8573,6 @@ body:not([data-engrid-debug]) #debug-bar{
   padding:5px 10px;
   position:absolute;
   text-transform:uppercase;
-}
-@media screen and (max-width:600px){
-  [data-engrid-theme=wwf] .wallpapers>div{
-    flex-basis:calc(50% - 0.5rem);
-  }
-}
-[data-engrid-theme=wwf] .showif-mobile{
-  display:none;
 }
 @media screen and (max-width:500px){
   [data-engrid-theme=wwf][data-engrid-layout=centerleft1col] .content-header{
@@ -8602,11 +8607,13 @@ body:not([data-engrid-debug]) #debug-bar{
   [data-engrid-theme=wwf][data-engrid-page-type=donation] #header,[data-engrid-theme=wwf][data-engrid-page-type=premiumgift] #header{
     margin-bottom:0 !important;
   }
-  [data-engrid-theme=wwf] .showif-desktop{
-    display:none;
-  }
   [data-engrid-theme=wwf] iframe#launcher{
     margin-right:calc(20px + 1rem) !important;
+  }
+}
+@media screen and (min-width:1024px){
+  [data-engrid-theme=wwf] .showif-desktop,[data-engrid-theme=wwf] .showif-mobile{
+    display:none;
   }
 }
 @media screen and (max-width:600px){

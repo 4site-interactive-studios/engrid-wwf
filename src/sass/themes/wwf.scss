@@ -364,7 +364,7 @@
   }
 
   .body-title > .en__component > *:first-child {
-    margin-top: -10px;
+    margin-top: 0px;
   }
 
   .body-title > .en__component > *:last-child {
@@ -1452,6 +1452,10 @@
     }
   }
 
+  .wallpapers {
+    margin-bottom: 1rem;
+  }
+
   .wallpapers a {
     color: #006ea5;
     font-size: 14px;
@@ -1516,6 +1520,18 @@
     margin: 15px 0 0;
   }
 
+  @media screen and (max-width: 1024px) {
+    .wallpapers > div {
+      flex-basis: calc(25% - 0.75rem);
+    }
+  }
+
+  @media screen and (max-width: 600px) {
+    .wallpapers > div > span {
+      display: none;
+    }
+  }
+
   p.difficulty {
     position: absolute;
     bottom: 30px;
@@ -1525,16 +1541,6 @@
     text-transform: uppercase;
     font-size: 14px;
   }
-
-  @media screen and (max-width: 600px) {
-    .wallpapers > div {
-      flex-basis: calc(50% - 0.5rem);
-    }
-  }
-}
-
-.showif-mobile {
-  display: none;
 }
 
 /* Add your custom theme styles here */
@@ -1590,12 +1596,21 @@
       margin-bottom: 0 !important;
     }
   }
-  .showif-desktop {
-    display: none;
-  }
 
   iframe#launcher {
     margin-right: calc(20px + 1rem) !important;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .showif-desktop {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .showif-mobile {
+    display: none;
   }
 }
 
