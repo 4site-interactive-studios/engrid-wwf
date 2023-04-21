@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, April 21, 2023 @ 15:05:23 ET
+ *  Date: Friday, April 21, 2023 @ 16:56:44 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.56
  *  ENGrid scripts: v0.13.55
@@ -8088,7 +8088,9 @@ body:not([data-engrid-debug]) #debug-bar{
   display:flex;
   font-style:italic;
   justify-content:center;
-  margin-bottom:1.25rem;
+  margin-left:8px;
+  margin-right:8px;
+  margin-top:1.75rem;
   min-height:88px;
   padding:1rem 1ch;
   text-align:center;
@@ -8108,7 +8110,7 @@ body:not([data-engrid-debug]) #debug-bar{
   height:80px;
   margin-left:53px;
   position:absolute;
-  top:-24px;
+  top:1px;
   width:40px;
 }
 [data-engrid-theme=wwf] figure.media-with-attribution{
@@ -8183,10 +8185,7 @@ body:not([data-engrid-debug]) #debug-bar{
   --fields_spacing-block:0;
   --recurring-frequency__button_padding:1.5ch 1.2ch;
   flex-basis:calc(100% + 44px);
-  margin-left:-12px;
-  margin-right:-12px;
-  margin-top:-27px;
-  padding-bottom:27px;
+  margin:-27px -12px 18px;
 }
 [data-engrid-theme=wwf] .radio-to-buttons_recurrfreq.radio-to-buttons_recurrfreq_to-tabs .en__field--recurrfreq label{
   padding-left:8px;
@@ -8201,11 +8200,7 @@ body:not([data-engrid-debug]) #debug-bar{
   }
 }
 @media screen and (min-width:601px){
-  [data-engrid-theme=wwf] .radio-to-buttons_recurrfreq.radio-to-buttons_recurrfreq_to-tabs .en__field--recurrfreq{
-    margin-left:-21px;
-    margin-right:-21px;
-  }
-  [data-engrid-theme=wwf] .radio-to-buttons_recurrfreq.radio-to-buttons_recurrfreq_to-tabs .en__field--recurrfreq label{
+  [data-engrid-theme=wwf] .radio-to-buttons_recurrfreq.radio-to-buttons_recurrfreq_to-tabs .en__field--recurrfreq,[data-engrid-theme=wwf] .radio-to-buttons_recurrfreq.radio-to-buttons_recurrfreq_to-tabs .en__field--recurrfreq label{
     margin-left:-8px;
     margin-right:-8px;
   }
@@ -8613,6 +8608,7 @@ body:not([data-engrid-debug]) #debug-bar{
     display:none !important;
   }
   [data-engrid-theme=wwf][data-engrid-page-type=donation] #header,[data-engrid-theme=wwf][data-engrid-page-type=premiumgift] #header{
+    border-bottom:1px solid #ccc;
     margin-bottom:0 !important;
   }
   [data-engrid-theme=wwf] iframe#launcher{
@@ -8695,8 +8691,8 @@ body:not([data-engrid-debug]) #debug-bar{
   }
   [data-engrid-theme=wwf] .inline-upsell-box{
     border-radius:0;
-    margin-left:-21px;
-    margin-right:-21px;
+    margin-left:-8px;
+    margin-right:-8px;
     padding:1rem .5rem;
   }
   [data-engrid-theme=wwf] .inline-upsell-box strong{

@@ -884,14 +884,16 @@
     padding: 1rem 1ch;
     background-color: #f7e6ed;
     color: #c60060;
-    margin-bottom: 1.25rem;
+    // margin-bottom: 1.25rem;
     font-style: italic;
     --p_font-size: 15px;
     --p_line-height: 24px;
     --p_font-weight: 400;
     min-height: 88px;
     border-radius: 4px;
-
+    margin-top: 1.75rem;
+    margin-left: 8px;
+    margin-right: 8px;
     strong {
       font-size: 20px;
       line-height: 28px;
@@ -909,7 +911,7 @@
     svg {
       height: 80px;
       position: absolute;
-      top: -24px;
+      top: 1px;
       // transform: scaleX(-1);
       width: 40px;
       margin-left: 53px;
@@ -1006,7 +1008,7 @@
     // position: relative;
     // top: -27px;
     margin-top: -27px;
-    padding-bottom: 27px;
+    margin-bottom: 18px;
 
     label {
       padding-left: 8px;
@@ -1023,8 +1025,8 @@
     }
 
     @media screen and (min-width: 601px) {
-      margin-left: -21px;
-      margin-right: -21px;
+      margin-left: -8px;
+      margin-right: -8px;
       label {
         margin-left: -8px;
         margin-right: -8px;
@@ -1603,6 +1605,7 @@
     }
     #header {
       margin-bottom: 0 !important;
+      border-bottom: 1px solid #ccc;
     }
   }
 
@@ -1746,9 +1749,9 @@
   }
 
   .inline-upsell-box {
-    margin-left: -21px;
+    margin-left: -8px;
     border-radius: 0;
-    margin-right: -21px;
+    margin-right: -8px;
     padding: 1rem 0.5rem;
     strong {
       font-size: 15px;
