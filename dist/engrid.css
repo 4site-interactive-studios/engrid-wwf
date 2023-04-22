@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Saturday, April 22, 2023 @ 03:53:34 ET
+ *  Date: Saturday, April 22, 2023 @ 04:06:06 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.61
  *  ENGrid scripts: v0.13.61
@@ -7569,8 +7569,8 @@ body[data-engrid-debug]:before{
   --submit__button_border-color:#e5621a;
   --submit__button_background-color:#e5621a;
   --submit__button_color_hover:#fff;
-  --submit__button_background-color_hover:#000;
-  --submit__button_border-color_hover:#000;
+  --submit__button_background-color_hover:#b54000;
+  --submit__button_border-color_hover:#b54000;
   --submit__button_color_checked:#fff;
   --submit__button_background-color_checked:#000;
   --submit__button_border-color_checked:#000;
@@ -7764,6 +7764,9 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf] input[type=checkbox]+label{
   --checkbox_top:2px;
   align-items:flex-start;
+}
+[data-engrid-theme=wwf] .en__component--copyblock li{
+  margin-bottom:var(--fields_spacing-block);
 }
 [data-engrid-theme=wwf] .give-by-select{
   --button_background-color_hover:var(

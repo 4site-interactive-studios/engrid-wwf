@@ -110,8 +110,8 @@
   --submit__button_background-color: #e5621a;
 
   --submit__button_color_hover: #ffffff;
-  --submit__button_background-color_hover: #000000;
-  --submit__button_border-color_hover: #000000;
+  --submit__button_background-color_hover: #b54000;
+  --submit__button_border-color_hover: #b54000;
 
   --submit__button_color_checked: #ffffff;
   --submit__button_background-color_checked: #000000;
@@ -439,6 +439,10 @@
   input[type="checkbox"] + label {
     align-items: flex-start;
     --checkbox_top: 2px;
+  }
+
+  .en__component--copyblock li {
+    margin-bottom: var(--fields_spacing-block);
   }
 
   .give-by-select {
