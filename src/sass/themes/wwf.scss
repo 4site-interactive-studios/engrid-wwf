@@ -131,8 +131,8 @@
 
   --input_placeholder-color: #989b97;
 
-  --radio_height: 32px;
-  --radio_width: 32px;
+  --radio_height: 30px;
+  --radio_width: 30px;
   --radio_border-width: 2px;
 
   //   --radio_background-color_hover: fade-out(grayscale(#006ea3), 0.4);
@@ -918,6 +918,12 @@
     }
   }
 
+  .body-banner > .en__component--codeblock > img,
+  .body-banner > .en__component--codeblock > video,
+  figure.media-with-attribution {
+    margin-bottom: 3rem;
+  }
+
   figure.media-with-attribution {
     margin-bottom: 3rem;
 
@@ -1085,7 +1091,8 @@
     background-color: #cccccc;
   }
 
-  .sms-disclosure p {
+  .sms-disclosure p,
+  .en__field__notice {
     font-weight: 400;
     font-size: 14px;
     line-height: 130%;
@@ -1093,12 +1100,9 @@
     margin-top: 0;
   }
 
-  // &[data-engrid-layout*="1col"]
-  //   .body-banner
-  //   *:not(figure.media-with-attribution)
-  //   img {
-  //   margin-bottom: 3rem;
-  // }
+  .en__field__notice {
+    order: 3;
+  }
 
   // On premium pages, when the visitor is not in the US, hide the premium gift options other than the no gift option
   &:not([data-engrid-demo])[data-engrid-page-type="premiumgift"]:not(
@@ -1718,10 +1722,6 @@
     .en__field__element--radio {
     --fields_spacing-inline: 0.62rem;
     --fields_spacing-block: 0.9rem;
-  }
-
-  figure.media-with-attribution {
-    margin-bottom: 3rem;
   }
 
   &[data-engrid-transaction-recurring-frequency]
