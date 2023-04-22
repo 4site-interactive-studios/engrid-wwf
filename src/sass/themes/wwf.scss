@@ -839,7 +839,8 @@
   }
 
   .en__field--radio.en__field--question > .en__field__label,
-  .en__field--checkbox.en__field--question > .en__field__label {
+  .en__field--checkbox.en__field--question > .en__field__label,
+  .en__field--radio.en__field--survey > .en__field__label {
     margin-bottom: var(--fields_spacing-block);
   }
 
