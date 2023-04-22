@@ -17,9 +17,9 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Saturday, April 22, 2023 @ 04:12:23 ET
+ *  Date: Saturday, April 22, 2023 @ 04:26:36 ET
  *  By: bryancasler
- *  ENGrid styles: v0.13.61
+ *  ENGrid styles: v0.13.62
  *  ENGrid scripts: v0.13.61
  *
  *  Created by 4Site Studios
@@ -17707,7 +17707,7 @@ class LiveFrequency {
 
 }
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/version.js
-const AppVersion = "0.13.61";
+const AppVersion = "0.13.62";
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
 
