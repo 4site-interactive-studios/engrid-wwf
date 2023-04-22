@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, April 21, 2023 @ 22:12:50 ET
+ *  Date: Saturday, April 22, 2023 @ 24:51:21 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.60
  *  ENGrid scripts: v0.13.60
@@ -7105,7 +7105,7 @@ body:not([data-engrid-debug]) #debug-bar{
   background-color:var(--color_transparent) !important;
 }
 
-#en__pagebuilder [class*=engrid__supporter],#en__pagebuilder [class*=hideif],#en__pagebuilder [class*=showif],[data-engrid-debug] [class*=engrid__supporter],[data-engrid-debug] [class*=hideif],[data-engrid-debug] [class*=showif]{
+#en__pagebuilder [class*=engrid__],#en__pagebuilder [class*=hideif],#en__pagebuilder [class*=showif],[data-engrid-debug] [class*=engrid__],[data-engrid-debug] [class*=hideif],[data-engrid-debug] [class*=showif]{
   background-color:#0000ff1a !important;
 }
 #en__pagebuilder .edit-warning.en__component.en__component--active.en__component--activeTarget{
@@ -7720,6 +7720,42 @@ body:not([data-engrid-debug]) #debug-bar{
 }
 [data-engrid-theme=wwf] .body-main{
   border:1px solid #ccc;
+}
+[data-engrid-theme=wwf] .en__component--socialshareblock{
+  align-items:center;
+  flex-direction:column;
+  justify-content:center;
+}
+[data-engrid-theme=wwf] .en__component--socialshareblock:before{
+  color:var(--h2_color);
+  display:block;
+  font-family:var(--h2_font-family);
+  font-size:var(--h2_font-size);
+  font-weight:var(--h2_font-weight);
+  line-height:var(--h2_line-height);
+  margin-bottom:calc(1rem*var(--scale-down_20pct));
+  margin-top:calc(2rem*var(--scale-down_20pct));
+  text-align:center;
+  text-transform:var(--h2_text-transform);
+  width:100%;
+}
+[data-engrid-theme=wwf] .en__component--socialshareblock a[href*=facebook] img{
+  filter:saturate(0) contrast(1000%);
+}
+[data-engrid-theme=wwf] .en__component--socialshareblock a[href*=twitter] img{
+  filter:saturate(0) contrast(1000%) invert(1);
+}
+[data-engrid-theme=wwf] .en__component--socialshareblock a[href*=whatsapp]{
+  display:none;
+}
+[data-engrid-theme=wwf] .en__component--socialshareblock a[href*=linkedin] img{
+  filter:saturate(0) contrast(1000%);
+}
+[data-engrid-theme=wwf] .social-links{
+  transform:scale(.8);
+}
+[data-engrid-theme=wwf]:not(#en__pagebuilder):not([data-engrid-debug]) .customize-ecard:not([notify-selection=ecard]){
+  display:none;
 }
 [data-engrid-theme=wwf] .en__field--radio.en__field--question .en__field__element--radio{
   align-items:self-start;

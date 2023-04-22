@@ -376,6 +376,54 @@
     border: 1px solid #cccccc;
   }
 
+  // EN's native social sharing icons
+  .en__component--socialshareblock {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    &:before {
+      display: block;
+      width: 100%;
+      text-align: center;
+
+      // Style like an H2
+      color: var(--h2_color);
+      font-family: var(--h2_font-family);
+      font-size: var(--h2_font-size);
+      font-weight: var(--h2_font-weight);
+      line-height: var(--h2_line-height);
+      margin-bottom: calc(1rem * var(--scale-down_20pct));
+      margin-top: calc(2rem * var(--scale-down_20pct));
+      text-transform: var(--h2_text-transform);
+    }
+
+    a[href*="facebook"] img {
+      filter: saturate(0%) contrast(1000%);
+    }
+
+    a[href*="twitter"] img {
+      filter: saturate(0%) contrast(1000%) invert(1);
+    }
+
+    a[href*="whatsapp"] {
+      display: none;
+    }
+
+    a[href*="linkedin"] img {
+      filter: saturate(0%) contrast(1000%);
+    }
+  }
+
+  .social-links {
+    transform: scale(0.8);
+  }
+
+  &:not(#en__pagebuilder):not([data-engrid-debug])
+    .customize-ecard:not([notify-selection="ecard"]) {
+    display: none;
+  }
+
   /* All Opt-in Questions that are Radio Selects */
   .en__field--radio.en__field--question .en__field__element--radio {
     flex-direction: column;
