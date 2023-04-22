@@ -533,6 +533,80 @@
     }
   }
 
+  &[data-engrid-page-type="supporterhub"] .en__captcha,
+  &[data-engrid-page-type="supporterhub"] .en__field {
+    margin: 0 auto !important;
+    width: 100%;
+  }
+
+  &[data-engrid-page-type="supporterhub"] .en__component--hublogin {
+    margin-bottom: 2rem;
+  }
+
+  &[data-engrid-page-type="supporterhub"] .body-main {
+    background-color: transparent;
+    border: none;
+  }
+
+  &[data-engrid-page-type="supporterhub"] .en__supporterHubLogin__header {
+    display: none;
+  }
+
+  &[data-engrid-page-type="supporterhub"] .en__component--hubgadget > img {
+    height: 56px;
+    width: auto;
+  }
+
+  &[data-engrid-page-type="supporterhub"] .en__component--hubgadget img {
+    display: block;
+    margin: auto;
+  }
+
+  &[data-engrid-page-type="supporterhub"] .en__component--hubgadget {
+    cursor: pointer;
+    box-shadow: none;
+    padding: 1.5rem 1rem;
+    border: var(--button_border-width) solid var(--button_border-color);
+    color: var(--button_color);
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  &[data-engrid-page-type="supporterhub"] .en__component--hubgadget:hover,
+  &[data-engrid-page-type="supporterhub"] .en__component--hubgadget:active {
+    border-color: var(--button_border-color_hover);
+    color: var(--button_color_hover);
+  }
+
+  &[data-engrid-page-type="supporterhub"] .body-main {
+    padding-bottom: 2rem;
+  }
+
+  &[data-engrid-page-type="supporterhub"] .en__pagination {
+    display: flex;
+    justify-content: center;
+  }
+
+  &[data-engrid-page-type="supporterhub"] .en__pagination button {
+    border: none;
+  }
+
+  &[data-engrid-page-type="supporterhub"]
+    .en__hubTxnGiving__transactions__total {
+    text-align: left;
+  }
+
+  @media screen and (min-width: 599px) {
+    &[data-engrid-page-type="supporterhub"] {
+      .en__registrants__registrantDetails {
+        .en__field--registrant[class*="--firstName"],
+        .en__field--registrant[class*="--lastName"] {
+          flex: 1 0 50%;
+        }
+      }
+    }
+  }
+
   .debug-panel {
     bottom: 14px;
     left: 14px;
