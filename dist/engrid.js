@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Saturday, April 22, 2023 @ 01:04:36 ET
+ *  Date: Saturday, April 22, 2023 @ 01:41:26 ET
  *  By: bryancasler
- *  ENGrid styles: v0.13.60
- *  ENGrid scripts: v0.13.60
+ *  ENGrid styles: v0.13.61
+ *  ENGrid scripts: v0.13.61
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -17707,7 +17707,7 @@ class LiveFrequency {
 
 }
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/version.js
-const AppVersion = "0.13.60";
+const AppVersion = "0.13.61";
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
 
@@ -17792,6 +17792,15 @@ const customScript = function (App, DonationFrequency) {
 
   if (pageJson.pageNumber === 2) {
     document.body.setAttribute("ty-asset-download-links", "true");
+  } // Get the labels of the first and second opt-in radio selects, so we can replace the first with the second
+
+
+  var firstOptInLabel = document.querySelector(".en__component--formblock.opt-in-label-swap .en__field--question:nth-child(1) .en__field__label");
+  var secondOptInLabel = document.querySelector(".en__component--formblock.opt-in-label-swap .en__field--question:nth-child(2) .en__field__label"); // Check if both labels exist
+
+  if (firstOptInLabel && secondOptInLabel) {
+    // Replace the text content of the first opt-in label with the text content of the second opt-in label
+    firstOptInLabel.textContent = secondOptInLabel.textContent;
   } // Add your client scripts here
 
 

@@ -556,7 +556,6 @@
     padding: 1rem;
     color: #ffffff;
     background-color: #275937;
-    // border: 1px solid #6cc028;
     width: 100%;
     margin-top: 1rem;
 
@@ -625,6 +624,16 @@
           display: none;
         }
       }
+    }
+  }
+
+  &[data-engrid-page-type="advocacypetition"]
+    .en__component--widgetblock
+    .enWidget--progressBar {
+    background-color: #e5621a;
+    .enWidget__progress {
+      background-color: #b54000 !important;
+      border-color: #b54000 !important;
     }
   }
 

@@ -34,6 +34,20 @@ export const customScript = function (App, DonationFrequency) {
     document.body.setAttribute("ty-asset-download-links", "true");
   }
 
+  // Get the labels of the first and second opt-in radio selects, so we can replace the first with the second
+  var firstOptInLabel = document.querySelector(
+    ".en__component--formblock.opt-in-label-swap .en__field--question:nth-child(1) .en__field__label"
+  );
+  var secondOptInLabel = document.querySelector(
+    ".en__component--formblock.opt-in-label-swap .en__field--question:nth-child(2) .en__field__label"
+  );
+
+  // Check if both labels exist
+  if (firstOptInLabel && secondOptInLabel) {
+    // Replace the text content of the first opt-in label with the text content of the second opt-in label
+    firstOptInLabel.textContent = secondOptInLabel.textContent;
+  }
+
   // Add your client scripts here
   const freq = DonationFrequency.getInstance();
   freq.onFrequencyChange.subscribe((s) => {
