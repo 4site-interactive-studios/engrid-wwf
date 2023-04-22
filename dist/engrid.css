@@ -19,8 +19,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, April 21, 2023 @ 19:26:09 ET
- *  By: fernando
+ *  Date: Friday, April 21, 2023 @ 21:02:55 ET
+ *  By: bryancasler
  *  ENGrid styles: v0.13.60
  *  ENGrid scripts: v0.13.60
  *
@@ -4695,6 +4695,9 @@ div[id^=nb-field-].nb-success input{
   flex-basis:0;
   padding:0;
 }
+[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-engrid-page-type=premiumgift]:not([data-engrid-premium-gift-name]) .showif-has-premium,[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-engrid-page-type=premiumgift][data-engrid-premium-gift-name] .showif-no-premium{
+  display:none;
+}
 
 a.skip-link{
   background-color:#000 !important;
@@ -7984,11 +7987,9 @@ body:not([data-engrid-debug]) #debug-bar{
   --p_font-weight:700;
   margin-top:14px;
 }
-[data-engrid-theme=wwf] .donation-summary p:first-child{
-  margin-top:39px;
-}
-[data-engrid-theme=wwf] .donation-summary p:last-child{
-  margin-bottom:39px;
+[data-engrid-theme=wwf] .donation-summary p{
+  padding-bottom:22px;
+  padding-top:22px;
 }
 [data-engrid-theme=wwf] .alternative-donation-methods{
   --p_font-size:17px;

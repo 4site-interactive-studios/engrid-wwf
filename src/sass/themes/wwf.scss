@@ -758,11 +758,9 @@
     --p_line-height: 27.2px;
     --p_font-weight: 700;
     margin-top: 14px;
-    p:first-child {
-      margin-top: 39px;
-    }
-    p:last-child {
-      margin-bottom: 39px;
+    p {
+      padding-top: 22px;
+      padding-bottom: 22px;
     }
   }
 
