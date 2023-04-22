@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Saturday, April 22, 2023 @ 01:41:26 ET
+ *  Date: Saturday, April 22, 2023 @ 02:05:15 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.61
  *  ENGrid scripts: v0.13.61
@@ -6866,7 +6866,7 @@ body[data-engrid-debug]:before{
   padding-bottom:0;
 }
 
-body:not([data-engrid-debug]) #debug-bar{
+[data-engrid-debug] .en__field--ccexpire.en__field--splitselect [data-unhidden],body:not([data-engrid-debug]) #debug-bar{
   display:none;
 }
 
