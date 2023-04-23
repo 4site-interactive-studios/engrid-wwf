@@ -196,6 +196,10 @@
   .radio-to-buttons_recurrfreq
     .en__field--recurrfreq.en__field--radio
     input[type="radio"][value="MONTHLY"]
+    + label:before,
+  .radio-to-buttons_recurrfreq
+    .en__field--recurrfreq.en__field--radio
+    input[type="radio"][value="ANNUAL"]
     + label:before {
     display: block; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
     min-width: 0; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
@@ -225,6 +229,16 @@
     .en__field--recurrfreq.en__field--radio
     .en__field__item
     input[type="radio"][value="MONTHLY"]:checked
+    + label:before,
+  .radio-to-buttons_recurrfreq
+    .en__field--recurrfreq.en__field--radio
+    .en__field__item:hover
+    input[type="radio"][value="ANNUAL"]
+    + label:before,
+  .radio-to-buttons_recurrfreq
+    .en__field--recurrfreq.en__field--radio
+    .en__field__item
+    input[type="radio"][value="ANNUAL"]:checked
     + label:before {
     // display: block; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
     // min-width: 0; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
