@@ -714,6 +714,10 @@
   }
   .back-link {
     display: none;
+    font-size: 15px;
+    font-style: italic;
+    font-weight: 400;
+    line-height: 24px;
   }
   &[data-engrid-payment-type="stripedigitalwallet"],
   &[data-engrid-payment-type="paypaltouch"] {
@@ -726,6 +730,11 @@
       display: block;
       text-decoration: none;
     }
+  }
+  &[conditonally-hide-show-digital-wallet-elements]
+    #en__digitalWallet
+    .en__digitalWallet__container {
+    margin-top: 0 !important;
   }
   .digital-wallets-wrapper {
     display: flex;
