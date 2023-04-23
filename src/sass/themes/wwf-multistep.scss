@@ -130,7 +130,10 @@
     font-weight: var(--input_font-weight);
     height: auto;
     line-height: var(--input_line-height);
-    margin: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: var(--fields_spacing-block);
+    margin-top: calc(var(--fields_spacing-inline) * 0.5);
     max-width: 100%;
     min-width: auto;
     padding: var(--input_padding);
