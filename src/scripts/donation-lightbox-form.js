@@ -211,6 +211,8 @@ export default class DonationLightboxForm {
         </button>
       `;
         } else if (key == this.sections.length - 1) {
+          // Add Last Section Data Attribute
+          section.dataset.lastSection = true;
           sectionNavigation.innerHTML = `
         <button class="section-navigation__previous" data-section-id="${key}">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 16 16">
@@ -313,6 +315,19 @@ export default class DonationLightboxForm {
       section.querySelector(".en__component").append(sectionNavigation);
       section.querySelector(".en__component").append(sectionCount);
     });
+    const digitalWallets = document.querySelector(".digital-wallets-wrapper");
+    if (digitalWallets) {
+      // Create a back link for digital wallets
+      const backLink = document.createElement("a");
+      backLink.classList.add("back-link");
+      backLink.innerHTML = `back`;
+      backLink.href = "#";
+      backLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.scrollToSection(this.getSectionId(digitalWallets) - 1, 0);
+      });
+      digitalWallets.prepend(backLink);
+    }
   }
   // Scroll to a section
   scrollToSection(sectionId, fromSectionId) {
@@ -452,7 +467,10 @@ export default class DonationLightboxForm {
           return false;
         }
         // If payment type is not paypal, check credit card expiration and cvv
-        if (paymentType.value !== "paypal") {
+        if (
+          paymentType.value !== "paypal" &&
+          paymentType.value !== "paypaltouch"
+        ) {
           if (!ccnumber || !ccnumber.value) {
             this.scrollToElement(ccnumber);
             this.sendMessage(
@@ -843,6 +861,15 @@ export default class DonationLightboxForm {
         )
       ) {
         ptValue = "card";
+        // Check Card transaction.giveBySelect
+        const card = document.querySelector(
+          "[name='transaction.giveBySelect'][value='card']"
+        );
+        if (card) {
+          card.checked = true;
+          const event = new Event("change");
+          card.dispatchEvent(event);
+        }
       }
     }
     const ccnumberBlock = document.querySelector(

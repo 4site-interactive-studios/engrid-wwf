@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Saturday, April 22, 2023 @ 04:26:36 ET
- *  By: bryancasler
+ *  Date: Sunday, April 23, 2023 @ 02:32:54 ET
+ *  By: fernando
  *  ENGrid styles: v0.13.62
  *  ENGrid scripts: v0.13.61
  *
@@ -18612,6 +18612,8 @@ class DonationLightboxForm {
         </button>
       `;
         } else if (key == this.sections.length - 1) {
+          // Add Last Section Data Attribute
+          section.dataset.lastSection = true;
           sectionNavigation.innerHTML = `
         <button class="section-navigation__previous" data-section-id="${key}">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 16 16">
@@ -18702,6 +18704,20 @@ class DonationLightboxForm {
       section.querySelector(".en__component").append(sectionNavigation);
       section.querySelector(".en__component").append(sectionCount);
     });
+    const digitalWallets = document.querySelector(".digital-wallets-wrapper");
+
+    if (digitalWallets) {
+      // Create a back link for digital wallets
+      const backLink = document.createElement("a");
+      backLink.classList.add("back-link");
+      backLink.innerHTML = `back`;
+      backLink.href = "#";
+      backLink.addEventListener("click", e => {
+        e.preventDefault();
+        this.scrollToSection(this.getSectionId(digitalWallets) - 1, 0);
+      });
+      digitalWallets.prepend(backLink);
+    }
   } // Scroll to a section
 
 
@@ -18848,7 +18864,7 @@ class DonationLightboxForm {
         } // If payment type is not paypal, check credit card expiration and cvv
 
 
-        if (paymentType.value !== "paypal") {
+        if (paymentType.value !== "paypal" && paymentType.value !== "paypaltouch") {
           if (!ccnumber || !ccnumber.value) {
             this.scrollToElement(ccnumber);
             this.sendMessage("error", "Please add your credit card information");
@@ -19251,7 +19267,15 @@ class DonationLightboxForm {
       const payment = document.querySelector("#en__field_transaction_paymenttype");
 
       if (payment && ["visa", "mastercard", "amex", "discover", "diners", "jcb"].includes(payment.value)) {
-        ptValue = "card";
+        ptValue = "card"; // Check Card transaction.giveBySelect
+
+        const card = document.querySelector("[name='transaction.giveBySelect'][value='card']");
+
+        if (card) {
+          card.checked = true;
+          const event = new Event("change");
+          card.dispatchEvent(event);
+        }
       }
     }
 

@@ -1,0 +1,142 @@
+// Styling for the WWF theme that is not shared with the other themes.
+&#en__pagebuilder .body-title,
+&#en__pagebuilder .body-main {
+  margin-top: 114px;
+}
+
+&#en__pagebuilder .content-header,
+&#en__pagebuilder .content-footer {
+  display: none !important;
+}
+.en__field--NOT_TAGGED_47 {
+  padding-bottom: 1rem;
+}
+.engrid__supporterNOT_TAGGED_47-ECARD {
+  margin-bottom: 2rem;
+}
+.engrid__supporterNOT_TAGGED_47-MAIL {
+  h2 {
+    margin-top: 0;
+  }
+  .en__field--infpostcd input {
+    margin-bottom: 1.5rem;
+  }
+}
+// Style the /mo that appears on the donation amount buttons
+&[data-engrid-transaction-recurring-frequency]
+  .radio-to-buttons_donationAmt
+  .en__field--donationAmt
+  div:not(.en__field__item--other)
+  .en__field__label--item:after {
+  opacity: 1;
+  position: relative;
+  // top: 2px;
+  font-size: 19px;
+  line-height: 19px;
+}
+
+.en__component--formblock.give-by-select-wrapper
+  .en__field
+  .en__field__element.en__field__element--radio
+  .en__field__item.give-by-select {
+  --fields_spacing-block: 0.9rem;
+}
+
+// Style the recurring frequency buttons to look like tabs
+.radio-to-buttons_recurrfreq.radio-to-buttons_recurrfreq_to-tabs
+  .en__field--recurrfreq {
+  --recurring-frequency__button_color: #222222;
+  --recurring-frequency__button_border-color: #cccccc;
+  --recurring-frequency__button_background-color: #faf9f7;
+  --recurring-frequency__button_color_hover: #222222;
+  --recurring-frequency__button_border-color_hover: #cccccc;
+  --recurring-frequency__button_background-color_hover: #faf9f7;
+  --recurring-frequency__button_color_checked: #222222;
+  --recurring-frequency__button_border-color_checked: #cccccc;
+  --recurring-frequency__button_background-color_checked: var(
+    --engrid__body-main_background-color
+  );
+  --fields_spacing-block: 0;
+  --recurring-frequency__button_padding: 1.5ch 1.2ch;
+  margin-left: -12px;
+  margin-right: -12px; // Was -12px but left a 1px gap on the rigth edge and couldn't figure out why
+  flex-basis: calc(100% + 44px);
+
+  // position: relative;
+  // top: -27px;
+
+  margin-bottom: 18px;
+
+  @media screen and (min-width: 601px) {
+    margin-top: -27px;
+  }
+
+  label {
+    padding-left: 8px;
+    padding-right: 8px;
+    margin-left: -8px;
+    margin-right: -8px;
+  }
+
+  @media screen and (min-width: 601px) {
+    .en__field__element--radio {
+      margin-left: -21px;
+      margin-right: -21px;
+    }
+  }
+
+  .inline-upsell-box {
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+
+  @media screen and (max-width: 601px) {
+    label {
+      position: relative;
+      top: -5px;
+      margin-left: -8px;
+      margin-right: -8px;
+    }
+  }
+
+  @media screen and (min-width: 601px) {
+    margin-left: -8px;
+    margin-right: -8px;
+    label {
+      margin-left: -8px;
+      margin-right: -8px;
+    }
+  }
+
+  &.en__field--radio .en__field__item {
+    &:first-child input + label {
+      border-right: none;
+    }
+
+    input[type="radio"]:checked + label {
+      border-bottom-color: transparent;
+      outline: none;
+    }
+  }
+
+  .en__field__element.en__field__element--radio {
+    align-items: stretch;
+
+    .en__field__item {
+      display: flex;
+
+      &:first-child .en__field__label {
+        border-left: none;
+      }
+
+      &:last-child .en__field__label {
+        border-right: none;
+      }
+
+      label {
+        flex-basis: 100%;
+        align-content: flex-end;
+      }
+    }
+  }
+}

@@ -181,18 +181,6 @@
     display: none !important;
   }
 
-  &:not([data-engrid-subtheme="multistep"]) {
-    &#en__pagebuilder .body-title,
-    &#en__pagebuilder .body-main {
-      margin-top: 114px;
-    }
-
-    &#en__pagebuilder .content-header,
-    &#en__pagebuilder .content-footer {
-      display: none !important;
-    }
-  }
-
   // Base styling
   font-family: "Open Sans", sans-serif;
   color: #1f2937;
@@ -245,41 +233,6 @@
     // border-radius: 0; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
     // background-image: url("https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-icon_monthly-heart.png?v=1680364166000");
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAsCAMAAAAUyMtVAAAAAXNSR0IArs4c6QAAAsFQTFRFAAAA/////wD/AAAA/4CAgAAAAAAAqlVVqgBVqgAAVQAAv4CAv0BAvwAAgAAAzDNmzAAzmQAA////5pmz6KK5/+r//+vr/9vt7rvM77/P8MPS8cbV5KSt0niP1YCOzmd3yWd3zmJ3ymV6y15y0WF614eWzmJ71IeVylJvy1VtzF10yFJp0XiD0XaF0nSDyFhtyVdsynB+yGt2yXJ9yW99yW96yW55w09hyHB6yG16x2t4wE5gyGVzyGR0x2Nzx2VyyGRxxVJkxVhqxFNluSxEuSxDui9DuitDxEtfwktfwkpfwzxWwTxWvjxSwD9XvT9SwTxXvzlTwDpTwj1XwjxWwDtVvkNYv0NWvkBUvTxQvT1RwDlTwTtUv0JVv0FWv0FVv0BUwUtdwUtcvUBRvEFRwk1gwk5gwk5gvEBRvEBQvT5RvENTwlBhwk9hvD9QwUVZwUZavTtPvTpPvjtPvTtQvTtPuytEuylEvCpEuylDuylDuSpBuzBIuSpBvDBIuylFuylEuR06uylEuB46txY2txY1uB47uB06thQ1uylEthM0twwytxQ1txQ0txM0thI0uypEuylDtxU1txQ1txM0thAztg0xtgwxtwsxtgkwtxU1txQ1txQ0txM0txI0thIztxEzthEzthAztg8ytgwxtxU1txQ1txM0thAztgwxtgoxtxQ1txQ0txM0txI0tgwxtgoxtgkwtgcwtgQvtgMvui5EuSlBuSlAuShBuShAuCA7uB87tx45tx44uB05tx05tx04txk4txk3txg4txY2txU2txU1txM2txM0txI1txI0thI0thIztxE1txE0txEzthE0thEztg4ytg0ytg0xtgwytgwxtgkwtggwtggvtgcwtgYwtgYvtgUwtgUvtgQwtgQvtgMvtgEutQEutQEttgAvtgAutgAttQAttQAstQArv6q4sgAAALV0Uk5TAAEBAQICAgMDAwMEBAQEBQUFCgoLDA0ODxAREhwiJC8vLzAxMjM0NTU2NzhCQ0RUVVtdXl5eX2FiYmRlb3BxcnN/gIGEhoiIjo6OmJiYm5ucnJ2enp+go6Slp62utre3t7i6vL2/wMHCw8THzMzQ2drc3N7f4ODt7u/w8fPz9PT19vf39/f4+Pj5+fn6+vr6+/v7+/v7+/v7+/z8/Pz8/Pz8/Pz8/f39/f39/v7+/v7+/v7+/r58BGEAAAL/SURBVHjajZGFdxNZFMa/sM2y3d0WLe5uxd3d3d3d3d2lLVJKYaB4sDCB4l4kLeFOaHoLlBIIVtqE/BW85JQeAmnyfmfOOzP3/r4z774HD7pQoFK36asundw6b2SDYsB/gHcp3nDk3G2nrq6e3qMiEKpDLiFA5PhNKe4M0tideX9551IIg3hKd15+P9PNRK/dKTsm1vOIXvRAz1vO9NMGC9vIkHDl7avFkdDrUX/Rm7dXEgzEbDHEpTvv9vKqnljE1OxExURMzGKh83udtzsBXW47956nn1WTkpg9s4SQoQOm5ESrQmT2QpyqfH7Rp+/L60oq5xWJ1eicmR49FD2zo8lKnAdpfPmM2XzmMmu/VplisnsLHZG3ElX2dHyaFy7QH0U18U49AOOciqf1e4L8FBXnBKDSlnSTxlKQKX17FXRNOUUkGaC4lO6Y4TawNAb3NKzMUIklIdPrFThCLE0aUzx22zSWRrPtxGHNxrJYbdoeLHQZ5WcwuhZgdI7C0hz9Ogpt7l2Uv4eL91qg3Dq7ypKo9jXlgAH2g0wsAfHBzH4Aat68YZEJpJHly83qQChGfIxikvlB1MfhQg9BhfXfjEzB/XPf1pYXOsLQ7nkcEQXxieKetxWy4C9Mdh/gYAE+4J4kVA8hKLvMpQRMpAnftaSMUL38gxr7s0QikK9k7aqGgsglDE2SPp1jCjCwI6mR0PIIR8uH1/I9KmKj/UFzIeHXRMdn8RYm/74a/6S9rw/d3xiSfEhl8udbDpkHQq+DDwWAYclnjUx+9hNvHuoVfAkB+j+1/z55mpjX/mSgt+0n0TrJYfBNEBscDzr49QHdv2iV5FCYKE+3es6zGfQF4BddOFo9zjoqxFyf6dh74YfrkB/haLrvQ0IqU65/PONRY1EEAiTqbHwXZdNI+MSx7zbURRgCUgS1N7ti2SZ0jnVtrIXCCEIhVJ7viiKrlWK/L60qPhE8UXSOM4YoxjmnJP4HZBIRsxwnTryfHSHnAwWBwcnmQd4X6cTYMfn4PwC3d3FHKpEYWgAAAABJRU5ErkJggg==);
-  }
-
-  .en__field--NOT_TAGGED_47 {
-    padding-bottom: 1rem;
-  }
-  .engrid__supporterNOT_TAGGED_47-ECARD {
-    margin-bottom: 2rem;
-  }
-  .engrid__supporterNOT_TAGGED_47-MAIL {
-    h2 {
-      margin-top: 0;
-    }
-    .en__field--infpostcd input {
-      margin-bottom: 1.5rem;
-    }
-  }
-
-  // Style the /mo that appears on the donation amount buttons
-  &[data-engrid-transaction-recurring-frequency]
-    .radio-to-buttons_donationAmt
-    .en__field--donationAmt
-    div:not(.en__field__item--other)
-    .en__field__label--item:after {
-    opacity: 1;
-    position: relative;
-    // top: 2px;
-    font-size: 19px;
-    line-height: 19px;
-  }
-
-  .en__component--formblock.give-by-select-wrapper
-    .en__field
-    .en__field__element.en__field__element--radio
-    .en__field__item.give-by-select {
-    --fields_spacing-block: 0.9rem;
   }
 
   .payment-method {
@@ -1005,9 +958,7 @@
   }
 
   // When the email field has a non-invalid error caused by FreshAddress, we want to keep the label in its normal color state
-  .en__field--emailAddress.en__field--validationFailed:not(
-      [data-freshaddress-safetosendstatus="invalid"]
-    )
+  .en__field--emailAddress.en__field--validationFailed:not([data-freshaddress-safetosendstatus="invalid"])
     > label {
     color: var(--label_color);
   }
@@ -1127,105 +1078,6 @@
     }
   }
 
-  // Style the recurring frequency buttons to look like tabs
-  .radio-to-buttons_recurrfreq.radio-to-buttons_recurrfreq_to-tabs
-    .en__field--recurrfreq {
-    --recurring-frequency__button_color: #222222;
-    --recurring-frequency__button_border-color: #cccccc;
-    --recurring-frequency__button_background-color: #faf9f7;
-    --recurring-frequency__button_color_hover: #222222;
-    --recurring-frequency__button_border-color_hover: #cccccc;
-    --recurring-frequency__button_background-color_hover: #faf9f7;
-    --recurring-frequency__button_color_checked: #222222;
-    --recurring-frequency__button_border-color_checked: #cccccc;
-    --recurring-frequency__button_background-color_checked: var(
-      --engrid__body-main_background-color
-    );
-    --fields_spacing-block: 0;
-    --recurring-frequency__button_padding: 1.5ch 1.2ch;
-    margin-left: -12px;
-    margin-right: -12px; // Was -12px but left a 1px gap on the rigth edge and couldn't figure out why
-    flex-basis: calc(100% + 44px);
-
-    // position: relative;
-    // top: -27px;
-
-    margin-bottom: 18px;
-
-    @media screen and (min-width: 601px) {
-      margin-top: -27px;
-    }
-
-    label {
-      padding-left: 8px;
-      padding-right: 8px;
-      margin-left: -8px;
-      margin-right: -8px;
-    }
-
-    @media screen and (min-width: 601px) {
-      .en__field__element--radio {
-        margin-left: -21px;
-        margin-right: -21px;
-      }
-    }
-
-    .inline-upsell-box {
-      margin-left: 8px;
-      margin-right: 8px;
-    }
-
-    @media screen and (max-width: 601px) {
-      label {
-        position: relative;
-        top: -5px;
-        margin-left: -8px;
-        margin-right: -8px;
-      }
-    }
-
-    @media screen and (min-width: 601px) {
-      margin-left: -8px;
-      margin-right: -8px;
-      label {
-        margin-left: -8px;
-        margin-right: -8px;
-      }
-    }
-
-    &.en__field--radio .en__field__item {
-      &:first-child input + label {
-        border-right: none;
-      }
-
-      input[type="radio"]:checked + label {
-        border-bottom-color: transparent;
-        outline: none;
-      }
-    }
-
-    .en__field__element.en__field__element--radio {
-      align-items: stretch;
-
-      .en__field__item {
-        display: flex;
-
-        &:first-child .en__field__label {
-          border-left: none;
-        }
-
-        &:last-child .en__field__label {
-          border-right: none;
-        }
-
-        label {
-          flex-basis: 100%;
-          align-content: flex-end;
-        }
-      }
-    }
-  }
-
   .body-banner img,
   .body-banner video {
     background-color: #cccccc;
@@ -1245,9 +1097,7 @@
   }
 
   // On premium pages, when the visitor is not in the US, hide the premium gift options other than the no gift option
-  &:not([data-engrid-demo])[data-engrid-page-type="premiumgift"]:not(
-      [data-engrid-country="US"]
-    )
+  &:not([data-engrid-demo])[data-engrid-page-type="premiumgift"]:not([data-engrid-country="US"])
     .en__pgList[data-nogift] {
     // Force the no gift option to always appear selected
     .en__pg__select input:before {

@@ -3,4 +3,7 @@
   &[data-engrid-subtheme="multistep"] {
     @import "./themes/wwf-multistep";
   }
+  &:not([data-engrid-subtheme]) {
+    @import "./wwf-styles-not-shared";
+  }
 }

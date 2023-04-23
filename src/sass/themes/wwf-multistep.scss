@@ -1,9 +1,12 @@
 & {
+  --fields_spacing-inline: 5px;
+  --fields_spacing-block: 4px;
   .body-main {
     border: 0;
     margin: 0;
     padding: 0;
   }
+
   .radio-to-buttons_donationAmt .en__field--donationAmt {
     .en__field__item--other:before {
       top: 50%;
@@ -226,7 +229,7 @@
   }
 
   &:not(#en__pagebuilder)
-    .en__field:not(.en__field--checkbox)
+    .en__field:not(.en__field--checkbox):not(.en__field--question)
     > .en__field__label {
     display: none;
   }
@@ -635,12 +638,12 @@
     }
     p {
       margin: 0;
+      line-height: 1.2;
     }
   }
   .inline-upsell-box {
-    margin: 0;
-    margin-bottom: 10px;
-    max-height: 92px;
+    margin: 15px auto 0 auto;
+    min-height: 92px;
     strong {
       font-weight: 600;
     }
@@ -651,6 +654,83 @@
         font-size: 12px;
         line-height: 1.6;
       }
+    }
+  }
+  h2 {
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align-last: left;
+  }
+  .padlock-icon {
+    margin-bottom: 20px;
+    h2 {
+      margin: 0;
+    }
+    display: flex;
+    align-items: center;
+    img {
+      margin: 0 !important;
+    }
+  }
+  .giveBySelect-card {
+    label {
+      display: flex !important;
+    }
+  }
+  .en__field--question {
+    label {
+      display: block;
+    }
+    .en__field__element--radio {
+      display: inline-block !important;
+      margin-right: 10px;
+      .en__field__item {
+        label {
+          display: flex;
+          margin-right: 10px;
+        }
+      }
+    }
+  }
+  .en__field--opt-universal-opt-in {
+    margin-top: 15px;
+  }
+  .donation-summary {
+    background: rgba(184, 207, 149, 0.2);
+    border-radius: 4px;
+    line-height: 160%;
+    border: 0;
+    padding: 20px 25px;
+    margin-bottom: 15px;
+    p {
+      margin: 0;
+      font-weight: 400;
+      font-size: 16px;
+    }
+  }
+  .back-link {
+    display: none;
+  }
+  &[data-engrid-payment-type="stripedigitalwallet"],
+  &[data-engrid-payment-type="paypaltouch"] {
+    [data-last-section="true"] {
+      .section-navigation {
+        display: none !important;
+      }
+    }
+    .back-link {
+      display: block;
+      text-decoration: none;
+    }
+  }
+  .digital-wallets-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column-reverse;
+    div {
+      width: 100%;
     }
   }
 
