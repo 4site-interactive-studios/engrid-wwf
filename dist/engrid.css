@@ -19,8 +19,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Sunday, April 23, 2023 @ 14:42:29 ET
- *  By: bryancasler
+ *  Date: Monday, April 24, 2023 @ 14:58:54 ET
+ *  By: fernando
  *  ENGrid styles: v0.13.62
  *  ENGrid scripts: v0.13.61
  *
@@ -9218,60 +9218,18 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf][data-engrid-subtheme=multistep] .en__field--emailAddress{
   position:relative;
 }
-[data-engrid-theme=wwf][data-engrid-subtheme=multistep] .en__field--emailAddress #petaEmailValidator{
+[data-engrid-theme=wwf][data-engrid-subtheme=multistep] .en__field--emailAddress .en__field__error{
   background-color:var(--error__color);
   border-bottom-left-radius:3px;
   border-bottom-right-radius:3px;
-  bottom:40px;
   color:#fff;
+  display:block;
   font-size:.75rem;
-  opacity:0;
-  padding:5px;
-  position:absolute;
+  line-height:1;
+  margin-top:-5px;
+  padding:5px 10px;
   transition:opacity .3s ease-in-out,bottom .3s ease-in-out,z-index .3s ease-in-out;
   width:100%;
-  z-index:-1;
-}
-[data-engrid-theme=wwf][data-engrid-subtheme=multistep] .en__field--emailAddress #petaEmailValidator.show{
-  bottom:-20px;
-  opacity:1;
-  z-index:3;
-}
-[data-engrid-theme=wwf][data-engrid-subtheme=multistep] .en__field--emailAddress #petaEmailValidator .close{
-  box-sizing:initial;
-  height:15px;
-  outline:none;
-  position:absolute;
-  right:4px;
-  text-indent:-1000vw;
-  top:6px;
-  width:15px;
-  z-index:1000;
-}
-[data-engrid-theme=wwf][data-engrid-subtheme=multistep] .en__field--emailAddress #petaEmailValidator .close:hover:before{
-  transform:rotate(45deg) scale(1.5);
-}
-[data-engrid-theme=wwf][data-engrid-subtheme=multistep] .en__field--emailAddress #petaEmailValidator .close:hover:after{
-  transform:rotate(-45deg) scale(1.5);
-}
-[data-engrid-theme=wwf][data-engrid-subtheme=multistep] .en__field--emailAddress #petaEmailValidator .close:hover:after,[data-engrid-theme=wwf][data-engrid-subtheme=multistep] .en__field--emailAddress #petaEmailValidator .close:hover:before{
-  background-color:var(--error__color_faded);
-}
-[data-engrid-theme=wwf][data-engrid-subtheme=multistep] .en__field--emailAddress #petaEmailValidator .close:after,[data-engrid-theme=wwf][data-engrid-subtheme=multistep] .en__field--emailAddress #petaEmailValidator .close:before{
-  background-color:#fff;
-  content:" ";
-  height:9px;
-  left:6px;
-  position:absolute;
-  top:4px;
-  transition:transform .3s ease-in-out,background-color .3s ease-in-out;
-  width:2px;
-}
-[data-engrid-theme=wwf][data-engrid-subtheme=multistep] .en__field--emailAddress #petaEmailValidator .close:before{
-  transform:rotate(45deg);
-}
-[data-engrid-theme=wwf][data-engrid-subtheme=multistep] .en__field--emailAddress #petaEmailValidator .close:after{
-  transform:rotate(-45deg);
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=multistep] .mobile-logo{
   margin-top:-15px;
