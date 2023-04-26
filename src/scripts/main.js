@@ -191,6 +191,11 @@ export const customScript = function (App, DonationFrequency) {
         }
       });
     }
+    // Check if the field Donation Has Premiums is present, if not, add it
+    let donationHasPremiums = App.getField("supporter.NOT_TAGGED_45");
+    if (!donationHasPremiums) {
+      App.createHiddenInput("supporter.NOT_TAGGED_45");
+    }
   }
 
   // let enFieldPhoneNumber = document.querySelectorAll(

@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, April 24, 2023 @ 14:58:54 ET
+ *  Date: Wednesday, April 26, 2023 @ 18:36:42 ET
  *  By: fernando
- *  ENGrid styles: v0.13.62
- *  ENGrid scripts: v0.13.61
+ *  ENGrid styles: v0.13.63
+ *  ENGrid scripts: v0.13.64
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -10275,9 +10275,15 @@ class Autocomplete {
     this.autoCompleteField('[name="supporter.address2"]', "address-line2");
     this.autoCompleteField('[name="supporter.city"]', "address-level2");
     this.autoCompleteField('[name="supporter.region"]', "address-level1");
-    this.autoCompleteField('[name="supporter.postcode"]', "postal-code"); // Ignore Autocomplete on the Recipient Email Field
+    this.autoCompleteField('[name="supporter.postcode"]', "postal-code"); // Ignore Autocomplete on the Recipient Email Field & Address ("none" is intentional because "off" doesn't work)
 
+    this.autoCompleteField('[name="transaction.honname"]', "none");
     this.autoCompleteField('[name="transaction.infemail"]', "none");
+    this.autoCompleteField('[name="transaction.infname"]', "none");
+    this.autoCompleteField('[name="transaction.infadd1"]', "none");
+    this.autoCompleteField('[name="transaction.infadd2"]', "none");
+    this.autoCompleteField('[name="transaction.infcity"]', "none");
+    this.autoCompleteField('[name="transaction.infpostcd"]', "none");
   }
 
   autoCompleteField(querySelector, autoCompleteValue) {
@@ -10288,7 +10294,7 @@ class Autocomplete {
       return true;
     }
 
-    if (this.debug) console.log("AutoComplete: Field Not Found", querySelector);
+    if (this.debug && autoCompleteValue !== "none") console.log("AutoComplete: Field Not Found", querySelector);
     return false;
   }
 
@@ -17707,7 +17713,7 @@ class LiveFrequency {
 
 }
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/version.js
-const AppVersion = "0.13.62";
+const AppVersion = "0.13.64";
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
 
@@ -17932,6 +17938,13 @@ const customScript = function (App, DonationFrequency) {
           showPremiumBlock();
         }
       });
+    } // Check if the field Donation Has Premiums is present, if not, add it
+
+
+    let donationHasPremiums = App.getField("supporter.NOT_TAGGED_45");
+
+    if (!donationHasPremiums) {
+      App.createHiddenInput("supporter.NOT_TAGGED_45");
     }
   } // let enFieldPhoneNumber = document.querySelectorAll(
   //   ".en__field--phoneNumber2.en__mandatory input#en__field_supporter_phoneNumber2"
@@ -19331,6 +19344,15 @@ const options = {
   },
   onResize: () => console.log("Starter Theme Window Resized"),
   onSubmit: () => {
+    // Check if there's a transaction.selprodvariantid field and a donationHasPremium field
+    const transactionSelprodvariantid = App.getField("transaction.selprodvariantid");
+    const donationHasPremium = App.getField("supporter.NOT_TAGGED_45");
+
+    if (transactionSelprodvariantid && donationHasPremium) {
+      // If there is, sync the values
+      donationHasPremium.value = transactionSelprodvariantid.value ? "Y" : "N";
+    }
+
     if ("pageJson" in window && "pageType" in window.pageJson && window.pageJson.pageType === "premiumgift" && App.getUrlParameter("premium") !== "international") {
       const country = App.getField("supporter.country");
 
