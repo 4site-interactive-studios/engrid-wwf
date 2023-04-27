@@ -57,108 +57,6 @@ export const pageHeaderFooter = function (App) {
 
   // 4Site Code End
   ((window, document) => {
-    const WWF = {
-      vars: {
-        keys: {
-          ESC: 27,
-        },
-      },
-      util: {
-        setFocusContext: function (focusContext) {
-          console.log("in focusContext");
-          // focusable elements within document
-          var focusableElements = document.querySelectorAll(
-            "a,input,button,select,textarea,[tabindex]"
-          );
-
-          var parentElements = document.querySelectorAll(
-            "body > div, body > header, body > aside, body > section, body > main, body > footer, body > form, body > article"
-          );
-
-          var formElements = ["BUTTON", "INPUT", "SELECT", "TEXTAREA"];
-
-          if (focusContext) {
-            focusableElements.forEach(function (el) {
-              if (!focusContext.contains(el)) {
-                // disable focusable elements outside our context
-                el.setAttribute("data-focus-context", false);
-                el.setAttribute("aria-hidden", true);
-                if (el.hasAttribute("tabindex")) {
-                  el.setAttribute(
-                    "data-context-inert-tabindex",
-                    el.getAttribute("tabindex")
-                  );
-                  el.removeAttribute("tabindex");
-                }
-                if (el.hasAttribute("href")) {
-                  el.setAttribute(
-                    "data-context-inert-href",
-                    el.getAttribute("href")
-                  );
-                  el.removeAttribute("href");
-                }
-                if (formElements.indexOf(el.tagName) != -1) {
-                  if (el.hasAttribute("disabled")) {
-                    el.setAttribute(
-                      "data-context-inert-disabled",
-                      el.getAttribute("disabled")
-                    );
-                  }
-                  el.setAttribute("disabled", true);
-                }
-              }
-            });
-
-            focusContext.focus();
-
-            // set parents in dom inert
-            parentElements.forEach(function (parentEl) {
-              if (!parentEl.contains(focusContext)) {
-                parentEl.setAttribute("inert", " ");
-                parentEl.setAttribute("aria-hidden", true);
-              }
-            });
-          } else {
-            var inertElements = document.querySelectorAll(
-              "[data-focus-context=false]"
-            );
-            // restore
-            inertElements.forEach(function (el) {
-              if (el.hasAttribute("data-context-inert-tabindex")) {
-                el.setAttribute(
-                  "tabindex",
-                  el.getAttribute("data-context-inert-tabindex")
-                );
-                el.removeAttribute("data-context-inert-tabindex");
-              }
-              if (el.hasAttribute("data-context-inert-href")) {
-                el.setAttribute(
-                  "href",
-                  el.getAttribute("data-context-inert-href")
-                );
-                el.removeAttribute("data-context-inert-href");
-              }
-              if (formElements.indexOf(el.tagName) != -1) {
-                el.removeAttribute("disabled", true);
-                if (el.hasAttribute("data-context-inert-disabled")) {
-                  el.setAttribute(
-                    "disabled",
-                    el.getAttribute("data-context-inert-disabled")
-                  );
-                  el.removeAttribute("data-context-inert-disabled");
-                }
-              }
-              el.removeAttribute("data-context");
-            });
-            // restore parents in dom
-            parentElements.forEach(function (parentEl) {
-              parentEl.removeAttribute("inert");
-              parentEl.removeAttribute("aria-hidden");
-            });
-          }
-        },
-      },
-    };
     var _self = {
       headerNav: {
         init: function () {
@@ -199,7 +97,6 @@ export const pageHeaderFooter = function (App) {
               .addEventListener("mouseleave", _this.handleDropdownHover);
           });
           document.addEventListener("click", _this.handleDocumentClick);
-          document.addEventListener("keyup", _this.handleKeyboard);
           _this.searchControls.forEach((el) => {
             el.addEventListener("click", _this.handleAccordionClick);
           });
@@ -226,14 +123,6 @@ export const pageHeaderFooter = function (App) {
             _this.$control.forEach((control) => {
               control.classList.remove("expanded");
             });
-          }
-
-          if (document.querySelector(".control.control-expand.expanded")) {
-            WWF.util.setFocusContext(
-              document.querySelector(".nav-content .dropdown.dropdown-expanded")
-            );
-          } else {
-            WWF.util.setFocusContext(false);
           }
 
           if (!_this.panelScrollTops) {
@@ -345,14 +234,6 @@ export const pageHeaderFooter = function (App) {
             if (clickFromOutsideNavItem && clickFromOutsideSearch) {
               _this.closeExpandedPanels();
             }
-          }
-        },
-
-        handleKeyboard: function (e) {
-          const _this = _self.headerNav;
-
-          if (e.which === WWF.vars.keys.ESC) {
-            _this.closeExpandedPanels();
           }
         },
 
