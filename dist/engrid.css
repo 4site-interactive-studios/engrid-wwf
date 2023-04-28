@@ -19,8 +19,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, April 27, 2023 @ 13:08:03 ET
- *  By: fernando
+ *  Date: Friday, April 28, 2023 @ 24:03:30 ET
+ *  By: bryancasler
  *  ENGrid styles: v0.13.63
  *  ENGrid scripts: v0.13.64
  *
@@ -7108,45 +7108,60 @@ body[data-engrid-debug]:before{
 #en__pagebuilder [class*=engrid__],#en__pagebuilder [class*=hideif],#en__pagebuilder [class*=showif],[data-engrid-debug] [class*=engrid__],[data-engrid-debug] [class*=hideif],[data-engrid-debug] [class*=showif]{
   background-color:#0000ff1a !important;
 }
-#en__pagebuilder .edit-warning.en__component.en__component--active.en__component--activeTarget{
-  box-shadow:0 0 0 2px #f12222;
+.edit-warning{
+  --edit_color:#fff;
+  --edit_background-color:#000;
+  --edit_background-color-faded:#0003;
+  --edit_text:"Unlink Before Edit";
 }
-#en__pagebuilder .edit-lock.en__component.en__component--active.en__component--activeTarget{
-  box-shadow:0 0 0 2px #000;
+
+.edit-lock{
+  --edit_color:#fff;
+  --edit_background-color:#f12222;
+  --edit_background-color-faded:#f1222233;
+  --edit_text:"Do Not     ";
 }
-#en__pagebuilder .edit-lock.en__component.en__component--active.en__component--activeTarget .en__component__actions:after,#en__pagebuilder .edit-warning.en__component.en__component--active.en__component--activeTarget .en__component__actions:after{
+#en__pagebuilder [class*=edit-].en__component.en__component--active.en__component--activeTarget{
+  background:var(--edit_background-color-faded);
+  box-shadow:0 0 0 2px var(--edit_background-color);
+  outline-color:var(--edit_background-color);
+}
+#en__pagebuilder [class*=edit-].en__component.en__component--active.en__component--activeTarget .en__component__actions{
+  background-color:var(--edit_background-color);
+  cursor:default;
   display:block;
   font-weight:700;
   line-height:30px;
+  margin-left:8px;
   min-width:30px;
-  padding:0 6px 0 28px;
+  padding:0 calc(28px + var(--fields_spacing-inline)) 0 calc(28px + var(--fields_spacing-inline));
+  padding-bottom:var(--fields_spacing-block);
+  padding-left:0;
+  padding-right:0;
+  padding-top:var(--fields_spacing-block);
   text-align:left;
   text-decoration:none;
   white-space:nowrap;
-  z-index:9999;
 }
-#en__pagebuilder .edit-warning.en__component.en__component--active.en__component--activeTarget .en__component__actions{
-  background-color:#f12222;
-  color:#fff;
+#en__pagebuilder [class*=edit-].en__component.en__component--active.en__component--activeTarget .en__component__actions:before{
+  color:var(--edit_color);
+  content:var(--edit_text);
+  font-size:18px;
+  padding-left:28px;
+  padding-right:28px;
 }
-#en__pagebuilder .edit-lock.en__component.en__component--active.en__component--activeTarget .en__component__actions{
-  background-color:#000;
-  color:#fff;
-}
-#en__pagebuilder .edit-warning.en__component.en__component--active.en__component--activeTarget .en__component__actions:after{
-  content:"Unlink Before Editing";
-}
-#en__pagebuilder .edit-lock.en__component.en__component--active.en__component--activeTarget .en__component__actions:after{
-  content:"Edit From Library";
+#en__pagebuilder [class*=edit-].en__component.en__component--active.en__component--activeTarget .en__component__actions>a.en__component__action{
+  background-color:var(--edit_background-color);
 }
 #en__pagebuilder .edit-lock.en__component.en__component--active.en__component--activeTarget>.en__component__actions>a.en__component__action.en__component__action--settings{
-  display:none;
+  background:none;
+  cursor:default;
+  font-size:18px;
+  padding:0;
+  transform:translate(-18px, -31px);
 }
-#en__pagebuilder .edit-warning.en__component.en__component--active.en__component--activeTarget>.en__component__actions>a.en__component__action{
-  background-color:#f12222;
-}
-#en__pagebuilder .edit-lock.en__component.en__component--active.en__component--activeTarget>.en__component__actions>a.en__component__action{
-  background-color:#000;
+#en__pagebuilder .edit-lock.en__component.en__component--active.en__component--activeTarget>.en__component__actions>a.en__component__action.en__component__action--delete{
+  transform:translate(-33px);
 }
 #en__pagebuilder img[data-src],#en__pagebuilder video[data-src]{
   background-color:#ccc;
