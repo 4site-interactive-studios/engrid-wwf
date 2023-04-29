@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, April 28, 2023 @ 22:12:43 ET
+ *  Date: Friday, April 28, 2023 @ 23:00:55 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.63
  *  ENGrid scripts: v0.13.64
@@ -10645,7 +10645,8 @@ const inputPlaceholder = () => {
   let enFieldPhoneNumber = document.querySelector("input#en__field_supporter_phoneNumber");
   let enFieldPhoneNumberRequired = document.querySelector(".en__mandatory > * > input#en__field_supporter_phoneNumber");
   let enFieldPhoneNumber2 = document.querySelector("input#en__field_supporter_phoneNumber2");
-  let enFieldPhoneNumber2Required = document.querySelector(".en__mandatory > * > input#en__field_supporter_phoneNumber2"); // Address
+  let enFieldPhoneNumber2Required = document.querySelector(".en__mandatory > * > input#en__field_supporter_phoneNumber2");
+  let enFieldPhoneNumber2HideOptionalPlaceholder = document.querySelector(".hide-optional-phone-placeholder [name='supporter.phoneNumber2']"); // Address
 
   let enFieldCountry = document.querySelector("input#en__field_supporter_country");
   let enFieldAddress1 = document.querySelector("input#en__field_supporter_address1");
@@ -10720,6 +10721,8 @@ const inputPlaceholder = () => {
   }
 
   if (enAddInputPlaceholder && enFieldPhoneNumber2 && enFieldPhoneNumber2Required) {
+    enFieldPhoneNumber2.placeholder = "000-000-0000";
+  } else if (enAddInputPlaceholder && enFieldPhoneNumber2 && !enFieldPhoneNumber2Required && enFieldPhoneNumber2HideOptionalPlaceholder) {
     enFieldPhoneNumber2.placeholder = "000-000-0000";
   } else if (enAddInputPlaceholder && enFieldPhoneNumber2 && !enFieldPhoneNumber2Required) {
     enFieldPhoneNumber2.placeholder = "000-000-0000 (Optional)";
