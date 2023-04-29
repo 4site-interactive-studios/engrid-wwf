@@ -43,6 +43,14 @@
 }
 
 // Style the recurring frequency buttons to look like tabs
+&:not(#en__pagebuilder):not([data-engrid-debug])
+  .radio-to-buttons_recurrfreq.radio-to-buttons_recurrfreq_to-tabs
+  .en__field--recurrfreq {
+  @media screen and (min-width: 601px) {
+    margin-top: -27px;
+  }
+}
+
 .radio-to-buttons_recurrfreq.radio-to-buttons_recurrfreq_to-tabs
   .en__field--recurrfreq {
   --recurring-frequency__button_color: #222222;
@@ -66,10 +74,6 @@
   // top: -27px;
 
   margin-bottom: 18px;
-
-  @media screen and (min-width: 601px) {
-    margin-top: -27px;
-  }
 
   label {
     padding-left: 8px;
