@@ -2,6 +2,36 @@
 // Uncomment to use and reference engrid-scrips SASS files for more CSS Custom Properties.
 // All CSS Custom Properties should be scoped to the theme using CSS Data Attributes.
 
+// Render Critical Fonts
+
+// WWFRegular,Impact,sans-serif / 400
+// Main Menu Links
+//    https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/wwf-webfont.woff2
+
+// OpenSansRegular,Helvetica,Arial,sans-serif / 700
+// Main Menu Buttons
+//    "Open Sans" 300 / https://fonts.gstatic.com/s/opensans/v34/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTS-mu0SC55I.woff2
+//        https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTS-mu0SC55I.woff2
+//    "Open Sans" 400 / https://fonts.gstatic.com/s/opensans/v34/memtYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWqWuU6FxZCJgg.woff2
+//        https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/memtYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWqWuU6FxZCJgg.woff2
+
+// "Open Sans",sans-serif / 700
+// Title
+// Frequency Tabs
+// Donation Amount Button
+// Headers
+//    https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/opensans-bold-webfont.woff2
+
+// We skip this one because it's not critical
+// "Open Sans",sans-serif / 400 Italic
+// Upsell Message
+// Media Attribution
+//    https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/opensans-italic-webfont.woff2
+
+// "Open Sans",sans-serif / 400
+// Main Body
+//    https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/opensans-regular-webfont.woff2
+
 & {
   --engrid__body_margin: 0 22px;
   --engrid__body-main_padding: 26px 29px 20px 29px;
