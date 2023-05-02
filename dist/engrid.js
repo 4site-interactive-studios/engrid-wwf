@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, May 2, 2023 @ 15:29:03 ET
+ *  Date: Tuesday, May 2, 2023 @ 15:44:12 ET
  *  By: fernando
  *  ENGrid styles: v0.13.65
  *  ENGrid scripts: v0.13.65
@@ -10270,7 +10270,7 @@ class AutoYear {
 
 class Autocomplete {
   constructor() {
-    this.debug = engrid_ENGrid.debug;
+    this.logger = new EngridLogger("Autocomplete", "#330033", "#f0f0f0", "📇");
     this.autoCompleteField('[name="supporter.firstName"]', "given-name");
     this.autoCompleteField('[name="supporter.lastName"]', "family-name");
     this.autoCompleteField('[name="transaction.ccnumber"]', "cc-number");
@@ -10303,7 +10303,7 @@ class Autocomplete {
       return true;
     }
 
-    if (this.debug && autoCompleteValue !== "none") console.log("AutoComplete: Field Not Found", querySelector);
+    if (autoCompleteValue !== "none") this.logger.log("Field Not Found", querySelector);
     return false;
   }
 
