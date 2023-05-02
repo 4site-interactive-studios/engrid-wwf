@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Sunday, April 30, 2023 @ 14:24:32 ET
- *  By: bryancasler
- *  ENGrid styles: v0.13.63
- *  ENGrid scripts: v0.13.61
+ *  Date: Tuesday, May 2, 2023 @ 11:24:27 ET
+ *  By: fernando
+ *  ENGrid styles: v0.13.65
+ *  ENGrid scripts: v0.13.65
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -8823,15 +8823,22 @@ class engrid_ENGrid {
 
   static createHiddenInput(name) {
     let value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
-    const input = document.createElement("input");
-    input.type = "hidden";
-    input.name = name;
-    input.classList.add("en__field__input");
-    input.classList.add("en__field__input--text");
-    input.classList.add("engrid-added-input");
-    input.value = value;
-    engrid_ENGrid.enForm.appendChild(input);
-    return input;
+    const formBlock = document.createElement("div");
+    formBlock.classList.add("en__component", "en__component--formblock", "hide");
+    const textField = document.createElement("div");
+    textField.classList.add("en__field", "en__field--text");
+    const textElement = document.createElement("div");
+    textElement.classList.add("en__field__element", "en__field__element--text");
+    const inputField = document.createElement("input");
+    inputField.classList.add("en__field__input", "en__field__input--text", "engrid-added-input");
+    inputField.setAttribute("name", name);
+    inputField.setAttribute("type", "hidden");
+    inputField.setAttribute("value", value);
+    textElement.appendChild(inputField);
+    textField.appendChild(textElement);
+    formBlock.appendChild(textField);
+    engrid_ENGrid.enForm.appendChild(formBlock);
+    return inputField;
   } // Trigger EN Dependencies
 
 
@@ -14169,21 +14176,23 @@ class RememberMe {
 			`;
       const rememberMeOptInFieldChecked = this.rememberMeOptIn ? "checked" : "";
       const rememberMeOptInField = document.createElement("div");
-      rememberMeOptInField.classList.add("en__field", "en__field--checkbox");
+      rememberMeOptInField.classList.add("en__field", "en__field--checkbox", "en__field--question", "rememberme-wrapper");
       rememberMeOptInField.setAttribute("id", "remember-me-opt-in");
       rememberMeOptInField.setAttribute("style", "overflow-x: hidden;");
       rememberMeOptInField.innerHTML = `
-				<div class="en__field__item rememberme-wrapper">
-					<input id="remember-me-checkbox" type="checkbox" class="en__field__input en__field__input--checkbox" ${rememberMeOptInFieldChecked} />
-					<label for="remember-me-checkbox" class="en__field__label en__field__label--item" style="white-space: nowrap;">
-						<div class="rememberme-content" style="display: inline-flex; align-items: center;">
-							${rememberMeLabel}
-							<a id="rememberme-learn-more-toggle" style="display: inline-block; display: inline-flex; align-items: center; cursor: pointer; margin-left: 10px;">
-								<svg style="height: 14px; width: auto; z-index: 1;" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11 7H9V5H11V7ZM11 9H9V15H11V9ZM10 2C5.59 2 2 5.59 2 10C2 14.41 5.59 18 10 18C14.41 18 18 14.41 18 10C18 5.59 14.41 2 10 2ZM10 0C15.523 0 20 4.477 20 10C20 15.523 15.523 20 10 20C4.477 20 0 15.523 0 10C0 4.477 4.477 0 10 0Z" fill="currentColor"/></svg>
-							</a>
-						</div>
-					</label>
-				</div>
+        <div class="en__field__element en__field__element--checkbox">
+          <div class="en__field__item">
+            <input id="remember-me-checkbox" type="checkbox" class="en__field__input en__field__input--checkbox" ${rememberMeOptInFieldChecked} />
+            <label for="remember-me-checkbox" class="en__field__label en__field__label--item" style="white-space: nowrap;">
+              <div class="rememberme-content" style="display: inline-flex; align-items: center;">
+                ${rememberMeLabel}
+                <a id="rememberme-learn-more-toggle" style="display: inline-block; display: inline-flex; align-items: center; cursor: pointer; margin-left: 10px; margin-top: var(--rememberme-learn-more-toggle_margin-top)">
+                  <svg style="height: 14px; width: auto; z-index: 1;" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11 7H9V5H11V7ZM11 9H9V15H11V9ZM10 2C5.59 2 2 5.59 2 10C2 14.41 5.59 18 10 18C14.41 18 18 14.41 18 10C18 5.59 14.41 2 10 2ZM10 0C15.523 0 20 4.477 20 10C20 15.523 15.523 20 10 20C4.477 20 0 15.523 0 10C0 4.477 4.477 0 10 0Z" fill="currentColor"/></svg>
+                </a>
+              </div>
+            </label>
+          </div>
+        </div>
 			`;
       const targetField = this.getElementByFirstSelector(this.fieldOptInSelectorTarget);
 
@@ -17716,7 +17725,7 @@ class LiveFrequency {
 
 }
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/version.js
-const AppVersion = "0.13.64";
+const AppVersion = "0.13.65";
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
 
@@ -19251,15 +19260,6 @@ const options = {
   },
   onResize: () => console.log("Starter Theme Window Resized"),
   onSubmit: () => {
-    // Check if there's a transaction.selprodvariantid field and a donationHasPremium field
-    const transactionSelprodvariantid = App.getField("transaction.selprodvariantid");
-    const donationHasPremium = App.getField("supporter.NOT_TAGGED_45");
-
-    if (transactionSelprodvariantid && donationHasPremium) {
-      // If there is, sync the values
-      donationHasPremium.value = transactionSelprodvariantid.value ? "Y" : "N";
-    }
-
     if ("pageJson" in window && "pageType" in window.pageJson && window.pageJson.pageType === "premiumgift" && App.getUrlParameter("premium") !== "international") {
       const country = App.getField("supporter.country");
 
@@ -19307,6 +19307,16 @@ const options = {
       window.setTimeout(() => {
         App.enableSubmit();
       }, 1000);
+    }
+  },
+  onValidate: () => {
+    // Check if there's a transaction.selprodvariantid field and a donationHasPremium field
+    const transactionSelprodvariantid = App.getField("transaction.selprodvariantid");
+    const donationHasPremium = App.getField("supporter.NOT_TAGGED_45");
+
+    if (transactionSelprodvariantid && donationHasPremium) {
+      // If there is, sync the values
+      donationHasPremium.value = transactionSelprodvariantid.value ? "Y" : "N";
     }
   }
 };

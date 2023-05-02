@@ -58,17 +58,6 @@ const options: Options = {
   onResize: () => console.log("Starter Theme Window Resized"),
 
   onSubmit: () => {
-    // Check if there's a transaction.selprodvariantid field and a donationHasPremium field
-    const transactionSelprodvariantid = App.getField(
-      "transaction.selprodvariantid"
-    ) as HTMLInputElement;
-    const donationHasPremium = App.getField(
-      "supporter.NOT_TAGGED_45"
-    ) as HTMLInputElement;
-    if (transactionSelprodvariantid && donationHasPremium) {
-      // If there is, sync the values
-      donationHasPremium.value = transactionSelprodvariantid.value ? "Y" : "N";
-    }
     if (
       "pageJson" in (window as any) &&
       "pageType" in (window as any).pageJson &&
@@ -122,6 +111,19 @@ const options: Options = {
       window.setTimeout(() => {
         App.enableSubmit();
       }, 1000);
+    }
+  },
+  onValidate: () => {
+    // Check if there's a transaction.selprodvariantid field and a donationHasPremium field
+    const transactionSelprodvariantid = App.getField(
+      "transaction.selprodvariantid"
+    ) as HTMLInputElement;
+    const donationHasPremium = App.getField(
+      "supporter.NOT_TAGGED_45"
+    ) as HTMLInputElement;
+    if (transactionSelprodvariantid && donationHasPremium) {
+      // If there is, sync the values
+      donationHasPremium.value = transactionSelprodvariantid.value ? "Y" : "N";
     }
   },
 };
