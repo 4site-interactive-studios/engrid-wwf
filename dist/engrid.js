@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, May 2, 2023 @ 15:44:12 ET
+ *  Date: Tuesday, May 2, 2023 @ 16:22:06 ET
  *  By: fernando
  *  ENGrid styles: v0.13.65
  *  ENGrid scripts: v0.13.65
@@ -8823,6 +8823,9 @@ class engrid_ENGrid {
 
   static createHiddenInput(name) {
     let value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
+
+    var _a;
+
     const formBlock = document.createElement("div");
     formBlock.classList.add("en__component", "en__component--formblock", "hide");
     const textField = document.createElement("div");
@@ -8837,7 +8840,19 @@ class engrid_ENGrid {
     textElement.appendChild(inputField);
     textField.appendChild(textElement);
     formBlock.appendChild(textField);
-    engrid_ENGrid.enForm.appendChild(formBlock);
+    const submitElement = document.querySelector(".en__submit");
+
+    if (submitElement) {
+      const lastFormComponent = submitElement.closest(".en__component");
+
+      if (lastFormComponent) {
+        // Insert the new field after the submit button
+        (_a = lastFormComponent.parentNode) === null || _a === void 0 ? void 0 : _a.insertBefore(formBlock, lastFormComponent.nextSibling);
+      }
+    } else {
+      engrid_ENGrid.enForm.appendChild(formBlock);
+    }
+
     return inputField;
   } // Trigger EN Dependencies
 
