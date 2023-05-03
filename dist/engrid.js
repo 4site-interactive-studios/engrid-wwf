@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, May 2, 2023 @ 16:22:06 ET
+ *  Date: Wednesday, May 3, 2023 @ 17:28:37 ET
  *  By: fernando
  *  ENGrid styles: v0.13.65
- *  ENGrid scripts: v0.13.65
+ *  ENGrid scripts: v0.13.68
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -9099,7 +9099,7 @@ class engrid_ENGrid {
   static disableSubmit() {
     let label = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
     const submit = document.querySelector(".en__submit button");
-    submit.dataset.originalText = submit.innerText;
+    submit.dataset.originalText = submit.innerHTML;
     let submitButtonProcessingHTML = "<span class='loader-wrapper'><span class='loader loader-quart'></span><span class='submit-button-text-wrapper'>" + label + "</span></span>";
 
     if (submit) {
@@ -9912,6 +9912,11 @@ class App extends engrid_ENGrid {
 
 
     if (App.demo) App.setBodyData("demo", "");
+  }
+
+  static log(message) {
+    const logger = new EngridLogger("Client", "brown", "aliceblue", "🍪");
+    logger.log(message);
   }
 
 }
@@ -10941,9 +10946,23 @@ const watchInmemField = () => {
 }; // @TODO Refactor (low priority)
 
 const watchGiveBySelectField = () => {
+  const setPaymentType = paymentType => {
+    const enFieldPaymentType = document.querySelector("#en__field_transaction_paymenttype");
+
+    if (enFieldPaymentType) {
+      // Set Payment Type Option Value Case Insensitive
+      const paymentTypeOption = Array.from(enFieldPaymentType.options).find(option => option.value.toLowerCase() === paymentType.toLowerCase());
+
+      if (paymentTypeOption) {
+        paymentTypeOption.selected = true;
+        const event = new Event("change");
+        enFieldPaymentType.dispatchEvent(event);
+      }
+    }
+  };
+
   const enFieldGiveBySelect = document.querySelector(".en__field--give-by-select");
   const transactionGiveBySelect = document.getElementsByName("transaction.giveBySelect");
-  const enFieldPaymentType = document.querySelector("#en__field_transaction_paymenttype");
   let enFieldGiveBySelectCurrentValue = document.querySelector('input[name="transaction.giveBySelect"]:checked');
   const prefix = "has-give-by-";
   /* prettier-ignore */
@@ -10966,47 +10985,45 @@ const watchGiveBySelectField = () => {
         enGrid.classList.add("has-give-by-ach");
       }
 
-      enFieldPaymentType.value = "ach"; // Give By Check
+      setPaymentType("ach"); // Give By Check
     } else if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "check") {
       if (enGrid) {
         removeClassesByPrefix(enGrid, prefix);
         enGrid.classList.add("has-give-by-check");
       }
 
-      enFieldPaymentType.value = "check"; // Give By PayPal
+      setPaymentType("check"); // Give By PayPal
     } else if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "paypal") {
       if (enGrid) {
         removeClassesByPrefix(enGrid, prefix);
         enGrid.classList.add("has-give-by-paypal");
       }
 
-      enFieldPaymentType.value = "paypal"; // Give By Paypal One Touch or Venmo
+      setPaymentType("paypal"); // Give By Paypal One Touch or Venmo
     } else if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "paypaltouch") {
       if (enGrid) {
         removeClassesByPrefix(enGrid, prefix);
         enGrid.classList.add("has-give-by-paypaltouch");
       }
 
-      enFieldPaymentType.value = "paypaltouch"; // Give By Apple Pay via Vantiv
+      setPaymentType("paypaltouch"); // Give By Apple Pay via Vantiv
     } else if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "applepay") {
       if (enGrid) {
         removeClassesByPrefix(enGrid, prefix);
         enGrid.classList.add("has-give-by-applepay");
       }
 
-      enFieldPaymentType.value = "applepay"; // Give By Apple Pay or Google Pay via Stripe
+      setPaymentType("applepay"); // Give By Apple Pay or Google Pay via Stripe
     } else if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "stripedigitalwallet") {
       if (enGrid) {
         removeClassesByPrefix(enGrid, prefix);
         enGrid.classList.add("has-give-by-stripedigitalwallet");
       }
 
-      enFieldPaymentType.value = "stripedigitalwallet";
+      setPaymentType("stripedigitalwallet");
     }
 
     ;
-    const event = new Event("change");
-    enFieldPaymentType.dispatchEvent(event);
   };
   /* prettier-ignore */
   // Check Giving Frequency on page load
@@ -11616,7 +11633,7 @@ class LiveVariables {
     const thousands_separator = (_c = this.options.ThousandsSeparator) !== null && _c !== void 0 ? _c : "";
     const dec_places = amount % 1 == 0 ? 0 : (_d = this.options.DecimalPlaces) !== null && _d !== void 0 ? _d : 2;
     const amountTxt = engrid_ENGrid.formatNumber(amount, dec_places, dec_separator, thousands_separator);
-    return amount > 0 ? symbol + amountTxt : "";
+    return amount > 0 ? `<span class="live-variable-currency">${symbol}</span><span class="live-variable-amount">${amountTxt}</span>` : "";
   }
 
   getUpsellAmountTxt() {
@@ -11646,7 +11663,7 @@ class LiveVariables {
 
     if (amount) {
       label = label.replace("$AMOUNT", amount);
-      label = label.replace("$FREQUENCY", frequency);
+      label = label.replace("$FREQUENCY", `<span class="live-variable-frequency">${frequency}</span>`);
     } else {
       label = label.replace("$AMOUNT", "");
       label = label.replace("$FREQUENCY", "");
@@ -12626,6 +12643,39 @@ class TranslateFields {
         }, {
           label: "Wyoming",
           value: "WY"
+        }, {
+          label: "American Samoa",
+          value: "AS"
+        }, {
+          label: "Federated States of Micronesia",
+          value: "FM"
+        }, {
+          label: "Guam",
+          value: "GU"
+        }, {
+          label: "Marshall Islands",
+          value: "MH"
+        }, {
+          label: "Northern Mariana Islands",
+          value: "MP"
+        }, {
+          label: "Puerto Rico",
+          value: "PR"
+        }, {
+          label: "Palau",
+          value: "PW"
+        }, {
+          label: "Virgin Islands",
+          value: "VI"
+        }, {
+          label: "Armed Forces America",
+          value: "AA"
+        }, {
+          label: "Armed Forces Europe",
+          value: "AE"
+        }, {
+          label: "Armed Forces Pacific",
+          value: "AP"
         }]);
         break;
 
@@ -12786,6 +12836,39 @@ class TranslateFields {
         }, {
           label: "Wyoming",
           value: "Wyoming"
+        }, {
+          label: "American Samoa",
+          value: "American Samoa"
+        }, {
+          label: "Federated States of Micronesia",
+          value: "Federated States of Micronesia"
+        }, {
+          label: "Guam",
+          value: "Guam"
+        }, {
+          label: "Marshall Islands",
+          value: "Marshall Islands"
+        }, {
+          label: "Northern Mariana Islands",
+          value: "Northern Mariana Islands"
+        }, {
+          label: "Puerto Rico",
+          value: "Puerto Rico"
+        }, {
+          label: "Palau",
+          value: "Palau"
+        }, {
+          label: "Virgin Islands",
+          value: "Virgin Islands"
+        }, {
+          label: "Armed Forces America",
+          value: "Armed Forces America"
+        }, {
+          label: "Armed Forces Europe",
+          value: "Armed Forces Europe"
+        }, {
+          label: "Armed Forces Pacific",
+          value: "Armed Forces Pacific"
         }]);
         break;
 
@@ -17818,7 +17901,7 @@ class UniversalOptIn {
 
 }
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/version.js
-const AppVersion = "0.13.65";
+const AppVersion = "0.13.68";
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
 
