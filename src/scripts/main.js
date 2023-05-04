@@ -517,4 +517,18 @@ export const customScript = function (App, DonationFrequency) {
     inputObserver1.observe(emailInput, { attributes: true });
     inputObserver2.observe(nameInput, { attributes: true });
   }
+
+  // Inserts a privacy policy message after the element with the 'universal-opt-in' class
+  // ToDo
+  const universalOptIn = document.querySelector(".universal-opt-in");
+
+  if (universalOptIn) {
+    const privacyPolicyMarkup = `
+    <div class="en__component en__component--copyblock grey-box email-subscription-nudge engrid__supporterquestions608540-N">
+      <p>Are you sure? Email updates are the best way to keep up with WWF. You can unsubscribe at any time.</p>
+    </div>
+  `;
+
+    universalOptIn.insertAdjacentHTML("afterend", privacyPolicyMarkup);
+  }
 };

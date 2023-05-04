@@ -1078,6 +1078,14 @@
     }
   }
 
+  .email-subscription-nudge {
+    margin-bottom: calc(2rem * var(--scale-down_20pct));
+    p {
+      color: #b71234;
+      font-style: italic;
+    }
+  }
+
   // When the email field has a non-invalid error caused by FreshAddress, we want to keep the label in its normal color state
   .en__field--emailAddress.en__field--validationFailed:not(
       [data-freshaddress-safetosendstatus="invalid"]
@@ -1756,6 +1764,20 @@
   iframe#launcher {
     margin-right: calc(20px + 1rem) !important;
   }
+}
+
+&:not(#en__pagebuilder):not([data-engrid-debug]):not(
+    [data-engrid-page-type="donation"]
+  )
+  .showif-donation {
+  display: none;
+}
+
+&:not(#en__pagebuilder):not(
+    [data-engrid-debug]
+  )[data-engrid-page-type="donation"]
+  .showif-not-donation {
+  display: none;
 }
 
 @media screen and (max-width: 1024px) {
