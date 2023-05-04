@@ -75,6 +75,16 @@ const options: Options = {
           App.setFieldValue("transaction.selprodvariantid", "");
         }
       }
+      if (country && country.value === "US") {
+        const maxTheirGift = (window as any).maxTheirGift ?? 0;
+        const prodVariantValue = App.getFieldValue(
+          "transaction.selprodvariantid"
+        );
+        if (maxTheirGift && prodVariantValue === "") {
+          App.log(`Setting maxTheirGift to ${maxTheirGift}`);
+          App.setFieldValue("transaction.selprodvariantid", maxTheirGift);
+        }
+      }
     }
     const plaidLink = document.querySelector(
       "#plaid-link-button"
@@ -121,9 +131,15 @@ const options: Options = {
     const donationHasPremium = App.getField(
       "supporter.NOT_TAGGED_45"
     ) as HTMLInputElement;
+    const maxTheirGift = (window as any).maxTheirGift ?? 0;
     if (transactionSelprodvariantid && donationHasPremium) {
       // If there is, sync the values
-      donationHasPremium.value = transactionSelprodvariantid.value ? "Y" : "N";
+      donationHasPremium.value =
+        transactionSelprodvariantid.value &&
+        transactionSelprodvariantid.value != maxTheirGift
+          ? "Y"
+          : "N";
+      //
     }
   },
 };

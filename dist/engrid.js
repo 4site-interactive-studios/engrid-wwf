@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, May 3, 2023 @ 18:41:52 ET
+ *  Date: Thursday, May 4, 2023 @ 13:57:22 ET
  *  By: fernando
  *  ENGrid styles: v0.13.65
  *  ENGrid scripts: v0.13.68
@@ -18048,6 +18048,20 @@ const customScript = function (App, DonationFrequency) {
   if ("pageJson" in window && "pageType" in window.pageJson && window.pageJson.pageType === "premiumgift") {
     const country = App.getField("supporter.country");
 
+    const getProdVarId = id => {
+      let prodVarId = id;
+
+      if (window.EngagingNetworks.premiumGifts.products) {
+        window.EngagingNetworks.premiumGifts.products.forEach(product => {
+          if (product.id == id && "variants" in product) {
+            prodVarId = product.variants[0].id;
+          }
+        });
+      }
+
+      return prodVarId;
+    };
+
     const maxMyGift = () => {
       const maxRadio = document.querySelector(".en__pg:last-child input[type='radio'][name='en__pg'][value='0']");
 
@@ -18070,6 +18084,27 @@ const customScript = function (App, DonationFrequency) {
 
       if (premiumTitle) {
         premiumTitle.setAttribute("data-non-us-donor", "");
+      }
+    };
+
+    const hideMaxTheirGift = () => {
+      const maxTitle = document.querySelectorAll("h2.en__pg__name");
+
+      if (maxTitle) {
+        maxTitle.forEach(title => {
+          if (title.textContent.includes("Maximized Their Gift")) {
+            const maxElement = title.closest(".en__pg");
+
+            if (maxElement) {
+              maxElement.classList.add("hide");
+              const maxRadio = maxElement.querySelector("input[type='radio'][name='en__pg']");
+
+              if (maxRadio) {
+                window.maxTheirGift = getProdVarId(maxRadio.value);
+              }
+            }
+          }
+        });
       }
     };
 
@@ -18100,6 +18135,7 @@ const customScript = function (App, DonationFrequency) {
 
     if (!window.EngagingNetworks.require._defined.enjs.checkSubmissionFailed()) {
       maxMyGift();
+      hideMaxTheirGift();
     }
 
     if (App.getUrlParameter("premium") !== "international" && country) {
@@ -18107,6 +18143,7 @@ const customScript = function (App, DonationFrequency) {
         maxMyGift();
         hidePremiumBlock();
         addCountryNotice();
+        hideMaxTheirGift();
       }
 
       country.addEventListener("change", () => {
@@ -18134,6 +18171,47 @@ const customScript = function (App, DonationFrequency) {
 
     if (!donationHasPremiums) {
       App.createHiddenInput("supporter.NOT_TAGGED_45");
+    }
+
+    const premiumBlock = document.querySelector(".en__component--premiumgiftblock");
+
+    if (premiumBlock) {
+      // Mutation observer to check if the "Maximized Their Gift" radio button is present. If it is, hide it.
+      const observer = new MutationObserver(mutationsList => {
+        // Loop through the mutations that have occurred
+        for (const mutation of mutationsList) {
+          // Check if a node has been added to the form
+          if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
+            // Loop through the added nodes
+            mutation.addedNodes.forEach(node => {
+              if (typeof node.querySelector === "function") {
+                if (node.querySelector("h2") && node.querySelector("h2").innerText === "Maximized Their Gift") {
+                  const maxElement = node.closest(".en__pg");
+
+                  if (maxElement) {
+                    maxElement.classList.add("hide");
+                    const maxRadio = maxElement.querySelector("input[type='radio'][name='en__pg']");
+
+                    if (maxRadio) {
+                      window.maxTheirGift = getProdVarId(maxRadio.value);
+                    }
+                  }
+                }
+
+                if (node.querySelector('input[type="radio"][value="0"]')) {
+                  setTimeout(maxMyGift, 100);
+                }
+              }
+            });
+          }
+        }
+      }); // Start observing the target node for configured mutations
+
+      observer.observe(premiumBlock, {
+        attributes: true,
+        childList: true,
+        subtree: true
+      });
     }
   } // let enFieldPhoneNumber = document.querySelectorAll(
   //   ".en__field--phoneNumber2.en__mandatory input#en__field_supporter_phoneNumber2"
@@ -19449,6 +19527,16 @@ const options = {
           App.setFieldValue("transaction.selprodvariantid", "");
         }
       }
+
+      if (country && country.value === "US") {
+        const maxTheirGift = window.maxTheirGift ?? 0;
+        const prodVariantValue = App.getFieldValue("transaction.selprodvariantid");
+
+        if (maxTheirGift && prodVariantValue === "") {
+          App.log(`Setting maxTheirGift to ${maxTheirGift}`);
+          App.setFieldValue("transaction.selprodvariantid", maxTheirGift);
+        }
+      }
     }
 
     const plaidLink = document.querySelector("#plaid-link-button");
@@ -19490,10 +19578,11 @@ const options = {
     // Check if there's a transaction.selprodvariantid field and a donationHasPremium field
     const transactionSelprodvariantid = App.getField("transaction.selprodvariantid");
     const donationHasPremium = App.getField("supporter.NOT_TAGGED_45");
+    const maxTheirGift = window.maxTheirGift ?? 0;
 
     if (transactionSelprodvariantid && donationHasPremium) {
       // If there is, sync the values
-      donationHasPremium.value = transactionSelprodvariantid.value ? "Y" : "N";
+      donationHasPremium.value = transactionSelprodvariantid.value && transactionSelprodvariantid.value != maxTheirGift ? "Y" : "N"; //
     }
   }
 };

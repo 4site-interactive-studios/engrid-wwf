@@ -110,6 +110,18 @@ export const customScript = function (App, DonationFrequency) {
     window.pageJson.pageType === "premiumgift"
   ) {
     const country = App.getField("supporter.country");
+    const getProdVarId = (id) => {
+      let prodVarId = id;
+      if (window.EngagingNetworks.premiumGifts.products) {
+        window.EngagingNetworks.premiumGifts.products.forEach((product) => {
+          if (product.id == id && "variants" in product) {
+            prodVarId = product.variants[0].id;
+          }
+        });
+      }
+      return prodVarId;
+    };
+
     const maxMyGift = () => {
       const maxRadio = document.querySelector(
         ".en__pg:last-child input[type='radio'][name='en__pg'][value='0']"
@@ -135,6 +147,26 @@ export const customScript = function (App, DonationFrequency) {
         premiumTitle.setAttribute("data-non-us-donor", "");
       }
     };
+    const hideMaxTheirGift = () => {
+      const maxTitle = document.querySelectorAll("h2.en__pg__name");
+      if (maxTitle) {
+        maxTitle.forEach((title) => {
+          if (title.textContent.includes("Maximized Their Gift")) {
+            const maxElement = title.closest(".en__pg");
+            if (maxElement) {
+              maxElement.classList.add("hide");
+              const maxRadio = maxElement.querySelector(
+                "input[type='radio'][name='en__pg']"
+              );
+              if (maxRadio) {
+                window.maxTheirGift = getProdVarId(maxRadio.value);
+              }
+            }
+          }
+        });
+      }
+    };
+
     const showPremiumBlock = () => {
       const premiumBlock = document.querySelectorAll(
         ".en__component--premiumgiftblock > div"
@@ -165,12 +197,14 @@ export const customScript = function (App, DonationFrequency) {
       !window.EngagingNetworks.require._defined.enjs.checkSubmissionFailed()
     ) {
       maxMyGift();
+      hideMaxTheirGift();
     }
     if (App.getUrlParameter("premium") !== "international" && country) {
       if (country.value !== "US") {
         maxMyGift();
         hidePremiumBlock();
         addCountryNotice();
+        hideMaxTheirGift();
       }
       country.addEventListener("change", () => {
         if (country.value !== "US") {
@@ -195,6 +229,49 @@ export const customScript = function (App, DonationFrequency) {
     let donationHasPremiums = App.getField("supporter.NOT_TAGGED_45");
     if (!donationHasPremiums) {
       App.createHiddenInput("supporter.NOT_TAGGED_45");
+    }
+    const premiumBlock = document.querySelector(
+      ".en__component--premiumgiftblock"
+    );
+    if (premiumBlock) {
+      // Mutation observer to check if the "Maximized Their Gift" radio button is present. If it is, hide it.
+      const observer = new MutationObserver((mutationsList) => {
+        // Loop through the mutations that have occurred
+        for (const mutation of mutationsList) {
+          // Check if a node has been added to the form
+          if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
+            // Loop through the added nodes
+            mutation.addedNodes.forEach((node) => {
+              if (typeof node.querySelector === "function") {
+                if (
+                  node.querySelector("h2") &&
+                  node.querySelector("h2").innerText === "Maximized Their Gift"
+                ) {
+                  const maxElement = node.closest(".en__pg");
+                  if (maxElement) {
+                    maxElement.classList.add("hide");
+                    const maxRadio = maxElement.querySelector(
+                      "input[type='radio'][name='en__pg']"
+                    );
+                    if (maxRadio) {
+                      window.maxTheirGift = getProdVarId(maxRadio.value);
+                    }
+                  }
+                }
+                if (node.querySelector('input[type="radio"][value="0"]')) {
+                  setTimeout(maxMyGift, 100);
+                }
+              }
+            });
+          }
+        }
+      });
+      // Start observing the target node for configured mutations
+      observer.observe(premiumBlock, {
+        attributes: true,
+        childList: true,
+        subtree: true,
+      });
     }
   }
 
