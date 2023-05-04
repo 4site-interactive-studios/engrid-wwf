@@ -439,8 +439,10 @@ export const customScript = function (App, DonationFrequency) {
     emailDiv.parentNode.insertBefore(wrapperDiv, emailDiv.nextSibling);
   }
 
-  //On eCard pages, when the "Add recipients" button is clicked, remove any values in the Add Recipient Name and Email field
+  // On eCard pages, when the "Add recipients" button is clicked, remove any values in the Add Recipient Name and Email field
   // Hide the recipients list header and list until there are recipients added
+  // On eCard pages, simulate full field errors on the eCard Recipient name field and email field
+
   const addRecipientButton2 = document.querySelector(
     ".en__ecarditems__addrecipient"
   );
@@ -450,13 +452,17 @@ export const customScript = function (App, DonationFrequency) {
   );
   const recipientsList = document.querySelector(".en__ecardrecipients__list");
   const recipientsListLabel = document.querySelector("#recipients-list-label");
+  const emailParent = document.querySelector(".en__ecardrecipients__email");
+  const nameParent = document.querySelector(".en__ecardrecipients__name");
 
   if (
     addRecipientButton2 &&
     nameInput &&
     emailInput &&
     recipientsList &&
-    recipientsListLabel
+    recipientsListLabel &&
+    emailParent &&
+    nameParent
   ) {
     const clearInputs = () => {
       if (nameInput.value && emailInput.value) {
@@ -479,9 +485,36 @@ export const customScript = function (App, DonationFrequency) {
     toggleElementsVisibility();
 
     // Create a MutationObserver instance to monitor changes in the content of the recipients list
-    const observer = new MutationObserver(toggleElementsVisibility);
+    const listObserver = new MutationObserver(toggleElementsVisibility);
 
     // Start observing the recipients list for changes in its content
-    observer.observe(recipientsList, { childList: true, subtree: true });
+    listObserver.observe(recipientsList, { childList: true, subtree: true });
+
+    const toggleValidationClass = (element, parent) => (mutations) => {
+      for (const mutation of mutations) {
+        if (
+          mutation.type === "attributes" &&
+          mutation.attributeName === "class"
+        ) {
+          if (element.classList.contains("invalid")) {
+            parent.classList.add("en__field--validationFailed");
+          } else {
+            parent.classList.remove("en__field--validationFailed");
+          }
+        }
+      }
+    };
+
+    // Create MutationObserver instances to monitor changes in the input's attributes
+    const inputObserver1 = new MutationObserver(
+      toggleValidationClass(emailInput, emailParent)
+    );
+    const inputObserver2 = new MutationObserver(
+      toggleValidationClass(nameInput, nameParent)
+    );
+
+    // Start observing the inputs for changes in their attributes
+    inputObserver1.observe(emailInput, { attributes: true });
+    inputObserver2.observe(nameInput, { attributes: true });
   }
 };

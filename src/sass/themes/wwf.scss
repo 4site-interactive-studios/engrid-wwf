@@ -853,6 +853,16 @@
     width: 100%;
   }
 
+  // Hide the button until it gets moved outside and into its own wrapper
+  .en__ecardrecipients__email button {
+    display: none;
+  }
+
+  // Hide the Recipient List until there a recipient added to it
+  .en__ecardrecipients__list:empty {
+    display: none;
+  }
+
   // Limit ecards to a single recipient
   // .en__ecardrecipients__email button,
   // .en__ecardrecipients__list {
@@ -864,29 +874,24 @@
     margin-left: 0 !important;
     margin-right: 0 !important;
     margin-top: 2rem !important;
-    padding: var(--button_padding) !important;
-    padding-bottom: var(--button_padding-bottom) !important;
-    padding-top: var(--button_padding-top) !important;
     height: auto;
     margin-top: 0 !important;
     width: auto;
+    font-family: var(--donation-amount__button_font-family);
+    padding: var(--donation-amount__button_padding) !important;
   }
 
   .en__ecardrecipients__list {
-    margin: 0 -0.5rem;
+    margin: 0px -0.5rem 0px -0.5rem;
   }
 
-  .en__ecardrecipients__futureDelivery {
-    margin-bottom: 40px;
-  }
+  // .en__ecardrecipients__futureDelivery {
+  //   margin-bottom: 40px;
+  // }
 
-  .en__ecardrecipients__detail {
-    margin-bottom: 20px;
-  }
-
-  .en__ecardrecipients {
-    margin-bottom: 40px;
-  }
+  // .en__ecardrecipients {
+  //   margin-bottom: 40px;
+  // }
 
   .ecardrecipient__remove {
     align-items: center;

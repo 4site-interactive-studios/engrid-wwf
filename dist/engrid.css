@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, May 4, 2023 @ 14:07:45 ET
+ *  Date: Thursday, May 4, 2023 @ 16:27:03 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.65
  *  ENGrid scripts: v0.13.68
@@ -8070,28 +8070,21 @@ body[data-engrid-debug]:before{
   padding:var(--input_padding);
   width:100%;
 }
+[data-engrid-theme=wwf] .en__ecardrecipients__email button,[data-engrid-theme=wwf] .en__ecardrecipients__list:empty{
+  display:none;
+}
 [data-engrid-theme=wwf] .en__ecarditems__button{
+  font-family:var(--donation-amount__button_font-family);
   height:auto;
   margin-left:0 !important;
   margin-right:0 !important;
   margin-top:0 !important;
-  padding:var(--button_padding) !important;
-  padding-bottom:var(--button_padding-bottom) !important;
-  padding-top:var(--button_padding-top) !important;
+  padding:var(--donation-amount__button_padding) !important;
   position:static;
   width:auto;
 }
 [data-engrid-theme=wwf] .en__ecardrecipients__list{
   margin:0 -.5rem;
-}
-[data-engrid-theme=wwf] .en__ecardrecipients__futureDelivery{
-  margin-bottom:40px;
-}
-[data-engrid-theme=wwf] .en__ecardrecipients__detail{
-  margin-bottom:20px;
-}
-[data-engrid-theme=wwf] .en__ecardrecipients{
-  margin-bottom:40px;
 }
 [data-engrid-theme=wwf] .ecardrecipient__remove{
   align-items:center;
