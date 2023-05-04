@@ -19,8 +19,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, May 4, 2023 @ 13:57:22 ET
- *  By: fernando
+ *  Date: Thursday, May 4, 2023 @ 14:07:45 ET
+ *  By: bryancasler
  *  ENGrid styles: v0.13.65
  *  ENGrid scripts: v0.13.68
  *
@@ -8070,11 +8070,69 @@ body[data-engrid-debug]:before{
   padding:var(--input_padding);
   width:100%;
 }
-[data-engrid-theme=wwf] .en__ecardrecipients__email button,[data-engrid-theme=wwf] .en__ecardrecipients__list{
-  display:none;
+[data-engrid-theme=wwf] .en__ecarditems__button{
+  height:auto;
+  margin-left:0 !important;
+  margin-right:0 !important;
+  margin-top:0 !important;
+  padding:var(--button_padding) !important;
+  padding-bottom:var(--button_padding-bottom) !important;
+  padding-top:var(--button_padding-top) !important;
+  position:static;
+  width:auto;
+}
+[data-engrid-theme=wwf] .en__ecardrecipients__list{
+  margin:0 -.5rem;
 }
 [data-engrid-theme=wwf] .en__ecardrecipients__futureDelivery{
   margin-bottom:40px;
+}
+[data-engrid-theme=wwf] .en__ecardrecipients__detail{
+  margin-bottom:20px;
+}
+[data-engrid-theme=wwf] .en__ecardrecipients{
+  margin-bottom:40px;
+}
+[data-engrid-theme=wwf] .ecardrecipient__remove{
+  align-items:center;
+  display:flex;
+  justify-content:flex-end;
+}
+[data-engrid-theme=wwf] .en__ecardrecipients__recipient{
+  border-radius:5px;
+  padding:.25rem .5rem;
+  width:100%;
+}
+[data-engrid-theme=wwf] .en__ecardrecipients__recipient:hover{
+  background-color:var(--button_background-color_hover);
+}
+[data-engrid-theme=wwf] .en__ecardrecipients__recipient input{
+  background-color:initial;
+}
+[data-engrid-theme=wwf] .en__ecardrecipients__recipient .ecardrecipient__remove button{
+  align-items:center;
+  background:var(--error__color_faded);
+  border:1px solid var(--error__color);
+  border-radius:100%;
+  color:var(--error__color);
+  display:flex;
+  font-family:sans-serif;
+  font-size:9px !important;
+  height:18px;
+  justify-content:center;
+  line-height:normal;
+  margin-bottom:0;
+  right:0;
+  width:18px;
+}
+[data-engrid-theme=wwf] .en__ecardrecipients__recipient .ecardrecipient__remove{
+  width:2rem;
+}
+[data-engrid-theme=wwf] .ecardrecipient__name{
+  -webkit-mask-image:linear-gradient(90deg, #000 75%, #fff0 calc(100% - 1rem));
+          mask-image:linear-gradient(90deg, #000 75%, #fff0 calc(100% - 1rem));
+  outline:none;
+  padding-right:1rem;
 }
 [data-engrid-theme=wwf] .donation-summary{
   --p_font-size:17px;
