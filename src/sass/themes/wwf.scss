@@ -854,13 +854,85 @@
   }
 
   // Limit ecards to a single recipient
-  .en__ecardrecipients__email button,
+  // .en__ecardrecipients__email button,
+  // .en__ecardrecipients__list {
+  //   display: none;
+  // }
+
+  .en__ecarditems__button {
+    position: static;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-top: 2rem !important;
+    padding: var(--button_padding) !important;
+    padding-bottom: var(--button_padding-bottom) !important;
+    padding-top: var(--button_padding-top) !important;
+    height: auto;
+    margin-top: 0 !important;
+    width: auto;
+  }
+
   .en__ecardrecipients__list {
-    display: none;
+    margin: 0 -0.5rem;
   }
 
   .en__ecardrecipients__futureDelivery {
     margin-bottom: 40px;
+  }
+
+  .en__ecardrecipients__detail {
+    margin-bottom: 20px;
+  }
+
+  .en__ecardrecipients {
+    margin-bottom: 40px;
+  }
+
+  .ecardrecipient__remove {
+    align-items: center;
+    justify-content: flex-end;
+    display: flex;
+  }
+
+  .en__ecardrecipients__recipient {
+    padding: 0.25rem 0.5rem;
+    border-radius: 5px;
+    width: 100%;
+  }
+
+  .en__ecardrecipients__recipient:hover {
+    background-color: var(--button_background-color_hover);
+  }
+
+  .en__ecardrecipients__recipient input {
+    background-color: transparent;
+  }
+
+  .en__ecardrecipients__recipient .ecardrecipient__remove button {
+    margin-bottom: 0px;
+    color: var(--error__color);
+    border-radius: 100%;
+    font-family: sans-serif;
+    background: var(--error__color_faded);
+    line-height: initial;
+    font-size: 9px !important;
+    height: 18px;
+    width: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid var(--error__color);
+    right: 0;
+  }
+
+  .en__ecardrecipients__recipient .ecardrecipient__remove {
+    width: 2rem;
+  }
+
+  .ecardrecipient__name {
+    padding-right: 1rem;
+    mask-image: linear-gradient(to right, #000 75%, #fff0 calc(100% - 1rem));
+    outline: none;
   }
 
   // .en__ecardrecipients__email {

@@ -393,4 +393,95 @@ export const customScript = function (App, DonationFrequency) {
   // Use a MutationObserver to watch for changes in the DOM
   var observer = new MutationObserver(initLauncherWidthWatcher);
   observer.observe(document.body, { childList: true, subtree: true });
+
+  // On eCard pages, change the label of the "Add contact" button
+  const ecardAddRecipeintButton = document.querySelector(
+    ".en__ecarditems__addrecipient"
+  );
+
+  if (ecardAddRecipeintButton) {
+    ecardAddRecipeintButton.textContent = "Add this contact";
+  }
+
+  // On eCard pages, add a label to the recipients list
+  const ecardRecipientList = document.querySelector(
+    ".en__ecardrecipients__list"
+  );
+
+  if (ecardRecipientList) {
+    const label = document.createElement("h2");
+    label.textContent = "Recipients list";
+    label.id = "recipients-list-label";
+    label.setAttribute("for", "en__ecardrecipients__list");
+    ecardRecipientList.setAttribute("aria-labelledby", "recipients-list-label");
+
+    ecardRecipientList.parentNode.insertBefore(label, ecardRecipientList);
+  }
+
+  //On eCard pages, move the "Add recipients" button out of its current wrapper and add supporting button classes
+  const addRecipientButton = document.querySelector(
+    ".en__ecarditems__addrecipient"
+  );
+  const emailDiv = document.querySelector(".en__ecardrecipients__email");
+
+  if (addRecipientButton && emailDiv) {
+    addRecipientButton.classList.add("button");
+    const wrapperDiv = document.createElement("div");
+    wrapperDiv.classList.add("en__ecardrecipients__button");
+
+    // Remove the button from its current position
+    addRecipientButton.parentNode.removeChild(addRecipientButton);
+
+    // Wrap the button with the new div
+    wrapperDiv.appendChild(addRecipientButton);
+
+    // Insert the wrapped button after the email div
+    emailDiv.parentNode.insertBefore(wrapperDiv, emailDiv.nextSibling);
+  }
+
+  //On eCard pages, when the "Add recipients" button is clicked, remove any values in the Add Recipient Name and Email field
+  // Hide the recipients list header and list until there are recipients added
+  const addRecipientButton2 = document.querySelector(
+    ".en__ecarditems__addrecipient"
+  );
+  const nameInput = document.querySelector(".en__ecardrecipients__name input");
+  const emailInput = document.querySelector(
+    ".en__ecardrecipients__email input"
+  );
+  const recipientsList = document.querySelector(".en__ecardrecipients__list");
+  const recipientsListLabel = document.querySelector("#recipients-list-label");
+
+  if (
+    addRecipientButton2 &&
+    nameInput &&
+    emailInput &&
+    recipientsList &&
+    recipientsListLabel
+  ) {
+    const clearInputs = () => {
+      if (nameInput.value && emailInput.value) {
+        nameInput.value = "";
+        emailInput.value = "";
+      }
+    };
+
+    addRecipientButton2.addEventListener("click", clearInputs);
+    addRecipientButton2.addEventListener("touchend", clearInputs);
+    addRecipientButton2.addEventListener("keydown", clearInputs);
+
+    const toggleElementsVisibility = () => {
+      const displayValue = recipientsList.innerHTML.trim() ? "block" : "none";
+      recipientsListLabel.style.display = displayValue;
+      recipientsList.style.display = displayValue;
+    };
+
+    // Initially set the visibility of the label and the recipients list
+    toggleElementsVisibility();
+
+    // Create a MutationObserver instance to monitor changes in the content of the recipients list
+    const observer = new MutationObserver(toggleElementsVisibility);
+
+    // Start observing the recipients list for changes in its content
+    observer.observe(recipientsList, { childList: true, subtree: true });
+  }
 };
