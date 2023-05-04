@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, May 4, 2023 @ 17:37:06 ET
+ *  Date: Thursday, May 4, 2023 @ 17:44:01 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.65
  *  ENGrid scripts: v0.13.68
@@ -18419,7 +18419,7 @@ const customScript = function (App, DonationFrequency) {
   } // Inserts a email subscription nudge after the element with the 'universal-opt-in' class
 
 
-  App.addHtml('<div class="en__component en__component--copyblock grey-box email-subscription-nudge engrid__supporterquestions608540-N"> <p>Are you sure? Email updates are the best way to keep up with WWF. You can unsubscribe at any time.</p> </div>', ".universal-opt-in", "after");
+  App.addHtml('<div style="display: none;" class="en__component en__component--copyblock grey-box email-subscription-nudge engrid__supporterquestions608540-N"> <p>Are you sure? Email updates are the best way to keep up with WWF. You can unsubscribe at any time.</p> </div>', ".universal-opt-in", "after");
 };
 ;// CONCATENATED MODULE: ./src/scripts/page-header-footer.js
 const pageHeaderFooter = function (App) {
