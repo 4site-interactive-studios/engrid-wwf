@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, May 5, 2023 @ 16:24:52 ET
+ *  Date: Friday, May 5, 2023 @ 16:58:24 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.65
  *  ENGrid scripts: v0.13.68
@@ -17266,7 +17266,7 @@ class DebugHiddenFields {
   constructor() {
     this.logger = new EngridLogger("Debug hidden fields", "#f0f0f0", "#ff0000", "🫣"); // Query all hidden input elements within the specified selectors
 
-    const fields = document.querySelectorAll(".en__component--row [type='hidden'], .engrid-added-input[type='hidden']"); // Check if there are any hidden fields
+    const fields = document.querySelectorAll(".en__component--row [type='hidden'][class*='en_'], .engrid-added-input[type='hidden']"); // Check if there are any hidden fields
 
     if (fields.length > 0) {
       // Log the names of the hidden fields being changed to type 'text'

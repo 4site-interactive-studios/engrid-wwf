@@ -1678,11 +1678,16 @@ body,
 [data-header-footer-layout="limited"] {
   #header .nav.primary-nav,
   #header .utility-search-ctas .search,
-  #header .nav-actions.-split .action.action-secondary {
+  #header .utility-search-ctas .nav-actions.-split .action.action-secondary,
+  #header .nav-content > .nav-actions.-mobile .nav-item:last-child {
     display: none;
   }
-  #header .nav-actions.-split .nav-item:last-child {
+  #header .utility-search-ctas .nav-actions.-split .nav-item:last-child {
     width: auto;
+  }
+
+  #header .nav-content > .nav-actions.-mobile .nav-item:first-child {
+    width: 100%;
   }
 }
 
