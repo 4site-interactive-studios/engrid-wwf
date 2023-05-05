@@ -20,6 +20,8 @@ const options: Options = {
   DecimalSeparator: ".",
   ThousandsSeparator: ",",
   MediaAttribution: true,
+  MinAmount: 5,
+  MinAmountMessage: "Minimum donation amount is $5",
   SkipToMainContentLink: true,
   SrcDefer: true,
   ProgressBar: true,
