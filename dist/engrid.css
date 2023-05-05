@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, May 5, 2023 @ 11:10:28 ET
+ *  Date: Friday, May 5, 2023 @ 16:24:52 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.65
  *  ENGrid scripts: v0.13.68
@@ -11082,6 +11082,69 @@ body[data-engrid-debug]:before{
 }
 .shaded-light-pattern.panda-nation #panda-nation-title h2 .h2-orange{
   text-shadow:.5px .5px 0 #f05a2b, -.5px -.5px 0 #f05a2b, .5px -.5px 0 #f05a2b, -.5px .5px 0 #f05a2b;
+}
+
+[data-header-footer-layout=limited] #header .nav-actions.-split .action.action-secondary,[data-header-footer-layout=limited] #header .nav.primary-nav,[data-header-footer-layout=limited] #header .utility-search-ctas .search{
+  display:none;
+}
+[data-header-footer-layout=limited] #header .nav-actions.-split .nav-item:last-child{
+  width:auto;
+}
+
+[data-header-footer-layout=none] .content-header{
+  margin-bottom:50px;
+}
+[data-header-footer-layout=none] form>.en__component--row.en__component--advrow>.content-header>*{
+  display:none;
+}
+@media screen and (min-width:600px){
+  [data-header-footer-layout=none] .body-title .en__component{
+    grid-gap:1rem;
+    align-items:center;
+    display:flex;
+    gap:1rem;
+  }
+  [data-header-footer-layout=none] .body-title .en__component:before{
+    align-items:center;
+    background:#fff url(https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo.png?1) no-repeat;
+    background-position:50%;
+    background-size:contain;
+    box-shadow:0 1px 3px #00000014;
+    content:"WWF Logo";
+    display:flex;
+    flex-shrink:0;
+    height:100px;
+    justify-content:center;
+    margin:0;
+    max-width:80px;
+    text-indent:-9999px;
+    width:100%;
+    z-index:3;
+  }
+}
+@media screen and (max-width:599px){
+  [data-header-footer-layout=none] .content-header{
+    --engrid__content-header_background-color:#fff;
+    justify-items:center;
+    margin-top:10px;
+  }
+  [data-header-footer-layout=none] .content-header:before{
+    align-items:center;
+    background:#fff url(https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo.png?1) no-repeat;
+    background-position:50%;
+    background-size:contain;
+    content:"WWF Logo";
+    display:flex;
+    flex-shrink:0;
+    grid-column:pc;
+    height:100px;
+    justify-content:center;
+    margin:0;
+    max-width:80px;
+    text-indent:-9999px;
+    width:100%;
+    z-index:3;
+  }
 }
 
 @media only screen and (max-width:1015px){

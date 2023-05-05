@@ -11,6 +11,6 @@
     }
   ],
   "settings": {
-    "liveServer.settings.multiRootWorkspaceName": "engrid"
+    "liveServer.settings.multiRootWorkspaceName": null
   }
 }
