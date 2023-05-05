@@ -191,6 +191,9 @@
 
   --launcher-width: 48px;
 
+  --email-subscription-nudge: "Are you sure? Email updates are the best way to keep up with WWF. You can unsubscribe at any time.";
+
+
   /* Recurring Frequency Button Heart Icon */
   // .radio-to-buttons_recurrfreq
   //   .en__field--recurrfreq.en__field--radio
@@ -1080,9 +1083,10 @@
 
   .email-subscription-nudge {
     margin-bottom: calc(2rem * var(--scale-down_20pct));
-    p {
+    p::after {
       color: #b71234;
       font-style: italic;
+      content: var(--email-subscription-nudge);
     }
   }
 
