@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Sunday, May 7, 2023 @ 23:00:45 ET
+ *  Date: Sunday, May 7, 2023 @ 23:12:18 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.65
  *  ENGrid scripts: v0.13.68
@@ -943,12 +943,14 @@ template{
 }
 
 .en__twitterTarget__select{
-  margin:0 .5rem 0 0;
+  margin:0;
 }
 
 .en__contacts--singleTweetMode .en__twitterTarget__select{
+  display:grid;
   flex:1 0 auto;
   height:var(--checkbox_height);
+  margin:0;
 }
 
 .en__twitterTarget p{
@@ -2517,7 +2519,7 @@ select.en__field__input--select:focus,select.en__field__input--select:hover,sele
   left:3px;
   line-height:var(--checkbox_line-height);
   position:absolute;
-  top:6px;
+  top:5px;
 }
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{
   -webkit-appearance:none;
@@ -8034,7 +8036,7 @@ body[data-engrid-debug]:before{
 }
 [data-engrid-theme=wwf] .en__contacts:not(.en__contacts--hideCheck) .en__contactDetails__select:checked+.en__contactDetails__rows:after{
   left:5px;
-  top:10px;
+  top:9.5px;
 }
 [data-engrid-theme=wwf] .en__contactDetails__rows{
   font-size:17px;
