@@ -22,6 +22,8 @@ const options: Options = {
   MediaAttribution: true,
   MinAmount: 5,
   MinAmountMessage: "Minimum donation amount is $5",
+  MaxAmount: 66950,
+  MaxAmountMessage: "Maximum donation amount is $66,950",
   SkipToMainContentLink: true,
   SrcDefer: true,
   ProgressBar: true,

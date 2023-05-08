@@ -1283,7 +1283,7 @@
           // background-image: url("https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-gift_maximize-my-gift-placeholder.jpg?v=1680364148000");
           background-size: contain;
           // min-width: 100%; // Causing this overlay issue on Safari https://cln.sh/mGf3gcGc
-          background-position: center center;
+          background-position: left center;
           background-repeat: no-repeat;
           height: 100px;
         }
@@ -1295,15 +1295,30 @@
     }
 
     .en__pg__body {
+      grid-template-areas: "en__pg__select en__pg__detail en__pg__display" ". en__pg__detail-mobile .";
       grid-template-columns: min-content auto var(--premium__image_max-width);
       gap: 0 max(calc(var(--fields_spacing-inline) * 2), 0.5rem);
       padding: calc(var(--fields_spacing-block))
         calc(var(--fields_spacing-inline) * 2);
+    }
 
-      // Hide images on mobile
-      @media screen and (max-width: $centercenter1col_body-column_max-width) {
-        --premium__image_max-width: 0px;
-        grid-template-columns: min-content auto 0px;
+    // Move premium images on mobile
+    @media screen and (max-width: $centercenter1col_body-column_max-width) {
+      .en__pg__display {
+        grid-area: en__pg__detail-mobile;
+        .en__pg__images img {
+          min-width: auto;
+          margin-left: 0;
+          margin-top: 0.5rem;
+        }
+      }
+
+      // Hide unselected premium images on mobile
+      .en__pg:not(.en__pg--selected) {
+        .en__pg__body {
+          --premium__image_max-width: 0px;
+          grid-template-columns: min-content auto 0px;
+        }
         .en__pg__display {
           display: none;
         }
