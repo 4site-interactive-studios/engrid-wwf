@@ -193,7 +193,6 @@
 
   --email-subscription-nudge: "Are you sure? Email updates are the best way to keep up with WWF. You can unsubscribe at any time.";
 
-
   /* Recurring Frequency Button Heart Icon */
   // .radio-to-buttons_recurrfreq
   //   .en__field--recurrfreq.en__field--radio
@@ -733,7 +732,7 @@
     }
 
     .en__upsellModal__content {
-      max-width: 400px;
+      max-width: min(400px, 100vw);
 
       #en__upsellModal__close {
         opacity: 1;
@@ -759,10 +758,8 @@
       }
 
       #en__upsellModal__buttons button {
-        padding: 12px 15px 12px 15px;
-        font-size: 12px;
-        font-weight: 700;
-        line-height: 16px;
+        font-size: 20px;
+        line-height: 28px;
       }
 
       #en__upsellModal__yes button {
