@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Sunday, May 7, 2023 @ 22:06:54 ET
+ *  Date: Sunday, May 7, 2023 @ 23:00:45 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.65
  *  ENGrid scripts: v0.13.68
@@ -1963,10 +1963,18 @@ a:focus,a:hover{
   --radio_border-width:var(--input_border-width);
   --radio_border-radius:50%;
   --radio_box-shadow:none;
-  --radio_font-family:var(--p_font-family);
-  --radio_font-size:var(--p_font-size);
-  --radio_font-weight:var(--p_font-weight);
-  --radio_line-height:var(--p_line-height);
+  --radio_font-family:var(
+    --p_font-family
+  );
+  --radio_font-size:var(
+    --p_font-size
+  );
+  --radio_font-weight:var(
+    --p_font-weight
+  );
+  --radio_line-height:var(
+    --p_line-height
+  );
   --radio_width:20px;
   --radio_height:20px;
   --radio_top:0px;
@@ -2503,9 +2511,13 @@ select.en__field__input--select:focus,select.en__field__input--select:hover,sele
   color:var(--checkbox_color_checked);
   content:var(--checkbox_content_checked);
   cursor:pointer;
-  left:4px;
+  font-family:var(--checkbox_font-family);
+  font-size:var(--checkbox_font-size);
+  font-weight:var(--checkbox_font-weight);
+  left:3px;
+  line-height:var(--checkbox_line-height);
   position:absolute;
-  top:5px;
+  top:6px;
 }
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{
   -webkit-appearance:none;
@@ -4131,7 +4143,7 @@ button.en__eventOccurrence__select>label{
   padding:initial;
 }
 
-.en__contactDetails__select{
+.en__contactDetails__select,.en__contacts--hideCheck .en__contactDetails__rows{
   margin-left:0;
 }
 .en__component--contactblock,.en__contact--open .en__contact__toggle,.en__contact__detail,.en__contact__toggle{
@@ -4792,6 +4804,11 @@ body:not(#en__pagebuilder) .simple_country_select:not(.country-select-visible) .
 iframe[src*="enWidget.iframe.html"]{
   width:100%;
 }
+
+.en__twitterTarget{
+  grid-gap:calc(var(--checkbox_width) + var(--fields_spacing-inline) - var(--checkbox_width));
+  gap:calc(var(--checkbox_width) + var(--fields_spacing-inline) - var(--checkbox_width));
+}
 .en__tweet,.en__tweetBackgroundText,.en__tweetButton,.en__tweetContact,.en__tweetDisabled,.en__twitterTarget{
   background-color:initial;
 }
@@ -4808,7 +4825,7 @@ iframe[src*="enWidget.iframe.html"]{
 
 .en__twitterTarget__image,.en__twitterTarget__image:not([width]){
   margin-left:0;
-  margin-right:1rem;
+  margin-right:0;
   width:auto;
 }
 
@@ -8017,7 +8034,7 @@ body[data-engrid-debug]:before{
 }
 [data-engrid-theme=wwf] .en__contacts:not(.en__contacts--hideCheck) .en__contactDetails__select:checked+.en__contactDetails__rows:after{
   left:5px;
-  top:11px;
+  top:10px;
 }
 [data-engrid-theme=wwf] .en__contactDetails__rows{
   font-size:17px;
