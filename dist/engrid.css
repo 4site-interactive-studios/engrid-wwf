@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, May 8, 2023 @ 16:15:05 ET
+ *  Date: Tuesday, May 9, 2023 @ 11:13:09 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.65
  *  ENGrid scripts: v0.13.68
@@ -8048,6 +8048,24 @@ body[data-engrid-debug]:before{
   background-color:#fff;
   border-color:#006da4;
   color:#006da4;
+}
+@media screen and (max-width:800px){
+  [data-engrid-theme=wwf] #en__upsellModal .en__upsellModal__container{
+    display:flex;
+    flex-direction:column;
+  }
+  [data-engrid-theme=wwf] #en__upsellModal .en__upsellModal__background{
+    height:min(100vh - 400px - 60px, 477px);
+    max-width:100%;
+  }
+  [data-engrid-theme=wwf] #en__upsellModal .en__upsellModal__content h2{
+    margin-top:0;
+  }
+}
+@media screen and (max-height:700px) and (max-width:800px){
+  [data-engrid-theme=wwf] #en__upsellModal .en__upsellModal__background{
+    display:none;
+  }
 }
 [data-engrid-theme=wwf] .en__contacts:not(.en__contacts--hideCheck) .en__contactDetails__rows:before{
   top:8px;

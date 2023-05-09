@@ -775,6 +775,28 @@
         color: #006da4;
       }
     }
+
+    @media screen and (max-width: 800px) {
+      .en__upsellModal__container {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .en__upsellModal__background {
+        height: min(calc(100vh - 400px - 60px), 477px);
+        max-width: 100%;
+      }
+
+      .en__upsellModal__content h2 {
+        margin-top: 0;
+      }
+    }
+
+    @media screen and (max-height: 700px) and (max-width: 800px) {
+      .en__upsellModal__background {
+        display: none;
+      }
+    }
   }
 
   .en__contacts:not(.en__contacts--hideCheck) .en__contactDetails__rows:before {
@@ -1102,9 +1124,7 @@
   }
 
   // When the email field has a non-invalid error caused by FreshAddress, we want to keep the label in its normal color state
-  .en__field--emailAddress.en__field--validationFailed:not(
-      [data-freshaddress-safetosendstatus="invalid"]
-    )
+  .en__field--emailAddress.en__field--validationFailed:not([data-freshaddress-safetosendstatus="invalid"])
     > label {
     color: var(--label_color);
   }
@@ -1243,9 +1263,7 @@
   }
 
   // On premium pages, when the visitor is not in the US, hide the premium gift options other than the no gift option
-  &:not([data-engrid-demo])[data-engrid-page-type="premiumgift"]:not(
-      [data-engrid-country="US"]
-    )
+  &:not([data-engrid-demo])[data-engrid-page-type="premiumgift"]:not([data-engrid-country="US"])
     .en__pgList[data-nogift] {
     // Force the no gift option to always appear selected
     .en__pg__select input:before {
@@ -1796,16 +1814,12 @@
   }
 }
 
-&:not(#en__pagebuilder):not([data-engrid-debug]):not(
-    [data-engrid-page-type="donation"]
-  )
+&:not(#en__pagebuilder):not([data-engrid-debug]):not([data-engrid-page-type="donation"])
   .showif-donation {
   display: none;
 }
 
-&:not(#en__pagebuilder):not(
-    [data-engrid-debug]
-  )[data-engrid-page-type="donation"]
+&:not(#en__pagebuilder):not([data-engrid-debug])[data-engrid-page-type="donation"]
   .showif-not-donation {
   display: none;
 }
