@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, May 9, 2023 @ 11:17:10 ET
+ *  Date: Tuesday, May 9, 2023 @ 11:30:59 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.65
  *  ENGrid scripts: v0.13.68
@@ -19593,8 +19593,8 @@ const options = {
   MediaAttribution: true,
   MinAmount: 5,
   MinAmountMessage: "Minimum donation amount is $5",
-  MaxAmount: 66950,
-  MaxAmountMessage: "Maximum donation amount is $66,950",
+  MaxAmount: 65000,
+  MaxAmountMessage: "Maximum donation amount is $65,000",
   SkipToMainContentLink: true,
   SrcDefer: true,
   ProgressBar: true,
