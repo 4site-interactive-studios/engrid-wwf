@@ -28,6 +28,14 @@ module.exports = {
   entry: {
     engrid: "./src/index.ts",
   },
+  performance: {
+    assetFilter: function (assetFilename) {
+      return assetFilename.endsWith(".min.js", ".min.css");
+    },
+    hints: "error",
+    maxEntrypointSize: 2000000,
+    maxAssetSize: 500000,
+  },
   plugins: [
     new ForkTsCheckerWebpackPlugin(),
     new webpack.BannerPlugin({
