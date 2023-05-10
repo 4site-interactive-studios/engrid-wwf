@@ -1875,6 +1875,13 @@
     --radio_box-shadow_selected: inset 0 0 0 3px #ffffff;
     --radio_border-width: 1px;
 
+    .en__contacts:not(.en__contacts--hideCheck)
+      .en__contactDetails__select:checked
+      + .en__contactDetails__rows:after {
+      left: 3px;
+      top: 6.5px;
+    }
+
     --checkbox_content_checked: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='14px' height='11px' viewBox='0 0 20 15' version='1.1'%3E%3Cg id='surface1'%3E%3Cpath style=' stroke:none;fill-rule:nonzero;fill:rgb(100%25,100%25,100%25);fill-opacity:1;' d='M 12.75 6.117188 L 6.835938 12.234375 L 1.335938 6.546875 L 0 7.929688 L 3.417969 11.464844 L 6.835938 15.003906 L 13.417969 8.191406 L 20 1.382812 L 18.664062 0 Z M 12.75 6.117188 '/%3E%3C/g%3E%3C/svg%3E");
   }
 

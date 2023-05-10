@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, May 10, 2023 @ 11:31:03 ET
+ *  Date: Wednesday, May 10, 2023 @ 15:30:37 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.69
  *  ENGrid scripts: v0.13.69
@@ -2118,29 +2118,6 @@ label a.label-tooltip{
 }
 label a.label-tooltip:last-child{
   margin-right:0;
-}
-
-.label-wrapper{
-  grid-gap:calc(var(--fields_spacing-inline)/2) calc(var(--fields_spacing-inline)*2);
-  align-content:center;
-  display:flex;
-  flex-direction:row;
-  flex-wrap:wrap;
-  gap:calc(var(--fields_spacing-inline)/2) calc(var(--fields_spacing-inline)*2);
-  justify-content:space-between;
-}
-.label-wrapper a.label-tooltip{
-  color:var(--a_color);
-  font-family:var(--label_font-family);
-  font-size:var(--label_font-size);
-  font-weight:var(--a_font-weight);
-  letter-spacing:var(--label_letter-spacing);
-  line-height:var(--label_line-height);
-  margin-left:0;
-  margin-right:0;
-  -webkit-text-decoration:var(--a_text-decoration);
-          text-decoration:var(--a_text-decoration);
-  text-transform:var(--label_text-transform);
 }
 input,input.en__field__input{
   background-color:var(--input_background-color);
@@ -8861,6 +8838,10 @@ body[data-engrid-debug]:before{
     --radio_box-shadow_selected:inset 0 0 0 3px #fff;
     --radio_border-width:1px;
     --checkbox_content_checked:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='11' viewBox='0 0 20 15'%3E%3Cpath style='stroke:none;fill-rule:nonzero;fill:%23fff;fill-opacity:1' d='m12.75 6.117-5.914 6.117-5.5-5.687L0 7.93l3.418 3.535 3.418 3.539 6.582-6.813L20 1.383 18.664 0Zm0 0'/%3E%3C/svg%3E");
+  }
+  [data-engrid-theme=wwf] .en__contacts:not(.en__contacts--hideCheck) .en__contactDetails__select:checked+.en__contactDetails__rows:after{
+    left:3px;
+    top:6.5px;
   }
   [data-engrid-theme=wwf] #engrid>.en__component--advrow,[data-engrid-theme=wwf] form>.en__component--advrow{
     grid-template-rows:[page-start page-alert-start] min-content [page-alert-end content-header-start] min-content [content-header-end body-headerOutside-start] min-content [body-headerOutside-end body-header-start] min-content [body-header-end body-banner-start] min-content [body-banner-end body-bannerOverlay-start] min-content [body-bannerOverlay-end body-title-start] min-content [body-title-end body-top-start] min-content [body-top-end body-side-start] min-content [body-side-end body-main-start] min-content [body-main-end body-bottom-start] min-content [body-bottom-end body-footer-start] min-content [body-footer-end body-footerOutside-start] min-content [body-footerOutside-end content-footerSpacer-start] minmax(0, 1fr) [content-footerSpacer-end content-preFooter-start] min-content [content-preFooter-end content-footer-start] min-content [content-footer-end page-backgroundImage-start] min-content [page-backgroundImage-end page-backgroundImageOverlay-start] min-content [page-backgroundImageOverlay-end page-end page-customCode-start] min-content [page-customCode-end];
