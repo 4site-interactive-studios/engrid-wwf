@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, May 10, 2023 @ 11:20:18 ET
+ *  Date: Wednesday, May 10, 2023 @ 11:23:28 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.69
  *  ENGrid scripts: v0.13.69
@@ -8039,7 +8039,6 @@ body[data-engrid-debug]:before{
 }
 [data-engrid-theme=wwf] #en__upsellModal .en__upsellModal__content{
   max-width:min(400px, 100vw);
-  min-width:100%;
 }
 [data-engrid-theme=wwf] #en__upsellModal .en__upsellModal__content #en__upsellModal__close{
   color:#686868;
