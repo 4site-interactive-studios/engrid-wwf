@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, May 10, 2023 @ 15:30:37 ET
+ *  Date: Wednesday, May 10, 2023 @ 15:34:27 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.69
  *  ENGrid scripts: v0.13.69
@@ -9257,6 +9257,44 @@ class engrid_ENGrid {
     .replace(/\-\-+/g, "-") // Replace multiple - with single -
     .replace(/^-+/, "") // Trim - from start of text
     .replace(/-+$/, ""); // Trim - from end of text
+  } // This function is used to run a callback function when an error is displayed on the page
+
+
+  static watchForError(callback) {
+    const errorElement = document.querySelector(".en__errorList");
+
+    const capitalize = word => word.charAt(0).toUpperCase() + word.slice(1); // Avoid duplicate callbacks
+
+
+    let callbackType = callback.toString();
+
+    if (callbackType.indexOf("function") === 0) {
+      callbackType = callbackType.replace("function ", "");
+    }
+
+    if (callbackType.indexOf("(") > 0) {
+      callbackType = callbackType.substring(0, callbackType.indexOf("("));
+    } // Remove invalid characters
+
+
+    callbackType = callbackType.replace(/[^a-zA-Z0-9]/g, ""); // Limit to 20 characters and add prefix
+
+    callbackType = callbackType.substring(0, 20);
+    callbackType = "engrid" + capitalize(callbackType);
+
+    if (errorElement && !errorElement.dataset[callbackType]) {
+      errorElement.dataset[callbackType] = "true";
+      const observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+          if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
+            callback();
+          }
+        });
+      });
+      observer.observe(errorElement, {
+        childList: true
+      });
+    }
   }
 
 }
@@ -9610,7 +9648,11 @@ class App extends engrid_ENGrid {
 
       if (!this._form.submit) return false;
       if (this._form.submitPromise) return this._form.submitPromise;
-      this.logger.success("enOnSubmit Success");
+      this.logger.success("enOnSubmit Success"); // If all validation passes, we'll watch for Digital Wallets Errors, which
+      // will not reload the page (thanks EN), so we will enable the submit button if
+      // an error is programmatically thrown by the Digital Wallets
+
+      engrid_ENGrid.watchForError(engrid_ENGrid.enableSubmit);
       return true;
     };
 
@@ -14601,6 +14643,7 @@ class ShowIfAmount {
 class OtherAmount {
   constructor() {
     this.logger = new EngridLogger("OtherAmount", "green", "black", "💰");
+    this._amount = DonationAmount.getInstance();
     "focusin input".split(" ").forEach(e => {
       var _a; // We're attaching this event to the body because sometimes the other amount input is not in the DOM yet and comes via AJAX.
 
@@ -14633,6 +14676,22 @@ class OtherAmount {
           }
 
           target.value = cleanAmount % 1 != 0 ? cleanAmount.toFixed(2) : cleanAmount.toString();
+        }
+      }); // On blur, if the amount is 0, select the previous amount
+
+      otherAmountField.addEventListener("blur", e => {
+        const target = e.target;
+        const amount = target.value;
+        const cleanAmount = engrid_ENGrid.cleanAmount(amount);
+
+        if (cleanAmount === 0) {
+          this.logger.log("Other Amount Field Blurred with 0 amount"); // Get Live Amount
+
+          const liveAmount = this._amount.amount;
+
+          if (liveAmount > 0) {
+            this._amount.setAmount(liveAmount, false);
+          }
         }
       });
     }
@@ -15417,10 +15476,14 @@ class RequiredIfVisible {
 
           if (fieldLabel) {
             this.logger.log(`${fieldLabel.innerText} is required`);
-            engrid_ENGrid.setError(field, `${fieldLabel.innerText} is required`);
+            window.setTimeout(() => {
+              engrid_ENGrid.setError(field, `${fieldLabel.innerText} is required`);
+            }, 100);
           } else {
             this.logger.log(`${fieldElement.getAttribute("name")} is required`);
-            engrid_ENGrid.setError(field, `This field is required`);
+            window.setTimeout(() => {
+              engrid_ENGrid.setError(field, `This field is required`);
+            }, 100);
           }
 
           fieldElement.focus();
@@ -17901,7 +17964,7 @@ class UniversalOptIn {
 
 }
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/version.js
-const AppVersion = "0.13.68";
+const AppVersion = "0.13.69";
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
 
