@@ -726,6 +726,7 @@
   #en__upsellModal {
     .en__upsellModal__container {
       max-width: 779.59px;
+      grid-template-columns: minmax(0px, 379.59px) 1fr;
     }
 
     .en__upsellModal__background {
@@ -733,7 +734,7 @@
     }
 
     .en__upsellModal__content {
-      max-width: min(400px, 100vw);
+      min-width: auto;
 
       #en__upsellModal__close {
         opacity: 1;
