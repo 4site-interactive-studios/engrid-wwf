@@ -19,8 +19,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, May 9, 2023 @ 22:34:50 ET
- *  By: fernando
+ *  Date: Wednesday, May 10, 2023 @ 24:50:48 ET
+ *  By: bryancasler
  *  ENGrid styles: v0.13.69
  *  ENGrid scripts: v0.13.69
  *
@@ -8572,7 +8572,7 @@ body[data-engrid-debug]:before{
   flex-direction:column;
 }
 [data-engrid-theme=wwf]:not([data-engrid-country=US]) .en__pg:last-child .en__pg__description:after{
-  content:"We are unable to mail thank-you gifts to donors outside the United States and its territories and have selected the 'Mazimize my gift' option for you.";
+  content:"We are unable to mail thank-you gifts to donors outside the United States and its territories and have selected the 'Maximize my donation' option for you.";
 }
 [data-engrid-theme=wwf] .en__pgHeader .en__submit button:hover{
   box-shadow:0 4px 12px #00000026;
@@ -11157,14 +11157,13 @@ body[data-engrid-debug]:before{
   text-shadow:.5px .5px 0 #f05a2b, -.5px -.5px 0 #f05a2b, .5px -.5px 0 #f05a2b, -.5px .5px 0 #f05a2b;
 }
 
-[data-header-footer-layout=limited] #header .nav-content>.nav-actions.-mobile .nav-item:last-child,[data-header-footer-layout=limited] #header .nav.primary-nav,[data-header-footer-layout=limited] #header .utility-search-ctas .nav-actions.-split .action.action-secondary,[data-header-footer-layout=limited] #header .utility-search-ctas .search{
+@media screen and (min-width:767px){
+  [data-header-footer-layout=limited] #header .nav.primary-nav{
+    display:none;
+  }
+}
+[data-header-footer-layout=limited] #header .utility-search-ctas .search{
   display:none;
-}
-[data-header-footer-layout=limited] #header .utility-search-ctas .nav-actions.-split .nav-item:last-child{
-  width:auto;
-}
-[data-header-footer-layout=limited] #header .nav-content>.nav-actions.-mobile .nav-item:first-child{
-  width:100%;
 }
 
 [data-header-footer-layout=none] .content-header{
