@@ -464,11 +464,21 @@ export const customScript = function (App, DonationFrequency) {
     emailParent &&
     nameParent
   ) {
+    let previousRecipientCount = document.querySelectorAll(
+      ".en__ecardrecipients__recipient .ecardrecipient__email"
+    ).length;
+
     const clearInputs = () => {
-      if (nameInput.value && emailInput.value) {
+      let currentRecipientCount = document.querySelectorAll(
+        ".en__ecardrecipients__recipient .ecardrecipient__email"
+      ).length;
+
+      if (currentRecipientCount > previousRecipientCount) {
         nameInput.value = "";
         emailInput.value = "";
       }
+
+      previousRecipientCount = currentRecipientCount;
     };
 
     addRecipientButton2.addEventListener("click", clearInputs);

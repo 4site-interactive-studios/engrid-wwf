@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, May 10, 2023 @ 01:02:35 ET
+ *  Date: Wednesday, May 10, 2023 @ 09:19:58 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.69
  *  ENGrid scripts: v0.13.69
@@ -18430,11 +18430,17 @@ const customScript = function (App, DonationFrequency) {
   const nameParent = document.querySelector(".en__ecardrecipients__name");
 
   if (addRecipientButton2 && nameInput && emailInput && recipientsList && recipientsListLabel && emailParent && nameParent) {
+    let previousRecipientCount = document.querySelectorAll(".en__ecardrecipients__recipient .ecardrecipient__email").length;
+
     const clearInputs = () => {
-      if (nameInput.value && emailInput.value) {
+      let currentRecipientCount = document.querySelectorAll(".en__ecardrecipients__recipient .ecardrecipient__email").length;
+
+      if (currentRecipientCount > previousRecipientCount) {
         nameInput.value = "";
         emailInput.value = "";
       }
+
+      previousRecipientCount = currentRecipientCount;
     };
 
     addRecipientButton2.addEventListener("click", clearInputs);
