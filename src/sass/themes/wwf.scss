@@ -1538,6 +1538,12 @@
     }
   }
 
+  .en__component--socialshareblock::before {
+    @media screen and (max-width: 1024px) {
+      content: "SHARE";
+    }
+  }
+
   /* Tweet to Target Widget */
   .en__component--tweetcontactblock {
     /* @TODO Investigate: For some reason the Tweet button border does not appear solely by setting the correspinding variabels */
