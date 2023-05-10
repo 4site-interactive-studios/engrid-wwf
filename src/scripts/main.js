@@ -285,42 +285,50 @@ export const customScript = function (App, DonationFrequency) {
 
   const ccvvLabel = document.querySelector(".en__field--ccvv > label");
   const titleLabel = document.querySelector(
-    ".en__field--title.en__mandatory > label"
+    "[data-engrid-page-type='emailtotarget'] .en__field--title.en__mandatory > label"
   );
   if (ccvvLabel || titleLabel) {
     App.loadJS("https://unpkg.com/@popperjs/core@2", () => {
       App.loadJS("https://unpkg.com/tippy.js@6", () => {
-        // Add "what's this" markup to the CVV field
         if (ccvvLabel) {
-          let el = document.createElement("span");
-          let childEl = document.createElement("a");
-          childEl.href = "#";
-          childEl.id = "ccv-tooltip";
-          childEl.className = "label-tooltip";
-          childEl.tabIndex = "-1";
-          childEl.innerText = "What's this?";
-          childEl.addEventListener("click", (e) => e.preventDefault());
-          el.appendChild(childEl);
-          ccvvLabel.appendChild(el);
+          let link = document.createElement("a");
+          link.href = "#";
+          link.id = "ccv-tooltip";
+          link.className = "label-tooltip";
+          link.tabIndex = "-1";
+          link.innerText = "What's this?";
+          link.addEventListener("click", (e) => e.preventDefault());
+          ccvvLabel.insertAdjacentElement("afterend", link);
+
+          let wrapper = document.createElement("span");
+          wrapper.className = "label-wrapper";
+          ccvvLabel.parentNode.insertBefore(wrapper, ccvvLabel);
+          wrapper.appendChild(ccvvLabel);
+          wrapper.appendChild(link);
+
           tippy("#ccv-tooltip", {
             theme: "light",
             content:
               "The three or four digit security code on your debit or credit card to verify transactions when your card is not present.",
           });
         }
-        // Add "Why is this required?" markup to the Title field
-        // Only show it if the Title field is marked as required
+
         if (titleLabel) {
-          let el = document.createElement("span");
-          let childEl = document.createElement("a");
-          childEl.href = "#";
-          childEl.id = "title-tooltip";
-          childEl.className = "label-tooltip";
-          childEl.tabIndex = "-1";
-          childEl.innerText = "Why is this required?";
-          childEl.addEventListener("click", (e) => e.preventDefault());
-          el.appendChild(childEl);
-          titleLabel.appendChild(el);
+          let link = document.createElement("a");
+          link.href = "#";
+          link.id = "title-tooltip";
+          link.className = "label-tooltip";
+          link.tabIndex = "-1";
+          link.innerText = "Why is this required?";
+          link.addEventListener("click", (e) => e.preventDefault());
+          titleLabel.insertAdjacentElement("afterend", link);
+
+          let wrapper = document.createElement("span");
+          wrapper.className = "label-wrapper";
+          titleLabel.parentNode.insertBefore(wrapper, titleLabel);
+          wrapper.appendChild(titleLabel);
+          wrapper.appendChild(link);
+
           tippy("#title-tooltip", {
             theme: "light",
             content:
@@ -330,6 +338,7 @@ export const customScript = function (App, DonationFrequency) {
       });
     });
   }
+
   const fillCount = document.querySelector(".enWidget__fill__count")
     ? document.querySelector(".enWidget__fill__count").innerText
     : 0;

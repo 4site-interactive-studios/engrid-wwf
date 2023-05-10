@@ -1393,12 +1393,9 @@
   }
 
   // Tooltips added to field labels
-  label a.label-tooltip {
-    --label_color: #006da4;
-    text-decoration: none;
-    font-size: 16px;
-    font-weight: 400;
-    line-height: 24px;
+  a.label-tooltip {
+    --a_color: #006da4;
+    --a_text-decoration: none;
   }
 
   // Prevent interactions with the Header and Footer when in Page Builder
