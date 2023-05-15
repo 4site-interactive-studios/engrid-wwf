@@ -90,8 +90,8 @@
   }
 
   .inline-upsell-box {
-    margin-left: 8px;
-    margin-right: 8px;
+    margin-left: var(--inline-upsell-box_margin-left);
+    margin-right: var(--inline-upsell-box_margin-right);
   }
 
   @media screen and (max-width: 601px) {

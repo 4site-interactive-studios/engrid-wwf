@@ -194,6 +194,12 @@
   --email-subscription-nudge: "Are you sure? We'd like to share how you're making a difference.";
   --textarea_line-height: 24px;
 
+  --inline-upsell-box_margin-left: 8px;
+  --inline-upsell-box_margin-right: 8px;
+  --inline-upsell-box_font-size: 15px;
+  --inline-upsell-box_line-height: 24px;
+  --inline-upsell-box-svg_margin-left: 53px;
+
   /* Recurring Frequency Button Heart Icon */
   // .radio-to-buttons_recurrfreq
   //   .en__field--recurrfreq.en__field--radio
@@ -1125,7 +1131,9 @@
   }
 
   // When the email field has a non-invalid error caused by FreshAddress, we want to keep the label in its normal color state
-  .en__field--emailAddress.en__field--validationFailed:not([data-freshaddress-safetosendstatus="invalid"])
+  .en__field--emailAddress.en__field--validationFailed:not(
+      [data-freshaddress-safetosendstatus="invalid"]
+    )
     > label {
     color: var(--label_color);
   }
@@ -1141,8 +1149,8 @@
     color: #c60060;
     // margin-bottom: 1.25rem;
     font-style: italic;
-    --p_font-size: 15px;
-    --p_line-height: 24px;
+    --p_font-size: var(--inline-upsell-box_font-size);
+    --p_line-height: var(--inline-upsell-box_line-height);
     --p_font-weight: 400;
     min-height: 88px;
     border-radius: 4px;
@@ -1168,7 +1176,7 @@
       top: 1px;
       // transform: scaleX(-1);
       width: 40px;
-      margin-left: 53px;
+      margin-left: var(--inline-upsell-box-svg_margin-left);
     }
   }
 
@@ -1264,7 +1272,9 @@
   }
 
   // On premium pages, when the visitor is not in the US, hide the premium gift options other than the no gift option
-  &:not([data-engrid-demo])[data-engrid-page-type="premiumgift"]:not([data-engrid-country="US"])
+  &:not([data-engrid-demo])[data-engrid-page-type="premiumgift"]:not(
+      [data-engrid-country="US"]
+    )
     .en__pgList[data-nogift] {
     // Force the no gift option to always appear selected
     .en__pg__select input:before {
@@ -1788,7 +1798,7 @@
 
 @media screen and (max-width: 1024px) and (min-width: 1024px) {
   .inline-upsell-box svg {
-    margin-left: 36px;
+    --inline-upsell-box-svg_margin-left: 36px;
   }
 }
 
@@ -1818,12 +1828,16 @@
   }
 }
 
-&:not(#en__pagebuilder):not([data-engrid-debug]):not([data-engrid-page-type="donation"])
+&:not(#en__pagebuilder):not([data-engrid-debug]):not(
+    [data-engrid-page-type="donation"]
+  )
   .showif-donation {
   display: none;
 }
 
-&:not(#en__pagebuilder):not([data-engrid-debug])[data-engrid-page-type="donation"]
+&:not(#en__pagebuilder):not(
+    [data-engrid-debug]
+  )[data-engrid-page-type="donation"]
   .showif-not-donation {
   display: none;
 }
@@ -1971,7 +1985,7 @@
       line-height: 24px;
     }
     svg {
-      margin-left: 30px;
+      --inline-upsell-box-svg_margin-left: 30px;
     }
   }
 
