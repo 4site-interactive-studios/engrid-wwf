@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, May 16, 2023 @ 13:33:26 ET
+ *  Date: Tuesday, May 16, 2023 @ 13:55:21 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.69
  *  ENGrid scripts: v0.13.69
@@ -18327,7 +18327,7 @@ const customScript = function (App, DonationFrequency) {
           wrapper.appendChild(link);
           tippy("#title-tooltip", {
             theme: "light",
-            content: "The U.S. Senate is now requiring that all letters include a title. Please select one in order to ensure that your action lands in the inbox of your Senator."
+            content: "The US Senate requires all messages sent to Senators include a title. We understand that not all gender identities are represented, but title options vary by office. To ensure that your message reaches your Senator(s), we've listed only the options accepted by a majority of offices."
           });
         }
       });
