@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, May 16, 2023 @ 18:44:10 ET
+ *  Date: Tuesday, May 16, 2023 @ 18:46:06 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.69
  *  ENGrid scripts: v0.13.69
@@ -9189,6 +9189,10 @@ class engrid_ENGrid {
   }
 
   static isVisible(element) {
+    if (!element) {
+      return false;
+    }
+
     return !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length);
   }
 
@@ -9361,8 +9365,10 @@ class DonationFrequency {
 
 
   load() {
-    this.frequency = engrid_ENGrid.getFieldValue("transaction.recurrfreq");
-    this.recurring = engrid_ENGrid.getFieldValue("transaction.recurrpay"); // ENGrid.enParseDependencies();
+    const freqField = engrid_ENGrid.getField("transaction.recurrfreq");
+    if (freqField) this.frequency = engrid_ENGrid.getFieldValue("transaction.recurrfreq");
+    const recurrField = engrid_ENGrid.getField("transaction.recurrpay");
+    if (recurrField) this.recurring = engrid_ENGrid.getFieldValue("transaction.recurrpay"); // ENGrid.enParseDependencies();
   } // Force a new recurrency
 
 
