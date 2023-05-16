@@ -1774,6 +1774,17 @@
   }
 }
 
+// Adds a tiny close button when the primary input device does not support hover
+@media (hover: none) {
+  .tippy-box:after {
+    content: "x";
+    position: absolute;
+    top: calc(-4px + 0.5rem);
+    right: 0.5rem;
+    font-weight: 700;
+  }
+}
+
 /* Add your custom theme styles here */
 @mixin until-mobile-l {
   // STYLES
