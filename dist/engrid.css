@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, May 16, 2023 @ 13:05:12 ET
+ *  Date: Tuesday, May 16, 2023 @ 13:33:26 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.69
  *  ENGrid scripts: v0.13.69
@@ -4190,6 +4190,11 @@ button.en__eventOccurrence__select>label{
 }
 .en__component--contactblock,.en__contact--open .en__contact__toggle,.en__contact__detail,.en__contact__toggle{
   background-color:initial;
+}
+
+.en__contactMessage--typePlainText textarea,.en__contactSubject input{
+  margin-bottom:var(--fields_spacing-block);
+  margin-top:calc(var(--fields_spacing-inline)*.5);
 }
 
 #en__field_transaction_ccnumber{
