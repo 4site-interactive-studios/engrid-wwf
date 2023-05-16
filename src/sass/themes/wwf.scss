@@ -356,6 +356,14 @@
   //   }
   // }
 
+  // Prevents modals like the eCard preview modal from being hidden behind the header and footer
+  body:not(#en__pagebuilder) .content-footer,
+  body:not(#en__pagebuilder) .content-footerSpacer,
+  body:not(#en__pagebuilder) .content-header,
+  body:not(#en__pagebuilder) .content-preFooter {
+    z-index: 3;
+  }
+
   // Hide the label even when there is an error on the filed (e.g. Amount entered is below the threshold)
   &:not(#en__pagebuilder):not([data-engrid-debug])
     .en__field--donationAmt.en__field--validationFailed
