@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, May 16, 2023 @ 20:07:17 ET
- *  By: bryancasler
+ *  Date: Tuesday, May 16, 2023 @ 21:52:16 ET
+ *  By: fernando
  *  ENGrid styles: v0.13.69
  *  ENGrid scripts: v0.13.69
  *
@@ -19779,8 +19779,15 @@ window.EngridTranslate = {
     field: "transaction.infpostcd",
     translation: "Recipient ZIP Code"
   }]
-};
-new App(options);
+}; // 800ms delay for Firefox
+
+if (navigator.userAgent.indexOf("Firefox") != -1) {
+  window.setTimeout(() => {
+    new App(options);
+  }, 800);
+} else {
+  new App(options);
+}
 })();
 
 /******/ })()
