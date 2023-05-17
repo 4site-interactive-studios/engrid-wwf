@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, May 16, 2023 @ 21:52:16 ET
- *  By: fernando
+ *  Date: Wednesday, May 17, 2023 @ 12:13:32 ET
+ *  By: bryancasler
  *  ENGrid styles: v0.13.69
  *  ENGrid scripts: v0.13.69
  *
@@ -18498,6 +18498,29 @@ const customScript = function (App, DonationFrequency) {
 
 
   App.addHtml('<div style="display: none;" class="en__component en__component--copyblock grey-box email-subscription-nudge engrid__supporterquestions608540-N"><p></p></div>', ".universal-opt-in", "after");
+
+  function hideOptInDependentElements() {
+    // If the SMS opt-in does not appear on the page hide the Mobile Phone Number field and its disclosure
+    let smsOptIn = document.querySelector(".en__field--600302");
+    let phoneNumberField = document.querySelector(".en__field--phoneNumber2");
+    let smsDisclosure = document.querySelector(".sms-disclosure");
+
+    if (!smsOptIn && phoneNumberField && smsDisclosure) {
+      phoneNumberField.classList.add("hide");
+      smsDisclosure.classList.add("hide");
+    } // If the SMS opt-in and the EMail opt-in do not appear on the page hide the "be a part of our community" copy block
+
+
+    let emailOptIn = document.querySelector(".en__field--608540");
+    let communityBlock = document.querySelector(".be-a-part-of-our-community");
+
+    if (!smsOptIn && !emailOptIn && communityBlock) {
+      communityBlock.classList.add("hide");
+    }
+  } // Call the function
+
+
+  hideOptInDependentElements();
 };
 ;// CONCATENATED MODULE: ./src/scripts/page-header-footer.js
 const pageHeaderFooter = function (App) {
