@@ -78,13 +78,13 @@
 
   // TYPOGRAPHY A
   // --a_font-family: var(--default_font-family);
-  // --a_color: initial;
-  // --a_text-decoration: underline;
+  --a_color: #006ea5;
+  --a_text-decoration: none;
 
   // TYPOGRAPHY A:FOCUS
   // TYPOGRAPHY A:HOVER
   // --a_color_hover: var(--a_color);
-  // --a_text-decoration_hover: initial;
+  // --a_text-decoration_hover: underline;
 
   // TYPOGRAPHY INPUT
   // --input_font-family: var(--default_font-family);
@@ -1414,7 +1414,7 @@
 
   // Tooltips added to field labels
   a.label-tooltip {
-    --a_color: #006da4;
+    --a_color: #006ea5;
     --a_text-decoration: none;
   }
 
@@ -1607,10 +1607,10 @@
   //   transform: rotate(180deg);
   //   cursor: pointer;
   // }
-  .get-involved a,
-  .get-involved a:hover {
-    text-decoration: none;
-  }
+  // .get-involved a,
+  // .get-involved a:hover {
+  //   text-decoration: none;
+  // }
 
   .involved-action {
     margin: 0 auto;

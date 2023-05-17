@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, May 17, 2023 @ 13:39:51 ET
+ *  Date: Wednesday, May 17, 2023 @ 15:57:55 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.69
  *  ENGrid scripts: v0.13.69
@@ -7636,6 +7636,8 @@ body[data-engrid-debug]:before{
   --h2_font-size:20px;
   --h2_font-weight:700;
   --h2_line-height:32px;
+  --a_color:#006ea5;
+  --a_text-decoration:none;
   --input_background-color:#fff;
   --input_border-color:grey;
   --input_border-radius:2px;
@@ -8538,7 +8540,7 @@ body[data-engrid-debug]:before{
   fill:#fff;
 }
 [data-engrid-theme=wwf] a.label-tooltip{
-  --a_color:#006da4;
+  --a_color:#006ea5;
   --a_text-decoration:none;
 }
 [data-engrid-theme=wwf]#en__pagebuilder>footer,[data-engrid-theme=wwf]#en__pagebuilder>header{
@@ -8660,9 +8662,6 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf] .en__component--tweetcontactblock .en__twitterTarget__details span{
   color:var(--label_color);
   font-weight:var(--label_font-weight);
-}
-[data-engrid-theme=wwf] .get-involved a,[data-engrid-theme=wwf] .get-involved a:hover{
-  text-decoration:none;
 }
 [data-engrid-theme=wwf] .involved-action{
   grid-gap:1rem;
