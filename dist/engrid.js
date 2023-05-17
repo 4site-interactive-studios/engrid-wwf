@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, May 17, 2023 @ 12:13:32 ET
+ *  Date: Wednesday, May 17, 2023 @ 13:39:51 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.69
  *  ENGrid scripts: v0.13.69
@@ -18520,7 +18520,97 @@ const customScript = function (App, DonationFrequency) {
   } // Call the function
 
 
-  hideOptInDependentElements();
+  hideOptInDependentElements(); // GTM / GA / GCLID Retrieval and Population
+  // Get GCLID from Local Storage
+
+  const getGclidFromLocalStorage = () => {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+
+      if (key && key.includes("gclid")) {
+        return localStorage.getItem(key);
+      }
+    }
+
+    return null;
+  }; // Get GCLID from GAC cookie
+
+
+  const getGclidFromCookie = () => {
+    const match = document.cookie.match("(^|;)\\s*_gac\\s*=\\s*([^;]+)");
+    return match ? match.pop() : null;
+  }; // Get GCLID from URL
+
+
+  const getGclidFromUrl = () => {
+    const url = window.location.href;
+    let gclid = null;
+
+    if (url.includes("gclid")) {
+      const urlParts = url.split("gclid=");
+
+      if (urlParts[1]) {
+        gclid = urlParts[1].split("&")[0];
+      }
+    }
+
+    return gclid;
+  };
+
+  const handleGclid = () => {
+    try {
+      // Check if .en__submit exists on the page
+      if (!document.querySelector(".en__submit")) {
+        return;
+      }
+
+      const gclid = getGclidFromLocalStorage() || getGclidFromCookie() || getGclidFromUrl();
+
+      if (gclid) {
+        const transactionField = document.querySelector('input[name="transaction.othamt4"]');
+
+        if (transactionField) {
+          transactionField.value = gclid;
+        } else {
+          const transactionHTML = `
+                    <div class="en__field en__field--text en__field--othamt4 hide">
+                        <label for="en__field_transaction_othamt4" class="en__field__label" style="">GCLID (Other 4)</label>
+                        <div class="en__field__element en__field__element--text">
+                            <input id="en__field_transaction_othamt4" type="text" class="en__field__input en__field__input--text" name="transaction.othamt4" value="${gclid}">
+                        </div>
+                    </div>
+                `;
+          const submitButton = document.querySelector(".en__submit");
+
+          if (submitButton) {
+            submitButton.insertAdjacentHTML("afterend", transactionHTML);
+          } else {
+            throw new Error(".en__submit element not found");
+          }
+        }
+      } else {
+        console.log("No GCLID found");
+      }
+    } catch (error) {
+      console.error("Error handling GCLID:", error);
+    }
+  }; // Add a listener for when GA4 is loaded
+
+
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: "gtm.js",
+    "gtm.start": new Date().getTime(),
+    "gtm.uniqueEventId": 0
+  });
+  window.dataLayer.push({
+    event: "GA4_loaded",
+    callback: handleGclid
+  }); // Fallback to check for GCLID once the page has finished loading
+
+  window.addEventListener("load", handleGclid); // Perform an immediate check for the GCLID
+
+  handleGclid();
 };
 ;// CONCATENATED MODULE: ./src/scripts/page-header-footer.js
 const pageHeaderFooter = function (App) {
