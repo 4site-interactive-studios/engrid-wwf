@@ -1774,7 +1774,7 @@
   }
 }
 
-// Adds a tiny close button when the primary input device does not support hover
+// Adds a tiny close button on the Tippy Tooltip when the primary input device does not support hover
 @media (hover: none) {
   .tippy-box:after {
     content: "x";
