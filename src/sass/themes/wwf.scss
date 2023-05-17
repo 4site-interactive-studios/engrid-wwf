@@ -84,7 +84,7 @@
   // TYPOGRAPHY A:FOCUS
   // TYPOGRAPHY A:HOVER
   // --a_color_hover: var(--a_color);
-  // --a_text-decoration_hover: underline;
+  --a_text-decoration_hover: underline;
 
   // TYPOGRAPHY INPUT
   // --input_font-family: var(--default_font-family);
@@ -357,10 +357,10 @@
   // }
 
   // Prevents modals like the eCard preview modal from being hidden behind the header and footer
-  body:not(#en__pagebuilder) .content-footer,
-  body:not(#en__pagebuilder) .content-footerSpacer,
-  body:not(#en__pagebuilder) .content-header,
-  body:not(#en__pagebuilder) .content-preFooter {
+  &[data-engrid-page-type="e-card"]:not(#en__pagebuilder) .content-footer,
+  &[data-engrid-page-type="e-card"]:not(#en__pagebuilder) .content-footerSpacer,
+  &[data-engrid-page-type="e-card"]:not(#en__pagebuilder) .content-header,
+  &[data-engrid-page-type="e-card"]:not(#en__pagebuilder) .content-preFooter {
     z-index: 3;
   }
 
