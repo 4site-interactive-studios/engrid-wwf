@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, May 17, 2023 @ 20:29:57 ET
+ *  Date: Wednesday, May 17, 2023 @ 21:25:41 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.69
  *  ENGrid scripts: v0.13.69
@@ -5044,22 +5044,27 @@ body:not(#en__pagebuilder):not([data-engrid-debug]) [class*=showifamount].animat
 [data-engrid-theme][data-engrid-page-type=supporterhub] .en__hubPledge__column{
   width:100%;
 }
-[data-engrid-theme][data-engrid-page-type=supporterhub] .en__hubPledge__buttons .en__submit:first-child{
-  margin-right:1rem;
-}
-[data-engrid-theme][data-engrid-page-type=supporterhub] .en__hubPledge__buttons .en__submit:last-child{
-  margin-left:1rem;
-}
-[data-engrid-theme][data-engrid-page-type=supporterhub] .en__hubPledge__buttons .en__submit:first-child:last-child{
-  margin-left:0;
-  margin-right:0;
+[data-engrid-theme][data-engrid-page-type=supporterhub] .en__hubPledge__buttons{
+  grid-gap:2rem;
+  align-items:center;
+  gap:2rem;
 }
 [data-engrid-theme][data-engrid-page-type=supporterhub] .en__hubPledge__validationFail .en__field__element{
   border:none;
 }
-
-.en__component--hubgadget>img[src*=pageassets]{
+@media screen and (max-width:768px){
+  [data-engrid-theme] .en__hubPledge__buttons{
+    flex-direction:column;
+  }
+  [data-engrid-theme] .en__hubPledge__buttons .en__submit button{
+    margin:0;
+  }
+}
+[data-engrid-theme] .en__component--hubgadget>img[src*=pageassets]{
   max-width:72px;
+}
+[data-engrid-theme] .en__pagination .en__button{
+  word-break:keep-all;
 }
 
 #en__pagebuilder div.en__component.engrid-ticker{
@@ -8843,6 +8848,16 @@ body[data-engrid-debug]:before{
 }
 [data-engrid-theme=wwf]:not(#en__pagebuilder):not([data-engrid-debug]):not([data-engrid-page-type=donation]) .showif-donation,[data-engrid-theme=wwf]:not(#en__pagebuilder):not([data-engrid-debug])[data-engrid-page-type=donation] .showif-not-donation{
   display:none;
+}
+[data-engrid-theme=wwf] .en__hubOverlay--memCardUpdate>.en__hubOverlay__popup,[data-engrid-theme=wwf] .en__hubOverlay--membership>.en__hubOverlay__popup,[data-engrid-theme=wwf] .en__hubOverlay--membershipHistory>.en__hubOverlay__popup,[data-engrid-theme=wwf] .en__hubOverlay--membershipRenew>.en__hubOverlay__popup,[data-engrid-theme=wwf] .en__hubOverlay--pledge .en__hubOverlay__popup,[data-engrid-theme=wwf] .en__hubOverlay--pledgeRoi .en__hubOverlay__popup,[data-engrid-theme=wwf] .en__hubOverlay--supporterdetails .en__hubOverlay__popup,[data-engrid-theme=wwf] .en__hubOverlay--supportersubscriptions .en__hubOverlay__popup,[data-engrid-theme=wwf] .en__hubOverlay--txngiving>.en__hubOverlay__popup,[data-engrid-theme=wwf] .en__hubOverlay__impact>.en__hubOverlay__popup{
+  max-width:37.5rem;
+}
+[data-engrid-theme=wwf] .en__hubPledge__icon{
+  display:none;
+}
+[data-engrid-theme=wwf] .en__hubOverlay__impact .en__hubOverlay__content>div{
+  background:none;
+  padding:0;
 }
 @media screen and (max-width:1024px){
   [data-engrid-theme=wwf]:not(#en__pagebuilder):not([data-engrid-debug]) .showif-desktop{

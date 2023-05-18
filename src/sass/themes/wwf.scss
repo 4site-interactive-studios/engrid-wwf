@@ -1863,6 +1863,30 @@
   display: none;
 }
 
+.en__hubOverlay--supporterdetails .en__hubOverlay__popup,
+.en__hubOverlay--supportersubscriptions .en__hubOverlay__popup,
+.en__hubOverlay--pledge .en__hubOverlay__popup,
+.en__hubOverlay--pledgeRoi .en__hubOverlay__popup,
+.en__hubOverlay--membership > .en__hubOverlay__popup,
+.en__hubOverlay--membershipHistory > .en__hubOverlay__popup,
+.en__hubOverlay--memCardUpdate > .en__hubOverlay__popup,
+.en__hubOverlay--membershipRenew > .en__hubOverlay__popup,
+.en__hubOverlay--txngiving > .en__hubOverlay__popup,
+.en__hubOverlay__impact > .en__hubOverlay__popup {
+  max-width: 37.5rem;
+}
+
+// Remove Pledge Icon from Supporter Hub widget
+.en__hubPledge__icon {
+  display: none;
+}
+
+// Remove Impact Icon from Supporter Hub widget
+.en__hubOverlay__impact .en__hubOverlay__content > div {
+  padding: 0;
+  background: none;
+}
+
 @media screen and (max-width: 1024px) {
   &:not(#en__pagebuilder):not([data-engrid-debug]) .showif-desktop {
     display: none;
