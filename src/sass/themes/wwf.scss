@@ -1833,16 +1833,16 @@
     width: calc(100% - 40px - 3rem - var(--launcher-width));
     left: calc(20px + 1rem);
   }
-  &[data-engrid-page-type="premiumgift"],
-  &[data-engrid-page-type="donation"] {
-    ul.nav-actions.-mobile {
-      display: none !important;
-    }
-    #header {
-      margin-bottom: 0 !important;
-      border-bottom: 1px solid #ccc;
-    }
-  }
+  // &[data-engrid-page-type="premiumgift"],
+  // &[data-engrid-page-type="donation"] {
+  //   ul.nav-actions.-mobile {
+  //     display: none !important;
+  //   }
+  //   #header {
+  //     margin-bottom: 0 !important;
+  //     border-bottom: 1px solid #ccc;
+  //   }
+  // }
 
   iframe#launcher {
     margin-right: calc(20px + 1rem) !important;
