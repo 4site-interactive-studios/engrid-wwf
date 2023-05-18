@@ -1623,7 +1623,7 @@
     margin-top: 40px;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
   }
 
   .get-involved a:not(:last-child) {
@@ -1637,16 +1637,16 @@
   }
 
   .involved-action__image {
-    flex: 0 0 33%;
+    flex: 0 0 50%;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
   .involved-action__image img {
-    width: 100%;
+    width: 100% !important;
     min-height: 100%;
-    height: auto;
+    height: auto !important;
   }
 
   .involved-action__header {

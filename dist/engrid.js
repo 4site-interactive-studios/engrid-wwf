@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, May 17, 2023 @ 16:06:05 ET
+ *  Date: Wednesday, May 17, 2023 @ 20:11:04 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.69
  *  ENGrid scripts: v0.13.69
@@ -18611,6 +18611,31 @@ const customScript = function (App, DonationFrequency) {
   window.addEventListener("load", handleGclid); // Perform an immediate check for the GCLID
 
   handleGclid();
+  /**
+   * Function to rearrange eCard related elements on the page.
+   * Moves .en__ecarditems__action to come after .en__ecardmessage and
+   * moves .en__ecardrecipients__futureDelivery to come after .en__ecardrecipients.
+   */
+
+  function rearrangeEcardElements() {
+    // Get the elements
+    const ecardItemsAction = document.querySelector(".en__ecarditems__action");
+    const ecardMessage = document.querySelector(".en__ecardmessage");
+    const ecardRecipientsFutureDelivery = document.querySelector(".en__ecardrecipients__futureDelivery");
+    const ecardRecipients = document.querySelector(".en__ecardrecipients"); // Move .en__ecarditems__action so it comes after .en__ecardmessage
+
+    if (ecardItemsAction && ecardMessage) {
+      ecardMessage.insertAdjacentElement("afterend", ecardItemsAction);
+    } // Move .en__ecardrecipients__futureDelivery so it comes after .en__ecardrecipients
+
+
+    if (ecardRecipientsFutureDelivery && ecardRecipients) {
+      ecardRecipients.insertAdjacentElement("afterend", ecardRecipientsFutureDelivery);
+    }
+  } // Call the function
+
+
+  rearrangeEcardElements();
 };
 ;// CONCATENATED MODULE: ./src/scripts/page-header-footer.js
 const pageHeaderFooter = function (App) {
