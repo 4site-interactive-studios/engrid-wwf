@@ -686,4 +686,47 @@ export const customScript = function (App, DonationFrequency) {
 
   // Call the function
   rearrangeEcardElements();
+
+  // Prevents the Credit Card field value from incrementing/decrementing when scrolling up/down if it's of type="number"
+  // REF: https://stackoverflow.com/questions/9712295/disable-scrolling-on-input-type-number
+  // 4Site Note: We suggest the CC field by type="tel" which would remove the need for this and provide other benefits
+  let ccNumberField = document.querySelector(
+    'input[name="transaction.ccnumber"]'
+  );
+
+  if (ccNumberField) {
+    ccNumberField.addEventListener("wheel", () => {
+      ccNumberField.blur();
+    });
+  }
+
+  if (
+    pageJson &&
+    (pageJson.pageType === "premiumgift" || pageJson.pageType === "donation") &&
+    pageJson.pageNumber === 1
+  ) {
+    window.zE ||
+      (function (e, t, s) {
+        var n =
+            (window.zE =
+            window.zEmbed =
+              function () {
+                n._.push(arguments);
+              }),
+          a = (n.s = e.createElement(t)),
+          r = e.getElementsByTagName(t)[0];
+        (n.set = function (e) {
+          n.set._.push(e);
+        }),
+          (n._ = []),
+          (n.set._ = []),
+          (a.async = true),
+          a.setAttribute("charset", "utf-8"),
+          (a.src =
+            "https://static.zdassets.com/ekr/asset_composer.js?key=" + s),
+          (n.t = +new Date()),
+          (a.type = "text/javascript"),
+          r.parentNode.insertBefore(a, r);
+      })(document, "script", "7f237240-f3c5-4922-aa1f-b4c70aa52d65");
+  }
 };
