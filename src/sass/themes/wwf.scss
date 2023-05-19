@@ -1851,7 +1851,7 @@
 
 &:not(#en__pagebuilder):not([data-engrid-debug]):not(
     [data-engrid-page-type="donation"]
-  )
+  ):not([data-engrid-page-type="premiumgift"])
   .showif-donation {
   display: none;
 }
@@ -1859,6 +1859,10 @@
 &:not(#en__pagebuilder):not(
     [data-engrid-debug]
   )[data-engrid-page-type="donation"]
+  .showif-not-donation,
+&:not(#en__pagebuilder):not(
+    [data-engrid-debug]
+  )[data-engrid-page-type="premiumgift"]
   .showif-not-donation {
   display: none;
 }
