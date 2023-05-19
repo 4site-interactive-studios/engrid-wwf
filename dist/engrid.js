@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, May 19, 2023 @ 10:22:20 ET
- *  By: bryancasler
+ *  Date: Friday, May 19, 2023 @ 14:53:12 ET
+ *  By: fernando
  *  ENGrid styles: v0.13.69
  *  ENGrid scripts: v0.13.69
  *
@@ -9556,18 +9556,7 @@ class App extends engrid_ENGrid {
       document.addEventListener("DOMContentLoaded", () => {
         this.run();
       });
-    } // Window Load
-
-
-    let onLoad = typeof window.onload === "function" ? window.onload : null;
-
-    window.onload = e => {
-      this.onLoad();
-
-      if (onLoad) {
-        onLoad.bind(window, e);
-      }
-    }; // Window Resize
+    } // Window Resize
 
 
     window.onresize = () => {
@@ -9580,7 +9569,7 @@ class App extends engrid_ENGrid {
       this.logger.danger("Engaging Networks JS Framework NOT FOUND");
       setTimeout(() => {
         this.run();
-      }, 10);
+      }, 100);
       return;
     } // If there's an option object on the page, override the defaults
 
@@ -9780,7 +9769,21 @@ class App extends engrid_ENGrid {
 
     engrid_ENGrid.setBodyData("data-engrid-scripts-js-loading", "finished");
     window.EngridVersion = AppVersion;
-    this.logger.success(`VERSION: ${AppVersion}`);
+    this.logger.success(`VERSION: ${AppVersion}`); // Window Load
+
+    let onLoad = typeof window.onload === "function" ? window.onload : null;
+
+    if (document.readyState !== "loading") {
+      this.onLoad();
+    } else {
+      window.onload = e => {
+        this.onLoad();
+
+        if (onLoad) {
+          onLoad.bind(window, e);
+        }
+      };
+    }
   }
 
   onLoad() {
@@ -19917,15 +19920,8 @@ window.EngridTranslate = {
     field: "transaction.infpostcd",
     translation: "Recipient ZIP Code"
   }]
-}; // 800ms delay for Firefox
-
-if (navigator.userAgent.indexOf("Firefox") != -1) {
-  window.setTimeout(() => {
-    new App(options);
-  }, 800);
-} else {
-  new App(options);
-}
+};
+new App(options);
 })();
 
 /******/ })()

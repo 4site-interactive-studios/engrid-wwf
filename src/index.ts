@@ -154,11 +154,4 @@ const options: Options = {
     { field: "transaction.infpostcd", translation: "Recipient ZIP Code" },
   ],
 };
-// 800ms delay for Firefox
-if (navigator.userAgent.indexOf("Firefox") != -1) {
-  window.setTimeout(() => {
-    new App(options);
-  }, 800);
-} else {
-  new App(options);
-}
+new App(options);
