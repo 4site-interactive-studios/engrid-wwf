@@ -729,4 +729,16 @@ export const customScript = function (App, DonationFrequency) {
           r.parentNode.insertBefore(a, r);
       })(document, "script", "7f237240-f3c5-4922-aa1f-b4c70aa52d65");
   }
+
+  // Function to load BugHerd script
+  const loadBugHerdScript = () => {
+    const script = document.createElement("script");
+    script.src =
+      "https://www.bugherd.com/sidebarv2.js?apikey=rrtm8eyxomjfjthcue06hq";
+    script.async = true;
+    document.body.appendChild(script);
+  };
+
+  // Call the function to load the script
+  loadBugHerdScript();
 };
