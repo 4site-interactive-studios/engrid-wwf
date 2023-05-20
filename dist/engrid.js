@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, May 19, 2023 @ 20:31:03 ET
+ *  Date: Friday, May 19, 2023 @ 20:36:15 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.69
  *  ENGrid scripts: v0.13.69
@@ -13946,6 +13946,7 @@ class FreshAddress {
     if (this.emailField) {
       this.createFields();
       this.addEventListeners();
+      window.FreshAddressStatus = "idle";
 
       if (this.emailField.value) {
         this.logger.log("E-mail Field Found");
@@ -14028,12 +14029,12 @@ class FreshAddress {
 
     if (!this.options || !window.FreshAddress) return;
     if (!this.shouldRun) return;
+    window.FreshAddressStatus = "validating";
     const email = (_a = this.emailField) === null || _a === void 0 ? void 0 : _a.value;
     const options = {
       emps: false,
       rtc_timeout: 1200
     };
-    engrid_ENGrid.disableSubmit("Validating Your Email");
     const ret = window.FreshAddress.validateEmail(email, options).then(response => {
       this.logger.log("Validate API Response", JSON.parse(JSON.stringify(response)));
       return this.validateResponse(response);
@@ -14090,6 +14091,7 @@ class FreshAddress {
       this.writeToFields("API Error", "Unknown Error");
     }
 
+    window.FreshAddressStatus = "idle";
     engrid_ENGrid.enableSubmit();
   }
 
@@ -14108,16 +14110,40 @@ class FreshAddress {
       return;
     }
 
-    if (this.faStatus.value === "Invalid") {
+    if (window.FreshAddressStatus === "validating") {
+      this.logger.log("Waiting for API Response"); // Self resolving Promise that waits 1000ms
+
+      const wait = new Promise((resolve, reject) => {
+        setTimeout(() => {
+          var _a;
+
+          const status = this.faStatus.value;
+
+          if (status === "" || status === "Invalid") {
+            this.logger.log("Promise Rejected");
+            (_a = this.emailField) === null || _a === void 0 ? void 0 : _a.focus();
+            reject(false);
+            return;
+          }
+
+          this.logger.log("Promise Resolved");
+          resolve(true);
+        }, 700);
+      });
+      this.form.validatePromise = wait;
+      return;
+    } else if (this.faStatus.value === "Invalid") {
       this.form.validate = false;
       window.setTimeout(() => {
         engrid_ENGrid.setError(this.emailWrapper, this.faMessage.value);
       }, 100);
       (_a = this.emailField) === null || _a === void 0 ? void 0 : _a.focus();
-      return;
+      engrid_ENGrid.enableSubmit();
+      return false;
     }
 
     this.form.validate = true;
+    return true;
   }
 
 }
