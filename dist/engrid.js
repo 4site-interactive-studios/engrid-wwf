@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, May 19, 2023 @ 20:36:15 ET
+ *  Date: Friday, May 19, 2023 @ 20:49:52 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.69
  *  ENGrid scripts: v0.13.69
@@ -18673,6 +18673,8 @@ const customScript = function (App, DonationFrequency) {
   if (ccNumberField) {
     ccNumberField.addEventListener("wheel", () => {
       ccNumberField.blur();
+    }, {
+      passive: true
     });
   }
 

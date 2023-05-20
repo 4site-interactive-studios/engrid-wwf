@@ -695,9 +695,13 @@ export const customScript = function (App, DonationFrequency) {
   );
 
   if (ccNumberField) {
-    ccNumberField.addEventListener("wheel", () => {
-      ccNumberField.blur();
-    });
+    ccNumberField.addEventListener(
+      "wheel",
+      () => {
+        ccNumberField.blur();
+      },
+      { passive: true }
+    );
   }
 
   if (
