@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, May 19, 2023 @ 21:21:50 ET
- *  By: bryancasler
+ *  Date: Friday, May 19, 2023 @ 21:24:42 ET
+ *  By: fernando
  *  ENGrid styles: v0.13.69
  *  ENGrid scripts: v0.13.69
  *
@@ -11654,7 +11654,9 @@ class LiveVariables {
 
     this._frequency.onFrequencyChange.subscribe(() => this.changeSubmitButton());
 
-    this._form.onSubmit.subscribe(() => engrid_ENGrid.disableSubmit("Processing..."));
+    this._form.onSubmit.subscribe(() => {
+      if (engrid_ENGrid.getPageType() !== "SUPPORTERHUB") engrid_ENGrid.disableSubmit("Processing...");
+    });
 
     this._form.onError.subscribe(() => engrid_ENGrid.enableSubmit()); // Watch the monthly-upsell links
 
