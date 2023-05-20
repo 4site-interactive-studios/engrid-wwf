@@ -164,6 +164,11 @@
   --radio_height: 30px;
   --radio_width: 30px;
   --radio_border-width: 2px;
+  --radio_color: #006ea3;
+  // color: var(--radio_color_selected);
+  // background-color: var(--radio_background-color_selected);
+  // border-color: var(--radio_border-color_selected);
+  // box-shadow: var(--radio_box-shadow_selected);
 
   //   --radio_background-color_hover: fade-out(grayscale(#006ea3), 0.4);
   --radio_background-color_hover: #bababa;
@@ -1279,6 +1284,13 @@
 
   .en__field__notice {
     order: 3;
+  }
+
+  // Scale up the vanilla radio buttons on Firefox
+  @-moz-document url-prefix() {
+    .en__pg__select input {
+      transform: scale(1.5);
+    }
   }
 
   // On premium pages, when the visitor is not in the US, hide the premium gift options other than the no gift option
