@@ -1322,9 +1322,12 @@
           // background-image: url("https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-gift_maximize-my-gift-placeholder.jpg?v=1680364148000");
           background-size: contain;
           // min-width: 100%; // Causing this overlay issue on Safari https://cln.sh/mGf3gcGc
-          background-position: left center;
+          background-position: center;
           background-repeat: no-repeat;
           height: 100px;
+          @media screen and (max-width: 628px) {
+            background-position: left center;
+          }
         }
       }
     }
