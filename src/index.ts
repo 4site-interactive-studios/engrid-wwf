@@ -42,6 +42,7 @@ const options: Options = {
     "Syria",
     "Ukraine",
   ],
+  Plaid: true,
   PageLayouts: [
     "centerleft1col",
     "centercenter1col",
@@ -89,42 +90,6 @@ const options: Options = {
           App.setFieldValue("transaction.selprodvariantid", maxTheirGift);
         }
       }
-    }
-    const plaidLink = document.querySelector(
-      "#plaid-link-button"
-    ) as HTMLLinkElement;
-    if (plaidLink && plaidLink.textContent === "Link Account") {
-      const form = EnForm.getInstance();
-
-      // Click the Plaid Link button
-      plaidLink.click();
-      form.submit = false;
-      // Create a observer to watch the Link ID #plaid-link-button for a new Text Node
-      const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-          if (mutation.type === "childList") {
-            mutation.addedNodes.forEach((node) => {
-              if (node.nodeType === Node.TEXT_NODE) {
-                // If the Text Node is "Link Account" then the Link has failed
-                if (node.nodeValue === "Account Linked") {
-                  form.submit = true;
-                  form.submitForm();
-                } else {
-                  form.submit = true;
-                }
-              }
-            });
-          }
-        });
-      });
-      // Start observing the Link ID #plaid-link-button
-      observer.observe(plaidLink, {
-        childList: true,
-        subtree: true,
-      });
-      window.setTimeout(() => {
-        App.enableSubmit();
-      }, 1000);
     }
   },
   onValidate: () => {

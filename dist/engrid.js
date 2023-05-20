@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, May 19, 2023 @ 21:24:42 ET
+ *  Date: Friday, May 19, 2023 @ 22:47:29 ET
  *  By: fernando
  *  ENGrid styles: v0.13.69
  *  ENGrid scripts: v0.13.69
@@ -8167,6 +8167,7 @@ const OptionsDefaults = {
   TidyContact: false,
   RegionLongFormat: "",
   CountryDisable: [],
+  Plaid: false,
   MobileCTA: false,
   PageLayouts: ["leftleft1col", "centerleft1col", "centercenter1col", "centercenter2col", "centerright1col", "rightright1col", "none"]
 };
@@ -9756,7 +9757,9 @@ class App extends engrid_ENGrid {
 
     new LiveFrequency(); // Universal Opt In
 
-    new UniversalOptIn();
+    new UniversalOptIn(); // Plaid
+
+    if (this.options.Plaid) new Plaid();
     this.setDataAttributes(); //Debug panel
 
     if (this.options.Debug || window.sessionStorage.hasOwnProperty(DebugPanel.debugSessionStorageKey)) {
@@ -18000,10 +18003,65 @@ class UniversalOptIn {
   }
 
 }
+;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/plaid.js
+// Component with a helper to auto-click on the Plaid link
+// when that payment method is selected
+
+class Plaid {
+  constructor() {
+    this.logger = new EngridLogger("Plaid", "peru", "yellow", "🔗");
+    this._form = EnForm.getInstance();
+    this.logger.log("Enabled");
+
+    this._form.onSubmit.subscribe(() => this.submit());
+  }
+
+  submit() {
+    const plaidLink = document.querySelector("#plaid-link-button");
+
+    if (plaidLink && plaidLink.textContent === "Link Account") {
+      // Click the Plaid Link button
+      this.logger.log("Clicking Link");
+      plaidLink.click();
+      this._form.submit = false; // Create a observer to watch the Link ID #plaid-link-button for a new Text Node
+
+      const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+          if (mutation.type === "childList") {
+            mutation.addedNodes.forEach(node => {
+              if (node.nodeType === Node.TEXT_NODE) {
+                // If the Text Node is "Link Account" then the Link has failed
+                if (node.nodeValue === "Account Linked") {
+                  this.logger.log("Plaid Linked");
+                  this._form.submit = true;
+
+                  this._form.submitForm();
+                } else {
+                  this._form.submit = true;
+                }
+              }
+            });
+          }
+        });
+      }); // Start observing the Link ID #plaid-link-button
+
+      observer.observe(plaidLink, {
+        childList: true,
+        subtree: true
+      });
+      window.setTimeout(() => {
+        this.logger.log("Enabling Submit");
+        engrid_ENGrid.enableSubmit();
+      }, 1000);
+    }
+  }
+
+}
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/version.js
 const AppVersion = "0.13.69";
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
+
 
 
 
@@ -19889,6 +19947,7 @@ const options = {
     dateFieldFormat: "YYYY-MM-DD"
   },
   CountryDisable: ["Belarus", "Cuba", "Iran", "North Korea", "Russia", "Syria", "Ukraine"],
+  Plaid: true,
   PageLayouts: ["centerleft1col", "centercenter1col", "centercenter2col", "centerright1col"],
   Debug: App.getUrlParameter("debug") == "true" ? true : false,
   MobileCTA: {
@@ -19925,41 +19984,6 @@ const options = {
           App.setFieldValue("transaction.selprodvariantid", maxTheirGift);
         }
       }
-    }
-
-    const plaidLink = document.querySelector("#plaid-link-button");
-
-    if (plaidLink && plaidLink.textContent === "Link Account") {
-      const form = EnForm.getInstance(); // Click the Plaid Link button
-
-      plaidLink.click();
-      form.submit = false; // Create a observer to watch the Link ID #plaid-link-button for a new Text Node
-
-      const observer = new MutationObserver(mutations => {
-        mutations.forEach(mutation => {
-          if (mutation.type === "childList") {
-            mutation.addedNodes.forEach(node => {
-              if (node.nodeType === Node.TEXT_NODE) {
-                // If the Text Node is "Link Account" then the Link has failed
-                if (node.nodeValue === "Account Linked") {
-                  form.submit = true;
-                  form.submitForm();
-                } else {
-                  form.submit = true;
-                }
-              }
-            });
-          }
-        });
-      }); // Start observing the Link ID #plaid-link-button
-
-      observer.observe(plaidLink, {
-        childList: true,
-        subtree: true
-      });
-      window.setTimeout(() => {
-        App.enableSubmit();
-      }, 1000);
     }
   },
   onValidate: () => {
