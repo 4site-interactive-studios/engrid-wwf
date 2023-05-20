@@ -889,7 +889,8 @@ body,
     max-height: 0;
   }
   body.freeze #header .logo-header::before,
-  body.freeze #header .nav-actions.-full-width::before {
+  body.freeze #header .nav-actions.-full-width::before,
+  body.freeze::before {
     background-color: #000;
     bottom: 0;
     content: "";
@@ -898,7 +899,10 @@ body,
     position: absolute;
     right: 0;
     top: 0;
-    z-index: 10;
+    z-index: 5;
+  }
+  body.freeze {
+    overflow: hidden;
   }
   #header .utility-nav .nav-item-title {
     font-size: 15px;

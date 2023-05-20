@@ -1841,7 +1841,7 @@
   }
   &[data-engrid-page-type="premiumgift"],
   &[data-engrid-page-type="donation"] {
-    ul.nav-actions.-mobile {
+    .nav-content > ul.nav-actions.-mobile {
       display: none !important;
     }
     #header {
@@ -1849,7 +1849,9 @@
       border-bottom: 1px solid #ccc;
     }
   }
-
+  &.freeze #header {
+    border-bottom-color: #666666;
+  }
   iframe#launcher {
     margin-right: calc(20px + 1rem) !important;
   }

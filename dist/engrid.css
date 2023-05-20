@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, May 19, 2023 @ 16:20:13 ET
+ *  Date: Friday, May 19, 2023 @ 20:31:03 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.69
  *  ENGrid scripts: v0.13.69
@@ -8847,12 +8847,15 @@ body[data-engrid-debug]:before{
     left:calc(20px + 1rem);
     width:calc(100% - 40px - 3rem - var(--launcher-width));
   }
-  [data-engrid-theme=wwf][data-engrid-page-type=donation] ul.nav-actions.-mobile,[data-engrid-theme=wwf][data-engrid-page-type=premiumgift] ul.nav-actions.-mobile{
+  [data-engrid-theme=wwf][data-engrid-page-type=donation] .nav-content>ul.nav-actions.-mobile,[data-engrid-theme=wwf][data-engrid-page-type=premiumgift] .nav-content>ul.nav-actions.-mobile{
     display:none !important;
   }
   [data-engrid-theme=wwf][data-engrid-page-type=donation] #header,[data-engrid-theme=wwf][data-engrid-page-type=premiumgift] #header{
     border-bottom:1px solid #ccc;
     margin-bottom:0 !important;
+  }
+  [data-engrid-theme=wwf].freeze #header{
+    border-bottom-color:#666;
   }
   [data-engrid-theme=wwf] iframe#launcher{
     margin-right:calc(20px + 1rem) !important;
@@ -10499,7 +10502,7 @@ body[data-engrid-debug]:before{
     max-height:0;
   }
 
-  body.freeze #header .logo-header:before,body.freeze #header .nav-actions.-full-width:before{
+  body.freeze #header .logo-header:before,body.freeze #header .nav-actions.-full-width:before,body.freeze:before{
     background-color:#000;
     bottom:0;
     content:"";
@@ -10508,7 +10511,11 @@ body[data-engrid-debug]:before{
     position:absolute;
     right:0;
     top:0;
-    z-index:10;
+    z-index:5;
+  }
+
+  body.freeze{
+    overflow:hidden;
   }
 
   #header .utility-nav .nav-item-title,#header .utility-nav a{
