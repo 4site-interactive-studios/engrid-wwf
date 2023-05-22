@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, May 19, 2023 @ 22:47:29 ET
- *  By: fernando
+ *  Date: Monday, May 22, 2023 @ 12:25:31 ET
+ *  By: bryancasler
  *  ENGrid styles: v0.13.69
  *  ENGrid scripts: v0.13.69
  *
@@ -18058,7 +18058,7 @@ class Plaid {
 
 }
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/version.js
-const AppVersion = "0.13.69";
+const AppVersion = "0.13.70";
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
 
@@ -18761,7 +18761,32 @@ const customScript = function (App, DonationFrequency) {
   }; // Call the function to load the script
 
 
-  loadBugHerdScript();
+  loadBugHerdScript(); // Check if '.en__ecarditems__preview' exists in the page
+
+  const eCardPreview = document.querySelector(".en__ecarditems__preview");
+
+  if (eCardPreview) {
+    // Add 'data-ecard-preview' attribute to the body
+    document.body.setAttribute("data-ecard-preview", ""); // Function to set 'data-ecard-preview' value based on '.preview--show' class
+
+    const setEcardPreviewAttribute = () => {
+      if (eCardPreview.classList.contains("preview--show")) {
+        document.body.setAttribute("data-ecard-preview", "visible");
+      } else {
+        document.body.setAttribute("data-ecard-preview", "hidden");
+      }
+    }; // Initial setting of 'data-ecard-preview' value
+
+
+    setEcardPreviewAttribute(); // Create a MutationObserver instance to monitor changes in '.en__ecarditems__preview' class
+
+    const observer = new MutationObserver(setEcardPreviewAttribute); // Start observing '.en__ecarditems__preview' for changes in its class
+
+    observer.observe(eCardPreview, {
+      attributes: true,
+      attributeFilter: ["class"]
+    });
+  }
 };
 ;// CONCATENATED MODULE: ./src/scripts/page-header-footer.js
 const pageHeaderFooter = function (App) {

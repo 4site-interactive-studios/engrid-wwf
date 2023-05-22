@@ -745,4 +745,33 @@ export const customScript = function (App, DonationFrequency) {
 
   // Call the function to load the script
   loadBugHerdScript();
+
+  // Check if '.en__ecarditems__preview' exists in the page
+  const eCardPreview = document.querySelector(".en__ecarditems__preview");
+
+  if (eCardPreview) {
+    // Add 'data-ecard-preview' attribute to the body
+    document.body.setAttribute("data-ecard-preview", "");
+
+    // Function to set 'data-ecard-preview' value based on '.preview--show' class
+    const setEcardPreviewAttribute = () => {
+      if (eCardPreview.classList.contains("preview--show")) {
+        document.body.setAttribute("data-ecard-preview", "visible");
+      } else {
+        document.body.setAttribute("data-ecard-preview", "hidden");
+      }
+    };
+
+    // Initial setting of 'data-ecard-preview' value
+    setEcardPreviewAttribute();
+
+    // Create a MutationObserver instance to monitor changes in '.en__ecarditems__preview' class
+    const observer = new MutationObserver(setEcardPreviewAttribute);
+
+    // Start observing '.en__ecarditems__preview' for changes in its class
+    observer.observe(eCardPreview, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+  }
 };

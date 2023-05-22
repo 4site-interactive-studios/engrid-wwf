@@ -362,10 +362,14 @@
   // }
 
   // Prevents modals like the eCard preview modal from being hidden behind the header and footer
-  &[data-engrid-page-type="e-card"]:not(#en__pagebuilder) .content-footer,
-  &[data-engrid-page-type="e-card"]:not(#en__pagebuilder) .content-footerSpacer,
-  &[data-engrid-page-type="e-card"]:not(#en__pagebuilder) .content-header,
-  &[data-engrid-page-type="e-card"]:not(#en__pagebuilder) .content-preFooter {
+  &[data-ecard-preview="visible"]:not(#en__pagebuilder):not(.freeze)
+    .content-footer,
+  &[data-ecard-preview="visible"]:not(#en__pagebuilder):not(.freeze)
+    .content-footerSpacer,
+  &[data-ecard-preview="visible"]:not(#en__pagebuilder):not(.freeze)
+    .content-header,
+  &[data-ecard-preview="visible"]:not(#en__pagebuilder):not(.freeze)
+    .content-preFooter {
     z-index: 3;
   }
 
