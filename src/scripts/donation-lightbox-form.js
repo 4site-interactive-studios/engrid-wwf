@@ -779,24 +779,6 @@ export default class DonationLightboxForm {
     }
     return null;
   }
-  // Return true if you are in Canada, checking 3 conditions
-  // 1 - You are using a Canadian ip address
-  // 2 - You choose Canada as your country
-  // 3 - Your browser language is en-CA
-  isCanada() {
-    const country = document.querySelector("#en__field_supporter_country");
-    if (country) {
-      if (country.value === "CA") {
-        return true;
-      }
-    }
-    const lang = window.navigator.userLanguage || window.navigator.language;
-    if (lang === "en-CA" || this.ipCountry === "CA") {
-      return true;
-    }
-    return false;
-  }
-
   checkNested(obj, level, ...rest) {
     if (obj === undefined) return false;
     if (rest.length == 0 && obj.hasOwnProperty(level)) return true;
