@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, May 22, 2023 @ 12:25:31 ET
+ *  Date: Monday, May 22, 2023 @ 12:52:44 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.69
  *  ENGrid scripts: v0.13.69
@@ -8693,6 +8693,12 @@ body[data-engrid-debug]:before{
   flex-direction:column;
   gap:1.5rem;
   margin-top:40px;
+}
+[data-engrid-theme=wwf] .get-involved p>a{
+  --a_color:#000;
+  --a_color_hover:#000;
+  --a_text-decoration:none;
+  --a_text-decoration_hover:none;
 }
 [data-engrid-theme=wwf] .get-involved a:not(:last-child){
   border-bottom:1px solid #ccc;
