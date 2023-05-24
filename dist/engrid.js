@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, May 24, 2023 @ 15:40:31 ET
+ *  Date: Wednesday, May 24, 2023 @ 15:57:26 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.70
  *  ENGrid scripts: v0.13.70
@@ -18626,7 +18626,7 @@ const customScript = function (App, DonationFrequency) {
 
 
   const getGclidFromCookie = () => {
-    const match = document.cookie.match("(^|;)\\s*_gac\\s*=\\s*([^;]+)");
+    const match = document.cookie.match("(^|;)\\s*_ga\\s*=\\s*([^;]+)");
     return match ? match.pop() : null;
   }; // Get GCLID from URL
 
