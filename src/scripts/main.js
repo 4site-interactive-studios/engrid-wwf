@@ -774,4 +774,21 @@ export const customScript = function (App, DonationFrequency) {
       attributeFilter: ["class"],
     });
   }
+
+  // Add labels to Email To Target Message forms
+  if (
+    "pageJson" in window &&
+    "pageType" in window.pageJson &&
+    window.pageJson.pageType === "emailtotarget"
+  ) {
+    const contactSubjectContainer = document.querySelector('.en__contactSubject');
+    const contactSubjectLabel = `<label style="color: red;" for="contact.1126243.subject">Subject (required)</label>`;
+
+    contactSubjectContainer?.insertAdjacentHTML('afterbegin', contactSubjectLabel);
+
+    const contactMessageContainer = document.querySelector('.en__contactMessage');
+    const contactMessageLabel = `<label style="color: red;" for="contact.1126243.message">Message (required)</label>`;
+
+    contactMessageContainer?.insertAdjacentHTML('afterbegin', contactMessageLabel);
+  }
 };

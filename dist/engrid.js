@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, May 24, 2023 @ 15:57:26 ET
- *  By: bryancasler
+ *  Date: Thursday, May 25, 2023 @ 09:47:33 ET
+ *  By: noahpatterson
  *  ENGrid styles: v0.13.70
  *  ENGrid scripts: v0.13.70
  *
@@ -18786,6 +18786,16 @@ const customScript = function (App, DonationFrequency) {
       attributes: true,
       attributeFilter: ["class"]
     });
+  } // Add labels to Email To Target Message forms
+
+
+  if ("pageJson" in window && "pageType" in window.pageJson && window.pageJson.pageType === "emailtotarget") {
+    const contactSubjectContainer = document.querySelector('.en__contactSubject');
+    const contactSubjectLabel = `<label style="color: red;" for="contact.1126243.subject">Subject (required)</label>`;
+    contactSubjectContainer === null || contactSubjectContainer === void 0 ? void 0 : contactSubjectContainer.insertAdjacentHTML('afterbegin', contactSubjectLabel);
+    const contactMessageContainer = document.querySelector('.en__contactMessage');
+    const contactMessageLabel = `<label style="color: red;" for="contact.1126243.message">Message (required)</label>`;
+    contactMessageContainer === null || contactMessageContainer === void 0 ? void 0 : contactMessageContainer.insertAdjacentHTML('afterbegin', contactMessageLabel);
   }
 };
 ;// CONCATENATED MODULE: ./src/scripts/page-header-footer.js
