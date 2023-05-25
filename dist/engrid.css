@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, May 25, 2023 @ 09:53:36 ET
+ *  Date: Thursday, May 25, 2023 @ 09:56:49 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.70
  *  ENGrid scripts: v0.13.70
@@ -7709,7 +7709,7 @@ body[data-engrid-debug]:before{
   --select_padding-right:3.75ch;
   --premium__image_max-height:100px;
   --ecard_thumnail-border-width:5px;
-  --launcher-width:48px;
+  --launcher-width:0px;
   --email-subscription-nudge:"Are you sure? We'd like to share how you're making a difference.";
   --textarea_line-height:24px;
   --inline-upsell-box_margin-left:8px;
