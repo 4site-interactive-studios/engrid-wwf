@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, May 24, 2023 @ 15:57:26 ET
+ *  Date: Thursday, May 25, 2023 @ 09:53:36 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.70
  *  ENGrid scripts: v0.13.70
@@ -11322,7 +11322,7 @@ body[data-engrid-debug]:before{
   }
   [data-header-footer-layout=none] .content-header:before{
     align-items:center;
-    background:#fff url(https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo-standalone.png?3) no-repeat;
+    background:#fff url(https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo-no-tab.png?3) no-repeat;
     background-position:50%;
     background-size:contain;
     content:"WWF Logo";
