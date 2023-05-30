@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 	<meta charset="utf-8">
 	<title>World Wildlife Fund - Receipt #{receipt_data~id}</title>
 </head>
+
 <body data-gramm="false">
-	<div class="receipt-box" style="background: #fff; max-width: 800px; margin: 40px auto 0 auto; padding: 30px; font-size: 16px; line-height: 24px; font-family: 'Helvetica Neue', 'Helvetica', Arial, sans-serif; color: #555;">
+	<div class="receipt-box"
+		style="background: #fff; max-width: 800px; margin: 40px auto 0 auto; padding: 30px; font-size: 16px; line-height: 24px; font-family: 'Helvetica Neue', 'Helvetica', Arial, sans-serif; color: #555;">
 		<table cellpadding="0" cellspacing="0" style="width: 100%; line-height: inherit; text-align: left;">
 			<tbody>
 				<tr class="top">
@@ -13,9 +16,14 @@
 						<table style="width: 100%; line-height: inherit; text-align: left;">
 							<tbody>
 								<tr>
-									<td class="title" style="font-size: 45px; line-height: 45px; color: #333;"><img alt="" class="emailImage" data-ratio-lock="true" data-unit="px" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-receipt-logo.jpg" style="height: 100px; width: 67px;"></td>
-									<td style="padding: 5px; vertical-align: middle; text-align: right; color: #333;"><b>Replacement Receipt #: {receipt_data~id}</b><br>
-									<b>Original Receipt #: {receipt_data~orig_id}</b></td>
+									<td class="title" style="font-size: 45px; line-height: 45px; color: #333;"><img
+											alt="" class="emailImage" data-ratio-lock="true" data-unit="px"
+											src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-receipt-logo.jpg"
+											style="height: 100px; width: 67px;"></td>
+									<td style="padding: 5px; vertical-align: middle; text-align: right; color: #333;">
+										<b>Replacement Receipt #: {receipt_data~id}</b><br>
+										<b>Original Receipt #: {receipt_data~orig_id}</b>
+									</td>
 								</tr>
 							</tbody>
 						</table>
@@ -26,12 +34,15 @@
 						<table style="width: 100%; line-height: inherit; text-align: left;">
 							<tbody>
 								<tr>
-									<td style="padding: 5px; vertical-align: top; padding-bottom: 40px;">World Wildlife Fund<br>
-									1250 24th Street, N.W.<br>
-									Washington, DC 20037</td>
-									<td style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 40px;">Transaction Date: {receipt_data~createdOn~[yyyy-MM-dd]}<br>
-									{user_data~First Name} {user_data~Last Name}<br>
-									{user_data~Email}</td>
+									<td style="padding: 5px; vertical-align: top; padding-bottom: 40px;">World Wildlife
+										Fund<br>
+										1250 24th Street, N.W.<br>
+										Washington, DC 20037</td>
+									<td
+										style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 40px;">
+										Transaction Date: {receipt_data~createdOn~[yyyy-MM-dd]}<br>
+										{user_data~First Name} {user_data~Last Name}<br>
+										{user_data~Email}</td>
 								</tr>
 							</tbody>
 						</table>
@@ -43,42 +54,67 @@
 					</td>
 				</tr>
 				<tr class="heading">
-					<td style="padding: 5px; vertical-align: top; background: #eee; border-bottom: 1px solid #ddd; font-weight: bold;">Payment Method</td>
-					<td style="padding: 5px; vertical-align: top; text-align: right; background: #eee; border-bottom: 1px solid #ddd; font-weight: bold;">Gateway</td>
+					<td
+						style="padding: 5px; vertical-align: top; background: #eee; border-bottom: 1px solid #ddd; font-weight: bold;">
+						Payment Method</td>
+					<td
+						style="padding: 5px; vertical-align: top; text-align: right; background: #eee; border-bottom: 1px solid #ddd; font-weight: bold;">
+						Gateway</td>
 				</tr>
 				<tr class="details">
 					<td style="padding: 5px; vertical-align: top; padding-bottom: 20px;">{receipt_data~paymentType}</td>
-					<td style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px;">{receipt_data~gateway}</td>
+					<td
+						style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px; word-break: break-word;">
+						{receipt_data~gateway}</td>
 				</tr>
 				<tr class="heading">
-					<td colspan="2" style="padding: 5px; vertical-align: top; background: #eee; border-bottom: 1px solid #ddd; font-weight: bold;">Donation Info</td>
+					<td colspan="2"
+						style="padding: 5px; vertical-align: top; background: #eee; border-bottom: 1px solid #ddd; font-weight: bold;">
+						Donation Info</td>
 				</tr>
 				<tr class="details">
 					<td style="padding: 5px; vertical-align: top; padding-bottom: 20px;">Transaction ID</td>
-					<td style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px; font-size: 12px"><span style="font-size:16px;">{receipt_data~txId}</span></td>
+					<td
+						style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px; word-break: break-word; font-size: 12px">
+						<span style="font-size:16px; word-break: break-word;">{receipt_data~txId}</span>
+					</td>
 				</tr>
 				<tr class="details">
 					<td style="padding: 5px; vertical-align: top; padding-bottom: 20px;">Order ID</td>
-					<td style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px;">{receipt_data~orderId}</td>
+					<td
+						style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px; word-break: break-word;">
+						{receipt_data~orderId}</td>
 				</tr>
 				<tr class="details">
 					<td style="padding: 5px; vertical-align: top; padding-bottom: 20px;">Amount</td>
-					<td style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px;">{receipt_data~amount~[en1]}</td>
+					<td
+						style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px; word-break: break-word;">
+						{receipt_data~amount~[en1]}</td>
 				</tr>
 				<tr class="details">
-					<td style="padding: 5px; vertical-align: top; padding-bottom: 20px;">Credit Card (if applicable)</td>
-					<td style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px;">{receipt_data~paymentType}<br>
-					Expiry {receipt_data~expiry}<br>
-					Last 4 Number {receipt_data~ccLastFour}</td>
+					<td style="padding: 5px; vertical-align: top; padding-bottom: 20px;">Credit Card (if applicable)
+					</td>
+					<td
+						style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px; word-break: break-word;">
+						{receipt_data~paymentType}<br>
+						Expiry {receipt_data~expiry}<br>
+						Last 4 Number {receipt_data~ccLastFour}</td>
 				</tr>
 				<tr class="information">
 					<td colspan="2">
-						<h2 style="font-size: 20px">Tax and Reporting Information</h2><!-- LEGALIZE -->
-						<p style="color: #333; font-size: 14px; margin: 0 0 1em; line-height: 1.4em; font-style:italic;">This serves as a replacement receipt for your donation paid to World Wildlife Fund. World Wildlife Fund is a 501(c)(3) organization; IRS tax-identification number 52-1693387.&nbsp;&nbsp;<a href="https://www.worldwildlife.org/pages/privacy-policy?source=en-donation-receipt-pdf" style="color:#337ab7;" target="_blank">Privacy Policy</a></p>
+						<h2 style="font-size: 20px">Tax and Reporting Information</h2>
+						<p
+							style="color: #333; font-size: 14px; margin: 0 0 1em; line-height: 1.4em; font-style:italic;">
+							This serves as a replacement receipt for your donation paid to World Wildlife Fund. World
+							Wildlife Fund is a 501(c)(3) organization; IRS tax-identification number
+							52-1693387.&nbsp;&nbsp;<a
+								href="https://www.worldwildlife.org/pages/privacy-policy?source=en-donation-receipt-pdf"
+								style="color:#337ab7;" target="_blank">Privacy Policy</a></p>
 					</td>
 				</tr>
 			</tbody>
 		</table>
 	</div>
 </body>
+
 </html>
