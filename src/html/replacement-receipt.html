@@ -1,6 +1,7 @@
-<html>
+<html lang="en">
 
 <head>
+	<meta charset="utf-8">
 	<title>World Wildlife Fund - Receipt #{receipt_data~id}</title>
 </head>
 
@@ -61,8 +62,7 @@
 				</tr>
 				<tr class="details">
 					<td style="padding: 5px; vertical-align: top; padding-bottom: 20px;">{receipt_data~paymentType}</td>
-					<td
-						style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px; word-break: break-word;">
+					<td style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px;">
 						{receipt_data~gateway}</td>
 				</tr>
 				<tr class="heading">
@@ -71,29 +71,25 @@
 						Donation Info</td>
 				</tr>
 				<tr class="details">
-					<td style="padding: 5px; vertical-align: top; padding-bottom: 20px;">Transaction ID</td>
-					<td
-						style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px; word-break: break-word; font-size: 12px">
-						<span style="font-size:16px; word-break: break-word;">{receipt_data~txId}</span>
+					<td colspan="2" style="padding: 5px; vertical-align: top; text-align: top; padding-bottom: 20px;">
+						Transaction ID<br />
+						<span style=" font-size: 12px">{receipt_data~txId}</span>
 					</td>
 				</tr>
 				<tr class="details">
 					<td style="padding: 5px; vertical-align: top; padding-bottom: 20px;">Order ID</td>
-					<td
-						style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px; word-break: break-word;">
+					<td style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px;">
 						{receipt_data~orderId}</td>
 				</tr>
 				<tr class="details">
 					<td style="padding: 5px; vertical-align: top; padding-bottom: 20px;">Amount</td>
-					<td
-						style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px; word-break: break-word;">
+					<td style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px;">
 						{receipt_data~amount~[en1]}</td>
 				</tr>
 				<tr class="details">
 					<td style="padding: 5px; vertical-align: top; padding-bottom: 20px;">Credit Card (if applicable)
 					</td>
-					<td
-						style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px; word-break: break-word;">
+					<td style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px;">
 						{receipt_data~paymentType}<br>
 						Expiry {receipt_data~expiry}<br>
 						Last 4 Number {receipt_data~ccLastFour}</td>

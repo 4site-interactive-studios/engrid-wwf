@@ -1,6 +1,7 @@
-<html>
+<html lang="en">
 
 <head>
+	<meta charset="utf-8">
 	<title>World Wildlife Fund - Receipt #{receipt_data~id}</title>
 </head>
 
@@ -59,8 +60,7 @@
 				</tr>
 				<tr class="details">
 					<td style="padding: 5px; vertical-align: top; padding-bottom: 20px;">{receipt_data~paymentType}</td>
-					<td
-						style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px; word-break: break-word;">
+					<td style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px;">
 						{receipt_data~gateway}</td>
 				</tr>
 				<tr class="heading">
@@ -69,41 +69,35 @@
 						Donation Info</td>
 				</tr>
 				<tr class="details">
-					<td style="padding: 5px; vertical-align: top; padding-bottom: 20px;">Transaction ID</td>
-					<td
-						style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px; word-break: break-word; font-size: 12px">
-						<span style="font-size:16px; word-break: break-word;">{receipt_data~txId}</span>
+					<td colspan="2" style="padding: 5px; vertical-align: top; text-align: top; padding-bottom: 20px;">
+						Transaction ID<br />
+						<span style=" font-size: 12px">{receipt_data~txId}</span>
 					</td>
 				</tr>
 				<tr class="details">
 					<td style="padding: 5px; vertical-align: top; padding-bottom: 20px;">Order ID</td>
-					<td
-						style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px; word-break: break-word;">
+					<td style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px;">
 						{receipt_data~orderId}</td>
 				</tr>
 				<tr class="details">
 					<td style="padding: 5px; vertical-align: top; padding-bottom: 20px;">Amount</td>
-					<td
-						style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px; word-break: break-word;">
+					<td style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px;">
 						{receipt_data~amount}</td>
 				</tr>
 				<tr class="details">
 					<td style="padding: 5px; vertical-align: top; padding-bottom: 20px;">Value of Advanatge</td>
-					<td
-						style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px; word-break: break-word;">
+					<td style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px;">
 						{splitreceipt~advantage_amount}</td>
 				</tr>
 				<tr class="details">
-					<td style="padding: 5px; vertical-align: top; padding-bottom: 20px;">Eligable Amount of Gift</td>
-					<td
-						style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px; word-break: break-word;">
+					<td style="padding: 5px; vertical-align: top; padding-bottom: 20px;">Eligible Amount of Gift</td>
+					<td style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px;">
 						{splitreceipt~eligible_amount~-1~-1~-1}</td>
 				</tr>
 				<tr class="details">
 					<td style="padding: 5px; vertical-align: top; padding-bottom: 20px;">Credit Card (if applicable)
 					</td>
-					<td
-						style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px; word-break: break-word;">
+					<td style="padding: 5px; vertical-align: top; text-align: right; padding-bottom: 20px;">
 						{receipt_data~paymentType}<br>
 						Expiry {receipt_data~expiry}<br>
 						Last 4 Number {receipt_data~ccLastFour}</td>
@@ -145,7 +139,7 @@
 						<p
 							style="color: #333; font-size: 14px; margin: 0 0 1em; line-height: 1.4em; font-style:italic;">
 							This serves as a receipt for your donation paid to World Wildlife Fund. World Wildlife Fund
-							is a 501(c)(3) organization; IRS tax-identification number 52-1693387. The "Eligable Amount
+							is a 501(c)(3) organization; IRS tax-identification number 52-1693387. The "Eligible Amount
 							of Gift" is tax deductible, as goods or services were received in exchange for your
 							donation.&nbsp;&nbsp;<a
 								href="https://www.worldwildlife.org/pages/privacy-policy?source=en-donation-receipt-pdf"
