@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, May 26, 2023 @ 23:27:29 ET
+ *  Date: Friday, June 2, 2023 @ 13:12:35 ET
  *  By: bryancasler
  *  ENGrid styles: v0.13.70
  *  ENGrid scripts: v0.13.71
@@ -2036,7 +2036,7 @@ a:focus,a:hover{
   margin-bottom:var(--fields_spacing-block);
   padding-bottom:0;
 }
-.en__component--formblock .en__field .en__field__helpText,.en__component--formblock .en__field .en__field__label:not(.en__field__label--item),.en__component--svblock .en__field .en__field__helpText,.en__component--svblock .en__field .en__field__label:not(.en__field__label--item),.en__registrants__registrantDetails .en__field .en__field__helpText,.en__registrants__registrantDetails .en__field .en__field__label:not(.en__field__label--item){
+.en__component--formblock .en__field .en__field__helpText,.en__component--formblock .en__field .en__field__label:not(.en__field__label--item):not([for*=svquestion]),.en__component--svblock .en__field .en__field__helpText,.en__component--svblock .en__field .en__field__label:not(.en__field__label--item):not([for*=svquestion]),.en__registrants__registrantDetails .en__field .en__field__helpText,.en__registrants__registrantDetails .en__field .en__field__label:not(.en__field__label--item):not([for*=svquestion]){
   align-items:center;
   display:flex;
   justify-content:space-between;
