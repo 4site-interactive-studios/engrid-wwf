@@ -443,6 +443,10 @@
   }
 
   &[data-engrid-embedded] {
+    // Hide Chat iFrame when embedded
+    #launcher {
+      display: none;
+    }
     height: 100vh;
     form.en__component {
       // scroll-snap-type: x mandatory;
