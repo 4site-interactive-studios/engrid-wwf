@@ -89,7 +89,10 @@ const options: Options = {
         const prodVariantValue = App.getFieldValue(
           "transaction.selprodvariantid"
         );
-        if (maxTheirGift && prodVariantValue === "") {
+        const pgItems = document.querySelectorAll(
+          ".en__pgList .en__pg"
+        ) as NodeListOf<HTMLInputElement>;
+        if (maxTheirGift && prodVariantValue === "" && pgItems.length > 0) {
           App.log(`Setting maxTheirGift to ${maxTheirGift}`);
           App.setFieldValue("transaction.selprodvariantid", maxTheirGift);
         }

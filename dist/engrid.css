@@ -19,10 +19,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, June 2, 2023 @ 13:12:35 ET
- *  By: bryancasler
- *  ENGrid styles: v0.13.70
- *  ENGrid scripts: v0.13.71
+ *  Date: Tuesday, June 6, 2023 @ 17:05:45 ET
+ *  By: fernando
+ *  ENGrid styles: v0.13.73
+ *  ENGrid scripts: v0.13.72
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -2546,6 +2546,9 @@ select.en__field__input--select:focus,select.en__field__input--select:hover,sele
   line-height:var(--checkbox_line-height);
   position:absolute;
   top:5px;
+}
+.en__field__notice{
+  order:3;
 }
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{
   -webkit-appearance:none;

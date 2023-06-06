@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, June 2, 2023 @ 13:12:35 ET
- *  By: bryancasler
- *  ENGrid styles: v0.13.70
- *  ENGrid scripts: v0.13.71
+ *  Date: Tuesday, June 6, 2023 @ 17:05:45 ET
+ *  By: fernando
+ *  ENGrid styles: v0.13.73
+ *  ENGrid scripts: v0.13.72
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -9642,13 +9642,13 @@ class App extends engrid_ENGrid {
 
       this._form.dispatchSubmit();
 
+      engrid_ENGrid.watchForError(engrid_ENGrid.enableSubmit);
       if (!this._form.submit) return false;
       if (this._form.submitPromise) return this._form.submitPromise;
       this.logger.success("enOnSubmit Success"); // If all validation passes, we'll watch for Digital Wallets Errors, which
       // will not reload the page (thanks EN), so we will enable the submit button if
       // an error is programmatically thrown by the Digital Wallets
 
-      engrid_ENGrid.watchForError(engrid_ENGrid.enableSubmit);
       return true;
     };
 
@@ -18058,7 +18058,7 @@ class Plaid {
 
 }
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/version.js
-const AppVersion = "0.13.71";
+const AppVersion = "0.13.73";
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
 
@@ -19992,8 +19992,9 @@ const options = {
       if (country && country.value === "US") {
         const maxTheirGift = window.maxTheirGift ?? 0;
         const prodVariantValue = App.getFieldValue("transaction.selprodvariantid");
+        const pgItems = document.querySelectorAll(".en__pgList .en__pg");
 
-        if (maxTheirGift && prodVariantValue === "") {
+        if (maxTheirGift && prodVariantValue === "" && pgItems.length > 0) {
           App.log(`Setting maxTheirGift to ${maxTheirGift}`);
           App.setFieldValue("transaction.selprodvariantid", maxTheirGift);
         }
