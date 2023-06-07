@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, June 6, 2023 @ 17:26:18 ET
+ *  Date: Tuesday, June 6, 2023 @ 22:55:35 ET
  *  By: fernando
- *  ENGrid styles: v0.13.73
- *  ENGrid scripts: v0.13.72
+ *  ENGrid styles: v0.13.74
+ *  ENGrid scripts: v0.13.74
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -17933,12 +17933,15 @@ class LiveFrequency {
  * inside a universal opt-in element (any form block with the CSS class universal-opt-in). When the user clicks on a radio/checkbox
  * button, we will search for every other radio/checkbox button inside the same
  * universal opt-in element and mirror the user's selection.
+ * If instead of universal-opt-in you use universal-opt-in_null, the class will
+ * not mirror the user's selection when a radio "No" option is selected. Instead,
+ * it will unset all other radio buttons.
  */
 
 class UniversalOptIn {
   constructor() {
     this.logger = new EngridLogger("UniversalOptIn", "#f0f0f0", "#d2691e", "🪞");
-    this._elements = document.querySelectorAll(".universal-opt-in");
+    this._elements = document.querySelectorAll(".universal-opt-in, .universal-opt-in_null");
     if (!this.shouldRun()) return;
     this.addEventListeners();
   }
@@ -17985,15 +17988,23 @@ class UniversalOptIn {
             if (yesNoValue === "Y") {
               this.logger.log("Yes/No " + yesNoElement.getAttribute("type") + " is checked");
               yesNoElements.forEach(yesNoElement2 => {
-                if (yesNoElement === yesNoElement2) return;
-                if (yesNoElement2.getAttribute("value") === "Y") yesNoElement2.setAttribute("checked", "checked");
-                if (yesNoElement2.getAttribute("value") === "N") yesNoElement2.removeAttribute("checked");
+                const fieldName = yesNoElement2.getAttribute("name");
+                const clickedFieldName = yesNoElement.getAttribute("name");
+                if (!fieldName || fieldName === clickedFieldName) return;
+                engrid_ENGrid.setFieldValue(fieldName, "Y");
               });
             } else {
               this.logger.log("Yes/No " + yesNoElement.getAttribute("type") + " is unchecked");
               yesNoElements.forEach(yesNoElement2 => {
-                if (yesNoElement === yesNoElement2) return;
-                if (yesNoElement2.getAttribute("value") === "Y") yesNoElement2.removeAttribute("checked");
+                const fieldName = yesNoElement2.getAttribute("name");
+                const clickedFieldName = yesNoElement.getAttribute("name");
+                if (!fieldName || fieldName === clickedFieldName) return;
+
+                if (element.classList.contains("universal-opt-in")) {
+                  engrid_ENGrid.setFieldValue(fieldName, "N");
+                } else {
+                  yesNoElement2.checked = false;
+                }
               });
             }
           });
@@ -18058,7 +18069,7 @@ class Plaid {
 
 }
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/version.js
-const AppVersion = "0.13.73";
+const AppVersion = "0.13.74";
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
 
