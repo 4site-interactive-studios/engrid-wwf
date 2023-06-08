@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, June 6, 2023 @ 22:55:35 ET
- *  By: fernando
+ *  Date: Thursday, June 8, 2023 @ 14:28:21 ET
+ *  By: bryancasler
  *  ENGrid styles: v0.13.74
  *  ENGrid scripts: v0.13.74
  *
@@ -11389,9 +11389,6 @@ class iFrame {
       engrid_ENGrid.setBodyData("embedded", ""); // Fire the resize event
 
       this.logger.log("iFrame Event - Begin Resizing");
-      this.sendIframeHeight(); // Listen for the resize event
-
-      window.addEventListener("resize", this.sendIframeHeight.bind(this));
       window.addEventListener("load", event => {
         // Scroll to top of iFrame
         this.logger.log("iFrame Event - window.onload");
@@ -11406,7 +11403,10 @@ class iFrame {
             this.sendIframeHeight();
           }, 100);
         });
-      }); // Listen for the form submit event
+      });
+      window.setTimeout(() => {
+        this.sendIframeHeight();
+      }, 300); // Listen for the form submit event
 
       this._form.onSubmit.subscribe(e => {
         this.logger.log("iFrame Event - onSubmit");
