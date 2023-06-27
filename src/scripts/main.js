@@ -581,7 +581,7 @@ export const customScript = function (App, DonationFrequency) {
 
   // Get GCLID from GAC cookie
   const getGclidFromCookie = () => {
-    const match = document.cookie.match("(^|;)\\s*_ga\\s*=\\s*([^;]+)");
+    const match = document.cookie.match("(^|;)\\s*_glc_aw\\s*=\\s*([^;]+)");
     return match ? match.pop() : null;
   };
 
