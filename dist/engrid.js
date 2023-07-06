@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, July 5, 2023 @ 15:46:06 ET
+ *  Date: Thursday, July 6, 2023 @ 16:59:22 ET
  *  By: fernando
  *  ENGrid styles: v0.14.6
  *  ENGrid scripts: v0.14.8
@@ -19503,7 +19503,9 @@ const customScript = function (App, DonationFrequency) {
       if (maxRadio) {
         maxRadio.checked = true;
         maxRadio.click();
-        App.setFieldValue("transaction.selprodvariantid", "");
+        setTimeout(() => {
+          App.setFieldValue("transaction.selprodvariantid", "");
+        }, 150);
       }
     };
 

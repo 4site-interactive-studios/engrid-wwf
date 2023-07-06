@@ -129,7 +129,9 @@ export const customScript = function (App, DonationFrequency) {
       if (maxRadio) {
         maxRadio.checked = true;
         maxRadio.click();
-        App.setFieldValue("transaction.selprodvariantid", "");
+        setTimeout(() => {
+          App.setFieldValue("transaction.selprodvariantid", "");
+        }, 150);
       }
     };
 
