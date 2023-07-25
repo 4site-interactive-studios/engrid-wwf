@@ -785,6 +785,10 @@ export const customScript = function (App, DonationFrequency) {
       'input[name="transaction.othamt3"]'
     );
     if (paymentType && !other3Field) {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const isSafari = /^((?!chrome|android).)*safari/i.test(
+        navigator.userAgent
+      );
       const formBlock = document.createElement("div");
       formBlock.classList.add(
         "en__component",
@@ -834,6 +838,22 @@ export const customScript = function (App, DonationFrequency) {
           form.appendChild(formBlock);
         }
       }
+      // Set the value of the Other 3 field to the value of the Payment Type field
+      // When the Payment Type field changes, update the Other 3 field
+      paymentType.addEventListener("change", () => {
+        const other3Field = document.querySelector(
+          'input[name="transaction.othamt3"]'
+        );
+        if (!other3Field) {
+          return;
+        }
+        if (paymentType.value === "stripedigitalwallet") {
+          // Set applepay if using IOS or Safari, otherwise set googlepay
+          other3Field.value = isIOS || isSafari ? "applepay" : "googlepay";
+        } else {
+          other3Field.value = paymentType.value;
+        }
+      });
     }
   };
   // Call the function

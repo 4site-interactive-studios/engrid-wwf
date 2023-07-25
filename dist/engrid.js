@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, July 25, 2023 @ 15:11:51 ET
+ *  Date: Tuesday, July 25, 2023 @ 17:29:52 ET
  *  By: fernando
  *  ENGrid styles: v0.14.6
  *  ENGrid scripts: v0.14.8
@@ -20073,6 +20073,8 @@ const customScript = function (App, DonationFrequency) {
     const other3Field = document.querySelector('input[name="transaction.othamt3"]');
 
     if (paymentType && !other3Field) {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
       const formBlock = document.createElement("div");
       formBlock.classList.add("en__component", "en__component--formblock", "hide");
       const textField = document.createElement("div");
@@ -20106,7 +20108,24 @@ const customScript = function (App, DonationFrequency) {
         if (form) {
           form.appendChild(formBlock);
         }
-      }
+      } // Set the value of the Other 3 field to the value of the Payment Type field
+      // When the Payment Type field changes, update the Other 3 field
+
+
+      paymentType.addEventListener("change", () => {
+        const other3Field = document.querySelector('input[name="transaction.othamt3"]');
+
+        if (!other3Field) {
+          return;
+        }
+
+        if (paymentType.value === "stripedigitalwallet") {
+          // Set applepay if using IOS or Safari, otherwise set googlepay
+          other3Field.value = isIOS || isSafari ? "applepay" : "googlepay";
+        } else {
+          other3Field.value = paymentType.value;
+        }
+      });
     }
   }; // Call the function
 
@@ -21335,21 +21354,6 @@ const options = {
     if (transactionSelprodvariantid && donationHasPremium) {
       // If there is, sync the values
       donationHasPremium.value = transactionSelprodvariantid.value && transactionSelprodvariantid.value != maxTheirGift ? "Y" : "N"; //
-    } // Add the payment type to the other 3 field
-
-
-    const paymentType = App.getFieldValue("transaction.paymenttype");
-    const other3 = App.getField("transaction.othamt3");
-
-    if (other3 && paymentType) {
-      if (paymentType === "stripedigitalwallet") {
-        // Set applepay if using IOS or Safari, otherwise set googlepay
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-        other3.value = isIOS || isSafari ? "applepay" : "googlepay";
-      } else {
-        other3.value = paymentType;
-      }
     }
   }
 };
