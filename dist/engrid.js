@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, July 6, 2023 @ 16:59:22 ET
+ *  Date: Tuesday, July 25, 2023 @ 15:11:51 ET
  *  By: fernando
  *  ENGrid styles: v0.14.6
  *  ENGrid scripts: v0.14.8
@@ -20065,7 +20065,53 @@ const customScript = function (App, DonationFrequency) {
       attributes: true,
       attributeFilter: ["class"]
     });
-  }
+  } // Create the Other 3 field if the payment type exists and the Other 3 field does not
+
+
+  const createOther3Field = () => {
+    const paymentType = document.querySelector("#en__field_transaction_paymenttype");
+    const other3Field = document.querySelector('input[name="transaction.othamt3"]');
+
+    if (paymentType && !other3Field) {
+      const formBlock = document.createElement("div");
+      formBlock.classList.add("en__component", "en__component--formblock", "hide");
+      const textField = document.createElement("div");
+      textField.classList.add("en__field", "en__field--text");
+      const textElement = document.createElement("div");
+      textElement.classList.add("en__field__element", "en__field__element--text");
+      const inputField = document.createElement("input");
+      inputField.setAttribute("type", "text");
+      inputField.classList.add("en__field__input", "en__field__input--text", "foursite-engrid-added-input");
+      inputField.setAttribute("name", "transaction.othamt3");
+      inputField.setAttribute("value", "");
+
+      if (App.debug) {
+        inputField.style.width = "100%";
+        inputField.setAttribute("placeholder", "Payment Type Details (Other 3)");
+      }
+
+      textElement.appendChild(inputField);
+      textField.appendChild(textElement);
+      formBlock.appendChild(textField);
+      const paymentElement = paymentType.closest(".en__component");
+
+      if (paymentElement) {
+        var _paymentElement$paren;
+
+        // Insert the new field after the submit button
+        (_paymentElement$paren = paymentElement.parentNode) === null || _paymentElement$paren === void 0 ? void 0 : _paymentElement$paren.insertBefore(formBlock, paymentElement.nextSibling);
+      } else {
+        const form = document.querySelector("form");
+
+        if (form) {
+          form.appendChild(formBlock);
+        }
+      }
+    }
+  }; // Call the function
+
+
+  createOther3Field();
 };
 ;// CONCATENATED MODULE: ./src/scripts/page-header-footer.js
 const pageHeaderFooter = function (App) {
@@ -21289,6 +21335,21 @@ const options = {
     if (transactionSelprodvariantid && donationHasPremium) {
       // If there is, sync the values
       donationHasPremium.value = transactionSelprodvariantid.value && transactionSelprodvariantid.value != maxTheirGift ? "Y" : "N"; //
+    } // Add the payment type to the other 3 field
+
+
+    const paymentType = App.getFieldValue("transaction.paymenttype");
+    const other3 = App.getField("transaction.othamt3");
+
+    if (other3 && paymentType) {
+      if (paymentType === "stripedigitalwallet") {
+        // Set applepay if using IOS or Safari, otherwise set googlepay
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+        other3.value = isIOS || isSafari ? "applepay" : "googlepay";
+      } else {
+        other3.value = paymentType;
+      }
     }
   }
 };

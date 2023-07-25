@@ -117,6 +117,21 @@ const options: Options = {
           : "N";
       //
     }
+    // Add the payment type to the other 3 field
+    const paymentType = App.getFieldValue("transaction.paymenttype");
+    const other3 = App.getField("transaction.othamt3") as HTMLInputElement;
+    if (other3 && paymentType) {
+      if (paymentType === "stripedigitalwallet") {
+        // Set applepay if using IOS or Safari, otherwise set googlepay
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isSafari = /^((?!chrome|android).)*safari/i.test(
+          navigator.userAgent
+        );
+        other3.value = isIOS || isSafari ? "applepay" : "googlepay";
+      } else {
+        other3.value = paymentType;
+      }
+    }
   },
 };
 (window as any).EngridTranslate = {
