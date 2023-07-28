@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, July 6, 2023 @ 16:59:22 ET
+ *  Date: Friday, July 28, 2023 @ 17:18:19 ET
  *  By: fernando
  *  ENGrid styles: v0.14.6
  *  ENGrid scripts: v0.14.8
@@ -19650,13 +19650,13 @@ const customScript = function (App, DonationFrequency) {
         subtree: true
       });
     }
-  } // let enFieldPhoneNumber = document.querySelectorAll(
-  //   ".en__field--phoneNumber2.en__mandatory input#en__field_supporter_phoneNumber2"
-  // )[0];
-  // if (enFieldPhoneNumber) {
-  //   enFieldPhoneNumber.placeholder = "000-000-0000 (Optional)";
-  // }
-  // App.setBodydata("client-js-loading", "finished");
+  }
+
+  let enFieldPhoneNumber = document.querySelector(".en__field--phoneNumber2 input#en__field_supporter_phoneNumber2");
+
+  if (enFieldPhoneNumber) {
+    enFieldPhoneNumber.placeholder = "000-000-0000";
+  } // App.setBodydata("client-js-loading", "finished");
 
 
   const ccvvLabel = document.querySelector(".en__field--ccvv > label");
