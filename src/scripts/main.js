@@ -776,4 +776,86 @@ export const customScript = function (App, DonationFrequency) {
       attributeFilter: ["class"],
     });
   }
+  // Create the Other 3 field if the payment type exists and the Other 3 field does not
+  const createOther3Field = () => {
+    const paymentType = document.querySelector(
+      "#en__field_transaction_paymenttype"
+    );
+    const other3Field = document.querySelector(
+      'input[name="transaction.othamt3"]'
+    );
+    if (paymentType && !other3Field) {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const isSafari = /^((?!chrome|android).)*safari/i.test(
+        navigator.userAgent
+      );
+      const formBlock = document.createElement("div");
+      formBlock.classList.add(
+        "en__component",
+        "en__component--formblock",
+        "hide"
+      );
+
+      const textField = document.createElement("div");
+      textField.classList.add("en__field", "en__field--text");
+
+      const textElement = document.createElement("div");
+      textElement.classList.add(
+        "en__field__element",
+        "en__field__element--text"
+      );
+
+      const inputField = document.createElement("input");
+      inputField.setAttribute("type", "text");
+      inputField.classList.add(
+        "en__field__input",
+        "en__field__input--text",
+        "foursite-engrid-added-input"
+      );
+      inputField.setAttribute("name", "transaction.othamt3");
+      inputField.setAttribute("value", "");
+      if (App.debug) {
+        inputField.style.width = "100%";
+        inputField.setAttribute(
+          "placeholder",
+          "Payment Type Details (Other 3)"
+        );
+      }
+
+      textElement.appendChild(inputField);
+      textField.appendChild(textElement);
+      formBlock.appendChild(textField);
+      const paymentElement = paymentType.closest(".en__component");
+      if (paymentElement) {
+        // Insert the new field after the submit button
+        paymentElement.parentNode?.insertBefore(
+          formBlock,
+          paymentElement.nextSibling
+        );
+      } else {
+        const form = document.querySelector("form");
+        if (form) {
+          form.appendChild(formBlock);
+        }
+      }
+      // Set the value of the Other 3 field to the value of the Payment Type field
+      // When the Payment Type field changes, update the Other 3 field
+      paymentType.addEventListener("change", () => {
+        const other3Field = document.querySelector(
+          'input[name="transaction.othamt3"]'
+        );
+        if (!other3Field) {
+          return;
+        }
+        if (paymentType.value === "stripedigitalwallet") {
+          // Set applepay if using IOS or Safari, otherwise set googlepay
+          other3Field.value = isIOS || isSafari ? "applepay" : "googlepay";
+        } else {
+          other3Field.value = paymentType.value;
+        }
+      });
+    }
+  };
+  // Call the function
+  createOther3Field();
 };

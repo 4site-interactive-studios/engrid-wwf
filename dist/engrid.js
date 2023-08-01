@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, July 28, 2023 @ 17:18:19 ET
+ *  Date: Tuesday, August 1, 2023 @ 16:38:05 ET
  *  By: fernando
- *  ENGrid styles: v0.14.6
- *  ENGrid scripts: v0.14.8
+ *  ENGrid styles: v0.14.13
+ *  ENGrid scripts: v0.14.14
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -10801,6 +10801,8 @@ const UpsellOptionsDefaults = {
     minAmount: 0,
     canClose: true,
     submitOnClose: false,
+    oneTime: true,
+    annual: false,
     disablePaymentMethods: [],
     skipUpsell: false,
 };
@@ -10847,6 +10849,21 @@ const TranslateOptionsDefaults = {
     FRA: frTranslation,
     NL: nlTranslation,
     NLD: nlTranslation,
+};
+
+;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/interfaces/exit-intent-options.js
+const ExitIntentOptionsDefaults = {
+    enabled: false,
+    title: "We are sad that you are leaving",
+    text: "Would you mind telling us why you are leaving this page?",
+    buttonText: "Send us your comments",
+    buttonLink: "https://www.4sitestudios.com/",
+    cookieName: "engrid-exit-intent-lightbox",
+    cookieDuration: 30,
+    triggers: {
+        visibilityState: true,
+        mousePosition: true,
+    }
 };
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/loader.js
@@ -12158,6 +12175,8 @@ class App extends engrid_ENGrid {
         // Give By Select
         new GiveBySelect();
         this.setDataAttributes();
+        //Exit Intent Lightbox
+        new ExitIntentLightbox();
         new UrlParamsToBodyAttrs();
         //Debug panel
         if (this.options.Debug ||
@@ -12207,11 +12226,6 @@ class App extends engrid_ENGrid {
         }
     }
     onError() {
-        // Smooth Scroll to the first .en__field--validationFailed element
-        const firstError = document.querySelector(".en__field--validationFailed");
-        if (firstError) {
-            firstError.scrollIntoView({ behavior: "smooth" });
-        }
         if (this.options.onError) {
             this.logger.danger("Client onError Triggered");
             this.options.onError();
@@ -13134,6 +13148,10 @@ class iFrame {
             window.setTimeout(() => {
                 this.sendIframeHeight();
             }, 300);
+            window.addEventListener("resize", this.debounceWithImmediate(() => {
+                this.logger.log("iFrame Event - window resized");
+                this.sendIframeHeight();
+            }));
             // Listen for the form submit event
             this._form.onSubmit.subscribe((e) => {
                 this.logger.log("iFrame Event - onSubmit");
@@ -13151,15 +13169,35 @@ class iFrame {
             if (skipLink) {
                 skipLink.remove();
             }
+            this._form.onError.subscribe(() => {
+                // Get the first .en__field--validationFailed element
+                const firstError = document.querySelector(".en__field--validationFailed");
+                // Send scrollTo message
+                // Parent pages listens for this message and scrolls to the correct position
+                const scrollTo = firstError
+                    ? firstError.getBoundingClientRect().top
+                    : 0;
+                this.logger.log(`iFrame Event 'scrollTo' - Position of top of first error ${scrollTo} px`); // check the message is being sent correctly
+                window.parent.postMessage({ scrollTo }, "*");
+            });
         }
         else {
-            // Parent Page Logic
+            // When not in iframe, default behaviour, smooth scroll to first error
+            this._form.onError.subscribe(() => {
+                // Smooth Scroll to the first .en__field--validationFailed element
+                const firstError = document.querySelector(".en__field--validationFailed");
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: "smooth" });
+                }
+            });
+            // Parent Page Logic (when an ENgrid form is embedded in an ENgrid page)
             window.addEventListener("message", (event) => {
                 const iframe = this.getIFrameByEvent(event);
                 if (iframe) {
                     if (event.data.hasOwnProperty("frameHeight")) {
                         iframe.style.height = event.data.frameHeight + "px";
                     }
+                    // Old scroll event logic "scroll", scrolls to correct iframe?
                     else if (event.data.hasOwnProperty("scroll") &&
                         event.data.scroll > 0) {
                         const elDistanceToTop = window.pageYOffset + iframe.getBoundingClientRect().top;
@@ -13170,6 +13208,18 @@ class iFrame {
                             behavior: "smooth",
                         });
                         this.logger.log("iFrame Event - Scrolling Window to " + scrollTo);
+                    }
+                    // New scroll event logic "scrollTo", scrolls to the first error
+                    else if (event.data.hasOwnProperty("scrollTo")) {
+                        const scrollToPosition = event.data.scrollTo +
+                            window.scrollY +
+                            iframe.getBoundingClientRect().top;
+                        window.scrollTo({
+                            top: scrollToPosition,
+                            left: 0,
+                            behavior: "smooth",
+                        });
+                        this.logger.log("iFrame Event - Scrolling Window to " + scrollToPosition);
                     }
                 }
             });
@@ -13274,6 +13324,21 @@ class iFrame {
             this.showFormComponents();
             banner.remove();
         });
+    }
+    debounceWithImmediate(func, timeout = 1000) {
+        let timer;
+        let firstEvent = true;
+        return (...args) => {
+            clearTimeout(timer);
+            if (firstEvent) {
+                func.apply(this, args);
+                firstEvent = false;
+            }
+            timer = setTimeout(() => {
+                func.apply(this, args);
+                firstEvent = true;
+            }, timeout);
+        };
     }
 }
 
@@ -13645,16 +13710,20 @@ class UpsellLightbox {
     renderLightbox() {
         const title = this.options.title
             .replace("{new-amount}", "<span class='upsell_suggestion'></span>")
-            .replace("{old-amount}", "<span class='upsell_amount'></span>");
+            .replace("{old-amount}", "<span class='upsell_amount'></span>")
+            .replace("{old-frequency}", "<span class='upsell_frequency'></span>");
         const paragraph = this.options.paragraph
             .replace("{new-amount}", "<span class='upsell_suggestion'></span>")
-            .replace("{old-amount}", "<span class='upsell_amount'></span>");
+            .replace("{old-amount}", "<span class='upsell_amount'></span>")
+            .replace("{old-frequency}", "<span class='upsell_frequency'></span>");
         const yes = this.options.yesLabel
             .replace("{new-amount}", "<span class='upsell_suggestion'></span>")
-            .replace("{old-amount}", "<span class='upsell_amount'></span>");
+            .replace("{old-amount}", "<span class='upsell_amount'></span>")
+            .replace("{old-frequency}", "<span class='upsell_frequency'></span>");
         const no = this.options.noLabel
             .replace("{new-amount}", "<span class='upsell_suggestion'></span>")
-            .replace("{old-amount}", "<span class='upsell_amount'></span>");
+            .replace("{old-amount}", "<span class='upsell_amount'></span>")
+            .replace("{old-frequency}", "<span class='upsell_frequency'></span>");
         const markup = `
             <div class="upsellLightboxContainer" id="goMonthly">
               <!-- ideal image size is 480x650 pixels -->
@@ -13770,6 +13839,10 @@ class UpsellLightbox {
         live_upsell_amount.forEach((elem) => (elem.innerHTML = this.getAmountTxt(suggestedAmount)));
         live_amount.forEach((elem) => (elem.innerHTML = this.getAmountTxt(this._amount.amount + this._fees.fee)));
     }
+    liveFrequency() {
+        const live_upsell_frequency = document.querySelectorAll(".upsell_frequency");
+        live_upsell_frequency.forEach((elem) => (elem.innerHTML = this.getFrequencyTxt()));
+    }
     // Return the Suggested Upsell Amount
     getUpsellAmount() {
         var _a, _b;
@@ -13799,14 +13872,13 @@ class UpsellLightbox {
             : this.options.minAmount;
     }
     shouldOpen() {
-        const freq = this._frequency.frequency;
         const upsellAmount = this.getUpsellAmount();
         const paymenttype = engrid_ENGrid.getFieldValue("transaction.paymenttype") || "";
         // If frequency is not onetime or
         // the modal is already opened or
         // there's no suggestion for this donation amount,
         // we should not open
-        if (freq == "onetime" &&
+        if (this.freqAllowed() &&
             !this.shouldSkip() &&
             !this.options.disablePaymentMethods.includes(paymenttype.toLowerCase()) &&
             !this.overlay.classList.contains("is-submitting") &&
@@ -13817,6 +13889,16 @@ class UpsellLightbox {
             return true;
         }
         return false;
+    }
+    // Return true if the current frequency is allowed by the options
+    freqAllowed() {
+        const freq = this._frequency.frequency;
+        const allowed = [];
+        if (this.options.oneTime)
+            allowed.push("onetime");
+        if (this.options.annual)
+            allowed.push("annual");
+        return allowed.includes(freq);
     }
     open() {
         this.logger.log("Upsell script opened");
@@ -13833,6 +13915,7 @@ class UpsellLightbox {
             return true;
         }
         this.liveAmounts();
+        this.liveFrequency();
         this.overlay.classList.remove("is-hidden");
         this._form.submit = false;
         engrid_ENGrid.setBodyData("has-lightbox", "");
@@ -13903,6 +13986,15 @@ class UpsellLightbox {
         const dec_places = amount % 1 == 0 ? 0 : (_d = engrid_ENGrid.getOption("DecimalPlaces")) !== null && _d !== void 0 ? _d : 2;
         const amountTxt = engrid_ENGrid.formatNumber(amount, dec_places, dec_separator, thousands_separator);
         return amount > 0 ? symbol + amountTxt : "";
+    }
+    getFrequencyTxt() {
+        const freqTxt = {
+            onetime: "one-time",
+            monthly: "monthly",
+            annual: "annual",
+        };
+        const frequency = this._frequency.frequency;
+        return frequency in freqTxt ? freqTxt[frequency] : frequency;
     }
     checkOtherAmount(value) {
         const otherInput = document.querySelector(".upsellOtherAmountInput");
@@ -14598,12 +14690,14 @@ class TranslateFields {
                     select.classList.add("en__field__input");
                     select.classList.add("en__field__input--select");
                     select.autocomplete = "address-level1";
+                    let valueSelected = false;
                     values.forEach((value) => {
                         const option = document.createElement("option");
                         option.value = value.value;
                         option.innerHTML = value.label;
-                        if (selectedState === value.value) {
+                        if (selectedState === value.value && !valueSelected) {
                             option.selected = true;
+                            valueSelected = true;
                         }
                         if (value.disabled) {
                             option.disabled = true;
@@ -14613,6 +14707,7 @@ class TranslateFields {
                     elementWrapper.innerHTML = "";
                     elementWrapper.appendChild(select);
                     select.addEventListener("change", this.rememberState.bind(this, state));
+                    select.dispatchEvent(new Event("change", { bubbles: true }));
                 }
                 else {
                     elementWrapper.innerHTML = "";
@@ -19329,11 +19424,140 @@ class UrlParamsToBodyAttrs {
     }
 }
 
+;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/exit-intent-lightbox.js
+
+
+class ExitIntentLightbox {
+    constructor() {
+        this.opened = false;
+        this.dataLayer = window.dataLayer || [];
+        this.logger = new EngridLogger("ExitIntentLightbox", "yellow", "black", "🚪");
+        let options = "EngridExitIntent" in window ? window.EngridExitIntent : {};
+        this.options = Object.assign(Object.assign({}, ExitIntentOptionsDefaults), options);
+        if (!this.options.enabled) {
+            this.logger.log("Not enabled");
+            return;
+        }
+        if (get(this.options.cookieName)) {
+            this.logger.log("Not showing - cookie found.");
+            return;
+        }
+        const activeTriggers = Object.keys(this.options.triggers)
+            .filter((t) => this.options.triggers[t])
+            .join(", ");
+        this.logger.log("Enabled, waiting for trigger. Active triggers: " + activeTriggers);
+        this.watchForTriggers();
+    }
+    watchForTriggers() {
+        if (this.options.triggers.mousePosition) {
+            this.watchMouse();
+        }
+        if (this.options.triggers.visibilityState) {
+            this.watchDocumentVisibility();
+        }
+    }
+    watchMouse() {
+        document.addEventListener("mouseout", (e) => {
+            // If this is an autocomplete element.
+            if (e.target.tagName.toLowerCase() == "input")
+                return;
+            // Get the current viewport width.
+            const vpWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+            // If the current mouse X position is within 50px of the right edge
+            // of the viewport, return.
+            if (e.clientX >= vpWidth - 50)
+                return;
+            // If the current mouse Y position is not within 50px of the top
+            // edge of the viewport, return.
+            if (e.clientY >= 50)
+                return;
+            // Reliable, works on mouse exiting window and
+            // user switching active program
+            const from = e.relatedTarget;
+            if (!from) {
+                this.logger.log("Triggered by mouse position");
+                this.open();
+            }
+        });
+    }
+    watchDocumentVisibility() {
+        const visibilityListener = () => {
+            if (document.visibilityState === "hidden") {
+                this.logger.log("Triggered by visibilityState is hidden");
+                this.open();
+                document.removeEventListener("visibilitychange", visibilityListener);
+            }
+        };
+        document.addEventListener("visibilitychange", visibilityListener);
+    }
+    open() {
+        var _a, _b, _c;
+        if (this.opened)
+            return;
+        engrid_ENGrid.setBodyData("exit-intent-lightbox", "open");
+        set(this.options.cookieName, "1", {
+            expires: this.options.cookieDuration,
+        });
+        document.body.insertAdjacentHTML("beforeend", `
+        <div class="ExitIntent">
+          <div class="ExitIntent__overlay">
+            <div class="ExitIntent__container">
+              <div class="ExitIntent__close">X</div>
+              <div class="ExitIntent__body">
+                <h2>${this.options.title}</h2>
+                <p>${this.options.text}</p>
+                <button type="button" class="ExitIntent__button">
+                  ${this.options.buttonText}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `);
+        this.opened = true;
+        this.dataLayer.push({ event: "exit_intent_lightbox_shown" });
+        (_a = document
+            .querySelector(".ExitIntent__close")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => {
+            this.dataLayer.push({ event: "exit_intent_lightbox_closed" });
+            this.close();
+        });
+        (_b = document
+            .querySelector(".ExitIntent__overlay")) === null || _b === void 0 ? void 0 : _b.addEventListener("click", (event) => {
+            if (event.target === event.currentTarget) {
+                this.dataLayer.push({ event: "exit_intent_lightbox_closed" });
+                this.close();
+            }
+        });
+        (_c = document
+            .querySelector(".ExitIntent__button")) === null || _c === void 0 ? void 0 : _c.addEventListener("click", () => {
+            this.dataLayer.push({ event: "exit_intent_lightbox_cta_clicked" });
+            this.close();
+            const target = this.options.buttonLink;
+            if (target.startsWith(".") || target.startsWith("#")) {
+                const targetEl = document.querySelector(target);
+                if (targetEl) {
+                    targetEl.scrollIntoView({ behavior: "smooth" });
+                }
+            }
+            else {
+                window.open(target, "_blank");
+            }
+        });
+    }
+    close() {
+        var _a;
+        (_a = document.querySelector(".ExitIntent")) === null || _a === void 0 ? void 0 : _a.remove();
+        engrid_ENGrid.setBodyData("exit-intent-lightbox", "closed");
+    }
+}
+
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.14.8";
+const AppVersion = "0.14.14";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
+
+
 
 
 
@@ -20065,7 +20289,72 @@ const customScript = function (App, DonationFrequency) {
       attributes: true,
       attributeFilter: ["class"]
     });
-  }
+  } // Create the Other 3 field if the payment type exists and the Other 3 field does not
+
+
+  const createOther3Field = () => {
+    const paymentType = document.querySelector("#en__field_transaction_paymenttype");
+    const other3Field = document.querySelector('input[name="transaction.othamt3"]');
+
+    if (paymentType && !other3Field) {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+      const formBlock = document.createElement("div");
+      formBlock.classList.add("en__component", "en__component--formblock", "hide");
+      const textField = document.createElement("div");
+      textField.classList.add("en__field", "en__field--text");
+      const textElement = document.createElement("div");
+      textElement.classList.add("en__field__element", "en__field__element--text");
+      const inputField = document.createElement("input");
+      inputField.setAttribute("type", "text");
+      inputField.classList.add("en__field__input", "en__field__input--text", "foursite-engrid-added-input");
+      inputField.setAttribute("name", "transaction.othamt3");
+      inputField.setAttribute("value", "");
+
+      if (App.debug) {
+        inputField.style.width = "100%";
+        inputField.setAttribute("placeholder", "Payment Type Details (Other 3)");
+      }
+
+      textElement.appendChild(inputField);
+      textField.appendChild(textElement);
+      formBlock.appendChild(textField);
+      const paymentElement = paymentType.closest(".en__component");
+
+      if (paymentElement) {
+        var _paymentElement$paren;
+
+        // Insert the new field after the submit button
+        (_paymentElement$paren = paymentElement.parentNode) === null || _paymentElement$paren === void 0 ? void 0 : _paymentElement$paren.insertBefore(formBlock, paymentElement.nextSibling);
+      } else {
+        const form = document.querySelector("form");
+
+        if (form) {
+          form.appendChild(formBlock);
+        }
+      } // Set the value of the Other 3 field to the value of the Payment Type field
+      // When the Payment Type field changes, update the Other 3 field
+
+
+      paymentType.addEventListener("change", () => {
+        const other3Field = document.querySelector('input[name="transaction.othamt3"]');
+
+        if (!other3Field) {
+          return;
+        }
+
+        if (paymentType.value === "stripedigitalwallet") {
+          // Set applepay if using IOS or Safari, otherwise set googlepay
+          other3Field.value = isIOS || isSafari ? "applepay" : "googlepay";
+        } else {
+          other3Field.value = paymentType.value;
+        }
+      });
+    }
+  }; // Call the function
+
+
+  createOther3Field();
 };
 ;// CONCATENATED MODULE: ./src/scripts/page-header-footer.js
 const pageHeaderFooter = function (App) {
