@@ -277,12 +277,12 @@ export const customScript = function (App, DonationFrequency) {
     }
   }
 
-  // let enFieldPhoneNumber = document.querySelectorAll(
-  //   ".en__field--phoneNumber2.en__mandatory input#en__field_supporter_phoneNumber2"
-  // )[0];
-  // if (enFieldPhoneNumber) {
-  //   enFieldPhoneNumber.placeholder = "000-000-0000 (Optional)";
-  // }
+  let enFieldPhoneNumber = document.querySelector(
+    ".en__field--phoneNumber2 input#en__field_supporter_phoneNumber2"
+  );
+  if (enFieldPhoneNumber) {
+    enFieldPhoneNumber.placeholder = "000-000-0000";
+  }
   // App.setBodydata("client-js-loading", "finished");
 
   const ccvvLabel = document.querySelector(".en__field--ccvv > label");
