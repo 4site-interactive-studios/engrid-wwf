@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, August 1, 2023 @ 16:46:02 ET
+ *  Date: Monday, August 14, 2023 @ 18:13:59 ET
  *  By: fernando
- *  ENGrid styles: v0.14.13
- *  ENGrid scripts: v0.14.14
+ *  ENGrid styles: v0.14.16
+ *  ENGrid scripts: v0.14.16
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -11728,12 +11728,12 @@ class engrid_ENGrid {
             const paymentTypeOption = Array.from(enFieldPaymentType.options).find((option) => option.value.toLowerCase() === paymentType.toLowerCase());
             if (paymentTypeOption) {
                 paymentTypeOption.selected = true;
-                const event = new Event("change");
-                enFieldPaymentType.dispatchEvent(event);
             }
             else {
                 enFieldPaymentType.value = paymentType;
             }
+            const event = new Event("change");
+            enFieldPaymentType.dispatchEvent(event);
         }
     }
 }
@@ -12157,6 +12157,8 @@ class App extends engrid_ENGrid {
         new CountryDisable();
         // Premium Gift Features
         new PremiumGift();
+        // Supporter Hub Features
+        new SupporterHub();
         // Digital Wallets Features
         if (engrid_ENGrid.getPageType() === "DONATION") {
             new DigitalWallets();
@@ -19551,11 +19553,73 @@ class ExitIntentLightbox {
     }
 }
 
+;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/supporter-hub.js
+// Component that adds 4Site Special Features to the Supporter Hub Page
+
+class SupporterHub {
+    constructor() {
+        this.logger = new EngridLogger("SupporterHub", "black", "pink", "🛖");
+        this._form = EnForm.getInstance();
+        if (!this.shoudRun())
+            return;
+        this.logger.log("Enabled");
+        this.watch();
+    }
+    shoudRun() {
+        return ("pageJson" in window &&
+            "pageType" in window.pageJson &&
+            window.pageJson.pageType === "supporterhub");
+    }
+    watch() {
+        const form = engrid_ENGrid.enForm;
+        // Create a observer to watch the Form for overlays
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === "childList") {
+                    mutation.addedNodes.forEach((node) => {
+                        if (node.nodeName === "DIV") {
+                            const overlay = node;
+                            if (overlay.classList.contains("en__hubOverlay")) {
+                                this.logger.log("Overlay found");
+                                this.creditCardUpdate(node);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+        // Start observing the Link ID #plaid-link-button
+        observer.observe(form, {
+            childList: true,
+            subtree: true,
+        });
+        // Run the Credit Card Update function in case the overlay is already present on page load
+        const hubOverlay = document.querySelector(".en__hubOverlay");
+        if (hubOverlay) {
+            this.creditCardUpdate(hubOverlay);
+        }
+    }
+    creditCardUpdate(overlay) {
+        window.setTimeout(() => {
+            // Check if the overlay has Credit Card field and Update Button
+            const ccField = overlay.querySelector("#en__hubPledge__field--ccnumber"), updateButton = overlay.querySelector(".en__hubUpdateCC__toggle");
+            if (ccField && updateButton) {
+                // When field gets focus, click the update button
+                ccField.addEventListener("focus", () => {
+                    this.logger.log("Credit Card field focused");
+                    updateButton.click();
+                });
+            }
+        }, 300);
+    }
+}
+
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.14.14";
+const AppVersion = "0.14.16";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
+
 
 
 
