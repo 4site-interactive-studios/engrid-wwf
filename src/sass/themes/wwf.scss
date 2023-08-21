@@ -1152,9 +1152,7 @@
   }
 
   // When the email field has a non-invalid error caused by FreshAddress, we want to keep the label in its normal color state
-  .en__field--emailAddress.en__field--validationFailed:not(
-      [data-freshaddress-safetosendstatus="invalid"]
-    )
+  .en__field--emailAddress.en__field--validationFailed:not([data-freshaddress-safetosendstatus="invalid"])
     > label {
     color: var(--label_color);
   }
@@ -1300,9 +1298,7 @@
   }
 
   // On premium pages, when the visitor is not in the US, hide the premium gift options other than the no gift option
-  &:not([data-engrid-demo])[data-engrid-page-type="premiumgift"]:not(
-      [data-engrid-country="US"]
-    )
+  &:not([data-engrid-demo])[data-engrid-page-type="premiumgift"]:not([data-engrid-country="US"])
     .en__pgList[data-nogift] {
     // Force the no gift option to always appear selected
     .en__pg__select input:before {
@@ -1900,20 +1896,14 @@
   }
 }
 
-&:not(#en__pagebuilder):not([data-engrid-debug]):not(
-    [data-engrid-page-type="donation"]
-  ):not([data-engrid-page-type="premiumgift"])
+&:not(#en__pagebuilder):not([data-engrid-debug]):not([data-engrid-page-type="donation"]):not([data-engrid-page-type="premiumgift"])
   .showif-donation {
   display: none;
 }
 
-&:not(#en__pagebuilder):not(
-    [data-engrid-debug]
-  )[data-engrid-page-type="donation"]
+&:not(#en__pagebuilder):not([data-engrid-debug])[data-engrid-page-type="donation"]
   .showif-not-donation,
-&:not(#en__pagebuilder):not(
-    [data-engrid-debug]
-  )[data-engrid-page-type="premiumgift"]
+&:not(#en__pagebuilder):not([data-engrid-debug])[data-engrid-page-type="premiumgift"]
   .showif-not-donation {
   display: none;
 }
@@ -2136,4 +2126,11 @@
     --h2_font-size: 16px;
     --h2_line-height: 24px;
   }
+}
+
+/* Force the visibility of Paypal Button when PayPal One Touch / Venmo is enabled */
+/* https://www.bugherd.com/projects/341429/tasks/318 */
+&[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements][data-engrid-transaction-recurring="n"][data-engrid-payment-type-option-paypal-one-touch="true"]
+  .en__field--giveBySelect.paypal.force-paypal-visibility {
+  display: inline-block !important;
 }

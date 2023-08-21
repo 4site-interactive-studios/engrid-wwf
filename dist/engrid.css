@@ -19,8 +19,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, August 14, 2023 @ 18:13:59 ET
- *  By: fernando
+ *  Date: Sunday, August 20, 2023 @ 23:04:55 ET
+ *  By: bryancasler
  *  ENGrid styles: v0.14.16
  *  ENGrid scripts: v0.14.16
  *
@@ -9133,6 +9133,9 @@ body[data-engrid-debug]:before{
     --h2_font-size:16px;
     --h2_line-height:24px;
   }
+}
+[data-engrid-theme=wwf][data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements][data-engrid-transaction-recurring=n][data-engrid-payment-type-option-paypal-one-touch=true] .en__field--giveBySelect.paypal.force-paypal-visibility{
+  display:inline-block !important;
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=multistep]{
   --fields_spacing-inline:5px;
