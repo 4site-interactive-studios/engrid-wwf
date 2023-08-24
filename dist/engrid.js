@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Sunday, August 20, 2023 @ 23:04:55 ET
+ *  Date: Thursday, August 24, 2023 @ 16:52:08 ET
  *  By: bryancasler
- *  ENGrid styles: v0.14.16
- *  ENGrid scripts: v0.14.16
+ *  ENGrid styles: v0.14.17
+ *  ENGrid scripts: v0.14.17
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -12180,6 +12180,8 @@ class App extends engrid_ENGrid {
         //Exit Intent Lightbox
         new ExitIntentLightbox();
         new UrlParamsToBodyAttrs();
+        new FastFormFill();
+        new SetAttr();
         //Debug panel
         if (this.options.Debug ||
             window.sessionStorage.hasOwnProperty(DebugPanel.debugSessionStorageKey)) {
@@ -19614,11 +19616,92 @@ class SupporterHub {
     }
 }
 
+;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/fast-form-fill.js
+/**
+ * This class adds body data attributes if all mandatory inputs, on specific form blocks, are filled.
+ * Related styling (to hide elements) can be found in "fast-form-fill.scss".
+ *
+ * To activate: add the custom class "fast-personal-details" or "fast-address-details"
+ * to the relevant form block.
+ */
+
+class FastFormFill {
+    constructor() {
+        this.logger = new EngridLogger("FastFormFill", "white", "magenta", "📌");
+        const fastPersonalDetailsFormBlock = document.querySelector(".en__component--formblock.fast-personal-details");
+        if (fastPersonalDetailsFormBlock) {
+            if (this.allMandatoryInputsAreFilled(fastPersonalDetailsFormBlock)) {
+                this.logger.log("Personal details - All mandatory inputs are filled");
+                engrid_ENGrid.setBodyData("hide-fast-personal-details", "true");
+            }
+            else {
+                this.logger.log("Personal details - Not all mandatory inputs are filled");
+                engrid_ENGrid.setBodyData("hide-fast-personal-details", "false");
+            }
+        }
+        const fastAddressDetailsFormBlock = document.querySelector(".en__component--formblock.fast-address-details");
+        if (fastAddressDetailsFormBlock) {
+            if (this.allMandatoryInputsAreFilled(fastAddressDetailsFormBlock)) {
+                this.logger.log("Address details - All mandatory inputs are filled");
+                engrid_ENGrid.setBodyData("hide-fast-address-details", "true");
+            }
+            else {
+                this.logger.log("Address details - Not all mandatory inputs are filled");
+                engrid_ENGrid.setBodyData("hide-fast-address-details", "false");
+            }
+        }
+    }
+    allMandatoryInputsAreFilled(formBlock) {
+        const fields = formBlock.querySelectorAll(".en__mandatory input, .en__mandatory select, .en__mandatory textarea");
+        return [...fields].every((input) => {
+            if (input.type === "radio" || input.type === "checkbox") {
+                const inputs = document.querySelectorAll('[name="' + input.name + '"]');
+                return [...inputs].some((radioOrCheckbox) => radioOrCheckbox.checked);
+            }
+            else {
+                return input.value !== null && input.value.trim() !== "";
+            }
+        });
+    }
+}
+
+;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/set-attr.js
+/*+
+  The class is used to set body attributes via click handlers.
+  The format is "setattr--{attribute}--{value}".
+  e.g. setattr--data-engrid-hide-fast-address-details--true
+ */
+
+class SetAttr {
+    constructor() {
+        this.logger = new EngridLogger("SetAttr", "black", "yellow", "📌");
+        const enGrid = document.getElementById("engrid");
+        if (enGrid) {
+            enGrid.addEventListener("click", (e) => {
+                const clickedEl = e.target;
+                const clickedElClassNames = clickedEl.className.split(" ");
+                if (clickedElClassNames.some((className) => className.startsWith("setattr--"))) {
+                    clickedEl.classList.forEach((className) => {
+                        //Check element has class with format "setattr--attribute--value"
+                        const match = className.match(/^setattr--(.+)--(.+)$/i);
+                        if (match && match[1] && match[2]) {
+                            this.logger.log(`Clicked element with class "${className}". Setting body attribute "${match[1]}" to "${match[2]}"`);
+                            engrid_ENGrid.setBodyData(match[1].replace("data-engrid-", ""), match[2]);
+                        }
+                    });
+                }
+            });
+        }
+    }
+}
+
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.14.16";
+const AppVersion = "0.14.17";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
+
+
 
 
 
