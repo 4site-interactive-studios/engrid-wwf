@@ -740,7 +740,7 @@ export const customScript = function (App, DonationFrequency) {
   const loadBugHerdScript = () => {
     const script = document.createElement("script");
     script.src =
-      "https://www.bugherd.com/sidebarv2.js?apikey=rrtm8eyxomjfjthcue06hq";
+      "https://www.bugherd.com/sidebarv2.js?apikey=c9xhgp67p1maeebj6hhyfw";
     script.async = true;
     document.body.appendChild(script);
   };

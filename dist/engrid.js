@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, August 24, 2023 @ 16:52:08 ET
+ *  Date: Thursday, August 24, 2023 @ 16:53:57 ET
  *  By: bryancasler
  *  ENGrid styles: v0.14.17
  *  ENGrid scripts: v0.14.17
@@ -20405,7 +20405,7 @@ const customScript = function (App, DonationFrequency) {
 
   const loadBugHerdScript = () => {
     const script = document.createElement("script");
-    script.src = "https://www.bugherd.com/sidebarv2.js?apikey=rrtm8eyxomjfjthcue06hq";
+    script.src = "https://www.bugherd.com/sidebarv2.js?apikey=c9xhgp67p1maeebj6hhyfw";
     script.async = true;
     document.body.appendChild(script);
   }; // Call the function to load the script
