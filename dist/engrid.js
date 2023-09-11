@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, August 24, 2023 @ 16:53:57 ET
- *  By: bryancasler
- *  ENGrid styles: v0.14.17
- *  ENGrid scripts: v0.14.17
+ *  Date: Monday, September 11, 2023 @ 12:56:43 ET
+ *  By: michael
+ *  ENGrid styles: v0.13.74
+ *  ENGrid scripts: v0.13.74
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -10801,8 +10801,6 @@ const UpsellOptionsDefaults = {
     minAmount: 0,
     canClose: true,
     submitOnClose: false,
-    oneTime: true,
-    annual: false,
     disablePaymentMethods: [],
     skipUpsell: false,
 };
@@ -10849,21 +10847,6 @@ const TranslateOptionsDefaults = {
     FRA: frTranslation,
     NL: nlTranslation,
     NLD: nlTranslation,
-};
-
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/interfaces/exit-intent-options.js
-const ExitIntentOptionsDefaults = {
-    enabled: false,
-    title: "We are sad that you are leaving",
-    text: "Would you mind telling us why you are leaving this page?",
-    buttonText: "Send us your comments",
-    buttonLink: "https://www.4sitestudios.com/",
-    cookieName: "engrid-exit-intent-lightbox",
-    cookieDuration: 30,
-    triggers: {
-        visibilityState: true,
-        mousePosition: true,
-    }
 };
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/loader.js
@@ -11717,25 +11700,6 @@ class engrid_ENGrid {
             observer.observe(errorElement, { childList: true });
         }
     }
-    // Get the Payment Type
-    static getPaymentType() {
-        return engrid_ENGrid.getFieldValue("transaction.paymenttype");
-    }
-    // Set the Payment Type
-    static setPaymentType(paymentType) {
-        const enFieldPaymentType = engrid_ENGrid.getField("transaction.paymenttype");
-        if (enFieldPaymentType) {
-            const paymentTypeOption = Array.from(enFieldPaymentType.options).find((option) => option.value.toLowerCase() === paymentType.toLowerCase());
-            if (paymentTypeOption) {
-                paymentTypeOption.selected = true;
-            }
-            else {
-                enFieldPaymentType.value = paymentType;
-            }
-            const event = new Event("change");
-            enFieldPaymentType.dispatchEvent(event);
-        }
-    }
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/events/donation-frequency.js
@@ -11960,8 +11924,7 @@ class App extends engrid_ENGrid {
             return;
         // Turn Debug ON if you use local assets
         if (engrid_ENGrid.getBodyData("assets") === "local" &&
-            engrid_ENGrid.getUrlParameter("debug") !== "false" &&
-            engrid_ENGrid.getUrlParameter("debug") !== "log") {
+            engrid_ENGrid.getUrlParameter("debug") !== "false") {
             window.EngridOptions.Debug = true;
         }
         // Document Load
@@ -11996,12 +11959,14 @@ class App extends engrid_ENGrid {
             // Enable debug if available is the first thing
             App.setBodyData("debug", "");
         // TODO: Abstract everything to the App class so we can remove custom-methods
+        inputPlaceholder();
+        preventAutocomplete();
         watchInmemField();
+        watchGiveBySelectField();
         simpleUnsubscribe();
         contactDetailLabels();
         easyEdit();
-        new InputPlaceholders();
-        new InputHasValueAndFocus();
+        enInput.init();
         new ShowHideRadioCheckboxes("transaction.giveBySelect", "giveBySelect-");
         new ShowHideRadioCheckboxes("transaction.inmem", "inmem-");
         new ShowHideRadioCheckboxes("transaction.recurrpay", "recurrpay-");
@@ -12093,8 +12058,8 @@ class App extends engrid_ENGrid {
         // On the end of the script, after all subscribers defined, let's load the current value
         this._amount.load();
         this._frequency.load();
-        // Auto Country Select
-        new AutoCountrySelect();
+        // Simple Country Select
+        new SimpleCountrySelect();
         // Add Image Attribution
         if (this.options.MediaAttribution)
             new MediaAttribution();
@@ -12107,8 +12072,8 @@ class App extends engrid_ENGrid {
         // Auto Year Class
         if (this.options.AutoYear)
             new AutoYear();
-        // Credit Card Utility
-        new CreditCard();
+        // Credit Card Numbers Only
+        new CreditCardNumbers();
         // Autocomplete Class
         new Autocomplete();
         // Ecard Class
@@ -12157,8 +12122,6 @@ class App extends engrid_ENGrid {
         new CountryDisable();
         // Premium Gift Features
         new PremiumGift();
-        // Supporter Hub Features
-        new SupporterHub();
         // Digital Wallets Features
         if (engrid_ENGrid.getPageType() === "DONATION") {
             new DigitalWallets();
@@ -12174,14 +12137,7 @@ class App extends engrid_ENGrid {
         // Plaid
         if (this.options.Plaid)
             new Plaid();
-        // Give By Select
-        new GiveBySelect();
         this.setDataAttributes();
-        //Exit Intent Lightbox
-        new ExitIntentLightbox();
-        new UrlParamsToBodyAttrs();
-        new FastFormFill();
-        new SetAttr();
         //Debug panel
         if (this.options.Debug ||
             window.sessionStorage.hasOwnProperty(DebugPanel.debugSessionStorageKey)) {
@@ -12230,6 +12186,11 @@ class App extends engrid_ENGrid {
         }
     }
     onError() {
+        // Smooth Scroll to the first .en__field--validationFailed element
+        const firstError = document.querySelector(".en__field--validationFailed");
+        if (firstError) {
+            firstError.scrollIntoView({ behavior: "smooth" });
+        }
         if (this.options.onError) {
             this.logger.danger("Client onError Triggered");
             this.options.onError();
@@ -12623,180 +12584,21 @@ class CapitalizeFields {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/credit-card.js
-// This class provides the credit card handler
-// and common credit card manipulation, like removing any non-numeric
-//  characters from the credit card field
+;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/credit-card-numbers.js
+// This class removes any non-numeric characters from the credit card field
 
-class CreditCard {
+class CreditCardNumbers {
     constructor() {
-        this.logger = new EngridLogger("CreditCard", "#ccc84a", "#333", "💳");
         this._form = EnForm.getInstance();
-        this.ccField = engrid_ENGrid.getField("transaction.ccnumber");
-        this.field_expiration_month = null;
-        this.field_expiration_year = null;
-        this.paymentTypeField = engrid_ENGrid.getField("transaction.paymenttype");
-        this.handleExpUpdate = (e) => {
-            if (!this.field_expiration_month || !this.field_expiration_year)
-                return;
-            const current_date = new Date();
-            const current_month = current_date.getMonth() + 1;
-            const current_year = current_date.getFullYear() - 2000;
-            // handle if year is changed to current year (disable all months less than current month)
-            // handle if month is changed to less than current month (disable current year)
-            if (e == "month") {
-                let selected_month = parseInt(this.field_expiration_month.value);
-                let disable = selected_month < current_month;
-                this.logger.log(`month disable ${disable}`);
-                this.logger.log(`selected_month ${selected_month}`);
-                for (let i = 0; i < this.field_expiration_year.options.length; i++) {
-                    // disable or enable current year
-                    if (parseInt(this.field_expiration_year.options[i].value) <= current_year) {
-                        if (disable) {
-                            this.field_expiration_year.options[i].setAttribute("disabled", "disabled");
-                        }
-                        else {
-                            this.field_expiration_year.options[i].disabled = false;
-                        }
-                    }
-                }
-            }
-            else if (e == "year") {
-                let selected_year = parseInt(this.field_expiration_year.value);
-                let disable = selected_year == current_year;
-                this.logger.log(`year disable ${disable}`);
-                this.logger.log(`selected_year ${selected_year}`);
-                for (let i = 0; i < this.field_expiration_month.options.length; i++) {
-                    // disable or enable all months less than current month
-                    if (parseInt(this.field_expiration_month.options[i].value) < current_month) {
-                        if (disable) {
-                            this.field_expiration_month.options[i].setAttribute("disabled", "disabled");
-                        }
-                        else {
-                            this.field_expiration_month.options[i].disabled = false;
-                        }
-                    }
-                }
-            }
-        };
-        if (!this.ccField)
-            return;
-        const expireFiels = document.getElementsByName("transaction.ccexpire");
-        if (expireFiels) {
-            this.field_expiration_month = expireFiels[0];
-            this.field_expiration_year = expireFiels[1];
-        }
-        this._form.onSubmit.subscribe(() => this.onlyNumbersCC());
-        this.addEventListeners();
-        this.handleCCUpdate();
-    }
-    addEventListeners() {
-        // Add event listeners to the credit card field
-        ["keyup", "paste", "blur"].forEach((event) => {
-            this.ccField.addEventListener(event, () => this.handleCCUpdate());
-        });
-        // Add event listeners to the expiration fields
-        if (this.field_expiration_month && this.field_expiration_year) {
-            ["change"].forEach((event) => {
-                var _a, _b;
-                (_a = this.field_expiration_month) === null || _a === void 0 ? void 0 : _a.addEventListener(event, () => {
-                    this.handleExpUpdate("month");
-                });
-                (_b = this.field_expiration_year) === null || _b === void 0 ? void 0 : _b.addEventListener(event, () => {
-                    this.handleExpUpdate("year");
-                });
-            });
-        }
-        // Add event listeners to the Give By Select Radio Buttons, if they exist
-        const transactionGiveBySelect = document.getElementsByName("transaction.giveBySelect");
-        if (transactionGiveBySelect) {
-            transactionGiveBySelect.forEach((giveBySelect) => {
-                giveBySelect.addEventListener("change", () => {
-                    if (giveBySelect.value.toLowerCase() === "card") {
-                        this.logger.log("Handle credit card auto-update");
-                        window.setTimeout(() => {
-                            this.handleCCUpdate();
-                        }, 100);
-                    }
-                });
-            });
+        this.ccField = document.getElementById("en__field_transaction_ccnumber");
+        if (this.ccField) {
+            this._form.onSubmit.subscribe(() => this.onlyNumbersCC());
         }
     }
     onlyNumbersCC() {
         const onlyNumbers = this.ccField.value.replace(/\D/g, "");
         this.ccField.value = onlyNumbers;
         return true;
-    }
-    handleCCUpdate() {
-        const card_type = this.getCardType(this.ccField.value);
-        const card_values = {
-            amex: ["amex", "american express", "americanexpress", "amx", "ax"],
-            visa: ["visa", "vi"],
-            mastercard: ["mastercard", "master card", "mc"],
-            discover: ["discover", "di"],
-        };
-        const selected_card_value = card_type
-            ? Array.from(this.paymentTypeField.options).filter((d) => card_values[card_type].includes(d.value.toLowerCase()))[0].value
-            : "";
-        if (this.paymentTypeField.value != selected_card_value) {
-            this.logger.log(`card type ${card_type}`);
-            this.paymentTypeField.value = selected_card_value;
-            const paymentTypeChangeEvent = new Event("change", { bubbles: true });
-            this.paymentTypeField.dispatchEvent(paymentTypeChangeEvent);
-        }
-    }
-    getCardType(cc_partial) {
-        let key_character = cc_partial.charAt(0);
-        const prefix = "live-card-type-";
-        const field_credit_card_classes = this.ccField.className
-            .split(" ")
-            .filter((c) => !c.startsWith(prefix));
-        switch (key_character) {
-            case "0":
-                this.ccField.className = field_credit_card_classes.join(" ").trim();
-                this.ccField.classList.add("live-card-type-invalid");
-                return false;
-            case "1":
-                this.ccField.className = field_credit_card_classes.join(" ").trim();
-                this.ccField.classList.add("live-card-type-invalid");
-                return false;
-            case "2":
-                this.ccField.className = field_credit_card_classes.join(" ").trim();
-                this.ccField.classList.add("live-card-type-invalid");
-                return false;
-            case "3":
-                this.ccField.className = field_credit_card_classes.join(" ").trim();
-                this.ccField.classList.add("live-card-type-amex");
-                return "amex";
-            case "4":
-                this.ccField.className = field_credit_card_classes.join(" ").trim();
-                this.ccField.classList.add("live-card-type-visa");
-                return "visa";
-            case "5":
-                this.ccField.className = field_credit_card_classes.join(" ").trim();
-                this.ccField.classList.add("live-card-type-mastercard");
-                return "mastercard";
-            case "6":
-                this.ccField.className = field_credit_card_classes.join(" ").trim();
-                this.ccField.classList.add("live-card-type-discover");
-                return "discover";
-            case "7":
-                this.ccField.className = field_credit_card_classes.join(" ").trim();
-                this.ccField.classList.add("live-card-type-invalid");
-                return false;
-            case "8":
-                this.ccField.className = field_credit_card_classes.join(" ").trim();
-                this.ccField.classList.add("live-card-type-invalid");
-                return false;
-            case "9":
-                this.ccField.className = field_credit_card_classes.join(" ").trim();
-                this.ccField.classList.add("live-card-type-invalid");
-                return false;
-            default:
-                this.ccField.className = field_credit_card_classes.join(" ").trim();
-                this.ccField.classList.add("live-card-type-na");
-                return false;
-        }
     }
 }
 
@@ -12976,11 +12778,442 @@ class ClickToExpand {
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/custom-methods.js
 const body = document.body;
 const enGrid = document.getElementById("engrid");
+const enInput = (() => {
+    /************************************
+     * Globablly Scoped Constants and Variables
+     ***********************************/
+    // @TODO Needs to be expanded to bind other EN elements (checkbox, radio) and compound elements (split-text, split-select, select with other input, etc...)
+    // @TODO A "Not" condition is needed for #en__field_transaction_email because someone could name their email opt in "Email" and it will get the .en_field--email class generated for it
+    // get DOM elements
+    const init = () => {
+        const formInput = document.querySelectorAll(".en__field--text, .en__field--email:not(.en__field--checkbox), .en__field--telephone, .en__field--number, .en__field--textarea, .en__field--select, .en__field--checkbox");
+        Array.from(formInput).forEach((e) => {
+            // @TODO Currently checkboxes always return as having a value, since they do but they're just not checked. Need to update and account for that, should also do Radio's while we're at it
+            let element = e.querySelector("input, textarea, select");
+            if (element && element.value) {
+                e.classList.add("has-value");
+            }
+            bindEvents(e);
+        });
+    };
+    return {
+        init: init,
+    };
+})();
+const bindEvents = (e) => {
+    /* @TODO */
+    /************************************
+     * INPUT, TEXTAREA, AND SELECT ACTIVITY CLASSES (FOCUS AND BLUR)
+     * NOTE: STILL NEEDS WORK TO FUNCTION ON "SPLIT" CUSTOM EN FIELDS
+     * REF: https://developer.mozilla.org/en-US/docs/Web/API/Element/blur_event
+     ***********************************/
+    // Occurs when an input field gets focus
+    const handleFocus = (e) => {
+        const target = e.target;
+        if (target && target.parentNode && target.parentNode.parentNode) {
+            const targetWrapper = target.parentNode.parentNode;
+            targetWrapper.classList.add("has-focus");
+        }
+    };
+    // Occurs when a user leaves an input field
+    const handleBlur = (e) => {
+        const target = e.target;
+        if (target && target.parentNode && target.parentNode.parentNode) {
+            const targetWrapper = target.parentNode.parentNode;
+            targetWrapper.classList.remove("has-focus");
+            if (target.value) {
+                targetWrapper.classList.add("has-value");
+            }
+            else {
+                targetWrapper.classList.remove("has-value");
+            }
+        }
+    };
+    // Occurs when a user changes the selected option of a <select> element
+    const handleChange = (e) => {
+        const target = e.target;
+        if (target && target.parentNode && target.parentNode.parentNode) {
+            const targetWrapper = target.parentNode.parentNode;
+            targetWrapper.classList.add("has-value");
+        }
+    };
+    // Occurs when a text or textarea element gets user input
+    const handleInput = (e) => {
+        const target = e.target;
+        if (target && target.parentNode && target.parentNode.parentNode) {
+            const targetWrapper = target.parentNode.parentNode;
+            targetWrapper.classList.add("has-value");
+        }
+    };
+    // Occurs when the web browser autofills a form fields
+    // REF: engrid-autofill.scss
+    // REF: https://medium.com/@brunn/detecting-autofilled-fields-in-javascript-aed598d25da7
+    const onAutoFillStart = (e) => {
+        e.parentNode.parentNode.classList.add("is-autofilled", "has-value");
+    };
+    const onAutoFillCancel = (e) => e.parentNode.parentNode.classList.remove("is-autofilled", "has-value");
+    const onAnimationStart = (e) => {
+        const target = e.target;
+        const animation = e.animationName;
+        switch (animation) {
+            case "onAutoFillStart":
+                return onAutoFillStart(target);
+            case "onAutoFillCancel":
+                return onAutoFillCancel(target);
+        }
+    };
+    const enField = e.querySelector("input, textarea, select");
+    if (enField) {
+        enField.addEventListener("focus", handleFocus);
+        enField.addEventListener("blur", handleBlur);
+        enField.addEventListener("change", handleChange);
+        enField.addEventListener("input", handleInput);
+        enField.addEventListener("animationstart", onAnimationStart);
+    }
+};
 const removeClassesByPrefix = (el, prefix) => {
     for (var i = el.classList.length - 1; i >= 0; i--) {
         if (el.classList[i].startsWith(prefix)) {
             el.classList.remove(el.classList[i]);
         }
+    }
+};
+const debugBar = () => {
+    if (window.location.href.indexOf("debug") != -1 ||
+        location.hostname === "localhost" ||
+        location.hostname === "127.0.0.1") {
+        body.classList.add("debug");
+        if (enGrid) {
+            enGrid.insertAdjacentHTML("beforebegin", '<span id="debug-bar">' +
+                '<span id="info-wrapper">' +
+                "<span>DEBUG BAR</span>" +
+                "</span>" +
+                '<span id="buttons-wrapper">' +
+                '<span id="debug-close">X</span>' +
+                "</span>" +
+                "</span>");
+        }
+        if (window.location.search.indexOf("mode=DEMO") > -1) {
+            const infoWrapper = document.getElementById("info-wrapper");
+            const buttonsWrapper = document.getElementById("buttons-wrapper");
+            if (infoWrapper) {
+                // console.log(window.performance);
+                const now = new Date().getTime();
+                const initialPageLoad = (now - performance.timing.navigationStart) / 1000;
+                const domInteractive = initialPageLoad + (now - performance.timing.domInteractive) / 1000;
+                infoWrapper.insertAdjacentHTML("beforeend", "<span>Initial Load: " +
+                    initialPageLoad +
+                    "s</span>" +
+                    "<span>DOM Interactive: " +
+                    domInteractive +
+                    "s</span>");
+                if (buttonsWrapper) {
+                    buttonsWrapper.insertAdjacentHTML("afterbegin", '<button id="layout-toggle" type="button">Layout Toggle</button>' +
+                        '<button id="page-edit" type="button">Edit in PageBuilder (BETA)</button>');
+                }
+            }
+        }
+        if (window.location.href.indexOf("debug") != -1 ||
+            location.hostname === "localhost" ||
+            location.hostname === "127.0.0.1") {
+            const buttonsWrapper = document.getElementById("buttons-wrapper");
+            if (buttonsWrapper) {
+                buttonsWrapper.insertAdjacentHTML("afterbegin", '<button id="layout-toggle" type="button">Layout Toggle</button>' +
+                    '<button id="fancy-errors-toggle" type="button">Toggle Fancy Errors</button>');
+            }
+        }
+        if (document.getElementById("fancy-errors-toggle")) {
+            const debugTemplateButton = document.getElementById("fancy-errors-toggle");
+            if (debugTemplateButton) {
+                debugTemplateButton.addEventListener("click", function () {
+                    fancyErrorsToggle();
+                }, false);
+            }
+        }
+        if (document.getElementById("layout-toggle")) {
+            const debugTemplateButton = document.getElementById("layout-toggle");
+            if (debugTemplateButton) {
+                debugTemplateButton.addEventListener("click", function () {
+                    layoutToggle();
+                }, false);
+            }
+        }
+        if (document.getElementById("page-edit")) {
+            const debugTemplateButton = document.getElementById("page-edit");
+            if (debugTemplateButton) {
+                debugTemplateButton.addEventListener("click", function () {
+                    pageEdit();
+                }, false);
+            }
+        }
+        if (document.getElementById("debug-close")) {
+            const debugTemplateButton = document.getElementById("debug-close");
+            if (debugTemplateButton) {
+                debugTemplateButton.addEventListener("click", function () {
+                    debugClose();
+                }, false);
+            }
+        }
+        const fancyErrorsToggle = () => {
+            if (enGrid) {
+                enGrid.classList.toggle("fancy-errors");
+            }
+        };
+        const pageEdit = () => {
+            window.location.href = window.location.href + "?edit";
+        };
+        const layoutToggle = () => {
+            if (enGrid) {
+                if (enGrid.classList.contains("layout-centercenter1col")) {
+                    removeClassesByPrefix(enGrid, "layout-");
+                    enGrid.classList.add("layout-centerright1col");
+                }
+                else if (enGrid.classList.contains("layout-centerright1col")) {
+                    removeClassesByPrefix(enGrid, "layout-");
+                    enGrid.classList.add("layout-centerleft1col");
+                }
+                else if (enGrid.classList.contains("layout-centerleft1col")) {
+                    removeClassesByPrefix(enGrid, "layout-");
+                    enGrid.classList.add("layout-embedded");
+                }
+                else if (enGrid.classList.contains("layout-embedded")) {
+                    removeClassesByPrefix(enGrid, "layout-");
+                    enGrid.classList.add("layout-centercenter1col");
+                }
+                else {
+                    console.log("While trying to switch layouts, something unexpected happen.");
+                }
+            }
+        };
+        const debugClose = () => {
+            body.classList.remove("debug");
+            const debugBar = document.getElementById("debug-bar");
+            if (debugBar) {
+                debugBar.style.display = "none";
+            }
+        };
+    }
+};
+const inputPlaceholder = () => {
+    // Personal Information
+    let enFieldFirstName = document.querySelector("input#en__field_supporter_firstName");
+    let enFieldLastName = document.querySelector("input#en__field_supporter_lastName");
+    let enFieldEmailAddress = document.querySelector("input#en__field_supporter_emailAddress");
+    let enFieldPhoneNumber = document.querySelector("input#en__field_supporter_phoneNumber");
+    let enFieldPhoneNumberRequired = document.querySelector(".en__mandatory > * > input#en__field_supporter_phoneNumber");
+    let enFieldPhoneNumber2 = document.querySelector("input#en__field_supporter_phoneNumber2");
+    let enFieldPhoneNumber2Required = document.querySelector(".en__mandatory > * > input#en__field_supporter_phoneNumber2");
+    let enFieldPhoneNumber2HideOptionalPlaceholder = document.querySelector(".hide-optional-phone-placeholder [name='supporter.phoneNumber2']");
+    // Address
+    let enFieldCountry = document.querySelector("input#en__field_supporter_country");
+    let enFieldAddress1 = document.querySelector("input#en__field_supporter_address1");
+    let enFieldAddress2 = document.querySelector("input#en__field_supporter_address2");
+    let enFieldCity = document.querySelector("input#en__field_supporter_city");
+    let enFieldRegion = document.querySelector("input#en__field_supporter_region");
+    let enFieldPostcode = document.querySelector("input#en__field_supporter_postcode");
+    // Donation
+    let enFieldDonationAmt = document.querySelector(".en__field--donationAmt.en__field--withOther .en__field__input--other");
+    let enFieldCcnumber = document.querySelector("input#en__field_transaction_ccnumber");
+    let enFieldCcexpire = document.querySelector("input#en__field_transaction_ccexpire");
+    let enFieldCcvv = document.querySelector("input#en__field_transaction_ccvv");
+    let enFieldBankAccountNumber = document.querySelector("input#en__field_supporter_bankAccountNumber");
+    let enFieldBankRoutingNumber = document.querySelector("input#en__field_supporter_bankRoutingNumber");
+    // In Honor
+    let enFieldHonname = document.querySelector("input#en__field_transaction_honname");
+    let enFieldInfname = document.querySelector("input#en__field_transaction_infname");
+    let enFieldInfemail = document.querySelector("input#en__field_transaction_infemail");
+    let enFieldInfcountry = document.querySelector("input#en__field_transaction_infcountry");
+    let enFieldInfadd1 = document.querySelector("input#en__field_transaction_infadd1");
+    let enFieldInfadd2 = document.querySelector("input#en__field_transaction_infadd2");
+    let enFieldInfcity = document.querySelector("input#en__field_transaction_infcity");
+    let enFieldInfpostcd = document.querySelector("input#en__field_transaction_infpostcd");
+    // Miscillaneous
+    let enFieldGftrsn = document.querySelector("input#en__field_transaction_gftrsn");
+    // Shipping Infromation
+    let enFieldShippingFirstName = document.querySelector("input#en__field_transaction_shipfname");
+    let enFieldShippingLastName = document.querySelector("input#en__field_transaction_shiplname");
+    let enFieldShippingEmailAddress = document.querySelector("input#en__field_transaction_shipemail");
+    let enFieldShippingCountry = document.querySelector("input#en__field_transaction_shipcountry");
+    let enFieldShippingAddress1 = document.querySelector("input#en__field_transaction_shipadd1");
+    let enFieldShippingAddress2 = document.querySelector("input#en__field_transaction_shipadd2");
+    let enFieldShippingCity = document.querySelector("input#en__field_transaction_shipcity");
+    let enFieldShippingRegion = document.querySelector("input#en__field_transaction_shipregion");
+    let enFieldShippingPostcode = document.querySelector("input#en__field_transaction_shippostcode");
+    // Billing Infromation
+    let enFieldBillingCountry = document.querySelector("input#en__field_supporter_billingCountry");
+    let enFieldBillingAddress1 = document.querySelector("input#en__field_supporter_billingAddress1");
+    let enFieldBillingAddress2 = document.querySelector("input#en__field_supporter_billingAddress2");
+    let enFieldBillingCity = document.querySelector("input#en__field_supporter_billingCity");
+    let enFieldBillingRegion = document.querySelector("input#en__field_supporter_billingRegion");
+    let enFieldBillingPostcode = document.querySelector("input#en__field_supporter_billingPostcode");
+    // CHANGE FIELD INPUT TYPES
+    if (enFieldDonationAmt) {
+        enFieldDonationAmt.setAttribute("inputmode", "decimal");
+    }
+    // ADD THE MISSING LABEL FOR IMPROVED ACCESSABILITY
+    if (enFieldDonationAmt) {
+        enFieldDonationAmt.setAttribute("aria-label", "Enter your custom donation amount");
+    }
+    // ADD FIELD PLACEHOLDERS
+    const enAddInputPlaceholder = document.querySelector("[data-engrid-add-input-placeholders]");
+    // Personal Information
+    if (enAddInputPlaceholder && enFieldFirstName) {
+        enFieldFirstName.placeholder = "First Name";
+    }
+    if (enAddInputPlaceholder && enFieldLastName) {
+        enFieldLastName.placeholder = "Last Name";
+    }
+    if (enAddInputPlaceholder && enFieldEmailAddress) {
+        enFieldEmailAddress.placeholder = "Email Address";
+    }
+    if (enAddInputPlaceholder &&
+        enFieldPhoneNumber &&
+        enFieldPhoneNumberRequired) {
+        enFieldPhoneNumber.placeholder = "Phone Number";
+    }
+    else if (enAddInputPlaceholder &&
+        enFieldPhoneNumber &&
+        !enFieldPhoneNumberRequired) {
+        enFieldPhoneNumber.placeholder = "Phone Number (Optional)";
+    }
+    if (enAddInputPlaceholder &&
+        enFieldPhoneNumber2 &&
+        enFieldPhoneNumber2Required) {
+        enFieldPhoneNumber2.placeholder = "000-000-0000";
+    }
+    else if (enAddInputPlaceholder &&
+        enFieldPhoneNumber2 &&
+        !enFieldPhoneNumber2Required &&
+        enFieldPhoneNumber2HideOptionalPlaceholder) {
+        enFieldPhoneNumber2.placeholder = "000-000-0000";
+    }
+    else if (enAddInputPlaceholder &&
+        enFieldPhoneNumber2 &&
+        !enFieldPhoneNumber2Required) {
+        enFieldPhoneNumber2.placeholder = "000-000-0000 (Optional)";
+    }
+    // Address
+    if (enAddInputPlaceholder && enFieldCountry) {
+        enFieldCountry.placeholder = "Country";
+    }
+    if (enAddInputPlaceholder && enFieldAddress1) {
+        enFieldAddress1.placeholder = "Street Address";
+    }
+    if (enAddInputPlaceholder && enFieldAddress2) {
+        enFieldAddress2.placeholder = "Apt., ste., bldg.";
+    }
+    if (enAddInputPlaceholder && enFieldCity) {
+        enFieldCity.placeholder = "City";
+    }
+    if (enAddInputPlaceholder && enFieldRegion) {
+        enFieldRegion.placeholder = "Region";
+    }
+    if (enAddInputPlaceholder && enFieldPostcode) {
+        enFieldPostcode.placeholder = "Postal Code";
+    }
+    // Donation
+    if (enAddInputPlaceholder && enFieldDonationAmt) {
+        enFieldDonationAmt.placeholder = "Other";
+    }
+    if (enAddInputPlaceholder && enFieldCcnumber) {
+        enFieldCcnumber.placeholder = "•••• •••• •••• ••••";
+    }
+    if (enAddInputPlaceholder && enFieldCcexpire) {
+        enFieldCcexpire.placeholder = "MM / YY";
+    }
+    if (enAddInputPlaceholder && enFieldCcvv) {
+        enFieldCcvv.placeholder = "CVV";
+    }
+    if (enAddInputPlaceholder && enFieldBankAccountNumber) {
+        enFieldBankAccountNumber.placeholder = "Bank Account Number";
+    }
+    if (enAddInputPlaceholder && enFieldBankRoutingNumber) {
+        enFieldBankRoutingNumber.placeholder = "Bank Routing Number";
+    }
+    // In Honor
+    if (enAddInputPlaceholder && enFieldHonname) {
+        enFieldHonname.placeholder = "Honoree Name";
+    }
+    if (enAddInputPlaceholder && enFieldInfname) {
+        enFieldInfname.placeholder = "Recipient Name";
+    }
+    if (enAddInputPlaceholder && enFieldInfemail) {
+        enFieldInfemail.placeholder = "Recipient Email Address";
+    }
+    if (enAddInputPlaceholder && enFieldInfcountry) {
+        enFieldInfcountry.placeholder = "Country";
+    }
+    if (enAddInputPlaceholder && enFieldInfadd1) {
+        enFieldInfadd1.placeholder = "Recipient Street Address";
+    }
+    if (enAddInputPlaceholder && enFieldInfadd2) {
+        enFieldInfadd2.placeholder = "Recipient Apt., ste., bldg.";
+    }
+    if (enAddInputPlaceholder && enFieldInfcity) {
+        enFieldInfcity.placeholder = "Recipient City";
+    }
+    if (enAddInputPlaceholder && enFieldInfpostcd) {
+        enFieldInfpostcd.placeholder = "Recipient Postal Code";
+    }
+    // Miscillaneous
+    if (enAddInputPlaceholder && enFieldGftrsn) {
+        enFieldGftrsn.placeholder = "Reason for your gift";
+    }
+    // Shipping Infromation
+    if (enAddInputPlaceholder && enFieldShippingFirstName) {
+        enFieldShippingFirstName.placeholder = "Shipping First Name";
+    }
+    if (enAddInputPlaceholder && enFieldShippingLastName) {
+        enFieldShippingLastName.placeholder = "Shipping Last Name";
+    }
+    if (enAddInputPlaceholder && enFieldShippingEmailAddress) {
+        enFieldShippingEmailAddress.placeholder = "Shipping Email Address";
+    }
+    if (enAddInputPlaceholder && enFieldShippingCountry) {
+        enFieldShippingCountry.placeholder = "Shipping Country";
+    }
+    if (enAddInputPlaceholder && enFieldShippingAddress1) {
+        enFieldShippingAddress1.placeholder = "Shipping Street Address";
+    }
+    if (enAddInputPlaceholder && enFieldShippingAddress2) {
+        enFieldShippingAddress2.placeholder = "Shipping Apt., ste., bldg.";
+    }
+    if (enAddInputPlaceholder && enFieldShippingCity) {
+        enFieldShippingCity.placeholder = "Shipping City";
+    }
+    if (enAddInputPlaceholder && enFieldShippingRegion) {
+        enFieldShippingRegion.placeholder = "Shipping Region";
+    }
+    if (enAddInputPlaceholder && enFieldShippingPostcode) {
+        enFieldShippingPostcode.placeholder = "Shipping Postal Code";
+    }
+    // Billing Information
+    if (enAddInputPlaceholder && enFieldBillingCountry) {
+        enFieldBillingCountry.placeholder = "Billing Country";
+    }
+    if (enAddInputPlaceholder && enFieldBillingAddress1) {
+        enFieldBillingAddress1.placeholder = "Billing Street Address";
+    }
+    if (enAddInputPlaceholder && enFieldBillingAddress2) {
+        enFieldBillingAddress2.placeholder = "Billing Apt., ste., bldg.";
+    }
+    if (enAddInputPlaceholder && enFieldBillingCity) {
+        enFieldBillingCity.placeholder = "Billing City";
+    }
+    if (enAddInputPlaceholder && enFieldBillingRegion) {
+        enFieldBillingRegion.placeholder = "Billing Region";
+    }
+    if (enAddInputPlaceholder && enFieldBillingPostcode) {
+        enFieldBillingPostcode.placeholder = "Billing Postal Code";
+    }
+};
+const preventAutocomplete = () => {
+    let enFieldDonationAmt = document.querySelector(".en__field--donationAmt.en__field--withOther .en__field__input--other");
+    if (enFieldDonationAmt) {
+        enFieldDonationAmt.setAttribute("autocomplete", "off");
+    }
+    if (enFieldDonationAmt) {
+        enFieldDonationAmt.setAttribute("data-lpignore", "true");
     }
 };
 const watchInmemField = () => {
@@ -13008,6 +13241,250 @@ const watchInmemField = () => {
         enFieldTransactionInmem.addEventListener("change", handleEnFieldTransactionInmemChange);
     }
 };
+// @TODO Refactor (low priority)
+const watchGiveBySelectField = () => {
+    const setPaymentType = (paymentType) => {
+        const enFieldPaymentType = document.querySelector("#en__field_transaction_paymenttype");
+        if (enFieldPaymentType) {
+            // Set Payment Type Option Value Case Insensitive
+            const paymentTypeOption = Array.from(enFieldPaymentType.options).find((option) => option.value.toLowerCase() === paymentType.toLowerCase());
+            if (paymentTypeOption) {
+                paymentTypeOption.selected = true;
+                const event = new Event("change");
+                enFieldPaymentType.dispatchEvent(event);
+            }
+        }
+    };
+    const enFieldGiveBySelect = document.querySelector(".en__field--give-by-select");
+    const transactionGiveBySelect = document.getElementsByName("transaction.giveBySelect");
+    let enFieldGiveBySelectCurrentValue = document.querySelector('input[name="transaction.giveBySelect"]:checked');
+    const prefix = "has-give-by-";
+    /* prettier-ignore */
+    const handleEnFieldGiveBySelect = () => {
+        enFieldGiveBySelectCurrentValue = document.querySelector('input[name="transaction.giveBySelect"]:checked');
+        console.log("enFieldGiveBySelectCurrentValue:", enFieldGiveBySelectCurrentValue);
+        // Give By Card
+        if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "card") {
+            if (enGrid) {
+                removeClassesByPrefix(enGrid, prefix);
+                enGrid.classList.add("has-give-by-card");
+            }
+            // enFieldPaymentType.value = "card";
+            handleCCUpdate();
+            // Give By ACH
+        }
+        else if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "ach") {
+            if (enGrid) {
+                removeClassesByPrefix(enGrid, prefix);
+                enGrid.classList.add("has-give-by-ach");
+            }
+            setPaymentType("ach");
+            // Give By Check
+        }
+        else if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "check") {
+            if (enGrid) {
+                removeClassesByPrefix(enGrid, prefix);
+                enGrid.classList.add("has-give-by-check");
+            }
+            setPaymentType("check");
+            // Give By PayPal
+        }
+        else if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "paypal") {
+            if (enGrid) {
+                removeClassesByPrefix(enGrid, prefix);
+                enGrid.classList.add("has-give-by-paypal");
+            }
+            setPaymentType("paypal");
+            // Give By Paypal One Touch or Venmo
+        }
+        else if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "paypaltouch") {
+            if (enGrid) {
+                removeClassesByPrefix(enGrid, prefix);
+                enGrid.classList.add("has-give-by-paypaltouch");
+            }
+            setPaymentType("paypaltouch");
+            // Give By Apple Pay via Vantiv
+        }
+        else if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "applepay") {
+            if (enGrid) {
+                removeClassesByPrefix(enGrid, prefix);
+                enGrid.classList.add("has-give-by-applepay");
+            }
+            setPaymentType("applepay");
+            // Give By Apple Pay or Google Pay via Stripe
+        }
+        else if (enFieldGiveBySelectCurrentValue && enFieldGiveBySelectCurrentValue.value.toLowerCase() == "stripedigitalwallet") {
+            if (enGrid) {
+                removeClassesByPrefix(enGrid, prefix);
+                enGrid.classList.add("has-give-by-stripedigitalwallet");
+            }
+            setPaymentType("stripedigitalwallet");
+        }
+        ;
+    };
+    /* prettier-ignore */
+    // Check Giving Frequency on page load
+    if (enFieldGiveBySelect) {
+        handleEnFieldGiveBySelect();
+    }
+    // Watch each Giving Frequency radio input for a change
+    if (transactionGiveBySelect) {
+        Array.from(transactionGiveBySelect).forEach((e) => {
+            let element = e;
+            element.addEventListener("change", handleEnFieldGiveBySelect);
+        });
+    }
+};
+/*
+ * Input fields as reference variables
+ */
+const field_credit_card = document.getElementById("en__field_transaction_ccnumber");
+const field_payment_type = document.getElementById("en__field_transaction_paymenttype");
+let field_expiration_parts = document.querySelectorAll(".en__field--ccexpire .en__field__input--splitselect");
+const field_country = document.getElementById("en__field_supporter_country");
+let field_expiration_month = field_expiration_parts[0];
+let field_expiration_year = field_expiration_parts[1];
+/*
+ * Helpers
+ */
+// current_month and current_year used by handleExpUpdate()
+let d = new Date();
+var current_month = d.getMonth() + 1; // month options in expiration dropdown are indexed from 1
+var current_year = d.getFullYear() - 2000;
+// getCardType used by handleCCUpdate()
+const getCardType = (cc_partial) => {
+    let key_character = cc_partial.charAt(0);
+    const prefix = "live-card-type-";
+    const field_credit_card_classes = field_credit_card.className
+        .split(" ")
+        .filter((c) => !c.startsWith(prefix));
+    switch (key_character) {
+        case "0":
+            field_credit_card.className = field_credit_card_classes.join(" ").trim();
+            field_credit_card.classList.add("live-card-type-invalid");
+            return false;
+        case "1":
+            field_credit_card.className = field_credit_card_classes.join(" ").trim();
+            field_credit_card.classList.add("live-card-type-invalid");
+            return false;
+        case "2":
+            field_credit_card.className = field_credit_card_classes.join(" ").trim();
+            field_credit_card.classList.add("live-card-type-invalid");
+            return false;
+        case "3":
+            field_credit_card.className = field_credit_card_classes.join(" ").trim();
+            field_credit_card.classList.add("live-card-type-amex");
+            return "amex";
+        case "4":
+            field_credit_card.className = field_credit_card_classes.join(" ").trim();
+            field_credit_card.classList.add("live-card-type-visa");
+            return "visa";
+        case "5":
+            field_credit_card.className = field_credit_card_classes.join(" ").trim();
+            field_credit_card.classList.add("live-card-type-mastercard");
+            return "mastercard";
+        case "6":
+            field_credit_card.className = field_credit_card_classes.join(" ").trim();
+            field_credit_card.classList.add("live-card-type-discover");
+            return "discover";
+        case "7":
+            field_credit_card.className = field_credit_card_classes.join(" ").trim();
+            field_credit_card.classList.add("live-card-type-invalid");
+            return false;
+        case "8":
+            field_credit_card.className = field_credit_card_classes.join(" ").trim();
+            field_credit_card.classList.add("live-card-type-invalid");
+            return false;
+        case "9":
+            field_credit_card.className = field_credit_card_classes.join(" ").trim();
+            field_credit_card.classList.add("live-card-type-invalid");
+            return false;
+        default:
+            field_credit_card.className = field_credit_card_classes.join(" ").trim();
+            field_credit_card.classList.add("live-card-type-na");
+            return false;
+    }
+};
+/*
+ * Handlers
+ */
+const handleCCUpdate = () => {
+    const card_type = getCardType(field_credit_card.value);
+    const card_values = {
+        amex: ["amex", "american express", "americanexpress", "amx", "ax"],
+        visa: ["visa", "vi"],
+        mastercard: ["mastercard", "master card", "mc"],
+        discover: ["discover", "di"],
+    };
+    const selected_card_value = card_type
+        ? Array.from(field_payment_type.options).filter((d) => card_values[card_type].includes(d.value.toLowerCase()))[0].value
+        : "";
+    if (field_payment_type.value != selected_card_value) {
+        field_payment_type.value = selected_card_value;
+        const paymentTypeChangeEvent = new Event("change", { bubbles: true });
+        field_payment_type.dispatchEvent(paymentTypeChangeEvent);
+    }
+};
+const handleExpUpdate = (e) => {
+    // handle if year is changed to current year (disable all months less than current month)
+    // handle if month is changed to less than current month (disable current year)
+    if (e == "month") {
+        let selected_month = parseInt(field_expiration_month.value);
+        let disable = selected_month < current_month;
+        console.log("month disable", disable, typeof disable, selected_month, current_month);
+        for (let i = 0; i < field_expiration_year.options.length; i++) {
+            // disable or enable current year
+            if (parseInt(field_expiration_year.options[i].value) <= current_year) {
+                if (disable) {
+                    //@TODO Couldn't get working in TypeScript
+                    field_expiration_year.options[i].setAttribute("disabled", "disabled");
+                }
+                else {
+                    field_expiration_year.options[i].disabled = false;
+                }
+            }
+        }
+    }
+    else if (e == "year") {
+        let selected_year = parseInt(field_expiration_year.value);
+        let disable = selected_year == current_year;
+        console.log("year disable", disable, typeof disable, selected_year, current_year);
+        for (let i = 0; i < field_expiration_month.options.length; i++) {
+            // disable or enable all months less than current month
+            if (parseInt(field_expiration_month.options[i].value) < current_month) {
+                if (disable) {
+                    //@TODO Couldn't get working in TypeScript
+                    field_expiration_month.options[i].setAttribute("disabled", "disabled");
+                }
+                else {
+                    field_expiration_month.options[i].disabled = false;
+                }
+            }
+        }
+    }
+};
+/*
+ * Event Listeners
+ */
+if (field_credit_card) {
+    field_credit_card.addEventListener("keyup", function () {
+        handleCCUpdate();
+    });
+    field_credit_card.addEventListener("paste", function () {
+        handleCCUpdate();
+    });
+    field_credit_card.addEventListener("blur", function () {
+        handleCCUpdate();
+    });
+}
+if (field_expiration_month && field_expiration_year) {
+    field_expiration_month.addEventListener("change", function () {
+        handleExpUpdate("month");
+    });
+    field_expiration_year.addEventListener("change", function () {
+        handleExpUpdate("year");
+    });
+}
 // EN Polyfill to support "label" clicking on Advocacy Recipient "labels"
 const contactDetailLabels = () => {
     const contact = document.querySelectorAll(".en__contactDetails__rows");
@@ -13134,6 +13611,9 @@ class iFrame {
             engrid_ENGrid.setBodyData("embedded", "");
             // Fire the resize event
             this.logger.log("iFrame Event - Begin Resizing");
+            this.sendIframeHeight();
+            // Listen for the resize event
+            window.addEventListener("resize", this.sendIframeHeight.bind(this));
             window.addEventListener("load", (event) => {
                 // Scroll to top of iFrame
                 this.logger.log("iFrame Event - window.onload");
@@ -13149,13 +13629,6 @@ class iFrame {
                     }, 100);
                 });
             });
-            window.setTimeout(() => {
-                this.sendIframeHeight();
-            }, 300);
-            window.addEventListener("resize", this.debounceWithImmediate(() => {
-                this.logger.log("iFrame Event - window resized");
-                this.sendIframeHeight();
-            }));
             // Listen for the form submit event
             this._form.onSubmit.subscribe((e) => {
                 this.logger.log("iFrame Event - onSubmit");
@@ -13173,35 +13646,15 @@ class iFrame {
             if (skipLink) {
                 skipLink.remove();
             }
-            this._form.onError.subscribe(() => {
-                // Get the first .en__field--validationFailed element
-                const firstError = document.querySelector(".en__field--validationFailed");
-                // Send scrollTo message
-                // Parent pages listens for this message and scrolls to the correct position
-                const scrollTo = firstError
-                    ? firstError.getBoundingClientRect().top
-                    : 0;
-                this.logger.log(`iFrame Event 'scrollTo' - Position of top of first error ${scrollTo} px`); // check the message is being sent correctly
-                window.parent.postMessage({ scrollTo }, "*");
-            });
         }
         else {
-            // When not in iframe, default behaviour, smooth scroll to first error
-            this._form.onError.subscribe(() => {
-                // Smooth Scroll to the first .en__field--validationFailed element
-                const firstError = document.querySelector(".en__field--validationFailed");
-                if (firstError) {
-                    firstError.scrollIntoView({ behavior: "smooth" });
-                }
-            });
-            // Parent Page Logic (when an ENgrid form is embedded in an ENgrid page)
+            // Parent Page Logic
             window.addEventListener("message", (event) => {
                 const iframe = this.getIFrameByEvent(event);
                 if (iframe) {
                     if (event.data.hasOwnProperty("frameHeight")) {
                         iframe.style.height = event.data.frameHeight + "px";
                     }
-                    // Old scroll event logic "scroll", scrolls to correct iframe?
                     else if (event.data.hasOwnProperty("scroll") &&
                         event.data.scroll > 0) {
                         const elDistanceToTop = window.pageYOffset + iframe.getBoundingClientRect().top;
@@ -13212,18 +13665,6 @@ class iFrame {
                             behavior: "smooth",
                         });
                         this.logger.log("iFrame Event - Scrolling Window to " + scrollTo);
-                    }
-                    // New scroll event logic "scrollTo", scrolls to the first error
-                    else if (event.data.hasOwnProperty("scrollTo")) {
-                        const scrollToPosition = event.data.scrollTo +
-                            window.scrollY +
-                            iframe.getBoundingClientRect().top;
-                        window.scrollTo({
-                            top: scrollToPosition,
-                            left: 0,
-                            behavior: "smooth",
-                        });
-                        this.logger.log("iFrame Event - Scrolling Window to " + scrollToPosition);
                     }
                 }
             });
@@ -13328,145 +13769,6 @@ class iFrame {
             this.showFormComponents();
             banner.remove();
         });
-    }
-    debounceWithImmediate(func, timeout = 1000) {
-        let timer;
-        let firstEvent = true;
-        return (...args) => {
-            clearTimeout(timer);
-            if (firstEvent) {
-                func.apply(this, args);
-                firstEvent = false;
-            }
-            timer = setTimeout(() => {
-                func.apply(this, args);
-                firstEvent = true;
-            }, timeout);
-        };
-    }
-}
-
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/input-has-value-and-focus.js
-// Component that adds has-value and has-focus classes to form inputs
-
-class InputHasValueAndFocus {
-    constructor() {
-        this.logger = new EngridLogger("InputHasValueAndFocus", "yellow", "#333", "🌈");
-        this.formInputs = document.querySelectorAll(".en__field--text, .en__field--email:not(.en__field--checkbox), .en__field--telephone, .en__field--number, .en__field--textarea, .en__field--select, .en__field--checkbox");
-        if (this.shouldRun()) {
-            this.run();
-        }
-    }
-    shouldRun() {
-        return this.formInputs.length > 0;
-    }
-    run() {
-        this.formInputs.forEach((el) => {
-            const input = el.querySelector("input, textarea, select");
-            if (input && input.value) {
-                el.classList.add("has-value");
-            }
-            this.bindEvents(el);
-        });
-    }
-    bindEvents(el) {
-        const input = el.querySelector("input, textarea, select");
-        if (!input) {
-            return;
-        }
-        input.addEventListener("focus", () => {
-            this.log("Focus added", input);
-            el.classList.add("has-focus");
-        });
-        input.addEventListener("blur", () => {
-            this.log("Focus removed", input);
-            el.classList.remove("has-focus");
-        });
-        input.addEventListener("input", () => {
-            if (input.value) {
-                this.log("Value added", input);
-                el.classList.add("has-value");
-            }
-            else {
-                this.log("Value removed", input);
-                el.classList.remove("has-value");
-            }
-        });
-    }
-    log(message, input) {
-        this.logger.log(`${message} on ${input.name}: ${input.value}`);
-    }
-}
-
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/input-placeholders.js
-// Component that adds input placeholders
-
-class InputPlaceholders {
-    constructor() {
-        if (this.shouldRun()) {
-            this.run();
-        }
-    }
-    shouldRun() {
-        return engrid_ENGrid.hasBodyData("add-input-placeholders");
-    }
-    run() {
-        // Personal Information
-        this.addPlaceholder("input#en__field_supporter_firstName", "First Name");
-        this.addPlaceholder("input#en__field_supporter_lastName", "Last Name");
-        this.addPlaceholder("input#en__field_supporter_emailAddress", "Email Address");
-        this.addPlaceholder("input#en__field_supporter_phoneNumber", "Phone Number (Optional)");
-        this.addPlaceholder(".en__mandatory input#en__field_supporter_phoneNumber", "Phone Number");
-        this.addPlaceholder("input#en__field_supporter_phoneNumber2", "000-000-0000 (Optional)");
-        this.addPlaceholder(".en__mandatory input#en__field_supporter_phoneNumber2", "000-000-0000");
-        // Address
-        this.addPlaceholder("input#en__field_supporter_country", "Country");
-        this.addPlaceholder("input#en__field_supporter_address1", "Street Address");
-        this.addPlaceholder("input#en__field_supporter_address2", "Apt., ste., bldg.");
-        this.addPlaceholder("input#en__field_supporter_city", "City");
-        this.addPlaceholder("input#en__field_supporter_region", "Region");
-        this.addPlaceholder("input#en__field_supporter_postcode", "Zip Code");
-        // Donation
-        this.addPlaceholder(".en__field--donationAmt.en__field--withOther .en__field__input--other", "Other");
-        this.addPlaceholder("input#en__field_transaction_ccnumber", "•••• •••• •••• ••••");
-        this.addPlaceholder("input#en__field_transaction_ccexpire", "MM / YY");
-        this.addPlaceholder("input#en__field_transaction_ccvv", "CVV");
-        this.addPlaceholder("input#en__field_supporter_bankAccountNumber", "Bank Account Number");
-        this.addPlaceholder("input#en__field_supporter_bankRoutingNumber", "Bank Routing Number");
-        // In Honor
-        this.addPlaceholder("input#en__field_transaction_honname", "Honoree Name");
-        this.addPlaceholder("input#en__field_transaction_infname", "Recipient Name");
-        this.addPlaceholder("input#en__field_transaction_infemail", "Recipient Email Address");
-        this.addPlaceholder("input#en__field_transaction_infcountry", "Country");
-        this.addPlaceholder("input#en__field_transaction_infadd1", "Recipient Street Address");
-        this.addPlaceholder("input#en__field_transaction_infadd2", "Recipient Apt., ste., bldg.");
-        this.addPlaceholder("input#en__field_transaction_infcity", "Recipient City");
-        this.addPlaceholder("input#en__field_transaction_infpostcd", "Recipient Postal Code");
-        // Miscillaneous
-        this.addPlaceholder("input#en__field_transaction_gftrsn", "Reason for your gift");
-        // Shipping Information
-        this.addPlaceholder("input#en__field_transaction_shipfname", "Shipping First Name");
-        this.addPlaceholder("input#en__field_transaction_shiplname", "Shipping Last Name");
-        this.addPlaceholder("input#en__field_transaction_shipemail", "Shipping Email Address");
-        this.addPlaceholder("input#en__field_transaction_shipcountry", "Shipping Country");
-        this.addPlaceholder("input#en__field_transaction_shipadd1", "Shipping Street Address");
-        this.addPlaceholder("input#en__field_transaction_shipadd2", "Shipping Apt., ste., bldg.");
-        this.addPlaceholder("input#en__field_transaction_shipcity", "Shipping City");
-        this.addPlaceholder("input#en__field_transaction_shipregion", "Shipping Region");
-        this.addPlaceholder("input#en__field_transaction_shippostcode", "Shipping Postal Code");
-        // Billing Infromation
-        this.addPlaceholder("input#en__field_supporter_billingCountry", "Billing Country");
-        this.addPlaceholder("input#en__field_supporter_billingAddress1", "Billing Street Address");
-        this.addPlaceholder("input#en__field_supporter_billingAddress2", "Billing Apt., ste., bldg.");
-        this.addPlaceholder("input#en__field_supporter_billingCity", "Billing City");
-        this.addPlaceholder("input#en__field_supporter_billingRegion", "Billing Region");
-        this.addPlaceholder("input#en__field_supporter_billingPostcode", "Billing Postal Code");
-    }
-    addPlaceholder(selector, placeholder) {
-        const fieldEl = document.querySelector(selector);
-        if (fieldEl) {
-            fieldEl.placeholder = placeholder;
-        }
     }
 }
 
@@ -13714,20 +14016,16 @@ class UpsellLightbox {
     renderLightbox() {
         const title = this.options.title
             .replace("{new-amount}", "<span class='upsell_suggestion'></span>")
-            .replace("{old-amount}", "<span class='upsell_amount'></span>")
-            .replace("{old-frequency}", "<span class='upsell_frequency'></span>");
+            .replace("{old-amount}", "<span class='upsell_amount'></span>");
         const paragraph = this.options.paragraph
             .replace("{new-amount}", "<span class='upsell_suggestion'></span>")
-            .replace("{old-amount}", "<span class='upsell_amount'></span>")
-            .replace("{old-frequency}", "<span class='upsell_frequency'></span>");
+            .replace("{old-amount}", "<span class='upsell_amount'></span>");
         const yes = this.options.yesLabel
             .replace("{new-amount}", "<span class='upsell_suggestion'></span>")
-            .replace("{old-amount}", "<span class='upsell_amount'></span>")
-            .replace("{old-frequency}", "<span class='upsell_frequency'></span>");
+            .replace("{old-amount}", "<span class='upsell_amount'></span>");
         const no = this.options.noLabel
             .replace("{new-amount}", "<span class='upsell_suggestion'></span>")
-            .replace("{old-amount}", "<span class='upsell_amount'></span>")
-            .replace("{old-frequency}", "<span class='upsell_frequency'></span>");
+            .replace("{old-amount}", "<span class='upsell_amount'></span>");
         const markup = `
             <div class="upsellLightboxContainer" id="goMonthly">
               <!-- ideal image size is 480x650 pixels -->
@@ -13843,10 +14141,6 @@ class UpsellLightbox {
         live_upsell_amount.forEach((elem) => (elem.innerHTML = this.getAmountTxt(suggestedAmount)));
         live_amount.forEach((elem) => (elem.innerHTML = this.getAmountTxt(this._amount.amount + this._fees.fee)));
     }
-    liveFrequency() {
-        const live_upsell_frequency = document.querySelectorAll(".upsell_frequency");
-        live_upsell_frequency.forEach((elem) => (elem.innerHTML = this.getFrequencyTxt()));
-    }
     // Return the Suggested Upsell Amount
     getUpsellAmount() {
         var _a, _b;
@@ -13876,13 +14170,14 @@ class UpsellLightbox {
             : this.options.minAmount;
     }
     shouldOpen() {
+        const freq = this._frequency.frequency;
         const upsellAmount = this.getUpsellAmount();
         const paymenttype = engrid_ENGrid.getFieldValue("transaction.paymenttype") || "";
         // If frequency is not onetime or
         // the modal is already opened or
         // there's no suggestion for this donation amount,
         // we should not open
-        if (this.freqAllowed() &&
+        if (freq == "onetime" &&
             !this.shouldSkip() &&
             !this.options.disablePaymentMethods.includes(paymenttype.toLowerCase()) &&
             !this.overlay.classList.contains("is-submitting") &&
@@ -13893,16 +14188,6 @@ class UpsellLightbox {
             return true;
         }
         return false;
-    }
-    // Return true if the current frequency is allowed by the options
-    freqAllowed() {
-        const freq = this._frequency.frequency;
-        const allowed = [];
-        if (this.options.oneTime)
-            allowed.push("onetime");
-        if (this.options.annual)
-            allowed.push("annual");
-        return allowed.includes(freq);
     }
     open() {
         this.logger.log("Upsell script opened");
@@ -13919,7 +14204,6 @@ class UpsellLightbox {
             return true;
         }
         this.liveAmounts();
-        this.liveFrequency();
         this.overlay.classList.remove("is-hidden");
         this._form.submit = false;
         engrid_ENGrid.setBodyData("has-lightbox", "");
@@ -13990,15 +14274,6 @@ class UpsellLightbox {
         const dec_places = amount % 1 == 0 ? 0 : (_d = engrid_ENGrid.getOption("DecimalPlaces")) !== null && _d !== void 0 ? _d : 2;
         const amountTxt = engrid_ENGrid.formatNumber(amount, dec_places, dec_separator, thousands_separator);
         return amount > 0 ? symbol + amountTxt : "";
-    }
-    getFrequencyTxt() {
-        const freqTxt = {
-            onetime: "one-time",
-            monthly: "monthly",
-            annual: "annual",
-        };
-        const frequency = this._frequency.frequency;
-        return frequency in freqTxt ? freqTxt[frequency] : frequency;
     }
     checkOtherAmount(value) {
         const otherInput = document.querySelector(".upsellOtherAmountInput");
@@ -14226,31 +14501,15 @@ class TranslateFields {
                     : options[key];
             }
         }
-        //Storing these values on load so we can set them back after the translation/swap.
-        let countryAndStateValuesOnLoad = {};
         if (this.countriesSelect) {
             this.countriesSelect.forEach((select) => {
                 select.addEventListener("change", this.translateFields.bind(this, select.name));
-                if (select.value) {
-                    countryAndStateValuesOnLoad[select.name] = select.value;
-                }
                 const stateField = document.querySelector(`select[name="${this.countryToStateFields[select.name]}"]`);
                 if (stateField) {
                     stateField.addEventListener("change", this.rememberState.bind(this, select.name));
-                    if (stateField.value) {
-                        countryAndStateValuesOnLoad[stateField.name] = stateField.value;
-                    }
                 }
             });
             this.translateFields("supporter.country");
-            //dont set these back if submission failed. EN / cookie will handle it.
-            const submissionFailed = !!(engrid_ENGrid.checkNested(window.EngagingNetworks, "require", "_defined", "enjs", "checkSubmissionFailed") &&
-                window.EngagingNetworks.require._defined.enjs.checkSubmissionFailed());
-            if (!submissionFailed) {
-                for (let field in countryAndStateValuesOnLoad) {
-                    engrid_ENGrid.setFieldValue(field, countryAndStateValuesOnLoad[field], false);
-                }
-            }
         }
     }
     translateFields(countryName = "supporter.country") {
@@ -14447,27 +14706,16 @@ class TranslateFields {
                     { label: "West Virginia", value: "WV" },
                     { label: "Wisconsin", value: "WI" },
                     { label: "Wyoming", value: "WY" },
-                    {
-                        label: "&#9472&#9472&nbspUS&nbspTerritories&nbsp&#9472&#9472",
-                        value: "",
-                        disabled: true,
-                    },
                     { label: "American Samoa", value: "AS" },
+                    { label: "Federated States of Micronesia", value: "FM" },
                     { label: "Guam", value: "GU" },
+                    { label: "Marshall Islands", value: "MH" },
                     { label: "Northern Mariana Islands", value: "MP" },
                     { label: "Puerto Rico", value: "PR" },
-                    { label: "US Minor Outlying Islands", value: "UM" },
+                    { label: "Palau", value: "PW" },
                     { label: "Virgin Islands", value: "VI" },
-                    {
-                        label: "&#9472&#9472&nbspArmed&nbspForces&nbsp&#9472&#9472",
-                        value: "",
-                        disabled: true,
-                    },
-                    { label: "Armed Forces Americas", value: "AA" },
-                    { label: "Armed Forces Africa", value: "AE" },
-                    { label: "Armed Forces Canada", value: "AE" },
+                    { label: "Armed Forces America", value: "AA" },
                     { label: "Armed Forces Europe", value: "AE" },
-                    { label: "Armed Forces Middle East", value: "AE" },
                     { label: "Armed Forces Pacific", value: "AP" },
                 ]);
                 break;
@@ -14525,36 +14773,22 @@ class TranslateFields {
                     { label: "West Virginia", value: "West Virginia" },
                     { label: "Wisconsin", value: "Wisconsin" },
                     { label: "Wyoming", value: "Wyoming" },
-                    {
-                        label: "&#9472&#9472&nbspUS&nbspTerritories&nbsp&#9472&#9472",
-                        value: "",
-                        disabled: true,
-                    },
                     { label: "American Samoa", value: "American Samoa" },
+                    {
+                        label: "Federated States of Micronesia",
+                        value: "Federated States of Micronesia",
+                    },
                     { label: "Guam", value: "Guam" },
+                    { label: "Marshall Islands", value: "Marshall Islands" },
                     {
                         label: "Northern Mariana Islands",
                         value: "Northern Mariana Islands",
                     },
                     { label: "Puerto Rico", value: "Puerto Rico" },
-                    {
-                        label: "US Minor Outlying Islands",
-                        value: "US Minor Outlying Islands",
-                    },
+                    { label: "Palau", value: "Palau" },
                     { label: "Virgin Islands", value: "Virgin Islands" },
-                    {
-                        label: "&#9472&#9472&nbspArmed&nbspForces&nbsp&#9472&#9472",
-                        value: "",
-                        disabled: true,
-                    },
-                    { label: "Armed Forces Americas", value: "Armed Forces Americas" },
-                    { label: "Armed Forces Africa", value: "Armed Forces Africa" },
-                    { label: "Armed Forces Canada", value: "Armed Forces Canada" },
+                    { label: "Armed Forces America", value: "Armed Forces America" },
                     { label: "Armed Forces Europe", value: "Armed Forces Europe" },
-                    {
-                        label: "Armed Forces Middle East",
-                        value: "Armed Forces Middle East",
-                    },
                     { label: "Armed Forces Pacific", value: "Armed Forces Pacific" },
                 ]);
                 break;
@@ -14694,24 +14928,18 @@ class TranslateFields {
                     select.classList.add("en__field__input");
                     select.classList.add("en__field__input--select");
                     select.autocomplete = "address-level1";
-                    let valueSelected = false;
                     values.forEach((value) => {
                         const option = document.createElement("option");
                         option.value = value.value;
                         option.innerHTML = value.label;
-                        if (selectedState === value.value && !valueSelected) {
+                        if (selectedState === value.value) {
                             option.selected = true;
-                            valueSelected = true;
-                        }
-                        if (value.disabled) {
-                            option.disabled = true;
                         }
                         select.appendChild(option);
                     });
                     elementWrapper.innerHTML = "";
                     elementWrapper.appendChild(select);
                     select.addEventListener("change", this.rememberState.bind(this, state));
-                    select.dispatchEvent(new Event("change", { bubbles: true }));
                 }
                 else {
                     elementWrapper.innerHTML = "";
@@ -14744,11 +14972,11 @@ class TranslateFields {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/auto-country-select.js
+;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/simple-country-select.js
 // This class works when the user has added ".simple_country_select" as a class in page builder for the Country select
 
 
-class AutoCountrySelect {
+class SimpleCountrySelect {
     constructor() {
         this.countryWrapper = document.querySelector(".simple_country_select");
         this.countrySelect = document.querySelector("select#en__field_supporter_country");
@@ -14756,15 +14984,8 @@ class AutoCountrySelect {
         const engridAutofill = get("engrid-autofill");
         const submissionFailed = !!(engrid_ENGrid.checkNested(window.EngagingNetworks, "require", "_defined", "enjs", "checkSubmissionFailed") && window.EngagingNetworks.require._defined.enjs.checkSubmissionFailed());
         const hasIntlSupport = !!engrid_ENGrid.checkNested(window.Intl, "DisplayNames");
-        // Only run if there's no engrid-autofill cookie && if it has Intl support && no country data in url
-        const locationDataInUrl = engrid_ENGrid.getUrlParameter("supporter.country") ||
-            engrid_ENGrid.getUrlParameter("supporter.region") ||
-            (engrid_ENGrid.getUrlParameter("ea.url.id") &&
-                !engrid_ENGrid.getUrlParameter("forwarded"));
-        if (!engridAutofill &&
-            !submissionFailed &&
-            hasIntlSupport &&
-            !locationDataInUrl) {
+        // Only run if there's no engrid-autofill cookie && if it has Intl support
+        if (!engridAutofill && !submissionFailed && hasIntlSupport) {
             fetch(`https://${window.location.hostname}/cdn-cgi/trace`)
                 .then((res) => res.text())
                 .then((t) => {
@@ -14789,6 +15010,60 @@ class AutoCountrySelect {
                 // We are setting the country by Name because the ISO code is not always the same. They have 2 and 3 letter codes.
                 this.setCountryByName(countriesNames.of(this.country));
             }
+            let countrySelectValue = this.countrySelect.options[this.countrySelect.selectedIndex].value;
+            // @TODO Update so that it reads "(Outside X?)" where X is the Value of the Country Select. No need for long form version of it.
+            if (countrySelectValue.toUpperCase() == "US" ||
+                countrySelectValue.toUpperCase() == "USA" ||
+                countrySelectValue.toUpperCase() == "UNITED STATES") {
+                countrySelectValue = "the US";
+            }
+            let countryWrapper = document.querySelector(".simple_country_select");
+            if (countryWrapper) {
+                // Remove Country Select tab index
+                this.countrySelect.tabIndex = -1;
+                // Find the address label
+                let addressLabel = document.querySelector(".en__field--address1 label");
+                // EN does not enforce a labels on fields so we have to check for it
+                // @TODO Update so that this follows the same pattern / HTML structure as the Tippy tooltips which are added to labels. REF: https://github.com/4site-interactive-studios/engrid-aiusa/blob/6e4692d4f9a28b9668d6c1bfed5622ac0cc5bdb9/src/scripts/main.js#L42
+                if (addressLabel) {
+                    let labelText = addressLabel.innerHTML;
+                    // Add our link INSIDE the address label
+                    let newEl = document.createElement("span");
+                    newEl.innerHTML =
+                        '<label class="engrid-simple-country"><a href="javascript:void(0)">(Outside ' +
+                            countrySelectValue +
+                            "?)</a></label>";
+                    addressLabel.innerHTML = `${labelText}${newEl.innerHTML}`;
+                    addressLabel.addEventListener("click", (ev) => {
+                        var _a;
+                        ev.preventDefault();
+                        if (((_a = ev.target) === null || _a === void 0 ? void 0 : _a.tagName) === "A") {
+                            this.showCountrySelect(ev);
+                        }
+                    });
+                }
+            }
+            // Deal with the auto-fill for the country
+            this.countrySelect.addEventListener("change", this.writeLink.bind(this));
+        }
+    }
+    showCountrySelect(e) {
+        var _a;
+        e.preventDefault();
+        this.countryWrapper.classList.add("country-select-visible");
+        let addressLabel = document.querySelector(".en__field--address1 label");
+        let addressWrapper = (_a = addressLabel.parentElement) === null || _a === void 0 ? void 0 : _a.parentElement;
+        addressWrapper.classList.add("country-select-visible");
+        this.countrySelect.focus();
+        // Reinstate Country Select tab index
+        this.countrySelect.removeAttribute("tabIndex");
+    }
+    writeLink() {
+        let countryName = this.countrySelect.options[this.countrySelect.selectedIndex].value;
+        let addressLabel = document.querySelector(".engrid-simple-country");
+        if (addressLabel) {
+            let labelLink = `<a href="javascript:void(0)">(Outside ${countryName}?)</a>`;
+            addressLabel.innerHTML = labelLink;
         }
     }
     setCountryByName(countryName) {
@@ -16013,11 +16288,6 @@ class OtherAmount {
         });
         const otherAmountField = document.querySelector("[name='transaction.donationAmt.other'");
         if (otherAmountField) {
-            otherAmountField.setAttribute("inputmode", "decimal");
-            // ADD THE MISSING LABEL FOR IMPROVED ACCESSABILITY
-            otherAmountField.setAttribute("aria-label", "Enter your custom donation amount");
-            otherAmountField.setAttribute("autocomplete", "off");
-            otherAmountField.setAttribute("data-lpignore", "true");
             otherAmountField.addEventListener("change", (e) => {
                 const target = e.target;
                 const amount = target.value;
@@ -16114,7 +16384,7 @@ class EngridLogger {
         }
     }
     get log() {
-        if (!engrid_ENGrid.debug && engrid_ENGrid.getUrlParameter("debug") !== "log") {
+        if (!engrid_ENGrid.debug) {
             return () => { };
         }
         return console.log.bind(window.console, "%c" + this.emoji + " " + this.prefix + " %s", `color: ${this.color}; background-color: ${this.background}; font-size: 1.2em; padding: 4px; border-radius: 2px; font-family: monospace;`);
@@ -19006,8 +19276,7 @@ class DigitalWallets {
     }
     addOptionToPaymentTypeField(value, label) {
         const paymentTypeField = document.querySelector('[name="transaction.paymenttype"]');
-        if (paymentTypeField &&
-            !paymentTypeField.querySelector(`[value=${value}]`)) {
+        if (paymentTypeField) {
             const walletOption = document.createElement("option");
             walletOption.value = value;
             walletOption.innerText = label;
@@ -19363,352 +19632,11 @@ class Plaid {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/give-by-select.js
-
-class GiveBySelect {
-    constructor() {
-        this.logger = new EngridLogger("GiveBySelect", "#FFF", "#333", "🐇");
-        this.transactionGiveBySelect = document.getElementsByName("transaction.giveBySelect");
-        if (!this.transactionGiveBySelect)
-            return;
-        this.transactionGiveBySelect.forEach((giveBySelect) => {
-            giveBySelect.addEventListener("change", () => {
-                this.logger.log("Changed to " + giveBySelect.value);
-                if (giveBySelect.value.toLowerCase() === "card") {
-                    engrid_ENGrid.setPaymentType("");
-                }
-                else {
-                    engrid_ENGrid.setPaymentType(giveBySelect.value);
-                }
-            });
-        });
-        // Set the initial value of giveBySelect to the transaction.paymenttype field
-        const paymentType = engrid_ENGrid.getPaymentType();
-        if (paymentType) {
-            this.logger.log("Setting giveBySelect to " + paymentType);
-            const isCard = [
-                "visa",
-                "mastercard",
-                "amex",
-                "discover",
-                "diners",
-                "jcb",
-                "vi",
-                "mc",
-                "ax",
-                "dc",
-                "di",
-                "jc",
-            ].includes(paymentType.toLowerCase());
-            this.transactionGiveBySelect.forEach((giveBySelect) => {
-                if (isCard && giveBySelect.value.toLowerCase() === "card") {
-                    giveBySelect.checked = true;
-                }
-                else if (giveBySelect.value.toLowerCase() === paymentType.toLowerCase()) {
-                    giveBySelect.checked = true;
-                }
-            });
-        }
-    }
-}
-
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/url-params-to-body-attrs.js
-//This component adds any url parameters that begin with "data-engrid-" to the body as attributes.
-
-class UrlParamsToBodyAttrs {
-    constructor() {
-        this.logger = new EngridLogger("UrlParamsToBodyAttrs", "white", "magenta", "📌");
-        this.urlParams = new URLSearchParams(document.location.search);
-        this.urlParams.forEach((value, key) => {
-            if (key.startsWith("data-engrid-")) {
-                engrid_ENGrid.setBodyData(key.split("data-engrid-")[1], value);
-                this.logger.log(`Set "${key}" on body to "${value}" from URL params`);
-            }
-        });
-    }
-}
-
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/exit-intent-lightbox.js
-
-
-class ExitIntentLightbox {
-    constructor() {
-        this.opened = false;
-        this.dataLayer = window.dataLayer || [];
-        this.logger = new EngridLogger("ExitIntentLightbox", "yellow", "black", "🚪");
-        let options = "EngridExitIntent" in window ? window.EngridExitIntent : {};
-        this.options = Object.assign(Object.assign({}, ExitIntentOptionsDefaults), options);
-        if (!this.options.enabled) {
-            this.logger.log("Not enabled");
-            return;
-        }
-        if (get(this.options.cookieName)) {
-            this.logger.log("Not showing - cookie found.");
-            return;
-        }
-        const activeTriggers = Object.keys(this.options.triggers)
-            .filter((t) => this.options.triggers[t])
-            .join(", ");
-        this.logger.log("Enabled, waiting for trigger. Active triggers: " + activeTriggers);
-        this.watchForTriggers();
-    }
-    watchForTriggers() {
-        if (this.options.triggers.mousePosition) {
-            this.watchMouse();
-        }
-        if (this.options.triggers.visibilityState) {
-            this.watchDocumentVisibility();
-        }
-    }
-    watchMouse() {
-        document.addEventListener("mouseout", (e) => {
-            // If this is an autocomplete element.
-            if (e.target.tagName.toLowerCase() == "input")
-                return;
-            // Get the current viewport width.
-            const vpWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-            // If the current mouse X position is within 50px of the right edge
-            // of the viewport, return.
-            if (e.clientX >= vpWidth - 50)
-                return;
-            // If the current mouse Y position is not within 50px of the top
-            // edge of the viewport, return.
-            if (e.clientY >= 50)
-                return;
-            // Reliable, works on mouse exiting window and
-            // user switching active program
-            const from = e.relatedTarget;
-            if (!from) {
-                this.logger.log("Triggered by mouse position");
-                this.open();
-            }
-        });
-    }
-    watchDocumentVisibility() {
-        const visibilityListener = () => {
-            if (document.visibilityState === "hidden") {
-                this.logger.log("Triggered by visibilityState is hidden");
-                this.open();
-                document.removeEventListener("visibilitychange", visibilityListener);
-            }
-        };
-        document.addEventListener("visibilitychange", visibilityListener);
-    }
-    open() {
-        var _a, _b, _c;
-        if (this.opened)
-            return;
-        engrid_ENGrid.setBodyData("exit-intent-lightbox", "open");
-        set(this.options.cookieName, "1", {
-            expires: this.options.cookieDuration,
-        });
-        document.body.insertAdjacentHTML("beforeend", `
-        <div class="ExitIntent">
-          <div class="ExitIntent__overlay">
-            <div class="ExitIntent__container">
-              <div class="ExitIntent__close">X</div>
-              <div class="ExitIntent__body">
-                <h2>${this.options.title}</h2>
-                <p>${this.options.text}</p>
-                <button type="button" class="ExitIntent__button">
-                  ${this.options.buttonText}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      `);
-        this.opened = true;
-        this.dataLayer.push({ event: "exit_intent_lightbox_shown" });
-        (_a = document
-            .querySelector(".ExitIntent__close")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => {
-            this.dataLayer.push({ event: "exit_intent_lightbox_closed" });
-            this.close();
-        });
-        (_b = document
-            .querySelector(".ExitIntent__overlay")) === null || _b === void 0 ? void 0 : _b.addEventListener("click", (event) => {
-            if (event.target === event.currentTarget) {
-                this.dataLayer.push({ event: "exit_intent_lightbox_closed" });
-                this.close();
-            }
-        });
-        (_c = document
-            .querySelector(".ExitIntent__button")) === null || _c === void 0 ? void 0 : _c.addEventListener("click", () => {
-            this.dataLayer.push({ event: "exit_intent_lightbox_cta_clicked" });
-            this.close();
-            const target = this.options.buttonLink;
-            if (target.startsWith(".") || target.startsWith("#")) {
-                const targetEl = document.querySelector(target);
-                if (targetEl) {
-                    targetEl.scrollIntoView({ behavior: "smooth" });
-                }
-            }
-            else {
-                window.open(target, "_blank");
-            }
-        });
-    }
-    close() {
-        var _a;
-        (_a = document.querySelector(".ExitIntent")) === null || _a === void 0 ? void 0 : _a.remove();
-        engrid_ENGrid.setBodyData("exit-intent-lightbox", "closed");
-    }
-}
-
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/supporter-hub.js
-// Component that adds 4Site Special Features to the Supporter Hub Page
-
-class SupporterHub {
-    constructor() {
-        this.logger = new EngridLogger("SupporterHub", "black", "pink", "🛖");
-        this._form = EnForm.getInstance();
-        if (!this.shoudRun())
-            return;
-        this.logger.log("Enabled");
-        this.watch();
-    }
-    shoudRun() {
-        return ("pageJson" in window &&
-            "pageType" in window.pageJson &&
-            window.pageJson.pageType === "supporterhub");
-    }
-    watch() {
-        const form = engrid_ENGrid.enForm;
-        // Create a observer to watch the Form for overlays
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.type === "childList") {
-                    mutation.addedNodes.forEach((node) => {
-                        if (node.nodeName === "DIV") {
-                            const overlay = node;
-                            if (overlay.classList.contains("en__hubOverlay")) {
-                                this.logger.log("Overlay found");
-                                this.creditCardUpdate(node);
-                            }
-                        }
-                    });
-                }
-            });
-        });
-        // Start observing the Link ID #plaid-link-button
-        observer.observe(form, {
-            childList: true,
-            subtree: true,
-        });
-        // Run the Credit Card Update function in case the overlay is already present on page load
-        const hubOverlay = document.querySelector(".en__hubOverlay");
-        if (hubOverlay) {
-            this.creditCardUpdate(hubOverlay);
-        }
-    }
-    creditCardUpdate(overlay) {
-        window.setTimeout(() => {
-            // Check if the overlay has Credit Card field and Update Button
-            const ccField = overlay.querySelector("#en__hubPledge__field--ccnumber"), updateButton = overlay.querySelector(".en__hubUpdateCC__toggle");
-            if (ccField && updateButton) {
-                // When field gets focus, click the update button
-                ccField.addEventListener("focus", () => {
-                    this.logger.log("Credit Card field focused");
-                    updateButton.click();
-                });
-            }
-        }, 300);
-    }
-}
-
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/fast-form-fill.js
-/**
- * This class adds body data attributes if all mandatory inputs, on specific form blocks, are filled.
- * Related styling (to hide elements) can be found in "fast-form-fill.scss".
- *
- * To activate: add the custom class "fast-personal-details" or "fast-address-details"
- * to the relevant form block.
- */
-
-class FastFormFill {
-    constructor() {
-        this.logger = new EngridLogger("FastFormFill", "white", "magenta", "📌");
-        const fastPersonalDetailsFormBlock = document.querySelector(".en__component--formblock.fast-personal-details");
-        if (fastPersonalDetailsFormBlock) {
-            if (this.allMandatoryInputsAreFilled(fastPersonalDetailsFormBlock)) {
-                this.logger.log("Personal details - All mandatory inputs are filled");
-                engrid_ENGrid.setBodyData("hide-fast-personal-details", "true");
-            }
-            else {
-                this.logger.log("Personal details - Not all mandatory inputs are filled");
-                engrid_ENGrid.setBodyData("hide-fast-personal-details", "false");
-            }
-        }
-        const fastAddressDetailsFormBlock = document.querySelector(".en__component--formblock.fast-address-details");
-        if (fastAddressDetailsFormBlock) {
-            if (this.allMandatoryInputsAreFilled(fastAddressDetailsFormBlock)) {
-                this.logger.log("Address details - All mandatory inputs are filled");
-                engrid_ENGrid.setBodyData("hide-fast-address-details", "true");
-            }
-            else {
-                this.logger.log("Address details - Not all mandatory inputs are filled");
-                engrid_ENGrid.setBodyData("hide-fast-address-details", "false");
-            }
-        }
-    }
-    allMandatoryInputsAreFilled(formBlock) {
-        const fields = formBlock.querySelectorAll(".en__mandatory input, .en__mandatory select, .en__mandatory textarea");
-        return [...fields].every((input) => {
-            if (input.type === "radio" || input.type === "checkbox") {
-                const inputs = document.querySelectorAll('[name="' + input.name + '"]');
-                return [...inputs].some((radioOrCheckbox) => radioOrCheckbox.checked);
-            }
-            else {
-                return input.value !== null && input.value.trim() !== "";
-            }
-        });
-    }
-}
-
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/set-attr.js
-/*+
-  The class is used to set body attributes via click handlers.
-  The format is "setattr--{attribute}--{value}".
-  e.g. setattr--data-engrid-hide-fast-address-details--true
- */
-
-class SetAttr {
-    constructor() {
-        this.logger = new EngridLogger("SetAttr", "black", "yellow", "📌");
-        const enGrid = document.getElementById("engrid");
-        if (enGrid) {
-            enGrid.addEventListener("click", (e) => {
-                const clickedEl = e.target;
-                const clickedElClassNames = clickedEl.className.split(" ");
-                if (clickedElClassNames.some((className) => className.startsWith("setattr--"))) {
-                    clickedEl.classList.forEach((className) => {
-                        //Check element has class with format "setattr--attribute--value"
-                        const match = className.match(/^setattr--(.+)--(.+)$/i);
-                        if (match && match[1] && match[2]) {
-                            this.logger.log(`Clicked element with class "${className}". Setting body attribute "${match[1]}" to "${match[2]}"`);
-                            engrid_ENGrid.setBodyData(match[1].replace("data-engrid-", ""), match[2]);
-                        }
-                    });
-                }
-            });
-        }
-    }
-}
-
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.14.17";
+const AppVersion = "0.13.74";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
-
-
-
-
-
-
-
-
-
 
 
 
@@ -19773,7 +19701,102 @@ const AppVersion = "0.14.17";
 // Version
 
 
+;// CONCATENATED MODULE: ./src/scripts/tweet-to-target.js
+
+class TweetToTarget {
+  constructor() {
+    if (this.shouldRun()) {
+      this.tweetToTargetData = JSON.parse(window.localStorage.getItem("engrid-ttt-data")) || {};
+      this._form = EnForm.getInstance();
+      this.init();
+    }
+  }
+
+  shouldRun() {
+    return App.getPageType() === "TWEETPAGE";
+  }
+
+  init() {
+    if (document.querySelector(".en__component--tweetcontactblock")) {
+      this.setupTweetPage();
+    } else if ("redirectBack" in this.tweetToTargetData) {
+      if (this.tweetToTargetData.redirectBack) {
+        window.location.href = this.tweetToTargetData.url;
+      } else {
+        window.localStorage.removeItem("engrid-ttt-data");
+      }
+    }
+  }
+  /**
+   * Configures the customisations to the Tweet Page with Tweet Contact Block
+   */
+
+
+  setupTweetPage() {
+    var _document$querySelect;
+
+    if (this.tweetToTargetData.positionY) {
+      window.scrollTo(0, this.tweetToTargetData.positionY);
+    }
+
+    if (this.tweetToTargetData.tweetedTo) {
+      this.tweetToTargetData.tweetedTo.forEach(contactTweeted => {
+        document.querySelector(`[data-contact="${contactTweeted}"]`).setAttribute("disabled", "");
+        document.querySelector(`[data-contact="${contactTweeted}"] .en__tweetButton__send a`).textContent = "Tweet Sent!";
+      });
+    }
+
+    (_document$querySelect = document.querySelector(".en__submit")) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.classList.add("hide");
+    const sendTweetButtons = document.querySelectorAll(".en__tweetButton__send > a");
+    sendTweetButtons.forEach(button => {
+      button.addEventListener("click", e => {
+        //setTimeout to push this to end of call stack, so that tweet windows opens first.
+        setTimeout(() => {
+          const contactId = e.target.closest(".en__tweetContact").dataset.contact ?? null;
+          this.storeTweetData(contactId);
+
+          this._form.submitForm();
+        }, 0);
+      });
+    });
+  }
+  /**
+   * Stores tweet to target data in localStorage
+   * @param contactId When null, we're using a single tweet to multiple targets page
+   */
+
+
+  storeTweetData(contactId) {
+    const newTweetToTargetData = {
+      url: window.location.href,
+      positionY: window.scrollY
+    };
+
+    if (contactId === null) {
+      newTweetToTargetData.tweetedTo = [];
+      newTweetToTargetData.singleTweet = true;
+    } else {
+      newTweetToTargetData.tweetedTo = this.tweetToTargetData.tweetedTo ? [...this.tweetToTargetData.tweetedTo, contactId] : [contactId];
+      newTweetToTargetData.singleTweet = false;
+    }
+
+    newTweetToTargetData.redirectBack = this.shouldRedirectBack(newTweetToTargetData);
+    this.tweetToTargetData = newTweetToTargetData;
+    window.localStorage.setItem("engrid-ttt-data", JSON.stringify(this.tweetToTargetData));
+  }
+  /**
+   * Determines if we should redirect back to the tweet page
+   * @returns {boolean}
+   */
+
+
+  shouldRedirectBack(newTweetToTargetData) {
+    return newTweetToTargetData.tweetedTo.length < document.querySelectorAll(".en__tweetContact").length && !newTweetToTargetData.singleTweet;
+  }
+
+}
 ;// CONCATENATED MODULE: ./src/scripts/main.js
+
 const customScript = function (App, DonationFrequency) {
   console.log("ENGrid client scripts are executing");
   let inlineMonthlyUpsell = document.querySelectorAll(".move-after-transaction-recurrfreq")[0];
@@ -20502,6 +20525,7 @@ const customScript = function (App, DonationFrequency) {
 
 
   createOther3Field();
+  new TweetToTarget();
 };
 ;// CONCATENATED MODULE: ./src/scripts/page-header-footer.js
 const pageHeaderFooter = function (App) {
