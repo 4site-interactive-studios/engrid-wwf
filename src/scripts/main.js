@@ -632,10 +632,10 @@ export const customScript = function (App, DonationFrequency) {
           }
         }
       } else {
-        console.log("No GCLID found");
+        if (App.debug) console.log("No GCLID found");
       }
     } catch (error) {
-      console.error("Error handling GCLID:", error);
+      if (App.debug) console.error("Error handling GCLID:", error);
     }
   };
 
