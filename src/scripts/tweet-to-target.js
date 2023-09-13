@@ -1,27 +1,33 @@
-import { App, EnForm } from "@4site/engrid-common";
-
 export default class TweetToTarget {
-  constructor() {
+  constructor(App, EnForm) {
+    this.App = App;
+    this._form = EnForm.getInstance();
+
     if (this.shouldRun()) {
       this.tweetToTargetData =
-        JSON.parse(window.localStorage.getItem("engrid-ttt-data")) || {};
-      this._form = EnForm.getInstance();
+        JSON.parse(window.sessionStorage.getItem("engrid-ttt-data")) || {};
       this.init();
     }
   }
 
   shouldRun() {
-    return App.getPageType() === "TWEETPAGE";
+    return this.App.getPageType() === "TWEETPAGE";
   }
 
   init() {
-    if (document.querySelector(".en__component--tweetcontactblock")) {
+    if (
+      document.querySelector(".en__component--tweetcontactblock") &&
+      this.App.getPageNumber() !== 1
+    ) {
       this.setupTweetPage();
     } else if ("redirectBack" in this.tweetToTargetData) {
       if (this.tweetToTargetData.redirectBack) {
-        window.location.href = this.tweetToTargetData.url;
+        const returnUrl = new URL(this.tweetToTargetData.url);
+        //Adding the "chain" parameter to the URL will prevent EN server side redirect (which causes redirect loop)
+        returnUrl.searchParams.set("chain", "");
+        window.location.replace(returnUrl.href);
       } else {
-        window.localStorage.removeItem("engrid-ttt-data");
+        window.sessionStorage.removeItem("engrid-ttt-data");
       }
     }
   }
@@ -89,7 +95,7 @@ export default class TweetToTarget {
 
     this.tweetToTargetData = newTweetToTargetData;
 
-    window.localStorage.setItem(
+    window.sessionStorage.setItem(
       "engrid-ttt-data",
       JSON.stringify(this.tweetToTargetData)
     );

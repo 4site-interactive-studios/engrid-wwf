@@ -1,5 +1,3 @@
-import TweetToTarget from "./tweet-to-target";
-
 export const customScript = function (App, DonationFrequency) {
   console.log("ENGrid client scripts are executing");
 
@@ -860,6 +858,4 @@ export const customScript = function (App, DonationFrequency) {
   };
   // Call the function
   createOther3Field();
-
-  new TweetToTarget();
 };

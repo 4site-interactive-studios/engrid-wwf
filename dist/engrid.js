@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, September 11, 2023 @ 12:56:43 ET
+ *  Date: Wednesday, September 13, 2023 @ 08:14:56 ET
  *  By: michael
  *  ENGrid styles: v0.13.74
  *  ENGrid scripts: v0.13.74
@@ -19701,102 +19701,7 @@ const AppVersion = "0.13.74";
 // Version
 
 
-;// CONCATENATED MODULE: ./src/scripts/tweet-to-target.js
-
-class TweetToTarget {
-  constructor() {
-    if (this.shouldRun()) {
-      this.tweetToTargetData = JSON.parse(window.localStorage.getItem("engrid-ttt-data")) || {};
-      this._form = EnForm.getInstance();
-      this.init();
-    }
-  }
-
-  shouldRun() {
-    return App.getPageType() === "TWEETPAGE";
-  }
-
-  init() {
-    if (document.querySelector(".en__component--tweetcontactblock")) {
-      this.setupTweetPage();
-    } else if ("redirectBack" in this.tweetToTargetData) {
-      if (this.tweetToTargetData.redirectBack) {
-        window.location.href = this.tweetToTargetData.url;
-      } else {
-        window.localStorage.removeItem("engrid-ttt-data");
-      }
-    }
-  }
-  /**
-   * Configures the customisations to the Tweet Page with Tweet Contact Block
-   */
-
-
-  setupTweetPage() {
-    var _document$querySelect;
-
-    if (this.tweetToTargetData.positionY) {
-      window.scrollTo(0, this.tweetToTargetData.positionY);
-    }
-
-    if (this.tweetToTargetData.tweetedTo) {
-      this.tweetToTargetData.tweetedTo.forEach(contactTweeted => {
-        document.querySelector(`[data-contact="${contactTweeted}"]`).setAttribute("disabled", "");
-        document.querySelector(`[data-contact="${contactTweeted}"] .en__tweetButton__send a`).textContent = "Tweet Sent!";
-      });
-    }
-
-    (_document$querySelect = document.querySelector(".en__submit")) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.classList.add("hide");
-    const sendTweetButtons = document.querySelectorAll(".en__tweetButton__send > a");
-    sendTweetButtons.forEach(button => {
-      button.addEventListener("click", e => {
-        //setTimeout to push this to end of call stack, so that tweet windows opens first.
-        setTimeout(() => {
-          const contactId = e.target.closest(".en__tweetContact").dataset.contact ?? null;
-          this.storeTweetData(contactId);
-
-          this._form.submitForm();
-        }, 0);
-      });
-    });
-  }
-  /**
-   * Stores tweet to target data in localStorage
-   * @param contactId When null, we're using a single tweet to multiple targets page
-   */
-
-
-  storeTweetData(contactId) {
-    const newTweetToTargetData = {
-      url: window.location.href,
-      positionY: window.scrollY
-    };
-
-    if (contactId === null) {
-      newTweetToTargetData.tweetedTo = [];
-      newTweetToTargetData.singleTweet = true;
-    } else {
-      newTweetToTargetData.tweetedTo = this.tweetToTargetData.tweetedTo ? [...this.tweetToTargetData.tweetedTo, contactId] : [contactId];
-      newTweetToTargetData.singleTweet = false;
-    }
-
-    newTweetToTargetData.redirectBack = this.shouldRedirectBack(newTweetToTargetData);
-    this.tweetToTargetData = newTweetToTargetData;
-    window.localStorage.setItem("engrid-ttt-data", JSON.stringify(this.tweetToTargetData));
-  }
-  /**
-   * Determines if we should redirect back to the tweet page
-   * @returns {boolean}
-   */
-
-
-  shouldRedirectBack(newTweetToTargetData) {
-    return newTweetToTargetData.tweetedTo.length < document.querySelectorAll(".en__tweetContact").length && !newTweetToTargetData.singleTweet;
-  }
-
-}
 ;// CONCATENATED MODULE: ./src/scripts/main.js
-
 const customScript = function (App, DonationFrequency) {
   console.log("ENGrid client scripts are executing");
   let inlineMonthlyUpsell = document.querySelectorAll(".move-after-transaction-recurrfreq")[0];
@@ -20525,7 +20430,6 @@ const customScript = function (App, DonationFrequency) {
 
 
   createOther3Field();
-  new TweetToTarget();
 };
 ;// CONCATENATED MODULE: ./src/scripts/page-header-footer.js
 const pageHeaderFooter = function (App) {
@@ -21665,6 +21569,104 @@ class DonationLightboxForm {
   }
 
 }
+;// CONCATENATED MODULE: ./src/scripts/tweet-to-target.js
+class TweetToTarget {
+  constructor(App, EnForm) {
+    this.App = App;
+    this._form = EnForm.getInstance();
+
+    if (this.shouldRun()) {
+      this.tweetToTargetData = JSON.parse(window.sessionStorage.getItem("engrid-ttt-data")) || {};
+      this.init();
+    }
+  }
+
+  shouldRun() {
+    return this.App.getPageType() === "TWEETPAGE";
+  }
+
+  init() {
+    if (document.querySelector(".en__component--tweetcontactblock") && this.App.getPageNumber() !== 1) {
+      this.setupTweetPage();
+    } else if ("redirectBack" in this.tweetToTargetData) {
+      if (this.tweetToTargetData.redirectBack) {
+        const returnUrl = new URL(this.tweetToTargetData.url); //Adding the "chain" parameter to the URL will prevent EN server side redirect (which causes redirect loop)
+
+        returnUrl.searchParams.set("chain", "");
+        window.location.replace(returnUrl.href);
+      } else {
+        window.sessionStorage.removeItem("engrid-ttt-data");
+      }
+    }
+  }
+  /**
+   * Configures the customisations to the Tweet Page with Tweet Contact Block
+   */
+
+
+  setupTweetPage() {
+    var _document$querySelect;
+
+    if (this.tweetToTargetData.positionY) {
+      window.scrollTo(0, this.tweetToTargetData.positionY);
+    }
+
+    if (this.tweetToTargetData.tweetedTo) {
+      this.tweetToTargetData.tweetedTo.forEach(contactTweeted => {
+        document.querySelector(`[data-contact="${contactTweeted}"]`).setAttribute("disabled", "");
+        document.querySelector(`[data-contact="${contactTweeted}"] .en__tweetButton__send a`).textContent = "Tweet Sent!";
+      });
+    }
+
+    (_document$querySelect = document.querySelector(".en__submit")) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.classList.add("hide");
+    const sendTweetButtons = document.querySelectorAll(".en__tweetButton__send > a");
+    sendTweetButtons.forEach(button => {
+      button.addEventListener("click", e => {
+        //setTimeout to push this to end of call stack, so that tweet windows opens first.
+        setTimeout(() => {
+          const contactId = e.target.closest(".en__tweetContact").dataset.contact ?? null;
+          this.storeTweetData(contactId);
+
+          this._form.submitForm();
+        }, 0);
+      });
+    });
+  }
+  /**
+   * Stores tweet to target data in localStorage
+   * @param contactId When null, we're using a single tweet to multiple targets page
+   */
+
+
+  storeTweetData(contactId) {
+    const newTweetToTargetData = {
+      url: window.location.href,
+      positionY: window.scrollY
+    };
+
+    if (contactId === null) {
+      newTweetToTargetData.tweetedTo = [];
+      newTweetToTargetData.singleTweet = true;
+    } else {
+      newTweetToTargetData.tweetedTo = this.tweetToTargetData.tweetedTo ? [...this.tweetToTargetData.tweetedTo, contactId] : [contactId];
+      newTweetToTargetData.singleTweet = false;
+    }
+
+    newTweetToTargetData.redirectBack = this.shouldRedirectBack(newTweetToTargetData);
+    this.tweetToTargetData = newTweetToTargetData;
+    window.sessionStorage.setItem("engrid-ttt-data", JSON.stringify(this.tweetToTargetData));
+  }
+  /**
+   * Determines if we should redirect back to the tweet page
+   * @returns {boolean}
+   */
+
+
+  shouldRedirectBack(newTweetToTargetData) {
+    return newTweetToTargetData.tweetedTo.length < document.querySelectorAll(".en__tweetContact").length && !newTweetToTargetData.singleTweet;
+  }
+
+}
 ;// CONCATENATED MODULE: ./src/index.ts
  // Uses ENGrid via NPM
 // import {
@@ -21673,6 +21675,7 @@ class DonationLightboxForm {
 //   DonationFrequency,
 //   DonationAmount,
 // } from "../../engrid-scripts/packages/common"; // Uses ENGrid via Visual Studio Workspace
+
 
 
 
@@ -21712,6 +21715,8 @@ const options = {
     new DonationLightboxForm(DonationAmount, DonationFrequency);
     customScript(App, DonationFrequency);
     pageHeaderFooter(App); // Added this line to trigger pageHeaderFooter
+
+    new TweetToTarget(App, EnForm);
   },
   onResize: () => console.log("Starter Theme Window Resized"),
   onSubmit: () => {
