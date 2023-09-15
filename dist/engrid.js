@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, September 13, 2023 @ 08:14:56 ET
+ *  Date: Friday, September 15, 2023 @ 06:45:54 ET
  *  By: michael
  *  ENGrid styles: v0.13.74
  *  ENGrid scripts: v0.13.74
@@ -21577,6 +21577,7 @@ class TweetToTarget {
 
     if (this.shouldRun()) {
       this.tweetToTargetData = JSON.parse(window.sessionStorage.getItem("engrid-ttt-data")) || {};
+      this.redirectPresent = window.pageJson.redirectPresent || false;
       this.init();
     }
   }
@@ -21605,20 +21606,25 @@ class TweetToTarget {
 
 
   setupTweetPage() {
-    var _document$querySelect;
+    //If there is a redirect on the page and we have more than 1 target, we want the user to manually submit the form
+    const dontAutomaticallyRedirect = this.redirectPresent && document.querySelectorAll(".en__tweetContact").length > 1;
 
     if (this.tweetToTargetData.positionY) {
       window.scrollTo(0, this.tweetToTargetData.positionY);
     }
 
+    if (!dontAutomaticallyRedirect) {
+      var _document$querySelect;
+
+      (_document$querySelect = document.querySelector(".en__submit")) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.classList.add("hide");
+    }
+
     if (this.tweetToTargetData.tweetedTo) {
-      this.tweetToTargetData.tweetedTo.forEach(contactTweeted => {
-        document.querySelector(`[data-contact="${contactTweeted}"]`).setAttribute("disabled", "");
-        document.querySelector(`[data-contact="${contactTweeted}"] .en__tweetButton__send a`).textContent = "Tweet Sent!";
+      this.tweetToTargetData.tweetedTo.forEach(contactId => {
+        this.disableTweetTarget(contactId);
       });
     }
 
-    (_document$querySelect = document.querySelector(".en__submit")) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.classList.add("hide");
     const sendTweetButtons = document.querySelectorAll(".en__tweetButton__send > a");
     sendTweetButtons.forEach(button => {
       button.addEventListener("click", e => {
@@ -21626,11 +21632,20 @@ class TweetToTarget {
         setTimeout(() => {
           const contactId = e.target.closest(".en__tweetContact").dataset.contact ?? null;
           this.storeTweetData(contactId);
+          this.disableTweetTarget(contactId);
 
-          this._form.submitForm();
+          if (!dontAutomaticallyRedirect) {
+            this._form.submitForm();
+          }
         }, 0);
       });
     });
+  }
+
+  disableTweetTarget(contactId) {
+    if (contactId === null) return;
+    document.querySelector(`[data-contact="${contactId}"]`).setAttribute("disabled", "");
+    document.querySelector(`[data-contact="${contactId}"] .en__tweetButton__send a`).textContent = "Tweet Sent!";
   }
   /**
    * Stores tweet to target data in localStorage

@@ -6,6 +6,7 @@ export default class TweetToTarget {
     if (this.shouldRun()) {
       this.tweetToTargetData =
         JSON.parse(window.sessionStorage.getItem("engrid-ttt-data")) || {};
+      this.redirectPresent = window.pageJson.redirectPresent || false;
       this.init();
     }
   }
@@ -36,22 +37,24 @@ export default class TweetToTarget {
    * Configures the customisations to the Tweet Page with Tweet Contact Block
    */
   setupTweetPage() {
+    //If there is a redirect on the page and we have more than 1 target, we want the user to manually submit the form
+    const dontAutomaticallyRedirect =
+      this.redirectPresent &&
+      document.querySelectorAll(".en__tweetContact").length > 1;
+
     if (this.tweetToTargetData.positionY) {
       window.scrollTo(0, this.tweetToTargetData.positionY);
     }
 
-    if (this.tweetToTargetData.tweetedTo) {
-      this.tweetToTargetData.tweetedTo.forEach((contactTweeted) => {
-        document
-          .querySelector(`[data-contact="${contactTweeted}"]`)
-          .setAttribute("disabled", "");
-        document.querySelector(
-          `[data-contact="${contactTweeted}"] .en__tweetButton__send a`
-        ).textContent = "Tweet Sent!";
-      });
+    if (!dontAutomaticallyRedirect) {
+      document.querySelector(".en__submit")?.classList.add("hide");
     }
 
-    document.querySelector(".en__submit")?.classList.add("hide");
+    if (this.tweetToTargetData.tweetedTo) {
+      this.tweetToTargetData.tweetedTo.forEach((contactId) => {
+        this.disableTweetTarget(contactId);
+      });
+    }
 
     const sendTweetButtons = document.querySelectorAll(
       ".en__tweetButton__send > a"
@@ -64,10 +67,24 @@ export default class TweetToTarget {
           const contactId =
             e.target.closest(".en__tweetContact").dataset.contact ?? null;
           this.storeTweetData(contactId);
-          this._form.submitForm();
+          this.disableTweetTarget(contactId);
+          if (!dontAutomaticallyRedirect) {
+            this._form.submitForm();
+          }
         }, 0);
       });
     });
+  }
+
+  disableTweetTarget(contactId) {
+    if (contactId === null) return;
+
+    document
+      .querySelector(`[data-contact="${contactId}"]`)
+      .setAttribute("disabled", "");
+    document.querySelector(
+      `[data-contact="${contactId}"] .en__tweetButton__send a`
+    ).textContent = "Tweet Sent!";
   }
 
   /**
