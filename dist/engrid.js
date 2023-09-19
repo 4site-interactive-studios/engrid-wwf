@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, August 24, 2023 @ 16:53:57 ET
- *  By: bryancasler
+ *  Date: Tuesday, September 19, 2023 @ 17:20:02 ET
+ *  By: fernando
  *  ENGrid styles: v0.14.17
  *  ENGrid scripts: v0.14.17
  *
@@ -19776,6 +19776,7 @@ const AppVersion = "0.14.17";
 ;// CONCATENATED MODULE: ./src/scripts/main.js
 const customScript = function (App, DonationFrequency) {
   console.log("ENGrid client scripts are executing");
+  const isSpanish = document.querySelector("label[for='en__field_supporter_emailAddress']") && document.querySelector("label[for='en__field_supporter_emailAddress']").textContent === "Correo electrónico";
   let inlineMonthlyUpsell = document.querySelectorAll(".move-after-transaction-recurrfreq")[0];
   let recurrFrequencyField = document.querySelectorAll(".en__field--recurrfreq")[0];
 
@@ -20135,7 +20136,7 @@ const customScript = function (App, DonationFrequency) {
   const ecardAddRecipeintButton = document.querySelector(".en__ecarditems__addrecipient");
 
   if (ecardAddRecipeintButton) {
-    ecardAddRecipeintButton.textContent = "Add this contact";
+    ecardAddRecipeintButton.textContent = isSpanish ? "Agrega este contacto" : "Add this contact";
   } // On eCard pages, add a label to the recipients list
 
 
@@ -20143,7 +20144,7 @@ const customScript = function (App, DonationFrequency) {
 
   if (ecardRecipientList) {
     const label = document.createElement("h2");
-    label.textContent = "Recipients list";
+    label.textContent = isSpanish ? "Lista de contactos" : "Recipients list";
     label.id = "recipients-list-label";
     label.setAttribute("for", "en__ecardrecipients__list");
     ecardRecipientList.setAttribute("aria-labelledby", "recipients-list-label");
