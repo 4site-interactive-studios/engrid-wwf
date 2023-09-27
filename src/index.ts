@@ -63,6 +63,16 @@ const options: Options = {
     new DonationLightboxForm(DonationAmount, DonationFrequency);
     customScript(App, DonationFrequency);
     pageHeaderFooter(App); // Added this line to trigger pageHeaderFooter
+    // Expand all contact sections on EMAILTOTARGET pages
+    if (App.getPageType() === "EMAILTOTARGET") {
+      const closedContactSections = document.querySelectorAll(
+        ".en__contact--closed"
+      );
+      closedContactSections.forEach((section) => {
+        section.classList.remove("en__contact--closed");
+        section.classList.add("en__contact--open");
+      });
+    }
   },
   onResize: () => console.log("Starter Theme Window Resized"),
 

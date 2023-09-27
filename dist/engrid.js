@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, September 26, 2023 @ 11:58:59 ET
- *  By: bryancasler
+ *  Date: Tuesday, September 26, 2023 @ 21:46:30 ET
+ *  By: fernando
  *  ENGrid styles: v0.14.17
  *  ENGrid scripts: v0.14.17
  *
@@ -21689,6 +21689,15 @@ const options = {
     new DonationLightboxForm(DonationAmount, DonationFrequency);
     customScript(App, DonationFrequency);
     pageHeaderFooter(App); // Added this line to trigger pageHeaderFooter
+    // Expand all contact sections on EMAILTOTARGET pages
+
+    if (App.getPageType() === "EMAILTOTARGET") {
+      const closedContactSections = document.querySelectorAll(".en__contact--closed");
+      closedContactSections.forEach(section => {
+        section.classList.remove("en__contact--closed");
+        section.classList.add("en__contact--open");
+      });
+    }
   },
   onResize: () => console.log("Starter Theme Window Resized"),
   onSubmit: () => {
