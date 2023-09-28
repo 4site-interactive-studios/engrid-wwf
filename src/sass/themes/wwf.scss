@@ -2004,18 +2004,18 @@
       body-bannerOverlay-start]           min-content        [body-bannerOverlay-end
       body-title-start]                   min-content        [body-title-end
       body-top-start]                     min-content        [body-top-end
-      body-side-start]                    min-content        [body-side-end  
-      body-main-start]                    min-content        [body-main-end  
-      body-bottom-start]                  min-content        [body-bottom-end  
+      body-side-start]                    min-content        [body-side-end
+      body-main-start]                    min-content        [body-main-end
+      body-bottom-start]                  min-content        [body-bottom-end
       body-footer-start]                  min-content        [body-footer-end
-      body-footerOutside-start]           min-content        [body-footerOutside-end  
+      body-footerOutside-start]           min-content        [body-footerOutside-end
       content-footerSpacer-start]         minmax(0px, 1fr)   [content-footerSpacer-end
       content-preFooter-start]            min-content        [content-preFooter-end
       content-footer-start]               min-content        [content-footer-end
       page-backgroundImage-start]         min-content        [page-backgroundImage-end
       page-backgroundImageOverlay-start]  min-content        [page-backgroundImageOverlay-end page-end
-      page-customCode-start]              min-content        [page-customCode-end        
-    ];        
+      page-customCode-start]              min-content        [page-customCode-end
+    ];
   }
 
   &[data-engrid-layout] .content-header {
@@ -2133,4 +2133,15 @@
 &[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements][data-engrid-transaction-recurring="n"][data-engrid-payment-type-option-paypal-one-touch="true"]
   .en__field--giveBySelect.paypal.force-paypal-visibility {
   display: inline-block !important;
+}
+
+.en__tweetContact[disabled]{
+  pointer-events: none;
+  filter: grayscale(1);
+  opacity: 0.5;
+
+  a {
+    filter: invert(1);
+    color: #000000;
+  }
 }
