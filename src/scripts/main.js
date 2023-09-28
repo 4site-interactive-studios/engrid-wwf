@@ -1,6 +1,11 @@
 export const customScript = function (App, DonationFrequency) {
   console.log("ENGrid client scripts are executing");
 
+  const isSpanish =
+    document.querySelector("label[for='en__field_supporter_emailAddress']") &&
+    document.querySelector("label[for='en__field_supporter_emailAddress']")
+      .textContent === "Correo electrónico";
+
   let inlineMonthlyUpsell = document.querySelectorAll(
     ".move-after-transaction-recurrfreq"
   )[0];
@@ -411,7 +416,9 @@ export const customScript = function (App, DonationFrequency) {
   );
 
   if (ecardAddRecipeintButton) {
-    ecardAddRecipeintButton.textContent = "Add this contact";
+    ecardAddRecipeintButton.textContent = isSpanish
+      ? "Agrega este contacto"
+      : "Add this contact";
   }
 
   // On eCard pages, add a label to the recipients list
@@ -421,7 +428,7 @@ export const customScript = function (App, DonationFrequency) {
 
   if (ecardRecipientList) {
     const label = document.createElement("h2");
-    label.textContent = "Recipients list";
+    label.textContent = isSpanish ? "Lista de contactos" : "Recipients list";
     label.id = "recipients-list-label";
     label.setAttribute("for", "en__ecardrecipients__list");
     ecardRecipientList.setAttribute("aria-labelledby", "recipients-list-label");
@@ -735,18 +742,6 @@ export const customScript = function (App, DonationFrequency) {
           r.parentNode.insertBefore(a, r);
       })(document, "script", "7f237240-f3c5-4922-aa1f-b4c70aa52d65");
   }
-
-  // Function to load BugHerd script
-  const loadBugHerdScript = () => {
-    const script = document.createElement("script");
-    script.src =
-      "https://www.bugherd.com/sidebarv2.js?apikey=c9xhgp67p1maeebj6hhyfw";
-    script.async = true;
-    document.body.appendChild(script);
-  };
-
-  // Call the function to load the script
-  loadBugHerdScript();
 
   // Check if '.en__ecarditems__preview' exists in the page
   const eCardPreview = document.querySelector(".en__ecarditems__preview");

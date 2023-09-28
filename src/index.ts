@@ -66,6 +66,16 @@ const options: Options = {
     customScript(App, DonationFrequency);
     pageHeaderFooter(App); // Added this line to trigger pageHeaderFooter
     new TweetToTarget(App, EnForm);
+    // Expand all contact sections on EMAILTOTARGET pages
+    if (App.getPageType() === "EMAILTOTARGET") {
+      const closedContactSections = document.querySelectorAll(
+        ".en__contact--closed"
+      );
+      closedContactSections.forEach((section) => {
+        section.classList.remove("en__contact--closed");
+        section.classList.add("en__contact--open");
+      });
+    }
   },
   onResize: () => console.log("Starter Theme Window Resized"),
 
