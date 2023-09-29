@@ -18,6 +18,8 @@ import { pageHeaderFooter } from "./scripts/page-header-footer";
 import DonationLightboxForm from "./scripts/donation-lightbox-form";
 import TweetToTarget from "./scripts/tweet-to-target";
 
+import { PaymentTracker } from "./scripts/payment-tracker";
+
 const options: Options = {
   applePay: false,
   CapitalizeFields: true,
@@ -76,6 +78,8 @@ const options: Options = {
         section.classList.add("en__contact--open");
       });
     }
+    // Start the Payment Method Tracker
+    new PaymentTracker(App);
   },
   onResize: () => console.log("Starter Theme Window Resized"),
 
