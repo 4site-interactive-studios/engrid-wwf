@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, September 29, 2023 @ 13:46:41 ET
+ *  Date: Tuesday, October 3, 2023 @ 13:55:51 ET
  *  By: michael
  *  ENGrid styles: v0.13.74
  *  ENGrid scripts: v0.13.74
@@ -18840,8 +18840,7 @@ const customScript = function (App, DonationFrequency) {
   const amountNudge = document.querySelector(".amount-nudge:not(.arrow-up)");
 
   if (amountNudge && recurrFrequencyField) {
-    console.log("moving amount nudge");
-    recurrFrequencyField.insertAdjacentElement("beforeend", amountNudge); // inlineMonthlyUpsell.style.visibility='visible';
+    recurrFrequencyField.insertAdjacentElement("beforeend", amountNudge);
   }
 };
 ;// CONCATENATED MODULE: ./src/scripts/page-header-footer.js

@@ -868,8 +868,6 @@ export const customScript = function (App, DonationFrequency) {
 
   const amountNudge = document.querySelector(".amount-nudge:not(.arrow-up)");
   if (amountNudge && recurrFrequencyField) {
-    console.log("moving amount nudge");
     recurrFrequencyField.insertAdjacentElement("beforeend", amountNudge);
-    // inlineMonthlyUpsell.style.visibility='visible';
   }
 };

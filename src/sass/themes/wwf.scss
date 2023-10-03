@@ -2163,6 +2163,10 @@
     bottom: -25px;
   }
 
+  &:not(.i1-arrow):not(.i2-arrow):not(.i3-arrow) svg {
+    display: none;
+  }
+
   &.arrow-up {
     padding: 0;
 
@@ -2170,7 +2174,7 @@
       margin: 0 8px 1.75rem;
     }
 
-    &.arrow-1 svg {
+    &.i1-arrow svg {
       transform: rotate(180deg);
       top: -25px;
       left: 14%;
@@ -2179,7 +2183,7 @@
       }
     }
 
-    &.arrow-2 svg {
+    &.i2-arrow svg {
       transform: rotate(180deg);
       top: -25px;
       left: 47%;
@@ -2188,7 +2192,7 @@
       }
     }
 
-    &.arrow-3 svg {
+    &.i3-arrow svg {
       transform: rotate(180deg);
       top: -25px;
       left: 80%;
@@ -2198,21 +2202,21 @@
     }
   }
 
-  &.arrow-1 svg {
+  &.i1-arrow svg {
     left: 14%;
     @media screen and (max-width: 768px) {
       left: 22%
     }
   }
 
-  &.arrow-2 svg {
+  &.i2-arrow svg {
     left: 47%;
     @media screen and (max-width: 768px) {
       left: 69%
     }
   }
 
-  &.arrow-3:not(.arrow-up) svg {
+  &.i3-arrow:not(.arrow-up) svg {
     left: 80%;
     @media screen and (max-width: 768px) {
       display: none;
