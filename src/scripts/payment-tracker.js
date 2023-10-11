@@ -40,13 +40,14 @@ export class PaymentTracker {
       this.currentPaymentType === this.paymentType.value
     )
       return;
+    const lastPayment = this.getLastPaymentType();
     let payment =
       this.app.getPaymentType() ||
       this.paymentType.options[this.paymentType.selectedIndex].value;
     let paymentData = this.getErrorPrefix();
     paymentData += this.currentPaymentType + "_to_" + payment;
     if (this.currentPaymentType === "") {
-      paymentData = payment;
+      paymentData = this.getErrorPrefix() + lastPayment + "_to_" + payment;
     }
     if (this.app.debug) console.log("ENgrid-PT Payment Data", paymentData);
     // Save the payment type into local storage
@@ -57,6 +58,14 @@ export class PaymentTracker {
     this.dataLayer.push({
       event: this.prefix + "_" + paymentData,
     });
+  }
+
+  getLastPaymentType() {
+    // Return the last piece of payment type from local storage, exploded by "_"
+    const lastPayment = this.paymentChanges[this.paymentChanges.length - 1];
+    if (!lastPayment) return "";
+    const payment = lastPayment.split("_");
+    return payment[payment.length - 1];
   }
 
   getErrorPrefix() {
