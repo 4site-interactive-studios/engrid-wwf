@@ -61,7 +61,9 @@ export class PaymentTracker {
 
   getErrorPrefix() {
     const hasError = document.querySelector(".en__errorList li");
-    return hasError ? "error_" : "";
+    // Check if the URL has a query string parameter of "val", which means the form has been submitted
+    const hasVal = window.location.search.includes("?val");
+    return hasError || hasVal ? "error_" : "";
   }
   clearLocalStorage() {
     this.paymentChanges.forEach((v) => {

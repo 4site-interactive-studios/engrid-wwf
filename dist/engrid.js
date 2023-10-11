@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, September 29, 2023 @ 15:59:15 ET
+ *  Date: Wednesday, October 11, 2023 @ 13:48:19 ET
  *  By: fernando
  *  ENGrid styles: v0.15.3
  *  ENGrid scripts: v0.15.2
@@ -22004,8 +22004,10 @@ class PaymentTracker {
   }
 
   getErrorPrefix() {
-    const hasError = document.querySelector(".en__errorList li");
-    return hasError ? "error_" : "";
+    const hasError = document.querySelector(".en__errorList li"); // Check if the URL has a query string parameter of "val", which means the form has been submitted
+
+    const hasVal = window.location.search.includes("?val");
+    return hasError || hasVal ? "error_" : "";
   }
 
   clearLocalStorage() {
