@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, October 11, 2023 @ 14:21:18 ET
+ *  Date: Wednesday, October 11, 2023 @ 14:38:00 ET
  *  By: fernando
  *  ENGrid styles: v0.15.3
  *  ENGrid scripts: v0.15.2
@@ -21990,7 +21990,7 @@ class PaymentTracker {
     paymentData += this.currentPaymentType + "_to_" + payment;
 
     if (this.currentPaymentType === "") {
-      paymentData = this.getErrorPrefix() + lastPayment + "_to_" + payment;
+      paymentData = lastPayment ? this.getErrorPrefix() + lastPayment + "_to_" + payment : payment;
     }
 
     if (this.app.debug) console.log("ENgrid-PT Payment Data", paymentData); // Save the payment type into local storage

@@ -47,7 +47,9 @@ export class PaymentTracker {
     let paymentData = this.getErrorPrefix();
     paymentData += this.currentPaymentType + "_to_" + payment;
     if (this.currentPaymentType === "") {
-      paymentData = this.getErrorPrefix() + lastPayment + "_to_" + payment;
+      paymentData = lastPayment
+        ? this.getErrorPrefix() + lastPayment + "_to_" + payment
+        : payment;
     }
     if (this.app.debug) console.log("ENgrid-PT Payment Data", paymentData);
     // Save the payment type into local storage
