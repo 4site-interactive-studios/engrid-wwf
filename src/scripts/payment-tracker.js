@@ -34,16 +34,14 @@ export class PaymentTracker {
   }
 
   trackPaymentType() {
-    // If the payment type is the same as the last one, don't do anything
-    if (
-      this.paymentType.value === "" ||
-      this.currentPaymentType === this.paymentType.value
-    )
-      return;
-    const lastPayment = this.getLastPaymentType();
-    let payment =
+    const payment =
       this.app.getPaymentType() ||
-      this.paymentType.options[this.paymentType.selectedIndex].value;
+      this.paymentType.options[this.paymentType.selectedIndex].value ||
+      "card";
+    // If the payment type is the same as the last one, don't do anything
+    if (this.currentPaymentType === payment) return;
+    console.log("trackPaymentType", payment);
+    const lastPayment = this.getLastPaymentType();
     let paymentData = this.getErrorPrefix();
     paymentData += this.currentPaymentType + "_to_" + payment;
     if (this.currentPaymentType === "") {
