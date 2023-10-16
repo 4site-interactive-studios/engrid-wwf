@@ -40,7 +40,6 @@ export class PaymentTracker {
       "card";
     // If the payment type is the same as the last one, don't do anything
     if (this.currentPaymentType === payment) return;
-    console.log("trackPaymentType", payment);
     const lastPayment = this.getLastPaymentType();
     let paymentData = this.getErrorPrefix();
     paymentData += this.currentPaymentType + "_to_" + payment;
