@@ -743,18 +743,6 @@ export const customScript = function (App, DonationFrequency) {
       })(document, "script", "7f237240-f3c5-4922-aa1f-b4c70aa52d65");
   }
 
-  // Function to load BugHerd script
-  const loadBugHerdScript = () => {
-    const script = document.createElement("script");
-    script.src =
-      "https://www.bugherd.com/sidebarv2.js?apikey=c9xhgp67p1maeebj6hhyfw";
-    script.async = true;
-    document.body.appendChild(script);
-  };
-
-  // Call the function to load the script
-  loadBugHerdScript();
-
   // Check if '.en__ecarditems__preview' exists in the page
   const eCardPreview = document.querySelector(".en__ecarditems__preview");
 
