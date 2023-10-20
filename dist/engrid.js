@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, September 28, 2023 @ 15:20:43 ET
+ *  Date: Friday, October 20, 2023 @ 14:26:28 ET
  *  By: fernando
  *  ENGrid styles: v0.15.3
  *  ENGrid scripts: v0.15.2
@@ -21763,7 +21763,7 @@ const options = {
 
     if (transactionSelprodvariantid && donationHasPremium) {
       // If there is, sync the values
-      donationHasPremium.value = transactionSelprodvariantid.value && transactionSelprodvariantid.value != maxTheirGift ? "Y" : "N"; //
+      donationHasPremium.value = transactionSelprodvariantid.value && transactionSelprodvariantid.value != maxTheirGift ? "Y" : "N";
     }
   }
 };
@@ -21778,7 +21778,24 @@ window.EngridTranslate = {
     field: "transaction.infpostcd",
     translation: "Recipient ZIP Code"
   }]
-};
+}; // Trying to fix the issue of EN not running the onSubmit & onValidate functions
+// when you use digital wallets
+
+const paymentButtons = document.querySelectorAll('input[name="transaction.giveBySelect"]');
+
+if (paymentButtons.length > 0) {
+  paymentButtons.forEach(button => {
+    // If the changed radio value is stripedigitalwallet, run the options functions
+    button.addEventListener("change", e => {
+      if (e.target.value === "stripedigitalwallet") {
+        App.log("Stripe Digital Wallet Selected");
+        if (options.onValidate) options.onValidate();
+        if (options.onSubmit) options.onSubmit();
+      }
+    });
+  });
+}
+
 new App(options);
 })();
 
