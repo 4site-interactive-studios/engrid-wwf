@@ -10,6 +10,7 @@ import {
 //   App,
 //   DonationFrequency,
 //   DonationAmount,
+//   EnForm,
 // } from "../../engrid-scripts/packages/common"; // Uses ENGrid via Visual Studio Workspace
 
 import "./sass/main.scss";
@@ -128,7 +129,6 @@ const options: Options = {
         transactionSelprodvariantid.value != maxTheirGift
           ? "Y"
           : "N";
-      //
     }
   },
 };
@@ -139,4 +139,21 @@ const options: Options = {
     { field: "transaction.infpostcd", translation: "Recipient ZIP Code" },
   ],
 };
+// Trying to fix the issue of EN not running the onSubmit & onValidate functions
+// when you use digital wallets
+const paymentButtons = document.querySelectorAll(
+  'input[name="transaction.giveBySelect"]'
+);
+if (paymentButtons.length > 0) {
+  paymentButtons.forEach((button) => {
+    // If the changed radio value is stripedigitalwallet, run the options functions
+    button.addEventListener("change", (e) => {
+      if ((e.target as HTMLInputElement).value === "stripedigitalwallet") {
+        App.log("Stripe Digital Wallet Selected");
+        if (options.onValidate) options.onValidate();
+        if (options.onSubmit) options.onSubmit();
+      }
+    });
+  });
+}
 new App(options);
