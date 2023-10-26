@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, October 20, 2023 @ 17:18:55 ET
+ *  Date: Thursday, October 26, 2023 @ 17:35:14 ET
  *  By: fernando
- *  ENGrid styles: v0.15.3
- *  ENGrid scripts: v0.15.11
+ *  ENGrid styles: v0.15.12
+ *  ENGrid scripts: v0.15.13
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -12176,8 +12176,15 @@ class App extends engrid_ENGrid {
         if (this.options.ProgressBar)
             new ProgressBar();
         // RememberMe
-        if (this.options.RememberMe && typeof this.options.RememberMe === "object")
-            new RememberMe(this.options.RememberMe);
+        try {
+            // Accessing window.localStorage will throw an exception if it isn't permitted due to security reasons
+            // For example, this happens in Firefox when cookies are disabled.  If it isn't available, we shouldn't
+            //  bother with enabling RememberMe
+            if (this.options.RememberMe && typeof this.options.RememberMe === "object" && window.localStorage) {
+                new RememberMe(this.options.RememberMe);
+            }
+        }
+        catch (e) { }
         if (this.options.NeverBounceAPI)
             new NeverBounce(this.options.NeverBounceAPI, this.options.NeverBounceDateField, this.options.NeverBounceStatusField, this.options.NeverBounceDateFormat);
         // FreshAddress
@@ -12237,8 +12244,16 @@ class App extends engrid_ENGrid {
         new SetAttr();
         new ShowIfPresent();
         //Debug panel
-        if (this.options.Debug ||
-            window.sessionStorage.hasOwnProperty(DebugPanel.debugSessionStorageKey)) {
+        let showDebugPanel = this.options.Debug;
+        try {
+            // accessing storage can throw an exception if it isn't available in Firefox
+            if (!showDebugPanel &&
+                window.sessionStorage.hasOwnProperty(DebugPanel.debugSessionStorageKey)) {
+                showDebugPanel = true;
+            }
+        }
+        catch (e) { }
+        if (showDebugPanel) {
             new DebugPanel(this.options.PageLayouts);
         }
         if (engrid_ENGrid.getUrlParameter("development") === "branding") {
@@ -12437,6 +12452,8 @@ class ApplePay {
         });
     }
     onPayClicked() {
+        if (!this._form.submit)
+            return;
         const enFieldPaymentType = document.querySelector("#en__field_transaction_paymenttype");
         const applePayToken = document.getElementById("applePayToken");
         const formClass = this._form;
@@ -13669,6 +13686,9 @@ class UpsellLightbox {
         this.logger = new EngridLogger("UpsellLightbox", "black", "pink", "🪟");
         let options = "EngridUpsell" in window ? window.EngridUpsell : {};
         this.options = Object.assign(Object.assign({}, UpsellOptionsDefaults), options);
+        //Disable for "applepay" via Vantiv payment method. Adding it to the array like this so it persists
+        //even if the client provides custom options.
+        this.options.disablePaymentMethods.push('applepay');
         if (!this.shouldRun()) {
             this.logger.log("Upsell script should NOT run");
             // If we're not on a Donation Page, get out
@@ -19874,7 +19894,6 @@ class ENValidators {
         if (!this.shouldRun()) {
             // If there's no custom validators, get out
             this.logger.log("Not Needed");
-            console.log(this._enElements);
             return;
         }
         this._form.onValidate.subscribe(this.enOnValidate.bind(this));
@@ -19948,7 +19967,7 @@ class ENValidators {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.15.11";
+const AppVersion = "0.15.13";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
