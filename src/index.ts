@@ -1,20 +1,23 @@
-// import {
-//   Options,
-//   App,
-//   DonationFrequency,
-//   DonationAmount,
-// } from "@4site/engrid-common"; // Uses ENGrid via NPM
 import {
   Options,
   App,
   DonationFrequency,
   DonationAmount,
-} from "../../engrid-scripts/packages/common"; // Uses ENGrid via Visual Studio Workspace
+  EnForm,
+} from "@4site/engrid-common"; // Uses ENGrid via NPM
+// import {
+//   Options,
+//   App,
+//   DonationFrequency,
+//   DonationAmount,
+//   EnForm,
+// } from "../../engrid-scripts/packages/common"; // Uses ENGrid via Visual Studio Workspace
 
 import "./sass/main.scss";
 import { customScript } from "./scripts/main";
 import { pageHeaderFooter } from "./scripts/page-header-footer";
 import DonationLightboxForm from "./scripts/donation-lightbox-form";
+import TweetToTarget from "./scripts/tweet-to-target";
 
 const options: Options = {
   applePay: false,
@@ -63,6 +66,17 @@ const options: Options = {
     new DonationLightboxForm(DonationAmount, DonationFrequency);
     customScript(App, DonationFrequency);
     pageHeaderFooter(App); // Added this line to trigger pageHeaderFooter
+    new TweetToTarget(App, EnForm);
+    // Expand all contact sections on EMAILTOTARGET pages
+    if (App.getPageType() === "EMAILTOTARGET") {
+      const closedContactSections = document.querySelectorAll(
+        ".en__contact--closed"
+      );
+      closedContactSections.forEach((section) => {
+        section.classList.remove("en__contact--closed");
+        section.classList.add("en__contact--open");
+      });
+    }
   },
   onResize: () => console.log("Starter Theme Window Resized"),
 
@@ -115,7 +129,6 @@ const options: Options = {
         transactionSelprodvariantid.value != maxTheirGift
           ? "Y"
           : "N";
-      //
     }
   },
 };
@@ -126,4 +139,21 @@ const options: Options = {
     { field: "transaction.infpostcd", translation: "Recipient ZIP Code" },
   ],
 };
+// Trying to fix the issue of EN not running the onSubmit & onValidate functions
+// when you use digital wallets
+const paymentButtons = document.querySelectorAll(
+  'input[name="transaction.giveBySelect"]'
+);
+if (paymentButtons.length > 0) {
+  paymentButtons.forEach((button) => {
+    // If the changed radio value is stripedigitalwallet, run the options functions
+    button.addEventListener("change", (e) => {
+      if ((e.target as HTMLInputElement).value === "stripedigitalwallet") {
+        App.log("Stripe Digital Wallet Selected");
+        if (options.onValidate) options.onValidate();
+        if (options.onSubmit) options.onSubmit();
+      }
+    });
+  });
+}
 new App(options);
