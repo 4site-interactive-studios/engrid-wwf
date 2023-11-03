@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, October 30, 2023 @ 12:35:51 ET
+ *  Date: Friday, November 3, 2023 @ 09:35:53 ET
  *  By: michael
  *  ENGrid styles: v0.15.12
  *  ENGrid scripts: v0.15.13
@@ -7751,7 +7751,10 @@ body[data-engrid-debug]:before{
 @font-face{
   font-display:swap;
   font-family:Architects Daughter;
-  src:url(https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/ArchitectsDaughter-Regular.ttf?v=1698682785000) format("ttf");
+  font-style:normal;
+  font-weight:400;
+  src:url(https://fonts.gstatic.com/s/architectsdaughter/v18/KtkxAKiDZI_td1Lkx62xHZHDtgO_Y-bvTYlg4-7jA-U.woff2) format("woff2");
+  unicode-range:u+00??, u+0131, u+0152-0153, u+02bb-02bc, u+02c6, u+02da, u+02dc, u+0304, u+0308, u+0329, u+2000-206f, u+2074, u+20ac, u+2122, u+2191, u+2193, u+2212, u+2215, u+feff, u+fffd;
 }
 [data-engrid-theme=wwf]{
   --engrid__body_margin:0 22px;
@@ -9167,10 +9170,10 @@ body[data-engrid-debug]:before{
   position:relative;
 }
 [data-engrid-theme=wwf] .amount-nudge .amount-nudge-inner{
-  background-color:#f7e6ed;
   border-radius:4px;
   color:#c60060;
   display:flex;
+  font-size:18px;
   font-style:italic;
   font-weight:700;
   justify-content:center;
@@ -9201,7 +9204,7 @@ body[data-engrid-debug]:before{
   margin:0 8px 1.75rem;
 }
 [data-engrid-theme=wwf] .amount-nudge.arrow-up.i1-arrow svg{
-  left:17%;
+  left:22%;
   top:-25px;
   transform:rotate(180deg) scaleX(-1);
 }
@@ -9211,43 +9214,43 @@ body[data-engrid-debug]:before{
   }
 }
 [data-engrid-theme=wwf] .amount-nudge.arrow-up.i2-arrow svg{
-  left:50%;
+  left:55%;
   top:-25px;
   transform:rotate(180deg) scaleX(-1);
 }
 @media screen and (max-width:768px){
   [data-engrid-theme=wwf] .amount-nudge.arrow-up.i2-arrow svg{
-    left:25%;
+    left:30%;
   }
 }
 [data-engrid-theme=wwf] .amount-nudge.arrow-up.i3-arrow svg{
-  left:85%;
+  left:90%;
   top:-25px;
   transform:rotate(180deg) scaleX(-1);
 }
 @media screen and (max-width:768px){
   [data-engrid-theme=wwf] .amount-nudge.arrow-up.i3-arrow svg{
-    left:75%;
+    left:80%;
   }
 }
 [data-engrid-theme=wwf] .amount-nudge.i1-arrow svg{
-  left:17%;
+  left:22%;
 }
 @media screen and (max-width:768px){
   [data-engrid-theme=wwf] .amount-nudge.i1-arrow svg{
-    left:25%;
+    left:30%;
   }
 }
 [data-engrid-theme=wwf] .amount-nudge.i2-arrow svg{
-  left:50%;
+  left:55%;
 }
 @media screen and (max-width:768px){
   [data-engrid-theme=wwf] .amount-nudge.i2-arrow svg{
-    left:75%;
+    left:80%;
   }
 }
 [data-engrid-theme=wwf] .amount-nudge.i3-arrow:not(.arrow-up) svg{
-  left:85%;
+  left:90%;
 }
 @media screen and (max-width:768px){
   [data-engrid-theme=wwf] .amount-nudge.i3-arrow:not(.arrow-up) svg{

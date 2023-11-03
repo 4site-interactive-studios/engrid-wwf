@@ -2149,12 +2149,11 @@
 
 .amount-nudge {
   position: relative;
-  font-family: 'Architects Daughter', cursive;
+  font-family: "Architects Daughter", cursive;
   margin-bottom: 5px;
 
   .amount-nudge-inner {
     text-align: center;
-    background-color: #f7e6ed;
     border-radius: 4px;
     color: #c60060;
     display: flex;
@@ -2163,6 +2162,7 @@
     justify-content: center;
     padding: 1rem 2rem;
     margin: 1.75rem 8px 0;
+    font-size: 18px;
 
     @media screen and (max-width: 600px) {
       font-size: 15px;
@@ -2192,7 +2192,7 @@
     &.i1-arrow svg {
       transform: rotate(180deg) scaleX(-1);
       top: -25px;
-      left: 17%;
+      left: 22%;
       @media screen and (max-width: 768px) {
         display: none;
       }
@@ -2201,38 +2201,38 @@
     &.i2-arrow svg {
       transform: rotate(180deg) scaleX(-1);
       top: -25px;
-      left: 50%;
+      left: 55%;
       @media screen and (max-width: 768px) {
-        left: 25%
+        left: 30%
       }
     }
 
     &.i3-arrow svg {
       transform: rotate(180deg) scaleX(-1);
       top: -25px;
-      left: 85%;
+      left: 90%;
       @media screen and (max-width: 768px) {
-        left: 75%
+        left: 80%
       }
     }
   }
 
   &.i1-arrow svg {
-    left: 17%;
+    left: 22%;
     @media screen and (max-width: 768px) {
-      left: 25%
+      left: 30%
     }
   }
 
   &.i2-arrow svg {
-    left: 50%;
+    left: 55%;
     @media screen and (max-width: 768px) {
-      left: 75%
+      left: 80%
     }
   }
 
   &.i3-arrow:not(.arrow-up) svg {
-    left: 85%;
+    left: 90%;
     @media screen and (max-width: 768px) {
       display: none;
     }
