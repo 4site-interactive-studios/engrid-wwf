@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, October 26, 2023 @ 17:35:14 ET
+ *  Date: Friday, November 3, 2023 @ 17:07:42 ET
  *  By: fernando
  *  ENGrid styles: v0.15.12
  *  ENGrid scripts: v0.15.13
@@ -22048,6 +22048,7 @@ const options = {
   SkipToMainContentLink: true,
   SrcDefer: true,
   ProgressBar: true,
+  RegionLongFormat: "supporter.NOT_TAGGED_97",
   FreshAddress: {
     // dateField: "supporter.NOT_TAGGED_XXX",
     // statusField: "supporter.NOT_TAGGED_YYY",
