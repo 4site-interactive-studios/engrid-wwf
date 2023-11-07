@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, November 7, 2023 @ 06:37:36 ET
- *  By: michael
+ *  Date: Friday, November 3, 2023 @ 17:07:42 ET
+ *  By: fernando
  *  ENGrid styles: v0.15.12
  *  ENGrid scripts: v0.15.13
  *
@@ -20766,11 +20766,6 @@ const customScript = function (App, DonationFrequency) {
 
 
   createOther3Field();
-  const amountNudge = document.querySelector(".amount-nudge:not(.arrow-up)");
-
-  if (amountNudge && recurrFrequencyField) {
-    recurrFrequencyField.insertAdjacentElement("beforeend", amountNudge);
-  }
 };
 ;// CONCATENATED MODULE: ./src/scripts/page-header-footer.js
 const pageHeaderFooter = function (App) {
@@ -22053,6 +22048,7 @@ const options = {
   SkipToMainContentLink: true,
   SrcDefer: true,
   ProgressBar: true,
+  RegionLongFormat: "supporter.NOT_TAGGED_97",
   FreshAddress: {
     // dateField: "supporter.NOT_TAGGED_XXX",
     // statusField: "supporter.NOT_TAGGED_YYY",
