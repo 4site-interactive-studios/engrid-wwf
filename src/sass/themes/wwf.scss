@@ -2145,3 +2145,94 @@
     color: #000000;
   }
 }
+
+
+.amount-nudge {
+  position: relative;
+  font-family: "Architects Daughter", cursive;
+  margin-bottom: 5px;
+
+  .amount-nudge-inner {
+    text-align: center;
+    border-radius: 4px;
+    color: #c60060;
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+    margin: 1.75rem 8px 0;
+
+    @media screen and (max-width: 600px) {
+      font-size: 15px;
+      line-height: 24px;
+    }
+  }
+
+  svg {
+    color: #c60060;
+    height: 40px;
+    position: absolute;
+    bottom: -25px;
+  }
+
+  &:not(.i1-arrow):not(.i2-arrow):not(.i3-arrow) svg {
+    display: none;
+  }
+
+  &.arrow-up {
+    padding: 0;
+    margin-top: 10px;
+
+    .amount-nudge-inner {
+      margin: 0 8px 1.75rem;
+    }
+
+    &.i1-arrow svg {
+      transform: rotate(180deg) scaleX(-1);
+      top: -25px;
+      left: 22%;
+      @media screen and (max-width: 768px) {
+        display: none;
+      }
+    }
+
+    &.i2-arrow svg {
+      transform: rotate(180deg) scaleX(-1);
+      top: -25px;
+      left: 55%;
+      @media screen and (max-width: 768px) {
+        left: 30%
+      }
+    }
+
+    &.i3-arrow svg {
+      transform: rotate(180deg) scaleX(-1);
+      top: -25px;
+      left: 90%;
+      @media screen and (max-width: 768px) {
+        left: 80%
+      }
+    }
+  }
+
+  &.i1-arrow svg {
+    left: 22%;
+    @media screen and (max-width: 768px) {
+      left: 30%
+    }
+  }
+
+  &.i2-arrow svg {
+    left: 55%;
+    @media screen and (max-width: 768px) {
+      left: 80%
+    }
+  }
+
+  &.i3-arrow:not(.arrow-up) svg {
+    left: 90%;
+    @media screen and (max-width: 768px) {
+      display: none;
+    }
+  }
+}
+

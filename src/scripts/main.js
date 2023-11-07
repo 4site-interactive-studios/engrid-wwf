@@ -853,4 +853,9 @@ export const customScript = function (App, DonationFrequency) {
   };
   // Call the function
   createOther3Field();
+
+  const amountNudge = document.querySelector(".amount-nudge:not(.arrow-up)");
+  if (amountNudge && recurrFrequencyField) {
+    recurrFrequencyField.insertAdjacentElement("beforeend", amountNudge);
+  }
 };
