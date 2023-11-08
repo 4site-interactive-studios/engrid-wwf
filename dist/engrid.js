@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, November 7, 2023 @ 06:40:36 ET
- *  By: michael
+ *  Date: Tuesday, November 7, 2023 @ 20:30:19 ET
+ *  By: fernando
  *  ENGrid styles: v0.15.12
  *  ENGrid scripts: v0.15.13
  *
@@ -22023,6 +22023,106 @@ class TweetToTarget {
   }
 
 }
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/defineProperty.js
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+;// CONCATENATED MODULE: ./src/scripts/annual-limit.ts
+
+// This script hides the premium gift options for the annual frequency until the amount is
+// greater than the minimum amount for the one-time frequency.
+
+class AnnualLimit {
+  constructor() {
+    _defineProperty(this, "logger", new EngridLogger("AnnualLimit", "yellow", "darkblue", "📅"));
+
+    _defineProperty(this, "_amount", DonationAmount.getInstance());
+
+    _defineProperty(this, "_frequency", DonationFrequency.getInstance());
+
+    _defineProperty(this, "singleLimit", 0);
+
+    if (!this.shouldRun()) return;
+    this.loadSingleLimit();
+
+    this._frequency.onFrequencyChange.subscribe(() => {
+      window.setTimeout(() => this.checkAnnualLimit(), 100);
+    });
+
+    this._amount.onAmountChange.subscribe(() => {
+      window.setTimeout(() => this.checkAnnualLimit(), 100);
+    });
+
+    this.checkAnnualLimit();
+  }
+
+  checkAnnualLimit() {
+    if (this.singleLimit === 0) return;
+    const frequency = this._frequency.frequency;
+    const amount = this._amount.amount;
+
+    if (this._frequency.frequency === "annual") {
+      if (amount < this.singleLimit) {
+        this.hidePremium();
+      } else {
+        this.showPremium();
+      }
+    } else {
+      this.showPremium();
+    }
+  }
+
+  showPremium() {
+    const premiumGiftContainer = document.querySelector(".en__component--premiumgiftblock");
+
+    if (premiumGiftContainer) {
+      premiumGiftContainer.style.display = "block";
+      this.logger.log("Premium Gift Container Show");
+    }
+  }
+
+  hidePremium() {
+    const premiumGiftContainer = document.querySelector(".en__component--premiumgiftblock");
+
+    if (premiumGiftContainer) {
+      premiumGiftContainer.style.display = "none";
+      this.logger.log("Premium Gift Container Hide");
+    }
+  }
+
+  shouldRun() {
+    const isPremiumGift = window.pageJson.pageType === "premiumgift";
+    const hasAnnualFrequency = document.querySelector("[name='transaction.recurrfreq'][value='annual' i]");
+    const hasPremiumGiftRules = engrid_ENGrid.checkNested(window.EngagingNetworks, "premiumGifts", "rules", "single", "ranges");
+    return isPremiumGift && hasAnnualFrequency && hasPremiumGiftRules;
+  }
+
+  loadSingleLimit() {
+    const premiumGiftRules = window.EngagingNetworks.premiumGifts.rules;
+    let singleLimit = 0;
+
+    for (let range in premiumGiftRules.single.ranges) {
+      if ("productIds" in premiumGiftRules.single.ranges[range] && premiumGiftRules.single.ranges[range].productIds.length === 0) {
+        singleLimit = +premiumGiftRules.single.ranges[range].limit;
+      }
+    }
+
+    this.singleLimit = singleLimit;
+    this.logger.log("Single Limit", this.singleLimit);
+  }
+
+}
 ;// CONCATENATED MODULE: ./src/index.ts
  // Uses ENGrid via NPM
 // import {
@@ -22032,6 +22132,7 @@ class TweetToTarget {
 //   DonationAmount,
 //   EnForm,
 // } from "../../engrid-scripts/packages/common"; // Uses ENGrid via Visual Studio Workspace
+
 
 
 
@@ -22069,6 +22170,7 @@ const options = {
     pages: ["ADVOCACY", "EMAILTOTARGET", "TWEETPAGE"]
   },
   onLoad: () => {
+    new AnnualLimit();
     window.DonationLightboxForm = DonationLightboxForm;
     new DonationLightboxForm(DonationAmount, DonationFrequency);
     customScript(App, DonationFrequency);
