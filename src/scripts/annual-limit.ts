@@ -72,7 +72,15 @@ export class AnnualLimit {
       "single",
       "ranges"
     );
-    return isPremiumGift && hasAnnualFrequency && hasPremiumGiftRules;
+    const hasMonthlyFrequency = document.querySelector(
+      "[name='transaction.recurrfreq'][value='monthly' i]"
+    ) as HTMLInputElement;
+    return (
+      isPremiumGift &&
+      hasAnnualFrequency &&
+      hasMonthlyFrequency &&
+      hasPremiumGiftRules
+    );
   }
   loadSingleLimit() {
     const premiumGiftRules = (window as any).EngagingNetworks.premiumGifts

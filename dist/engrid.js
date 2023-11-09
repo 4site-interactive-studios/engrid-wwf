@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, November 7, 2023 @ 20:30:19 ET
+ *  Date: Thursday, November 9, 2023 @ 15:55:16 ET
  *  By: fernando
  *  ENGrid styles: v0.15.12
  *  ENGrid scripts: v0.15.13
@@ -22105,7 +22105,8 @@ class AnnualLimit {
     const isPremiumGift = window.pageJson.pageType === "premiumgift";
     const hasAnnualFrequency = document.querySelector("[name='transaction.recurrfreq'][value='annual' i]");
     const hasPremiumGiftRules = engrid_ENGrid.checkNested(window.EngagingNetworks, "premiumGifts", "rules", "single", "ranges");
-    return isPremiumGift && hasAnnualFrequency && hasPremiumGiftRules;
+    const hasMonthlyFrequency = document.querySelector("[name='transaction.recurrfreq'][value='monthly' i]");
+    return isPremiumGift && hasAnnualFrequency && hasMonthlyFrequency && hasPremiumGiftRules;
   }
 
   loadSingleLimit() {
