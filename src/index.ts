@@ -18,6 +18,7 @@ import { customScript } from "./scripts/main";
 import { pageHeaderFooter } from "./scripts/page-header-footer";
 import DonationLightboxForm from "./scripts/donation-lightbox-form";
 import TweetToTarget from "./scripts/tweet-to-target";
+import { AnnualLimit } from "./scripts/annual-limit";
 
 const options: Options = {
   applePay: false,
@@ -63,6 +64,7 @@ const options: Options = {
     pages: ["ADVOCACY", "EMAILTOTARGET", "TWEETPAGE"],
   },
   onLoad: () => {
+    new AnnualLimit();
     (<any>window).DonationLightboxForm = DonationLightboxForm;
     new DonationLightboxForm(DonationAmount, DonationFrequency);
     customScript(App, DonationFrequency);
