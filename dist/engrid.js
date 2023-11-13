@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, November 7, 2023 @ 06:40:36 ET
+ *  Date: Monday, November 13, 2023 @ 09:30:04 ET
  *  By: michael
  *  ENGrid styles: v0.15.12
  *  ENGrid scripts: v0.15.13
@@ -20510,7 +20510,7 @@ const customScript = function (App, DonationFrequency) {
   } // Inserts a email subscription nudge after the element with the 'universal-opt-in' class
 
 
-  App.addHtml('<div style="display: none;" class="en__component en__component--copyblock grey-box email-subscription-nudge engrid__supporterquestions608540-N"><p></p></div>', ".universal-opt-in", "after");
+  App.addHtml('<div style="display: none;" class="en__component en__component--copyblock grey-box email-subscription-nudge engrid__supporterquestions600292-N"><p></p></div>', ".universal-opt-in", "after");
 
   function hideOptInDependentElements() {
     // If the SMS opt-in does not appear on the page hide the Mobile Phone Number field and its disclosure
@@ -22023,6 +22023,147 @@ class TweetToTarget {
   }
 
 }
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/defineProperty.js
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+;// CONCATENATED MODULE: ./src/scripts/mock-gift-history.js
+const mockGiftHistory = {
+  pagination: {
+    start: 0,
+    rows: 10,
+    total: 3
+  },
+  data: [{
+    pageSubtype: null,
+    recurringFrequency: null,
+    recurringDay: null,
+    pageTitle: "REFERENCE - Donation Page (Test Gateway)",
+    createdOn: 1699446096000,
+    pageName: "DEMO PAGE - Donation Page (Test Gateway) - Limited Header",
+    paymentType: "TEST: ach",
+    pageStatus: "live",
+    pageType: "nd",
+    currency: "USD",
+    id: 13853707,
+    expiry: null,
+    transactionError: null,
+    amount: "50.00",
+    transactionStatus: "success",
+    campaignId: 117098,
+    ccLastFour: null,
+    campaignPageId: 52063,
+    recurringStatus: null,
+    inMemoryHonoreeName: null,
+    transactionId: "ND117098T7347418576038572087__cus_Oy70s6urOxg3PV__py_1OAAmqGZo2KOB80RpTsOhItn",
+    parentTransactionId: null,
+    transactionType: "BANK_SINGLE",
+    taxDeductible: "N",
+    recurringPayment: "N",
+    gateway: "Stripe Gateway",
+    child: false
+  }, {
+    pageSubtype: null,
+    recurringFrequency: "MONTHLY",
+    recurringDay: "8",
+    pageTitle: "REFERENCE - Donation Page (Test Gateway)",
+    createdOn: 1699446032000,
+    pageName: "DEMO PAGE - Donation Page (Test Gateway) - Limited Header",
+    paymentType: "TEST: visa",
+    pageStatus: "live",
+    pageType: "nd",
+    currency: "USD",
+    id: 13853704,
+    expiry: "12/2027",
+    transactionError: null,
+    amount: "15.00",
+    transactionStatus: "success",
+    campaignId: 117098,
+    ccLastFour: "4242",
+    campaignPageId: 52063,
+    recurringStatus: "ACTIVE",
+    inMemoryHonoreeName: null,
+    transactionId: "pm_1OAAkDGZo2KOB80Ry9ao2LJQ__cus_Oy6yLHrYBPXxOF__pi_3OAAkFGZo2KOB80R1qUdtpox",
+    parentTransactionId: null,
+    transactionType: "CREDIT_RECURRING",
+    taxDeductible: "N",
+    recurringPayment: "Y",
+    gateway: "Stripe Gateway",
+    child: false
+  }, {
+    pageSubtype: null,
+    recurringFrequency: null,
+    recurringDay: null,
+    pageTitle: "REFERENCE - Donation Page (Test Gateway)",
+    createdOn: 1699446001000,
+    pageName: "DEMO PAGE - Donation Page (Test Gateway) - Limited Header",
+    paymentType: "TEST: visa",
+    pageStatus: "live",
+    pageType: "nd",
+    currency: "USD",
+    id: 13853700,
+    expiry: "12/2027",
+    transactionError: null,
+    amount: "50.00",
+    transactionStatus: "success",
+    campaignId: 117098,
+    ccLastFour: "4242",
+    campaignPageId: 52063,
+    recurringStatus: null,
+    inMemoryHonoreeName: null,
+    transactionId: "pm_1OAAjhGZo2KOB80RUirE75dy__cus_Oy6xpuEpd5GeDo__pi_3OAAjkGZo2KOB80R0ox2EYx8",
+    parentTransactionId: null,
+    transactionType: "CREDIT_SINGLE",
+    taxDeductible: "N",
+    recurringPayment: "N",
+    gateway: "Stripe Gateway",
+    child: false
+  }],
+  scores: [],
+  summary: {
+    USD: "115.00"
+  }
+};
+;// CONCATENATED MODULE: ./src/scripts/gift-history.ts
+
+
+
+class GiftHistory {
+  constructor() {
+    _defineProperty(this, "remoteGiftHistory", void 0);
+
+    if (this.shouldRun()) {
+      this.run();
+    }
+  }
+
+  shouldRun() {
+    return engrid_ENGrid.getPageType() === "SUPPORTERHUB" && engrid_ENGrid.getPageNumber() === 2;
+  }
+
+  run() {
+    this.remoteGiftHistory = this.fetchRemoteGiftHistory("michaelt@4sitestudios.com", 2); //get the EN gift history from the page
+    //merge the two gift histories
+    //render the gift history, with pagination
+  } //TODO: implement this once we have the API
+
+
+  fetchRemoteGiftHistory(email, supporterId) {
+    return mockGiftHistory;
+  }
+
+}
 ;// CONCATENATED MODULE: ./src/index.ts
  // Uses ENGrid via NPM
 // import {
@@ -22032,6 +22173,7 @@ class TweetToTarget {
 //   DonationAmount,
 //   EnForm,
 // } from "../../engrid-scripts/packages/common"; // Uses ENGrid via Visual Studio Workspace
+
 
 
 
@@ -22083,6 +22225,8 @@ const options = {
         section.classList.add("en__contact--open");
       });
     }
+
+    new GiftHistory();
   },
   onResize: () => console.log("Starter Theme Window Resized"),
   onSubmit: () => {

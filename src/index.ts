@@ -18,6 +18,7 @@ import { customScript } from "./scripts/main";
 import { pageHeaderFooter } from "./scripts/page-header-footer";
 import DonationLightboxForm from "./scripts/donation-lightbox-form";
 import TweetToTarget from "./scripts/tweet-to-target";
+import GiftHistory from "./scripts/gift-history";
 
 const options: Options = {
   applePay: false,
@@ -78,6 +79,7 @@ const options: Options = {
         section.classList.add("en__contact--open");
       });
     }
+    new GiftHistory();
   },
   onResize: () => console.log("Starter Theme Window Resized"),
 
