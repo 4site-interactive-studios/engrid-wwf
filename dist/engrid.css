@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, November 10, 2023 @ 21:34:54 ET
+ *  Date: Monday, November 13, 2023 @ 17:03:19 ET
  *  By: fernando
  *  ENGrid styles: v0.16.0
  *  ENGrid scripts: v0.16.0
@@ -9261,6 +9261,68 @@ body[data-engrid-debug]:before{
   [data-engrid-theme=wwf] .amount-nudge.i3-arrow:not(.arrow-up) svg{
     display:none;
   }
+}
+[data-engrid-theme=wwf] button[data-balloon]{
+  cursor:pointer;
+  overflow:visible;
+  position:relative;
+}
+[data-engrid-theme=wwf] button[data-balloon]:after{
+  background:#101010f2;
+  border-radius:2px;
+  border-radius:3px;
+  color:#fff;
+  content:attr(data-balloon);
+  display:none;
+  font-size:12px;
+  font-style:normal;
+  font-weight:400;
+  left:50%;
+  line-height:1.3;
+  padding:.5em 1em;
+  pointer-events:none;
+  position:absolute;
+  text-indent:0;
+  text-shadow:none;
+  transform:translateX(-50%);
+  white-space:nowrap;
+  white-space:pre;
+  z-index:10;
+}
+@media screen and (max-width:600px){
+  [data-engrid-theme=wwf] button[data-balloon]:after{
+    white-space:normal;
+    width:90%;
+  }
+}
+[data-engrid-theme=wwf] button[data-balloon]:before{
+  border:5px solid #0000;
+  border-top-color:#101010f2;
+  content:"";
+  display:none;
+  height:0;
+  left:50%;
+  pointer-events:none;
+  position:absolute;
+  transform:translateX(-50%);
+  width:0;
+  z-index:10;
+}
+[data-engrid-theme=wwf][data-engrid-payment-type=ach] button[data-balloon]{
+  margin-top:70px;
+}
+@media screen and (max-width:600px){
+  [data-engrid-theme=wwf][data-engrid-payment-type=ach] button[data-balloon]{
+    margin-top:80px;
+  }
+}
+[data-engrid-theme=wwf][data-engrid-payment-type=ach] button[data-balloon]:after{
+  bottom:calc(100% + 10px);
+  display:block;
+}
+[data-engrid-theme=wwf][data-engrid-payment-type=ach] button[data-balloon]:before{
+  bottom:100%;
+  display:block;
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=multistep]{
   --fields_spacing-inline:5px;

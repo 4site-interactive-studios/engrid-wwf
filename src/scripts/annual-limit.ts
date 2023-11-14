@@ -38,8 +38,6 @@ export class AnnualLimit {
       } else {
         this.showPremium();
       }
-    } else {
-      this.showPremium();
     }
   }
   showPremium() {
