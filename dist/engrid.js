@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, November 13, 2023 @ 17:03:19 ET
+ *  Date: Tuesday, November 14, 2023 @ 15:32:53 ET
  *  By: fernando
  *  ENGrid styles: v0.16.0
- *  ENGrid scripts: v0.16.0
+ *  ENGrid scripts: v0.16.1
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -12709,7 +12709,9 @@ class engrid_ENGrid {
         const currencyField = engrid_ENGrid.getField("transaction.paycurrency");
         if (currencyField) {
             // Check if the selected currency field option have a data-currency-symbol attribute
-            const selectedOption = currencyField.options[currencyField.selectedIndex];
+            const selectedOption = currencyField.tagName === "SELECT"
+                ? currencyField.options[currencyField.selectedIndex]
+                : currencyField;
             if (selectedOption.dataset.currencySymbol) {
                 return selectedOption.dataset.currencySymbol;
             }
@@ -21334,7 +21336,7 @@ class ENValidators {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.16.0";
+const AppVersion = "0.16.1";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires

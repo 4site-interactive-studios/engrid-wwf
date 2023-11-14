@@ -2246,11 +2246,11 @@ button[data-balloon] {
     font-weight: normal;
     font-style: normal;
     text-shadow: none;
-    font-size: 12px;
-    line-height: 1.3;
-    background: rgba(16, 16, 16, 0.95);
+    font-size: 14px;
+    line-height: 1.4;
+    background: #f6f5f3;
     border-radius: 2px;
-    color: white;
+    color: #1f2937;
     border-radius: 3px;
     content: attr(data-balloon);
     padding: 0.5em 1em;
@@ -2270,7 +2270,7 @@ button[data-balloon] {
     width: 0;
     height: 0;
     border: 5px solid transparent;
-    border-top-color: rgba(16, 16, 16, 0.95);
+    border-top-color: #f6f5f3;
     pointer-events: none;
     content: "";
     position: absolute;
@@ -2282,9 +2282,9 @@ button[data-balloon] {
 }
 &[data-engrid-payment-type="ach"] {
   button[data-balloon] {
-    margin-top: 70px;
+    margin-top: 80px;
     @media screen and (max-width: 600px) {
-      margin-top: 80px;
+      margin-top: 100px;
     }
     &::after {
       bottom: calc(100% + 10px);

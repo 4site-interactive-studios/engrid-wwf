@@ -19,10 +19,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, November 13, 2023 @ 17:03:19 ET
+ *  Date: Tuesday, November 14, 2023 @ 15:32:53 ET
  *  By: fernando
  *  ENGrid styles: v0.16.0
- *  ENGrid scripts: v0.16.0
+ *  ENGrid scripts: v0.16.1
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -9268,17 +9268,17 @@ body[data-engrid-debug]:before{
   position:relative;
 }
 [data-engrid-theme=wwf] button[data-balloon]:after{
-  background:#101010f2;
+  background:#f6f5f3;
   border-radius:2px;
   border-radius:3px;
-  color:#fff;
+  color:#1f2937;
   content:attr(data-balloon);
   display:none;
-  font-size:12px;
+  font-size:14px;
   font-style:normal;
   font-weight:400;
   left:50%;
-  line-height:1.3;
+  line-height:1.4;
   padding:.5em 1em;
   pointer-events:none;
   position:absolute;
@@ -9297,7 +9297,7 @@ body[data-engrid-debug]:before{
 }
 [data-engrid-theme=wwf] button[data-balloon]:before{
   border:5px solid #0000;
-  border-top-color:#101010f2;
+  border-top-color:#f6f5f3;
   content:"";
   display:none;
   height:0;
@@ -9309,11 +9309,11 @@ body[data-engrid-debug]:before{
   z-index:10;
 }
 [data-engrid-theme=wwf][data-engrid-payment-type=ach] button[data-balloon]{
-  margin-top:70px;
+  margin-top:80px;
 }
 @media screen and (max-width:600px){
   [data-engrid-theme=wwf][data-engrid-payment-type=ach] button[data-balloon]{
-    margin-top:80px;
+    margin-top:100px;
   }
 }
 [data-engrid-theme=wwf][data-engrid-payment-type=ach] button[data-balloon]:after{
