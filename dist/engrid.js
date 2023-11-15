@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, November 10, 2023 @ 21:34:54 ET
- *  By: fernando
+ *  Date: Monday, November 13, 2023 @ 12:45:00 ET
+ *  By: michael
  *  ENGrid styles: v0.16.0
  *  ENGrid scripts: v0.16.0
  *
@@ -21416,6 +21416,8 @@ const AppVersion = "0.16.0";
 
 ;// CONCATENATED MODULE: ./src/scripts/main.js
 const customScript = function (App, DonationFrequency) {
+  var _document$querySelect;
+
   console.log("ENGrid client scripts are executing");
   const isSpanish = document.querySelector("label[for='en__field_supporter_emailAddress']") && document.querySelector("label[for='en__field_supporter_emailAddress']").textContent === "Correo electrónico";
   let inlineMonthlyUpsell = document.querySelectorAll(".move-after-transaction-recurrfreq")[0];
@@ -21878,7 +21880,18 @@ const customScript = function (App, DonationFrequency) {
   } // Inserts a email subscription nudge after the element with the 'universal-opt-in' class
 
 
-  App.addHtml('<div style="display: none;" class="en__component en__component--copyblock grey-box email-subscription-nudge engrid__supporterquestions608540-N"><p></p></div>', ".universal-opt-in", "after");
+  const universalOptInFieldClasses = (_document$querySelect = document.querySelector(".universal-opt-in > .en__field")) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.classList;
+
+  if (universalOptInFieldClasses) {
+    const optInClass = [...universalOptInFieldClasses].find(className => {
+      return className.startsWith("en__field--") && !isNaN(Number(className.replace("en__field--", "")));
+    });
+
+    if (optInClass) {
+      const showHideClassName = `engrid__supporterquestions${optInClass.replace("en__field--", "")}-N`;
+      App.addHtml(`<div style="display: none;" class="en__component en__component--copyblock grey-box email-subscription-nudge ${showHideClassName}"><p></p></div>`, ".universal-opt-in", "after");
+    }
+  }
 
   function hideOptInDependentElements() {
     // If the SMS opt-in does not appear on the page hide the Mobile Phone Number field and its disclosure
