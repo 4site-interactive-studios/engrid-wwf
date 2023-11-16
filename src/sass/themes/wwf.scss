@@ -2282,9 +2282,9 @@ button[data-balloon] {
 }
 &[data-engrid-payment-type="ach"] {
   button[data-balloon] {
-    margin-top: 80px;
+    margin-top: 90px;
     @media screen and (max-width: 600px) {
-      margin-top: 100px;
+      margin-top: 120px;
     }
     &::after {
       bottom: calc(100% + 10px);
