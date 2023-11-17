@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, November 13, 2023 @ 12:45:00 ET
- *  By: michael
+ *  Date: Friday, November 17, 2023 @ 07:44:04 ET
+ *  By: fernando
  *  ENGrid styles: v0.16.0
- *  ENGrid scripts: v0.16.0
+ *  ENGrid scripts: v0.16.1
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -12709,7 +12709,9 @@ class engrid_ENGrid {
         const currencyField = engrid_ENGrid.getField("transaction.paycurrency");
         if (currencyField) {
             // Check if the selected currency field option have a data-currency-symbol attribute
-            const selectedOption = currencyField.options[currencyField.selectedIndex];
+            const selectedOption = currencyField.tagName === "SELECT"
+                ? currencyField.options[currencyField.selectedIndex]
+                : currencyField;
             if (selectedOption.dataset.currencySymbol) {
                 return selectedOption.dataset.currencySymbol;
             }
@@ -21334,7 +21336,7 @@ class ENValidators {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.16.0";
+const AppVersion = "0.16.1";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
@@ -23459,8 +23461,6 @@ class AnnualLimit {
       } else {
         this.showPremium();
       }
-    } else {
-      this.showPremium();
     }
   }
 
@@ -23566,6 +23566,16 @@ const options = {
         section.classList.remove("en__contact--closed");
         section.classList.add("en__contact--open");
       });
+    } // Add Plaid Tooltip to Submit Button
+
+
+    const submitButton = document.querySelector(".en__submit button");
+
+    if (submitButton) {
+      submitButton.setAttribute("data-balloon", `When you click the button below, a new window will appear.
+        Follow the steps to securely donate from your bank account to WWF
+        (through Engaging Networks and Plaid).`);
+      submitButton.setAttribute("data-balloon-pos", "up");
     }
   },
   onResize: () => console.log("Starter Theme Window Resized"),
@@ -23636,7 +23646,17 @@ if (paymentButtons.length > 0) {
   });
 }
 
-new App(options);
+new App(options); // Adding a new listener to the onSubmit event after the App has been instantiated so that
+// it runs last and can modify the value of the RegionLongFormat field for the District of Columbia
+
+const enForm = EnForm.getInstance();
+enForm.onSubmit.subscribe(() => {
+  const expandedRegionField = App.getField(App.getOption("RegionLongFormat"));
+
+  if (expandedRegionField && expandedRegionField.value === "District of Columbia") {
+    expandedRegionField.value = `the District of Columbia`;
+  }
+});
 })();
 
 /******/ })()
