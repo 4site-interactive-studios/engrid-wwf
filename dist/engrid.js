@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, November 16, 2023 @ 14:33:37 ET
- *  By: fernando
+ *  Date: Monday, November 13, 2023 @ 12:45:00 ET
+ *  By: michael
  *  ENGrid styles: v0.16.0
- *  ENGrid scripts: v0.16.1
+ *  ENGrid scripts: v0.16.0
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -12709,9 +12709,7 @@ class engrid_ENGrid {
         const currencyField = engrid_ENGrid.getField("transaction.paycurrency");
         if (currencyField) {
             // Check if the selected currency field option have a data-currency-symbol attribute
-            const selectedOption = currencyField.tagName === "SELECT"
-                ? currencyField.options[currencyField.selectedIndex]
-                : currencyField;
+            const selectedOption = currencyField.options[currencyField.selectedIndex];
             if (selectedOption.dataset.currencySymbol) {
                 return selectedOption.dataset.currencySymbol;
             }
@@ -21336,7 +21334,7 @@ class ENValidators {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.16.1";
+const AppVersion = "0.16.0";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
@@ -21418,6 +21416,8 @@ const AppVersion = "0.16.1";
 
 ;// CONCATENATED MODULE: ./src/scripts/main.js
 const customScript = function (App, DonationFrequency) {
+  var _document$querySelect;
+
   console.log("ENGrid client scripts are executing");
   const isSpanish = document.querySelector("label[for='en__field_supporter_emailAddress']") && document.querySelector("label[for='en__field_supporter_emailAddress']").textContent === "Correo electrónico";
   let inlineMonthlyUpsell = document.querySelectorAll(".move-after-transaction-recurrfreq")[0];
@@ -21880,7 +21880,18 @@ const customScript = function (App, DonationFrequency) {
   } // Inserts a email subscription nudge after the element with the 'universal-opt-in' class
 
 
-  App.addHtml('<div style="display: none;" class="en__component en__component--copyblock grey-box email-subscription-nudge engrid__supporterquestions608540-N"><p></p></div>', ".universal-opt-in", "after");
+  const universalOptInFieldClasses = (_document$querySelect = document.querySelector(".universal-opt-in > .en__field")) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.classList;
+
+  if (universalOptInFieldClasses) {
+    const optInClass = [...universalOptInFieldClasses].find(className => {
+      return className.startsWith("en__field--") && !isNaN(Number(className.replace("en__field--", "")));
+    });
+
+    if (optInClass) {
+      const showHideClassName = `engrid__supporterquestions${optInClass.replace("en__field--", "")}-N`;
+      App.addHtml(`<div style="display: none;" class="en__component en__component--copyblock grey-box email-subscription-nudge ${showHideClassName}"><p></p></div>`, ".universal-opt-in", "after");
+    }
+  }
 
   function hideOptInDependentElements() {
     // If the SMS opt-in does not appear on the page hide the Mobile Phone Number field and its disclosure
@@ -23448,6 +23459,8 @@ class AnnualLimit {
       } else {
         this.showPremium();
       }
+    } else {
+      this.showPremium();
     }
   }
 
@@ -23553,16 +23566,6 @@ const options = {
         section.classList.remove("en__contact--closed");
         section.classList.add("en__contact--open");
       });
-    } // Add Plaid Tooltip to Submit Button
-
-
-    const submitButton = document.querySelector(".en__submit button");
-
-    if (submitButton) {
-      submitButton.setAttribute("data-balloon", `When you click the button below, a new window will appear.
-        Follow the steps to securely donate from your bank account to WWF
-        (through Engaging Networks and Plaid).`);
-      submitButton.setAttribute("data-balloon-pos", "up");
     }
   },
   onResize: () => console.log("Starter Theme Window Resized"),
@@ -23633,17 +23636,7 @@ if (paymentButtons.length > 0) {
   });
 }
 
-new App(options); // Adding a new listener to the onSubmit event after the App has been instantiated so that
-// it runs last and can modify the value of the RegionLongFormat field for the District of Columbia
-
-const enForm = EnForm.getInstance();
-enForm.onSubmit.subscribe(() => {
-  const expandedRegionField = App.getField(App.getOption("RegionLongFormat"));
-
-  if (expandedRegionField && expandedRegionField.value === "District of Columbia") {
-    expandedRegionField.value = `the District of Columbia`;
-  }
-});
+new App(options);
 })();
 
 /******/ })()
