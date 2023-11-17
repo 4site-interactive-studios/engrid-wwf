@@ -80,6 +80,19 @@ const options: Options = {
         section.classList.add("en__contact--open");
       });
     }
+    // Add Plaid Tooltip to Submit Button
+    const submitButton = document.querySelector(
+      ".en__submit button"
+    ) as HTMLButtonElement;
+    if (submitButton) {
+      submitButton.setAttribute(
+        "data-balloon",
+        `When you click the button below, a new window will appear.
+        Follow the steps to securely donate from your bank account to WWF
+        (through Engaging Networks and Plaid).`
+      );
+      submitButton.setAttribute("data-balloon-pos", "up");
+    }
   },
   onResize: () => console.log("Starter Theme Window Resized"),
 
@@ -159,4 +172,20 @@ if (paymentButtons.length > 0) {
     });
   });
 }
+
 new App(options);
+
+// Adding a new listener to the onSubmit event after the App has been instantiated so that
+// it runs last and can modify the value of the RegionLongFormat field for the District of Columbia
+const enForm = EnForm.getInstance();
+enForm.onSubmit.subscribe(() => {
+  const expandedRegionField = App.getField(
+    App.getOption("RegionLongFormat") as string
+  ) as HTMLInputElement;
+  if (
+    expandedRegionField &&
+    expandedRegionField.value === "District of Columbia"
+  ) {
+    expandedRegionField.value = `the District of Columbia`;
+  }
+});
