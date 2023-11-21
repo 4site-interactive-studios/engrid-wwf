@@ -70,6 +70,7 @@ export const pageHeaderFooter = function (App) {
           const _this = _self.headerNav;
 
           _this.$header = document.getElementById("header");
+          if (!_this.$header) return;
           _this.$dropdown = _this.$header.querySelector("div.dropdown");
           _this.$control = _this.$header.querySelectorAll(".control-expand");
           _this.$accordionControls =
@@ -83,6 +84,8 @@ export const pageHeaderFooter = function (App) {
 
         bindEvents: function () {
           const _this = _self.headerNav;
+
+          if (!_this.$header) return;
 
           _this.$control.forEach((control) => {
             control.addEventListener("click", _this.handleDropdownClick);

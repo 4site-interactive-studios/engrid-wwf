@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, November 17, 2023 @ 07:44:04 ET
+ *  Date: Monday, November 20, 2023 @ 21:47:28 ET
  *  By: fernando
  *  ENGrid styles: v0.16.0
  *  ENGrid scripts: v0.16.1
@@ -22227,6 +22227,7 @@ const pageHeaderFooter = function (App) {
         setVars: function () {
           const _this = _self.headerNav;
           _this.$header = document.getElementById("header");
+          if (!_this.$header) return;
           _this.$dropdown = _this.$header.querySelector("div.dropdown");
           _this.$control = _this.$header.querySelectorAll(".control-expand");
           _this.$accordionControls = _this.$header.querySelectorAll(".control-accordion");
@@ -22236,6 +22237,7 @@ const pageHeaderFooter = function (App) {
         },
         bindEvents: function () {
           const _this = _self.headerNav;
+          if (!_this.$header) return;
 
           _this.$control.forEach(control => {
             control.addEventListener("click", _this.handleDropdownClick);
@@ -22875,6 +22877,12 @@ class DonationLightboxForm {
       const ccnumberSection = this.getSectionId(ccnumberBlock);
       console.log("DonationLightboxForm: validateForm", ccnumberBlock, ccnumberSection);
 
+      if (paymentType && paymentType.value === "") {
+        // Set payment type to visa if it's empty
+        paymentType.value = "visa";
+        this.showHideCCSection("card");
+      }
+
       if (sectionId === false || sectionId == ccnumberSection) {
         if (!paymentType || !paymentType.value) {
           this.scrollToElement(paymentType);
@@ -22904,7 +22912,7 @@ class DonationLightboxForm {
             }
           }
 
-          if (/^\d+$/.test(ccnumber.value) === false) {
+          if (/^[0-9\s]+$/.test(ccnumber.value) === false) {
             this.scrollToElement(ccnumber);
             this.sendMessage("error", "Only numbers are allowed on credit card");
 
