@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, November 13, 2023 @ 09:30:04 ET
+ *  Date: Wednesday, November 22, 2023 @ 12:28:54 ET
  *  By: michael
  *  ENGrid styles: v0.15.12
  *  ENGrid scripts: v0.15.13
@@ -20510,7 +20510,7 @@ const customScript = function (App, DonationFrequency) {
   } // Inserts a email subscription nudge after the element with the 'universal-opt-in' class
 
 
-  App.addHtml('<div style="display: none;" class="en__component en__component--copyblock grey-box email-subscription-nudge engrid__supporterquestions600292-N"><p></p></div>', ".universal-opt-in", "after");
+  App.addHtml('<div style="display: none;" class="en__component en__component--copyblock grey-box email-subscription-nudge engrid__supporterquestions608540-N"><p></p></div>', ".universal-opt-in", "after");
 
   function hideOptInDependentElements() {
     // If the SMS opt-in does not appear on the page hide the Mobile Phone Number field and its disclosure
@@ -22050,7 +22050,7 @@ const mockGiftHistory = {
     recurringFrequency: null,
     recurringDay: null,
     pageTitle: "REFERENCE - Donation Page (Test Gateway)",
-    createdOn: 1699446096000,
+    createdOn: 1699398000000,
     pageName: "DEMO PAGE - Donation Page (Test Gateway) - Limited Header",
     paymentType: "TEST: ach",
     pageStatus: "live",
@@ -22059,7 +22059,7 @@ const mockGiftHistory = {
     id: 13853707,
     expiry: null,
     transactionError: null,
-    amount: "50.00",
+    amount: "80.00",
     transactionStatus: "success",
     campaignId: 117098,
     ccLastFour: null,
@@ -22106,7 +22106,7 @@ const mockGiftHistory = {
     recurringFrequency: null,
     recurringDay: null,
     pageTitle: "REFERENCE - Donation Page (Test Gateway)",
-    createdOn: 1699446001000,
+    createdOn: 1699398000000,
     pageName: "DEMO PAGE - Donation Page (Test Gateway) - Limited Header",
     paymentType: "TEST: visa",
     pageStatus: "live",
@@ -22132,7 +22132,7 @@ const mockGiftHistory = {
   }],
   scores: [],
   summary: {
-    USD: "115.00"
+    USD: "145.00"
   }
 };
 ;// CONCATENATED MODULE: ./src/scripts/gift-history.ts
@@ -22143,6 +22143,8 @@ class GiftHistory {
   constructor() {
     _defineProperty(this, "remoteGiftHistory", void 0);
 
+    _defineProperty(this, "logger", new EngridLogger("Gift History"));
+
     if (this.shouldRun()) {
       this.run();
     }
@@ -22152,15 +22154,97 @@ class GiftHistory {
     return engrid_ENGrid.getPageType() === "SUPPORTERHUB" && engrid_ENGrid.getPageNumber() === 2;
   }
 
-  run() {
-    this.remoteGiftHistory = this.fetchRemoteGiftHistory("michaelt@4sitestudios.com", 2); //get the EN gift history from the page
-    //merge the two gift histories
-    //render the gift history, with pagination
-  } //TODO: implement this once we have the API
+  async run() {
+    this.remoteGiftHistory = await this.fetchRemoteGiftHistory();
+
+    if (this.remoteGiftHistory) {
+      const targetElement = document.querySelector(".en__component--page");
+
+      if (targetElement) {
+        //This mutation observer is used to detect when new transactions are added to the DOM
+        //When this happens, we merge
+        const observer = new MutationObserver(mutationsList => {
+          for (const mutation of mutationsList) {
+            if (mutation.type === "childList") {
+              const newTransactionsAdded = [...mutation.addedNodes].some(node => this.isElementWithClass(node, "en__hubTxnGiving__transactions__list"));
+
+              if (newTransactionsAdded) {
+                this.logger.log("New EN transactions added to DOM");
+                this.updateTotalAllTime();
+                this.renderMergedGiftHistory();
+              }
+            }
+          }
+        });
+        observer.observe(targetElement, {
+          childList: true,
+          subtree: true
+        });
+      }
+
+      document.head.insertAdjacentHTML("beforeend", `<style>.en__hubTxnGiving__transactions__list:not([data-engrid-transactions-loaded]) { display: none }</style>`);
+    }
+  } //TODO: implement this once we have the remote API
 
 
-  fetchRemoteGiftHistory(email, supporterId) {
+  async fetchRemoteGiftHistory() {
     return mockGiftHistory;
+  }
+
+  isElementWithClass(node, className) {
+    return node.nodeType === Node.ELEMENT_NODE && node.classList.contains(className);
+  }
+
+  renderMergedGiftHistory() {
+    const transactionsList = document.querySelector(".en__hubTxnGiving__transactions__list");
+    transactionsList === null || transactionsList === void 0 ? void 0 : transactionsList.removeAttribute("data-engrid-transactions-loaded");
+    const enGiftHistory = this.getENGiftHistoryOnPage();
+    const giftHistoryToRender = this.mergeRemoteGiftHistoryEntries(enGiftHistory); //TODO: render the gift history to the DOM
+    //since there are possibly event listeners on the items, we should intelligently merge in our new entries instead of replacing anything.
+
+    console.log(giftHistoryToRender);
+    transactionsList === null || transactionsList === void 0 ? void 0 : transactionsList.setAttribute("data-engrid-transactions-loaded", "");
+  }
+
+  getENGiftHistoryOnPage() {
+    const giftHeaders = document.querySelectorAll(".en__hubTxnGiving__transaction .en__hubTxnGiving__transaction__header");
+    return [...giftHeaders].map(giftHeader => {
+      return giftHeader.textContent ? this.getGiftDataFromGiftHeaderString(giftHeader.textContent.trim()) : null;
+    }).filter(gift => gift !== null);
+  }
+
+  getGiftDataFromGiftHeaderString(headerString) {
+    const matchResult = headerString.match(/^(\$?\d+\.\d{2}) on (\d{1,2}\/\d{1,2}\/\d{4}) to (.+)$/);
+
+    if (matchResult) {
+      return {
+        date: Date.parse(matchResult[2]),
+        rawDate: matchResult[2]
+      };
+    } else {
+      this.logger.log(`Gift string did not match expected format: ${headerString}}`);
+      return null;
+    }
+  }
+
+  mergeRemoteGiftHistoryEntries(enGiftHistory) {
+    const mostRecentENGift = enGiftHistory[0].date;
+    const oldestENGift = enGiftHistory[enGiftHistory.length - 1].date;
+    const remoteGiftHistoryToMerge = this.remoteGiftHistory.data.filter(remoteGift => remoteGift.createdOn >= oldestENGift && remoteGift.createdOn <= mostRecentENGift);
+    return [...enGiftHistory, ...remoteGiftHistoryToMerge].sort((a, b) => b.date - a.date);
+  }
+
+  updateTotalAllTime() {
+    var _el$textContent;
+
+    const el = document.querySelector(".en__hubTxnGiving__transactions__total > span");
+    const enTotal = el === null || el === void 0 ? void 0 : (_el$textContent = el.textContent) === null || _el$textContent === void 0 ? void 0 : _el$textContent.trim().replace("$", "").replace(",", "");
+    const remoteTotal = this.remoteGiftHistory.summary.USD.replace("$", "").replace(",", "");
+
+    if (enTotal && remoteTotal) {
+      const total = parseFloat(enTotal) + parseFloat(remoteTotal);
+      el.textContent = `$${total.toFixed(2)}`;
+    }
   }
 
 }
