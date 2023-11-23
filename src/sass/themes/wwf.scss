@@ -2236,3 +2236,10 @@
   }
 }
 
+//Remote gift history styles
+.en__hubTxnGiving__transactions__list[data-engrid-transactions-loaded] {
+  .en__hubTxnGiving__transaction--remote {
+    border-color: red;
+  }
+}
+

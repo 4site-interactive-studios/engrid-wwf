@@ -25,7 +25,7 @@ export default class GiftHistory {
 
       if (targetElement) {
         //This mutation observer is used to detect when new transactions are added to the DOM
-        //When this happens, we merge
+        //When this happens, we merge in the remote gift history
         const observer = new MutationObserver((mutationsList) => {
           for (const mutation of mutationsList) {
             if (mutation.type === "childList") {
@@ -55,11 +55,6 @@ export default class GiftHistory {
     }
   }
 
-  //TODO: implement this once we have the remote API
-  private async fetchRemoteGiftHistory() {
-    return mockGiftHistory;
-  }
-
   private isElementWithClass(node: Node, className: string) {
     return (
       node.nodeType === Node.ELEMENT_NODE &&
@@ -78,10 +73,7 @@ export default class GiftHistory {
     const giftHistoryToRender =
       this.mergeRemoteGiftHistoryEntries(enGiftHistory);
 
-    //TODO: render the gift history to the DOM
-    //since there are possibly event listeners on the items, we should intelligently merge in our new entries instead of replacing anything.
-
-    console.log(giftHistoryToRender);
+    this.addGiftHistoryToDOM(giftHistoryToRender);
 
     transactionsList?.setAttribute("data-engrid-transactions-loaded", "");
   }
@@ -106,8 +98,9 @@ export default class GiftHistory {
     );
     if (matchResult) {
       return {
-        date: Date.parse(matchResult[2]),
+        createdOn: Date.parse(matchResult[2]),
         rawDate: matchResult[2],
+        source: "EngagingNetworks",
       };
     } else {
       this.logger.log(
@@ -118,17 +111,35 @@ export default class GiftHistory {
   }
 
   private mergeRemoteGiftHistoryEntries(enGiftHistory: any[]) {
-    const mostRecentENGift = enGiftHistory[0].date;
-    const oldestENGift = enGiftHistory[enGiftHistory.length - 1].date;
+    const onFirstPage = document
+      .querySelector(".en__pagination__prev")
+      ?.hasAttribute("disabled");
+    const onLastPage = document
+      .querySelector(".en__pagination__next")
+      ?.hasAttribute("disabled");
+
+    const mostRecentENGift = enGiftHistory[0].createdOn;
+    const oldestENGift = enGiftHistory[enGiftHistory.length - 1].createdOn;
 
     const remoteGiftHistoryToMerge = this.remoteGiftHistory.data.filter(
-      (remoteGift: any) =>
-        remoteGift.createdOn >= oldestENGift &&
-        remoteGift.createdOn <= mostRecentENGift
+      (remoteGift: any) => {
+        //If we're on the first page, merge in gifts that are newer than the oldest gift on the page
+        //If we're on the last page, merge in gifts that are older than the most recent gift on the page
+        //Otherwise, we want to merge in all gifts between the oldest and most recent gifts on the page
+        if (onFirstPage) {
+          return remoteGift.createdOn >= oldestENGift;
+        } else if (onLastPage) {
+          return remoteGift.createdOn <= mostRecentENGift;
+        }
+        return (
+          remoteGift.createdOn >= oldestENGift &&
+          remoteGift.createdOn <= mostRecentENGift
+        );
+      }
     );
 
     return [...enGiftHistory, ...remoteGiftHistoryToMerge].sort(
-      (a, b) => b.date - a.date
+      (a, b) => b.createdOn - a.createdOn
     );
   }
 
@@ -147,5 +158,72 @@ export default class GiftHistory {
       const total = parseFloat(enTotal) + parseFloat(remoteTotal);
       el!.textContent = `$${total.toFixed(2)}`;
     }
+  }
+
+  private addGiftHistoryToDOM(giftHistoryToRender: any[]) {
+    const transactionsList = document.querySelector(
+      ".en__hubTxnGiving__transactions__list > ol"
+    );
+
+    if (transactionsList) {
+      giftHistoryToRender.forEach((gift, index) => {
+        if (!gift.source || gift.source !== "EngagingNetworks") {
+          transactionsList.insertBefore(
+            this.createGiftElement(gift),
+            transactionsList.children[index]
+          );
+        }
+      });
+    }
+  }
+
+  private createGiftElement(gift: any) {
+    //TODO: adjust this based on final API response structure
+    const giftEl = document.createElement("li");
+    giftEl.classList.add("en__hubTxnGiving__transaction");
+    giftEl.classList.add("en__hubTxnGiving__transaction--remote");
+
+    if (gift.recurringPayment === "Y") {
+      giftEl.classList.add("en__hubTxnGiving__transaction--recurring");
+    } else {
+      giftEl.classList.add("en__hubTxnGiving__transaction--single");
+    }
+
+    let paymentMethod = "";
+    if (gift.transactionType.startsWith("CREDIT")) {
+      paymentMethod = "card";
+      giftEl.classList.add("en__hubTxnGiving__transaction--card");
+    } else if (gift.transactionType.startsWith("BANK")) {
+      paymentMethod = "bank";
+      giftEl.classList.add("en__hubTxnGiving__transaction--bank");
+    }
+
+    const giftDate = new Date(gift.createdOn);
+    const giftString =
+      giftDate.getMonth() +
+      1 +
+      "/" +
+      giftDate.getDate() +
+      "/" +
+      giftDate.getFullYear();
+
+    const paymentString =
+      paymentMethod === "bank"
+        ? "Bank payment"
+        : `Made with card ending ${gift.ccLastFour}, expiring ${gift.expiry}`;
+
+    giftEl.innerHTML = `
+      <div class="en__hubTxnGiving__transaction__header">
+        <p>$${gift.amount} on ${giftString} to ${gift.pageTitle}</p>
+      </div>
+      <div class="en__hubTxnGiving__transaction__payment"><p>${paymentString}</p></div>
+    `;
+
+    return giftEl;
+  }
+
+  //TODO: implement this once we have the remote API
+  private async fetchRemoteGiftHistory() {
+    return mockGiftHistory;
   }
 }
