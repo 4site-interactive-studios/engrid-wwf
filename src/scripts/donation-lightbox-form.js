@@ -457,6 +457,11 @@ export default class DonationLightboxForm {
         ccnumberBlock,
         ccnumberSection
       );
+      if (paymentType && paymentType.value === "") {
+        // Set payment type to visa if it's empty
+        paymentType.value = "visa";
+        this.showHideCCSection("card");
+      }
       if (sectionId === false || sectionId == ccnumberSection) {
         if (!paymentType || !paymentType.value) {
           this.scrollToElement(paymentType);
@@ -486,7 +491,7 @@ export default class DonationLightboxForm {
               ccnumberBlock.classList.remove("has-error");
             }
           }
-          if (/^\d+$/.test(ccnumber.value) === false) {
+          if (/^[0-9\s]+$/.test(ccnumber.value) === false) {
             this.scrollToElement(ccnumber);
             this.sendMessage(
               "error",

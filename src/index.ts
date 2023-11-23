@@ -18,6 +18,7 @@ import { customScript } from "./scripts/main";
 import { pageHeaderFooter } from "./scripts/page-header-footer";
 import DonationLightboxForm from "./scripts/donation-lightbox-form";
 import TweetToTarget from "./scripts/tweet-to-target";
+import { AnnualLimit } from "./scripts/annual-limit";
 import GiftHistory from "./scripts/gift-history";
 
 const options: Options = {
@@ -64,6 +65,7 @@ const options: Options = {
     pages: ["ADVOCACY", "EMAILTOTARGET", "TWEETPAGE"],
   },
   onLoad: () => {
+    new AnnualLimit();
     (<any>window).DonationLightboxForm = DonationLightboxForm;
     new DonationLightboxForm(DonationAmount, DonationFrequency);
     customScript(App, DonationFrequency);
@@ -78,6 +80,19 @@ const options: Options = {
         section.classList.remove("en__contact--closed");
         section.classList.add("en__contact--open");
       });
+    }
+    // Add Plaid Tooltip to Submit Button
+    const submitButton = document.querySelector(
+      ".en__submit button"
+    ) as HTMLButtonElement;
+    if (submitButton) {
+      submitButton.setAttribute(
+        "data-balloon",
+        `When you click the button below, a new window will appear.
+        Follow the steps to securely donate from your bank account to WWF
+        (through Engaging Networks and Plaid).`
+      );
+      submitButton.setAttribute("data-balloon-pos", "up");
     }
     new GiftHistory();
   },
@@ -159,4 +174,20 @@ if (paymentButtons.length > 0) {
     });
   });
 }
+
 new App(options);
+
+// Adding a new listener to the onSubmit event after the App has been instantiated so that
+// it runs last and can modify the value of the RegionLongFormat field for the District of Columbia
+const enForm = EnForm.getInstance();
+enForm.onSubmit.subscribe(() => {
+  const expandedRegionField = App.getField(
+    App.getOption("RegionLongFormat") as string
+  ) as HTMLInputElement;
+  if (
+    expandedRegionField &&
+    expandedRegionField.value === "District of Columbia"
+  ) {
+    expandedRegionField.value = `the District of Columbia`;
+  }
+});

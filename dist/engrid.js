@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, November 23, 2023 @ 08:09:11 ET
+ *  Date: Thursday, November 23, 2023 @ 08:13:30 ET
  *  By: michael
  *  ENGrid styles: v0.15.12
  *  ENGrid scripts: v0.15.13
@@ -20048,6 +20048,8 @@ const AppVersion = "0.15.13";
 
 ;// CONCATENATED MODULE: ./src/scripts/main.js
 const customScript = function (App, DonationFrequency) {
+  var _document$querySelect;
+
   console.log("ENGrid client scripts are executing");
   const isSpanish = document.querySelector("label[for='en__field_supporter_emailAddress']") && document.querySelector("label[for='en__field_supporter_emailAddress']").textContent === "Correo electrónico";
   let inlineMonthlyUpsell = document.querySelectorAll(".move-after-transaction-recurrfreq")[0];
@@ -20510,7 +20512,18 @@ const customScript = function (App, DonationFrequency) {
   } // Inserts a email subscription nudge after the element with the 'universal-opt-in' class
 
 
-  App.addHtml('<div style="display: none;" class="en__component en__component--copyblock grey-box email-subscription-nudge engrid__supporterquestions608540-N"><p></p></div>', ".universal-opt-in", "after");
+  const universalOptInFieldClasses = (_document$querySelect = document.querySelector(".universal-opt-in > .en__field")) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.classList;
+
+  if (universalOptInFieldClasses) {
+    const optInClass = [...universalOptInFieldClasses].find(className => {
+      return className.startsWith("en__field--") && !isNaN(Number(className.replace("en__field--", "")));
+    });
+
+    if (optInClass) {
+      const showHideClassName = `engrid__supporterquestions${optInClass.replace("en__field--", "")}-N`;
+      App.addHtml(`<div style="display: none;" class="en__component en__component--copyblock grey-box email-subscription-nudge ${showHideClassName}"><p></p></div>`, ".universal-opt-in", "after");
+    }
+  }
 
   function hideOptInDependentElements() {
     // If the SMS opt-in does not appear on the page hide the Mobile Phone Number field and its disclosure
@@ -20844,6 +20857,7 @@ const pageHeaderFooter = function (App) {
         setVars: function () {
           const _this = _self.headerNav;
           _this.$header = document.getElementById("header");
+          if (!_this.$header) return;
           _this.$dropdown = _this.$header.querySelector("div.dropdown");
           _this.$control = _this.$header.querySelectorAll(".control-expand");
           _this.$accordionControls = _this.$header.querySelectorAll(".control-accordion");
@@ -20853,6 +20867,7 @@ const pageHeaderFooter = function (App) {
         },
         bindEvents: function () {
           const _this = _self.headerNav;
+          if (!_this.$header) return;
 
           _this.$control.forEach(control => {
             control.addEventListener("click", _this.handleDropdownClick);
@@ -21492,6 +21507,12 @@ class DonationLightboxForm {
       const ccnumberSection = this.getSectionId(ccnumberBlock);
       console.log("DonationLightboxForm: validateForm", ccnumberBlock, ccnumberSection);
 
+      if (paymentType && paymentType.value === "") {
+        // Set payment type to visa if it's empty
+        paymentType.value = "visa";
+        this.showHideCCSection("card");
+      }
+
       if (sectionId === false || sectionId == ccnumberSection) {
         if (!paymentType || !paymentType.value) {
           this.scrollToElement(paymentType);
@@ -21521,7 +21542,7 @@ class DonationLightboxForm {
             }
           }
 
-          if (/^\d+$/.test(ccnumber.value) === false) {
+          if (/^[0-9\s]+$/.test(ccnumber.value) === false) {
             this.scrollToElement(ccnumber);
             this.sendMessage("error", "Only numbers are allowed on credit card");
 
@@ -22038,6 +22059,90 @@ function _defineProperty(obj, key, value) {
 
   return obj;
 }
+;// CONCATENATED MODULE: ./src/scripts/annual-limit.ts
+
+// This script hides the premium gift options for the annual frequency until the amount is
+// greater than the minimum amount for the one-time frequency.
+
+class AnnualLimit {
+  constructor() {
+    _defineProperty(this, "logger", new EngridLogger("AnnualLimit", "yellow", "darkblue", "📅"));
+
+    _defineProperty(this, "_amount", DonationAmount.getInstance());
+
+    _defineProperty(this, "_frequency", DonationFrequency.getInstance());
+
+    _defineProperty(this, "singleLimit", 0);
+
+    if (!this.shouldRun()) return;
+    this.loadSingleLimit();
+
+    this._frequency.onFrequencyChange.subscribe(() => {
+      window.setTimeout(() => this.checkAnnualLimit(), 100);
+    });
+
+    this._amount.onAmountChange.subscribe(() => {
+      window.setTimeout(() => this.checkAnnualLimit(), 100);
+    });
+
+    this.checkAnnualLimit();
+  }
+
+  checkAnnualLimit() {
+    if (this.singleLimit === 0) return;
+    const frequency = this._frequency.frequency;
+    const amount = this._amount.amount;
+
+    if (this._frequency.frequency === "annual") {
+      if (amount < this.singleLimit) {
+        this.hidePremium();
+      } else {
+        this.showPremium();
+      }
+    }
+  }
+
+  showPremium() {
+    const premiumGiftContainer = document.querySelector(".en__component--premiumgiftblock");
+
+    if (premiumGiftContainer) {
+      premiumGiftContainer.style.display = "block";
+      this.logger.log("Premium Gift Container Show");
+    }
+  }
+
+  hidePremium() {
+    const premiumGiftContainer = document.querySelector(".en__component--premiumgiftblock");
+
+    if (premiumGiftContainer) {
+      premiumGiftContainer.style.display = "none";
+      this.logger.log("Premium Gift Container Hide");
+    }
+  }
+
+  shouldRun() {
+    const isPremiumGift = window.pageJson.pageType === "premiumgift";
+    const hasAnnualFrequency = document.querySelector("[name='transaction.recurrfreq'][value='annual' i]");
+    const hasPremiumGiftRules = engrid_ENGrid.checkNested(window.EngagingNetworks, "premiumGifts", "rules", "single", "ranges");
+    const hasMonthlyFrequency = document.querySelector("[name='transaction.recurrfreq'][value='monthly' i]");
+    return isPremiumGift && hasAnnualFrequency && hasMonthlyFrequency && hasPremiumGiftRules;
+  }
+
+  loadSingleLimit() {
+    const premiumGiftRules = window.EngagingNetworks.premiumGifts.rules;
+    let singleLimit = 0;
+
+    for (let range in premiumGiftRules.single.ranges) {
+      if ("productIds" in premiumGiftRules.single.ranges[range] && premiumGiftRules.single.ranges[range].productIds.length === 0) {
+        singleLimit = +premiumGiftRules.single.ranges[range].limit;
+      }
+    }
+
+    this.singleLimit = singleLimit;
+    this.logger.log("Single Limit", this.singleLimit);
+  }
+
+}
 ;// CONCATENATED MODULE: ./src/scripts/mock-gift-history.js
 const mockGiftHistory = {
   pagination: {
@@ -22352,6 +22457,7 @@ class GiftHistory {
 
 
 
+
 const options = {
   applePay: false,
   CapitalizeFields: true,
@@ -22383,6 +22489,7 @@ const options = {
     pages: ["ADVOCACY", "EMAILTOTARGET", "TWEETPAGE"]
   },
   onLoad: () => {
+    new AnnualLimit();
     window.DonationLightboxForm = DonationLightboxForm;
     new DonationLightboxForm(DonationAmount, DonationFrequency);
     customScript(App, DonationFrequency);
@@ -22396,6 +22503,16 @@ const options = {
         section.classList.remove("en__contact--closed");
         section.classList.add("en__contact--open");
       });
+    } // Add Plaid Tooltip to Submit Button
+
+
+    const submitButton = document.querySelector(".en__submit button");
+
+    if (submitButton) {
+      submitButton.setAttribute("data-balloon", `When you click the button below, a new window will appear.
+        Follow the steps to securely donate from your bank account to WWF
+        (through Engaging Networks and Plaid).`);
+      submitButton.setAttribute("data-balloon-pos", "up");
     }
 
     new GiftHistory();
@@ -22468,7 +22585,17 @@ if (paymentButtons.length > 0) {
   });
 }
 
-new App(options);
+new App(options); // Adding a new listener to the onSubmit event after the App has been instantiated so that
+// it runs last and can modify the value of the RegionLongFormat field for the District of Columbia
+
+const enForm = EnForm.getInstance();
+enForm.onSubmit.subscribe(() => {
+  const expandedRegionField = App.getField(App.getOption("RegionLongFormat"));
+
+  if (expandedRegionField && expandedRegionField.value === "District of Columbia") {
+    expandedRegionField.value = `the District of Columbia`;
+  }
+});
 })();
 
 /******/ })()
