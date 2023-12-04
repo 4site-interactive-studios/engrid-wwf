@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, November 20, 2023 @ 21:47:28 ET
- *  By: fernando
+ *  Date: Monday, December 4, 2023 @ 10:32:00 ET
+ *  By: michael
  *  ENGrid styles: v0.16.0
- *  ENGrid scripts: v0.16.1
+ *  ENGrid scripts: v0.16.2
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -20320,6 +20320,25 @@ class PremiumGift {
                 }
             });
         });
+        // Check when visibility of the Premium Gift Block changes.
+        // EN will add "display: none" to this element when the supporter does not qualify for a premium
+        const premiumGiftsBlock = document.querySelector(".en__component--premiumgiftblock");
+        if (premiumGiftsBlock) {
+            const observer = new MutationObserver((mutationsList) => {
+                for (const mutation of mutationsList) {
+                    if (mutation.type === "attributes" &&
+                        mutation.attributeName === "style") {
+                        if (premiumGiftsBlock.style.display === "none") {
+                            this.logger.log("Premium Gift Section hidden - removing premium gift body data attributes and premium title.");
+                            engrid_ENGrid.setBodyData("premium-gift-maximize", false);
+                            engrid_ENGrid.setBodyData("premium-gift-name", false);
+                            this.setPremiumTitle("");
+                        }
+                    }
+                }
+            });
+            observer.observe(premiumGiftsBlock, { attributes: true });
+        }
     }
     checkPremiumGift() {
         const premiumGift = document.querySelector('[name="en__pg"]:checked');
@@ -21336,7 +21355,7 @@ class ENValidators {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.16.1";
+const AppVersion = "0.16.2";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
