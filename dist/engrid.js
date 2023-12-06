@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, November 23, 2023 @ 08:16:01 ET
+ *  Date: Wednesday, December 6, 2023 @ 12:44:49 ET
  *  By: michael
  *  ENGrid styles: v0.16.0
- *  ENGrid scripts: v0.16.1
+ *  ENGrid scripts: v0.16.2
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -20320,6 +20320,25 @@ class PremiumGift {
                 }
             });
         });
+        // Check when visibility of the Premium Gift Block changes.
+        // EN will add "display: none" to this element when the supporter does not qualify for a premium
+        const premiumGiftsBlock = document.querySelector(".en__component--premiumgiftblock");
+        if (premiumGiftsBlock) {
+            const observer = new MutationObserver((mutationsList) => {
+                for (const mutation of mutationsList) {
+                    if (mutation.type === "attributes" &&
+                        mutation.attributeName === "style") {
+                        if (premiumGiftsBlock.style.display === "none") {
+                            this.logger.log("Premium Gift Section hidden - removing premium gift body data attributes and premium title.");
+                            engrid_ENGrid.setBodyData("premium-gift-maximize", false);
+                            engrid_ENGrid.setBodyData("premium-gift-name", false);
+                            this.setPremiumTitle("");
+                        }
+                    }
+                }
+            });
+            observer.observe(premiumGiftsBlock, { attributes: true });
+        }
     }
     checkPremiumGift() {
         const premiumGift = document.querySelector('[name="en__pg"]:checked');
@@ -21336,7 +21355,7 @@ class ENValidators {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.16.1";
+const AppVersion = "0.16.2";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
@@ -23632,10 +23651,68 @@ const mockGiftHistory = {
     recurringPayment: "N",
     gateway: "Stripe Gateway",
     child: false
+  }, //2022 gift
+  {
+    pageSubtype: null,
+    recurringFrequency: null,
+    recurringDay: null,
+    pageTitle: "REFERENCE - Donation Page (Test Gateway)",
+    createdOn: 1670169706000,
+    pageName: "DEMO PAGE - Donation Page (Test Gateway) - Limited Header",
+    paymentType: "TEST: visa",
+    pageStatus: "live",
+    pageType: "nd",
+    currency: "USD",
+    id: 13853700,
+    expiry: "12/2027",
+    transactionError: null,
+    amount: "50.00",
+    transactionStatus: "success",
+    campaignId: 117098,
+    ccLastFour: "4242",
+    campaignPageId: 52063,
+    recurringStatus: null,
+    inMemoryHonoreeName: null,
+    transactionId: "pm_1OAAjhGZo2KOB80RUirE75dy__cus_Oy6xpuEpd5GeDo__pi_3OAAjkGZo2KOB80R0ox2EYx8",
+    parentTransactionId: null,
+    transactionType: "CREDIT_SINGLE",
+    taxDeductible: "N",
+    recurringPayment: "N",
+    gateway: "Stripe Gateway",
+    child: false
+  }, //2024 gift
+  {
+    pageSubtype: null,
+    recurringFrequency: null,
+    recurringDay: null,
+    pageTitle: "REFERENCE - Donation Page (Test Gateway)",
+    createdOn: 1733328106000,
+    pageName: "DEMO PAGE - Donation Page (Test Gateway) - Limited Header",
+    paymentType: "TEST: visa",
+    pageStatus: "live",
+    pageType: "nd",
+    currency: "USD",
+    id: 13853700,
+    expiry: "12/2027",
+    transactionError: null,
+    amount: "50.00",
+    transactionStatus: "success",
+    campaignId: 117098,
+    ccLastFour: "4242",
+    campaignPageId: 52063,
+    recurringStatus: null,
+    inMemoryHonoreeName: null,
+    transactionId: "pm_1OAAjhGZo2KOB80RUirE75dy__cus_Oy6xpuEpd5GeDo__pi_3OAAjkGZo2KOB80R0ox2EYx8",
+    parentTransactionId: null,
+    transactionType: "CREDIT_SINGLE",
+    taxDeductible: "N",
+    recurringPayment: "N",
+    gateway: "Stripe Gateway",
+    child: false
   }],
   scores: [],
   summary: {
-    USD: "175.00"
+    USD: "275.00"
   }
 };
 ;// CONCATENATED MODULE: ./src/scripts/gift-history.ts
@@ -23673,7 +23750,7 @@ class GiftHistory {
 
               if (newTransactionsAdded) {
                 this.logger.log("New EN transactions added to DOM");
-                this.updateTotalAllTime();
+                this.updateTotalAmountDonated();
                 this.renderMergedGiftHistory();
               }
             }
@@ -23705,17 +23782,17 @@ class GiftHistory {
   getENGiftHistoryOnPage() {
     const giftHeaders = document.querySelectorAll(".en__hubTxnGiving__transaction .en__hubTxnGiving__transaction__header");
     return [...giftHeaders].map(giftHeader => {
-      return giftHeader.textContent ? this.getGiftDataFromGiftHeaderString(giftHeader.textContent.trim()) : null;
+      return giftHeader.textContent ? this.getGiftDateFromGiftHeaderString(giftHeader.textContent.trim()) : null;
     }).filter(gift => gift !== null);
   }
 
-  getGiftDataFromGiftHeaderString(headerString) {
-    const matchResult = headerString.match(/^(\$?\d+\.\d{2}) on (\d{1,2}\/\d{1,2}\/\d{4}) to (.+)$/);
+  getGiftDateFromGiftHeaderString(headerString) {
+    const date = headerString.match(/^.*?(\d{1,2}\/\d{1,2}\/\d{4}).*?$/);
 
-    if (matchResult) {
+    if (date) {
       return {
-        createdOn: Date.parse(matchResult[2]),
-        rawDate: matchResult[2],
+        createdOn: Date.parse(date[1]),
+        rawDate: date[1],
         source: "EngagingNetworks"
       };
     } else {
@@ -23725,33 +23802,68 @@ class GiftHistory {
   }
 
   mergeRemoteGiftHistoryEntries(enGiftHistory) {
-    var _document$querySelect, _document$querySelect2;
+    var _document$querySelect, _document$querySelect2, _document$getElementB;
 
     const onFirstPage = (_document$querySelect = document.querySelector(".en__pagination__prev")) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.hasAttribute("disabled");
     const onLastPage = (_document$querySelect2 = document.querySelector(".en__pagination__next")) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.hasAttribute("disabled");
-    const mostRecentENGift = enGiftHistory[0].createdOn;
-    const oldestENGift = enGiftHistory[enGiftHistory.length - 1].createdOn;
-    const remoteGiftHistoryToMerge = this.remoteGiftHistory.data.filter(remoteGift => {
-      //If we're on the first page, merge in gifts that are newer than the oldest gift on the page
-      //If we're on the last page, merge in gifts that are older than the most recent gift on the page
-      //Otherwise, we want to merge in all gifts between the oldest and most recent gifts on the page
-      if (onFirstPage) {
-        return remoteGift.createdOn >= oldestENGift;
-      } else if (onLastPage) {
-        return remoteGift.createdOn <= mostRecentENGift;
-      }
+    const transactionsDate = (_document$getElementB = document.getElementById("en__hubTxnGiving__transactions__date__select")) === null || _document$getElementB === void 0 ? void 0 : _document$getElementB.value;
+    let remoteGiftHistoryToMerge = [];
 
-      return remoteGift.createdOn >= oldestENGift && remoteGift.createdOn <= mostRecentENGift;
-    });
+    if (enGiftHistory.length > 0) {
+      //if the page has gifts, we want to merge in remote gifts based on the date range of the gifts on the page
+      const mostRecentENGift = enGiftHistory[0].createdOn;
+      const oldestENGift = enGiftHistory[enGiftHistory.length - 1].createdOn;
+      remoteGiftHistoryToMerge = this.remoteGiftHistory.data.filter(remoteGift => {
+        //If we're on the first page, merge in gifts that are newer than the oldest gift on the page
+        //If we're on the last page, merge in gifts that are older than the most recent gift on the page
+        //Otherwise, we want to merge in all gifts between the oldest and most recent gifts on the page
+        //Also, make sure the year is the same as the year filter (or "all time");
+        const giftYearMatchesOrAllTime = transactionsDate === "0" || transactionsDate === new Date(remoteGift.createdOn).getFullYear().toString();
+
+        if (onFirstPage) {
+          return remoteGift.createdOn >= oldestENGift && giftYearMatchesOrAllTime;
+        } else if (onLastPage) {
+          return remoteGift.createdOn <= mostRecentENGift && giftYearMatchesOrAllTime;
+        }
+
+        return remoteGift.createdOn >= oldestENGift && remoteGift.createdOn <= mostRecentENGift && giftYearMatchesOrAllTime;
+      });
+    } else {
+      // If we don't have any gifts on the page, we want to merge in remote gifts based on the date filter
+      remoteGiftHistoryToMerge = this.remoteGiftHistory.data.filter(remoteGift => {
+        // If the date filter is set to "All time", merge in all gifts
+        if (transactionsDate === "0") {
+          return true;
+        } // Otherwise, merge in gifts that match the year of the date filter
+
+
+        return new Date(remoteGift.createdOn).getFullYear() === parseInt(transactionsDate);
+      });
+    }
+
     return [...enGiftHistory, ...remoteGiftHistoryToMerge].sort((a, b) => b.createdOn - a.createdOn);
   }
 
-  updateTotalAllTime() {
-    var _el$textContent;
+  updateTotalAmountDonated() {
+    var _el$textContent, _document$getElementB2;
 
     const el = document.querySelector(".en__hubTxnGiving__transactions__total > span");
     const enTotal = el === null || el === void 0 ? void 0 : (_el$textContent = el.textContent) === null || _el$textContent === void 0 ? void 0 : _el$textContent.trim().replace("$", "").replace(",", "");
-    const remoteTotal = this.remoteGiftHistory.summary.USD.replace("$", "").replace(",", "");
+    const transactionsDate = (_document$getElementB2 = document.getElementById("en__hubTxnGiving__transactions__date__select")) === null || _document$getElementB2 === void 0 ? void 0 : _document$getElementB2.value;
+    let remoteTotal = ""; //All time donations
+
+    if (transactionsDate === "0") {
+      remoteTotal = this.remoteGiftHistory.summary.USD.replace("$", "").replace(",", "");
+    } else {
+      // The value of the year select is a year like "2023".
+      // Filter the remote gift history to only include gifts from that year and then sum the USD values
+      remoteTotal = this.remoteGiftHistory.data.filter(gift => {
+        const giftDate = new Date(gift.createdOn);
+        return giftDate.getFullYear() === parseInt(transactionsDate);
+      }).reduce((total, gift) => {
+        return total + parseFloat(gift.amount);
+      }, 0);
+    }
 
     if (enTotal && remoteTotal) {
       const total = parseFloat(enTotal) + parseFloat(remoteTotal);
@@ -23768,6 +23880,26 @@ class GiftHistory {
           transactionsList.insertBefore(this.createGiftElement(gift), transactionsList.children[index]);
         }
       });
+    } else {
+      var _document$querySelect3;
+
+      // If this "ol" doesn't exist, it means there are no EN transactions on the page
+      // So we make a list element and add the remote gifts to it
+      const transactionsList = (_document$querySelect3 = document.querySelector(".en__hubTxnGiving__transactions__list")) === null || _document$querySelect3 === void 0 ? void 0 : _document$querySelect3.appendChild(document.createElement("ol"));
+
+      if (transactionsList) {
+        giftHistoryToRender.forEach(gift => {
+          if (!gift.source || gift.source !== "EngagingNetworks") {
+            transactionsList.appendChild(this.createGiftElement(gift));
+          }
+        });
+      }
+    }
+
+    if (giftHistoryToRender.length > 0) {
+      var _document$querySelect4;
+
+      (_document$querySelect4 = document.querySelector(".en__hubTxnGiving__transactions__empty")) === null || _document$querySelect4 === void 0 ? void 0 : _document$querySelect4.remove();
     }
   }
 

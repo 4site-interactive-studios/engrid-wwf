@@ -38,7 +38,7 @@ export default class GiftHistory {
               );
               if (newTransactionsAdded) {
                 this.logger.log("New EN transactions added to DOM");
-                this.updateTotalAllTime();
+                this.updateTotalAmountDonated();
                 this.renderMergedGiftHistory();
               }
             }
@@ -86,20 +86,18 @@ export default class GiftHistory {
     return [...giftHeaders]
       .map((giftHeader) => {
         return giftHeader.textContent
-          ? this.getGiftDataFromGiftHeaderString(giftHeader.textContent.trim())
+          ? this.getGiftDateFromGiftHeaderString(giftHeader.textContent.trim())
           : null;
       })
       .filter((gift) => gift !== null);
   }
 
-  private getGiftDataFromGiftHeaderString(headerString: string) {
-    const matchResult = headerString.match(
-      /^(\$?\d+\.\d{2}) on (\d{1,2}\/\d{1,2}\/\d{4}) to (.+)$/
-    );
-    if (matchResult) {
+  private getGiftDateFromGiftHeaderString(headerString: string) {
+    const date = headerString.match(/^.*?(\d{1,2}\/\d{1,2}\/\d{4}).*?$/);
+    if (date) {
       return {
-        createdOn: Date.parse(matchResult[2]),
-        rawDate: matchResult[2],
+        createdOn: Date.parse(date[1]),
+        rawDate: date[1],
         source: "EngagingNetworks",
       };
     } else {
@@ -117,42 +115,101 @@ export default class GiftHistory {
     const onLastPage = document
       .querySelector(".en__pagination__next")
       ?.hasAttribute("disabled");
+    const transactionsDate = (
+      document.getElementById(
+        "en__hubTxnGiving__transactions__date__select"
+      ) as HTMLSelectElement
+    )?.value;
 
-    const mostRecentENGift = enGiftHistory[0].createdOn;
-    const oldestENGift = enGiftHistory[enGiftHistory.length - 1].createdOn;
+    let remoteGiftHistoryToMerge = [];
 
-    const remoteGiftHistoryToMerge = this.remoteGiftHistory.data.filter(
-      (remoteGift: any) => {
-        //If we're on the first page, merge in gifts that are newer than the oldest gift on the page
-        //If we're on the last page, merge in gifts that are older than the most recent gift on the page
-        //Otherwise, we want to merge in all gifts between the oldest and most recent gifts on the page
-        if (onFirstPage) {
-          return remoteGift.createdOn >= oldestENGift;
-        } else if (onLastPage) {
-          return remoteGift.createdOn <= mostRecentENGift;
+    if (enGiftHistory.length > 0) {
+      //if the page has gifts, we want to merge in remote gifts based on the date range of the gifts on the page
+      const mostRecentENGift = enGiftHistory[0].createdOn;
+      const oldestENGift = enGiftHistory[enGiftHistory.length - 1].createdOn;
+
+      remoteGiftHistoryToMerge = this.remoteGiftHistory.data.filter(
+        (remoteGift: any) => {
+          //If we're on the first page, merge in gifts that are newer than the oldest gift on the page
+          //If we're on the last page, merge in gifts that are older than the most recent gift on the page
+          //Otherwise, we want to merge in all gifts between the oldest and most recent gifts on the page
+          //Also, make sure the year is the same as the year filter (or "all time");
+          const giftYearMatchesOrAllTime =
+            transactionsDate === "0" ||
+            transactionsDate ===
+              new Date(remoteGift.createdOn).getFullYear().toString();
+
+          if (onFirstPage) {
+            return (
+              remoteGift.createdOn >= oldestENGift && giftYearMatchesOrAllTime
+            );
+          } else if (onLastPage) {
+            return (
+              remoteGift.createdOn <= mostRecentENGift &&
+              giftYearMatchesOrAllTime
+            );
+          }
+          return (
+            remoteGift.createdOn >= oldestENGift &&
+            remoteGift.createdOn <= mostRecentENGift &&
+            giftYearMatchesOrAllTime
+          );
         }
-        return (
-          remoteGift.createdOn >= oldestENGift &&
-          remoteGift.createdOn <= mostRecentENGift
-        );
-      }
-    );
+      );
+    } else {
+      // If we don't have any gifts on the page, we want to merge in remote gifts based on the date filter
+      remoteGiftHistoryToMerge = this.remoteGiftHistory.data.filter(
+        (remoteGift: any) => {
+          // If the date filter is set to "All time", merge in all gifts
+          if (transactionsDate === "0") {
+            return true;
+          }
+          // Otherwise, merge in gifts that match the year of the date filter
+          return (
+            new Date(remoteGift.createdOn).getFullYear() ===
+            parseInt(transactionsDate)
+          );
+        }
+      );
+    }
 
     return [...enGiftHistory, ...remoteGiftHistoryToMerge].sort(
       (a, b) => b.createdOn - a.createdOn
     );
   }
 
-  private updateTotalAllTime() {
+  private updateTotalAmountDonated() {
     const el = document.querySelector(
       ".en__hubTxnGiving__transactions__total > span"
     );
-
     const enTotal = el?.textContent?.trim().replace("$", "").replace(",", "");
-    const remoteTotal = this.remoteGiftHistory.summary.USD.replace(
-      "$",
-      ""
-    ).replace(",", "");
+
+    const transactionsDate = (
+      document.getElementById(
+        "en__hubTxnGiving__transactions__date__select"
+      ) as HTMLSelectElement
+    )?.value;
+
+    let remoteTotal = "";
+
+    //All time donations
+    if (transactionsDate === "0") {
+      remoteTotal = this.remoteGiftHistory.summary.USD.replace("$", "").replace(
+        ",",
+        ""
+      );
+    } else {
+      // The value of the year select is a year like "2023".
+      // Filter the remote gift history to only include gifts from that year and then sum the USD values
+      remoteTotal = this.remoteGiftHistory.data
+        .filter((gift: any) => {
+          const giftDate = new Date(gift.createdOn);
+          return giftDate.getFullYear() === parseInt(transactionsDate);
+        })
+        .reduce((total: number, gift: any) => {
+          return total + parseFloat(gift.amount);
+        }, 0);
+    }
 
     if (enTotal && remoteTotal) {
       const total = parseFloat(enTotal) + parseFloat(remoteTotal);
@@ -174,6 +231,26 @@ export default class GiftHistory {
           );
         }
       });
+    } else {
+      // If this "ol" doesn't exist, it means there are no EN transactions on the page
+      // So we make a list element and add the remote gifts to it
+      const transactionsList = document
+        .querySelector(".en__hubTxnGiving__transactions__list")
+        ?.appendChild(document.createElement("ol"));
+
+      if (transactionsList) {
+        giftHistoryToRender.forEach((gift) => {
+          if (!gift.source || gift.source !== "EngagingNetworks") {
+            transactionsList.appendChild(this.createGiftElement(gift));
+          }
+        });
+      }
+    }
+
+    if (giftHistoryToRender.length > 0) {
+      document
+        .querySelector(".en__hubTxnGiving__transactions__empty")
+        ?.remove();
     }
   }
 
