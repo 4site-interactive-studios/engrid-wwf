@@ -19,8 +19,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, December 1, 2023 @ 10:54:38 ET
- *  By: bryancasler
+ *  Date: Friday, December 8, 2023 @ 10:14:36 ET
+ *  By: michael
  *  ENGrid styles: v0.16.0
  *  ENGrid scripts: v0.16.1
  *
@@ -2598,6 +2598,9 @@ input[disabled],input[readonly],textarea[disabled],textarea[readonly]{
   margin-bottom:1rem;
   padding-bottom:0;
   position:relative;
+}
+body[data-engrid-live-currency=active] .en__field--donationAmt .en__field__item:not([data-engrid-currency-symbol-updated=true]) label{
+  color:#0000 !important;
 }
 @supports (-webkit-appearance:-apple-pay-button){
   .apple-pay-button{
