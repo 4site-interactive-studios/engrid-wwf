@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, December 4, 2023 @ 10:32:00 ET
+ *  Date: Wednesday, December 13, 2023 @ 12:03:48 ET
  *  By: michael
  *  ENGrid styles: v0.16.0
  *  ENGrid scripts: v0.16.2
@@ -21800,7 +21800,7 @@ const customScript = function (App, DonationFrequency) {
   const ecardAddRecipeintButton = document.querySelector(".en__ecarditems__addrecipient");
 
   if (ecardAddRecipeintButton) {
-    ecardAddRecipeintButton.textContent = isSpanish ? "Agrega este contacto" : "Add this contact";
+    ecardAddRecipeintButton.textContent = isSpanish ? "Agrega destinatario" : "Add recipient";
   } // On eCard pages, add a label to the recipients list
 
 

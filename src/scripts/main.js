@@ -417,8 +417,8 @@ export const customScript = function (App, DonationFrequency) {
 
   if (ecardAddRecipeintButton) {
     ecardAddRecipeintButton.textContent = isSpanish
-      ? "Agrega este contacto"
-      : "Add this contact";
+      ? "Agrega destinatario"
+      : "Add recipient";
   }
 
   // On eCard pages, add a label to the recipients list
