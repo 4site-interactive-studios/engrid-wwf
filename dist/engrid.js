@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, December 13, 2023 @ 12:03:48 ET
+ *  Date: Thursday, December 14, 2023 @ 13:48:57 ET
  *  By: michael
- *  ENGrid styles: v0.16.0
- *  ENGrid scripts: v0.16.2
+ *  ENGrid styles: v0.16.4
+ *  ENGrid scripts: v0.16.7
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -12271,7 +12271,7 @@ class DonationAmount {
         else {
             const otherField = document.querySelector('input[name="' + this._other + '"]');
             if (otherField) {
-                const enFieldOtherAmountRadio = document.querySelector('input[name="' + this._radios + '"][value="other" i]');
+                const enFieldOtherAmountRadio = document.querySelector(`.en__field--donationAmt.en__field--withOther .en__field__item:nth-last-child(2) input[name="${this._radios}"]`);
                 if (enFieldOtherAmountRadio) {
                     enFieldOtherAmountRadio.checked = true;
                 }
@@ -14040,6 +14040,10 @@ class Ecard {
             const futureDeliveryH2 = document.createElement("h2");
             futureDeliveryH2.innerText = futureDeliveryLabel.innerText;
             futureDeliveryLabel.replaceWith(futureDeliveryH2);
+        }
+        if (emailField) {
+            emailField.setAttribute("type", "email");
+            emailField.setAttribute("autocomplete", "off");
         }
     }
     shouldRun() {
@@ -16092,6 +16096,7 @@ class SrcDefer {
 class setRecurrFreq {
     constructor() {
         this._frequency = DonationFrequency.getInstance();
+        this._amount = DonationAmount.getInstance();
         this.linkClass = "setRecurrFreq-";
         this.checkboxName = "engrid.recurrfreq";
         // Watch the links that starts with linkClass
@@ -16131,11 +16136,13 @@ class setRecurrFreq {
                     engrid_ENGrid.setFieldValue("transaction.recurrfreq", frequency);
                     engrid_ENGrid.setFieldValue("transaction.recurrpay", "Y");
                     this._frequency.load();
+                    this._amount.setAmount(this._amount.amount, false);
                 }
                 else if (frequency !== "ONETIME") {
                     engrid_ENGrid.setFieldValue("transaction.recurrfreq", "ONETIME");
                     engrid_ENGrid.setFieldValue("transaction.recurrpay", "N");
                     this._frequency.load();
+                    this._amount.setAmount(this._amount.amount, false);
                 }
             });
         });
@@ -19271,8 +19278,15 @@ class LiveCurrency {
         this.searchElements();
         if (!this.shouldRun())
             return;
+        engrid_ENGrid.setBodyData("live-currency", "active");
         this.updateCurrency();
         this.addEventListeners();
+        // Make labels visible on page load
+        document
+            .querySelectorAll(".en__field--donationAmt .en__field__element--radio .en__field__item")
+            .forEach((node) => {
+            node.setAttribute("data-engrid-currency-symbol-updated", "true");
+        });
     }
     searchElements() {
         const enElements = document.querySelectorAll(`
@@ -19322,6 +19336,9 @@ class LiveCurrency {
                     setTimeout(() => {
                         this.searchElements();
                         this.updateCurrency();
+                        targetNode.querySelectorAll(".en__field__item").forEach((node) => {
+                            node.setAttribute("data-engrid-currency-symbol-updated", "true");
+                        });
                         this.isUpdating = false;
                     }, 20);
                 }
@@ -19348,6 +19365,11 @@ class LiveCurrency {
             setTimeout(() => {
                 this.searchElements();
                 this.updateCurrency();
+                document
+                    .querySelectorAll(".en__field--donationAmt .en__field__element--radio .en__field__item")
+                    .forEach((node) => {
+                    node.setAttribute("data-engrid-currency-symbol-updated", "true");
+                });
                 this.isUpdating = false;
             }, 10);
         });
@@ -21166,6 +21188,9 @@ class SetAttr {
         if (enGrid) {
             enGrid.addEventListener("click", (e) => {
                 const clickedEl = e.target;
+                if (typeof clickedEl.className !== "string") {
+                    return;
+                }
                 const clickedElClassNames = clickedEl.className.split(" ");
                 if (clickedElClassNames.some((className) => className.startsWith("setattr--"))) {
                     clickedEl.classList.forEach((className) => {
@@ -21355,7 +21380,7 @@ class ENValidators {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.16.2";
+const AppVersion = "0.16.7";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
@@ -21437,8 +21462,6 @@ const AppVersion = "0.16.2";
 
 ;// CONCATENATED MODULE: ./src/scripts/main.js
 const customScript = function (App, DonationFrequency) {
-  var _document$querySelect;
-
   console.log("ENGrid client scripts are executing");
   const isSpanish = document.querySelector("label[for='en__field_supporter_emailAddress']") && document.querySelector("label[for='en__field_supporter_emailAddress']").textContent === "Correo electrónico";
   let inlineMonthlyUpsell = document.querySelectorAll(".move-after-transaction-recurrfreq")[0];
@@ -21901,7 +21924,7 @@ const customScript = function (App, DonationFrequency) {
   } // Inserts a email subscription nudge after the element with the 'universal-opt-in' class
 
 
-  const universalOptInFieldClasses = (_document$querySelect = document.querySelector(".universal-opt-in > .en__field")) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.classList;
+  const universalOptInFieldClasses = document.querySelector(".universal-opt-in > .en__field")?.classList;
 
   if (universalOptInFieldClasses) {
     const optInClass = [...universalOptInFieldClasses].find(className => {
@@ -22135,10 +22158,8 @@ const customScript = function (App, DonationFrequency) {
       const paymentElement = paymentType.closest(".en__component");
 
       if (paymentElement) {
-        var _paymentElement$paren;
-
         // Insert the new field after the submit button
-        (_paymentElement$paren = paymentElement.parentNode) === null || _paymentElement$paren === void 0 ? void 0 : _paymentElement$paren.insertBefore(formBlock, paymentElement.nextSibling);
+        paymentElement.parentNode?.insertBefore(formBlock, paymentElement.nextSibling);
       } else {
         const form = document.querySelector("form");
 
@@ -22360,11 +22381,9 @@ const pageHeaderFooter = function (App) {
         },
         handleDocumentClick: function (e) {
           if (_self.headerNav.mobileHeaderMq.matches) {
-            var _e$target$closest;
-
             // close any open menus (on mobile) with search click
             const _this = _self.headerNav;
-            const clickFromInsideSearch = ((_e$target$closest = e.target.closest(".search")) === null || _e$target$closest === void 0 ? void 0 : _e$target$closest.length) === 1;
+            const clickFromInsideSearch = e.target.closest(".search")?.length === 1;
 
             if (clickFromInsideSearch) {
               _this.closeExpandedPanels();
@@ -22635,8 +22654,6 @@ class DonationLightboxForm {
   buildSectionNavigation() {
     console.log("DonationLightboxForm: buildSectionNavigation");
     this.sections.forEach((section, key) => {
-      var _sectionNavigation$qu, _sectionNavigation$qu2, _sectionNavigation$qu3;
-
       section.dataset.sectionId = key;
       const sectionNavigation = document.createElement("div");
       sectionNavigation.classList.add("section-navigation");
@@ -22688,10 +22705,8 @@ class DonationLightboxForm {
         <span class="section-count__total">${sectionTotal}</span>
       `;
       } else {
-        var _document$querySelect;
-
         // Single Section Pages
-        const submitButtonLabel = ((_document$querySelect = document.querySelector(".en__submit button")) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.innerText) || "Submit";
+        const submitButtonLabel = document.querySelector(".en__submit button")?.innerText || "Submit";
         sectionNavigation.innerHTML = `
         <button class="section-navigation__submit" data-section-id="${key}" type="submit" data-label="${submitButtonLabel}">
           <span>${submitButtonLabel}</span>
@@ -22699,18 +22714,18 @@ class DonationLightboxForm {
       `;
       }
 
-      (_sectionNavigation$qu = sectionNavigation.querySelector(".section-navigation__previous")) === null || _sectionNavigation$qu === void 0 ? void 0 : _sectionNavigation$qu.addEventListener("click", e => {
+      sectionNavigation.querySelector(".section-navigation__previous")?.addEventListener("click", e => {
         e.preventDefault();
         this.scrollToSection(key - 1, key);
       });
-      (_sectionNavigation$qu2 = sectionNavigation.querySelector(".section-navigation__next")) === null || _sectionNavigation$qu2 === void 0 ? void 0 : _sectionNavigation$qu2.addEventListener("click", e => {
+      sectionNavigation.querySelector(".section-navigation__next")?.addEventListener("click", e => {
         e.preventDefault();
 
         if (this.validateForm(key)) {
           this.scrollToSection(key + 1, key);
         }
       });
-      (_sectionNavigation$qu3 = sectionNavigation.querySelector(".section-navigation__submit")) === null || _sectionNavigation$qu3 === void 0 ? void 0 : _sectionNavigation$qu3.addEventListener("click", e => {
+      sectionNavigation.querySelector(".section-navigation__submit")?.addEventListener("click", e => {
         e.preventDefault(); // Validate the entire form again
 
         if (this.validateForm()) {
@@ -23365,9 +23380,7 @@ class TweetToTarget {
     }
 
     if (!dontAutomaticallyRedirect) {
-      var _document$querySelect;
-
-      (_document$querySelect = document.querySelector(".en__submit")) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.classList.add("hide");
+      document.querySelector(".en__submit")?.classList.add("hide");
     }
 
     if (this.tweetToTargetData.tweetedTo) {
