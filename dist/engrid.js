@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, December 15, 2023 @ 22:57:00 ET
+ *  Date: Friday, December 15, 2023 @ 23:04:49 ET
  *  By: bryancasler
  *  ENGrid styles: v0.16.4
  *  ENGrid scripts: v0.16.8
@@ -23587,6 +23587,15 @@ const options = {
     dateFieldFormat: "YYYY-MM-DD"
   },
   CountryDisable: ["Belarus", "Cuba", "Iran", "North Korea", "Russia", "Syria", "Ukraine"],
+  RememberMe: {
+    checked: true,
+    remoteUrl: "https://www.ran.org/wp-content/themes/ran-2020/data-remember.html",
+    fieldOptInSelectorTarget: "div.en__field--postcode, div.en__field--telephone, div.en__field--email, div.en__field--lastName",
+    fieldOptInSelectorTargetLocation: "after",
+    fieldClearSelectorTarget: "div.en__field--firstName div, div.en__field--email div",
+    fieldClearSelectorTargetLocation: "after",
+    fieldNames: ["supporter.firstName", "supporter.lastName", "supporter.address1", "supporter.address2", "supporter.city", "supporter.country", "supporter.region", "supporter.postcode", "supporter.emailAddress"]
+  },
   Plaid: true,
   PageLayouts: ["centerleft1col", "centercenter1col", "centercenter2col", "centerright1col"],
   Debug: App.getUrlParameter("debug") == "true" ? true : false,
