@@ -54,7 +54,7 @@ const options: Options = {
   RememberMe: {
     checked: true,
     remoteUrl:
-      "https://www.ran.org/wp-content/themes/ran-2020/data-remember.html",
+      "https://4site-interactive-studios.github.io/engrid-wwf/remember-me/index.html",
     fieldOptInSelectorTarget:
       "div.en__field--postcode, div.en__field--telephone, div.en__field--email, div.en__field--lastName",
     fieldOptInSelectorTargetLocation: "after",

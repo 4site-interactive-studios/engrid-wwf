@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, December 15, 2023 @ 23:04:49 ET
+ *  Date: Friday, December 15, 2023 @ 23:07:19 ET
  *  By: bryancasler
  *  ENGrid styles: v0.16.4
  *  ENGrid scripts: v0.16.8
@@ -23589,7 +23589,7 @@ const options = {
   CountryDisable: ["Belarus", "Cuba", "Iran", "North Korea", "Russia", "Syria", "Ukraine"],
   RememberMe: {
     checked: true,
-    remoteUrl: "https://www.ran.org/wp-content/themes/ran-2020/data-remember.html",
+    remoteUrl: "https://4site-interactive-studios.github.io/engrid-wwf/remember-me/index.html",
     fieldOptInSelectorTarget: "div.en__field--postcode, div.en__field--telephone, div.en__field--email, div.en__field--lastName",
     fieldOptInSelectorTargetLocation: "after",
     fieldClearSelectorTarget: "div.en__field--firstName div, div.en__field--email div",
