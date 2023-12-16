@@ -52,7 +52,7 @@ const options: Options = {
     "Ukraine",
   ],
   RememberMe: {
-    checked: true,
+    checked: false,
     remoteUrl:
       "https://4site-interactive-studios.github.io/engrid-wwf/remember-me/index.html",
     fieldOptInSelectorTarget:
