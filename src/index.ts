@@ -66,7 +66,7 @@ const options: Options = {
   onLoad: () => {
     new AnnualLimit();
     (<any>window).DonationLightboxForm = DonationLightboxForm;
-    new DonationLightboxForm(DonationAmount, DonationFrequency);
+    new DonationLightboxForm(DonationAmount, DonationFrequency, App);
     customScript(App, DonationFrequency);
     pageHeaderFooter(App); // Added this line to trigger pageHeaderFooter
     new TweetToTarget(App, EnForm);

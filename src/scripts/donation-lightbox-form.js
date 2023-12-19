@@ -5,7 +5,7 @@ if (isSafari) {
 import smoothscroll from "smoothscroll-polyfill";
 smoothscroll.polyfill();
 export default class DonationLightboxForm {
-  constructor(DonationAmount, DonationFrequency) {
+  constructor(DonationAmount, DonationFrequency, App) {
     if (
       !this.isIframe() ||
       document.querySelector("body").dataset.engridSubtheme !== "multistep"
@@ -97,8 +97,33 @@ export default class DonationLightboxForm {
         EngagingNetworks.require._defined.enjs.checkSubmissionFailed()
       ) {
         console.log("DonationLightboxForm: Submission Failed");
-        // Submission failed
-        if (this.validateForm()) {
+        // If the en__field_transaction_ccexpire is not empty, show the credit card section
+        const creditCardSection = document.querySelector(
+          ".en__field--ccexpire"
+        );
+        const creditCardExpire = creditCardSection
+          ? creditCardSection.querySelector("#en__field_transaction_ccexpire")
+          : null;
+        if (creditCardExpire && creditCardExpire.value != "") {
+          const paymentType = document.querySelector(
+            "#en__field_transaction_paymenttype"
+          );
+          const ccnumberBlock = document.querySelector(".en__field--ccnumber");
+          if (paymentType && ccnumberBlock) {
+            paymentType.value = "visa";
+            this.showHideCCSection("card");
+            ccnumberBlock.classList.add("has-error");
+            const errorMessage = document.querySelector(".en__error");
+            const errorMessageText =
+              errorMessage &&
+              errorMessage.textContent.split(". ").length > 1 &&
+              errorMessage.textContent.split(". ")[1] !== ""
+                ? errorMessage.textContent.split(". ")[1]
+                : errorMessage.textContent;
+            this.sendMessage("error", errorMessageText);
+            this.scrollToElement(creditCardSection);
+          }
+        } else if (this.validateForm()) {
           // Front-End Validation Passed, get first Error Message
           const error = document.querySelector("li.en__error");
           if (error) {
@@ -127,6 +152,17 @@ export default class DonationLightboxForm {
             }
           }
         }
+      } else {
+        App.watchForError(() => {
+          const errorMessage = document.querySelector(".en__error");
+          const errorMessageText =
+            errorMessage && errorMessage.textContent.split(". ").length > 1
+              ? errorMessage.textContent.split(". ")[1]
+              : errorMessage.textContent;
+          if (errorMessageText) {
+            this.sendMessage("error", errorMessageText);
+          }
+        });
       }
       document
         .querySelectorAll("form.en__component input.en__field__input")
@@ -141,9 +177,35 @@ export default class DonationLightboxForm {
                 nextSectionId === currentSectionId + 1;
 
               if (focusIsOnNextSection && this.validateForm(currentSectionId)) {
-                this.scrollToElement(e);
+                // Only scroll if the current section doesn't have radio elements
+                const radioElement =
+                  this.sections[currentSectionId].querySelector(
+                    ".en__field--radio"
+                  );
+                if (!radioElement) this.scrollToElement(e);
               }
             }, 50);
+            // If the field is the credit card number, remove the error class from the parent
+            if ("id" in e && e.id === "en__field_transaction_ccnumber") {
+              const parent = e.closest(".en__field");
+              if (parent) {
+                parent.classList.remove("has-error");
+              }
+            }
+          });
+        });
+      // Map the enter key to the next button
+      document
+        .querySelectorAll("form.en__component input.en__field__input")
+        .forEach((e) => {
+          e.addEventListener("keydown", (event) => {
+            if (event.keyCode === 13) {
+              event.preventDefault();
+              const sectionId = Number(this.getSectionId(e));
+              if (this.validateForm(sectionId)) {
+                this.scrollToSection(sectionId + 1, sectionId);
+              }
+            }
           });
         });
     }

@@ -19,10 +19,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, December 14, 2023 @ 13:48:57 ET
- *  By: michael
+ *  Date: Tuesday, December 19, 2023 @ 11:34:24 ET
+ *  By: fernando
  *  ENGrid styles: v0.16.4
- *  ENGrid scripts: v0.16.7
+ *  ENGrid scripts: v0.16.8
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -8005,12 +8005,8 @@ body[data-engrid-debug]:before{
   margin-bottom:var(--fields_spacing-block);
 }
 [data-engrid-theme=wwf] .give-by-select{
-  --button_background-color_hover:var(
-    --donation-amount__button_background-color_hover
-  );
-  --button_background-color_checked:var(
-    --donation-amount__button_background-color_hover
-  );
+  --button_background-color_hover:var(--donation-amount__button_background-color_hover);
+  --button_background-color_checked:var(--donation-amount__button_background-color_hover);
   --button_color_checked:var(--button_color);
 }
 [data-engrid-theme=wwf] .give-by-select .en__field__label{
@@ -9119,9 +9115,6 @@ body[data-engrid-debug]:before{
   }
   [data-engrid-theme=wwf] .en__component--premiumgiftblock .en__pg__description{
     max-width:100%;
-  }
-  [data-engrid-theme=wwf]:not(#en__pagebuilder):not([data-engrid-debug])[data-engrid-payment-type-option-paypal-one-touch=true] .give-by-select.paypal{
-    display:none;
   }
   [data-engrid-theme=wwf] .en__component--premiumgiftblock{
     --h2_font-size:16px;

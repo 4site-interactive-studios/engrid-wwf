@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, December 14, 2023 @ 13:48:57 ET
- *  By: michael
+ *  Date: Tuesday, December 19, 2023 @ 11:34:24 ET
+ *  By: fernando
  *  ENGrid styles: v0.16.4
- *  ENGrid scripts: v0.16.7
+ *  ENGrid scripts: v0.16.8
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -13748,6 +13748,9 @@ class CreditCard {
         };
         if (!this.ccField)
             return;
+        // Set credit card field to type="tel" to prevent mobile browsers from
+        //  showing a credit card number keyboard
+        this.ccField.type = "tel";
         const expireFiels = document.getElementsByName("transaction.ccexpire");
         if (expireFiels) {
             this.field_expiration_month = expireFiels[0];
@@ -21380,7 +21383,7 @@ class ENValidators {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.16.7";
+const AppVersion = "0.16.8";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
@@ -22499,7 +22502,7 @@ if (isSafari) {
 
 smoothscroll_default().polyfill();
 class DonationLightboxForm {
-  constructor(DonationAmount, DonationFrequency) {
+  constructor(DonationAmount, DonationFrequency, App) {
     if (!this.isIframe() || document.querySelector("body").dataset.engridSubtheme !== "multistep") return;
     this.amount = DonationAmount;
     this.frequency = DonationFrequency;
@@ -22562,9 +22565,25 @@ class DonationLightboxForm {
       this.buildSectionNavigation(); // If Form Submission Failed
 
       if (this.checkNested(EngagingNetworks, "require", "_defined", "enjs", "checkSubmissionFailed") && EngagingNetworks.require._defined.enjs.checkSubmissionFailed()) {
-        console.log("DonationLightboxForm: Submission Failed"); // Submission failed
+        console.log("DonationLightboxForm: Submission Failed"); // If the en__field_transaction_ccexpire is not empty, show the credit card section
 
-        if (this.validateForm()) {
+        const creditCardSection = document.querySelector(".en__field--ccexpire");
+        const creditCardExpire = creditCardSection ? creditCardSection.querySelector("#en__field_transaction_ccexpire") : null;
+
+        if (creditCardExpire && creditCardExpire.value != "") {
+          const paymentType = document.querySelector("#en__field_transaction_paymenttype");
+          const ccnumberBlock = document.querySelector(".en__field--ccnumber");
+
+          if (paymentType && ccnumberBlock) {
+            paymentType.value = "visa";
+            this.showHideCCSection("card");
+            ccnumberBlock.classList.add("has-error");
+            const errorMessage = document.querySelector(".en__error");
+            const errorMessageText = errorMessage && errorMessage.textContent.split(". ").length > 1 && errorMessage.textContent.split(". ")[1] !== "" ? errorMessage.textContent.split(". ")[1] : errorMessage.textContent;
+            this.sendMessage("error", errorMessageText);
+            this.scrollToElement(creditCardSection);
+          }
+        } else if (this.validateForm()) {
           // Front-End Validation Passed, get first Error Message
           const error = document.querySelector("li.en__error");
 
@@ -22583,6 +22602,15 @@ class DonationLightboxForm {
             }
           }
         }
+      } else {
+        App.watchForError(() => {
+          const errorMessage = document.querySelector(".en__error");
+          const errorMessageText = errorMessage && errorMessage.textContent.split(". ").length > 1 ? errorMessage.textContent.split(". ")[1] : errorMessage.textContent;
+
+          if (errorMessageText) {
+            this.sendMessage("error", errorMessageText);
+          }
+        });
       }
 
       document.querySelectorAll("form.en__component input.en__field__input").forEach(e => {
@@ -22594,9 +22622,32 @@ class DonationLightboxForm {
             const focusIsOnNextSection = nextSectionId === currentSectionId + 1;
 
             if (focusIsOnNextSection && this.validateForm(currentSectionId)) {
-              this.scrollToElement(e);
+              // Only scroll if the current section doesn't have radio elements
+              const radioElement = this.sections[currentSectionId].querySelector(".en__field--radio");
+              if (!radioElement) this.scrollToElement(e);
             }
-          }, 50);
+          }, 50); // If the field is the credit card number, remove the error class from the parent
+
+          if ("id" in e && e.id === "en__field_transaction_ccnumber") {
+            const parent = e.closest(".en__field");
+
+            if (parent) {
+              parent.classList.remove("has-error");
+            }
+          }
+        });
+      }); // Map the enter key to the next button
+
+      document.querySelectorAll("form.en__component input.en__field__input").forEach(e => {
+        e.addEventListener("keydown", event => {
+          if (event.keyCode === 13) {
+            event.preventDefault();
+            const sectionId = Number(this.getSectionId(e));
+
+            if (this.validateForm(sectionId)) {
+              this.scrollToSection(sectionId + 1, sectionId);
+            }
+          }
         });
       });
     }
@@ -23594,7 +23645,7 @@ const options = {
   onLoad: () => {
     new AnnualLimit();
     window.DonationLightboxForm = DonationLightboxForm;
-    new DonationLightboxForm(DonationAmount, DonationFrequency);
+    new DonationLightboxForm(DonationAmount, DonationFrequency, App);
     customScript(App, DonationFrequency);
     pageHeaderFooter(App); // Added this line to trigger pageHeaderFooter
 
