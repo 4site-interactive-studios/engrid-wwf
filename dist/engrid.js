@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, December 19, 2023 @ 11:34:24 ET
+ *  Date: Wednesday, December 20, 2023 @ 15:18:49 ET
  *  By: fernando
  *  ENGrid styles: v0.16.4
- *  ENGrid scripts: v0.16.8
+ *  ENGrid scripts: v0.16.9
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -12250,6 +12250,12 @@ class DonationAmount {
                 this.amount = currentAmountValue;
             }
         }
+        else if (engrid_ENGrid.checkNested(window.EngagingNetworks, "require", "_defined", "enjs", "getDonationTotal")) {
+            const total = window.EngagingNetworks.require._defined.enjs.getDonationTotal();
+            if (total) {
+                this.amount = total;
+            }
+        }
     }
     // Force a new amount
     setAmount(amount, dispatch = true) {
@@ -12889,12 +12895,20 @@ class DonationFrequency {
     }
     // Set amount var with currently selected amount
     load() {
-        const freqField = engrid_ENGrid.getField("transaction.recurrfreq");
-        if (freqField)
-            this.frequency = engrid_ENGrid.getFieldValue("transaction.recurrfreq");
+        this.frequency =
+            engrid_ENGrid.getFieldValue("transaction.recurrfreq") ||
+                sessionStorage.getItem("engrid-transaction-recurring-frequency") ||
+                "onetime";
         const recurrField = engrid_ENGrid.getField("transaction.recurrpay");
-        if (recurrField)
+        if (recurrField) {
             this.recurring = engrid_ENGrid.getFieldValue("transaction.recurrpay");
+        }
+        else if (engrid_ENGrid.checkNested(window.EngagingNetworks, "require", "_defined", "enjs", "getSupporterData")) {
+            this.recurring =
+                window.EngagingNetworks.require._defined.enjs
+                    .getSupporterData("recurrpay")
+                    .toLowerCase() || "n";
+        }
         // ENGrid.enParseDependencies();
     }
     // Force a new recurrency
@@ -21383,7 +21397,7 @@ class ENValidators {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.16.8";
+const AppVersion = "0.16.9";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
@@ -23667,6 +23681,44 @@ const options = {
         Follow the steps to securely donate from your bank account to WWF
         (through Engaging Networks and Plaid).`);
       submitButton.setAttribute("data-balloon-pos", "up");
+    } // If the page has a State field, and it is not required, make a mutation observer
+    // to watch for changes to the field and hide/show it
+
+
+    const regionContainer = document.querySelector(".en__field--region:not(.en__mandatory)");
+
+    if (regionContainer) {
+      const stateField = document.querySelector("#en__field_supporter_region");
+      console.log(stateField);
+
+      if (stateField && stateField.nodeName === "INPUT") {
+        regionContainer.classList.add("hide");
+      } // Observe changes to the region container
+
+
+      const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+          // If it's adding a state TEXT field, empty it and hide the container
+          if (mutation.addedNodes && mutation.addedNodes.length > 0 && mutation.addedNodes[0].nodeName === "INPUT" && mutation.addedNodes[0].getAttribute("type") === "text") {
+            const stateField = mutation.addedNodes[0];
+            stateField.value = "";
+            regionContainer.classList.add("hide");
+          } // If it's adding a state SELECT field, show the container
+
+
+          if (mutation.addedNodes && mutation.addedNodes.length > 0 && mutation.addedNodes[0].nodeName === "SELECT") {
+            regionContainer.classList.remove("hide");
+          }
+
+          App.log("Mutation Observer");
+          console.log(mutation);
+        });
+      }); // Start observing the region container
+
+      observer.observe(regionContainer, {
+        childList: true,
+        subtree: true
+      });
     }
   },
   onResize: () => console.log("Starter Theme Window Resized"),

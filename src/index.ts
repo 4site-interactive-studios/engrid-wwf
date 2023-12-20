@@ -93,6 +93,46 @@ const options: Options = {
       );
       submitButton.setAttribute("data-balloon-pos", "up");
     }
+    // If the page has a State field, and it is not required, make a mutation observer
+    // to watch for changes to the field and hide/show it
+    const regionContainer = document.querySelector(
+      ".en__field--region:not(.en__mandatory)"
+    ) as HTMLDivElement;
+    if (regionContainer) {
+      const stateField = document.querySelector("#en__field_supporter_region");
+      if (stateField && stateField.nodeName === "INPUT") {
+        regionContainer.classList.add("hide");
+      }
+      // Observe changes to the region container
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          // If it's adding a state TEXT field, empty it and hide the container
+          if (
+            mutation.addedNodes &&
+            mutation.addedNodes.length > 0 &&
+            mutation.addedNodes[0].nodeName === "INPUT" &&
+            (mutation.addedNodes[0] as HTMLInputElement).getAttribute(
+              "type"
+            ) === "text"
+          ) {
+            const stateField = mutation.addedNodes[0] as HTMLInputElement;
+            stateField.value = "";
+            regionContainer.classList.add("hide");
+          }
+          // If it's adding a state SELECT field, show the container
+          if (
+            mutation.addedNodes &&
+            mutation.addedNodes.length > 0 &&
+            mutation.addedNodes[0].nodeName === "SELECT"
+          ) {
+            regionContainer.classList.remove("hide");
+          }
+          // console.log(mutation);
+        });
+      });
+      // Start observing the region container
+      observer.observe(regionContainer, { childList: true, subtree: true });
+    }
   },
   onResize: () => console.log("Starter Theme Window Resized"),
 
