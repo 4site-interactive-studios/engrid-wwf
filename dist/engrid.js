@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, December 20, 2023 @ 15:18:49 ET
+ *  Date: Thursday, December 21, 2023 @ 10:04:41 ET
  *  By: fernando
  *  ENGrid styles: v0.16.4
- *  ENGrid scripts: v0.16.9
+ *  ENGrid scripts: v0.16.10
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -12895,6 +12895,7 @@ class DonationFrequency {
     }
     // Set amount var with currently selected amount
     load() {
+        var _a;
         this.frequency =
             engrid_ENGrid.getFieldValue("transaction.recurrfreq") ||
                 sessionStorage.getItem("engrid-transaction-recurring-frequency") ||
@@ -12905,9 +12906,8 @@ class DonationFrequency {
         }
         else if (engrid_ENGrid.checkNested(window.EngagingNetworks, "require", "_defined", "enjs", "getSupporterData")) {
             this.recurring =
-                window.EngagingNetworks.require._defined.enjs
-                    .getSupporterData("recurrpay")
-                    .toLowerCase() || "n";
+                ((_a = window.EngagingNetworks.require._defined.enjs
+                    .getSupporterData("recurrpay")) === null || _a === void 0 ? void 0 : _a.toLowerCase()) || "n";
         }
         // ENGrid.enParseDependencies();
     }
@@ -21397,7 +21397,7 @@ class ENValidators {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.16.9";
+const AppVersion = "0.16.10";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
@@ -23689,7 +23689,6 @@ const options = {
 
     if (regionContainer) {
       const stateField = document.querySelector("#en__field_supporter_region");
-      console.log(stateField);
 
       if (stateField && stateField.nodeName === "INPUT") {
         regionContainer.classList.add("hide");
@@ -23708,10 +23707,8 @@ const options = {
 
           if (mutation.addedNodes && mutation.addedNodes.length > 0 && mutation.addedNodes[0].nodeName === "SELECT") {
             regionContainer.classList.remove("hide");
-          }
+          } // console.log(mutation);
 
-          App.log("Mutation Observer");
-          console.log(mutation);
         });
       }); // Start observing the region container
 
