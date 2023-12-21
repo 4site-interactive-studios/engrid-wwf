@@ -276,7 +276,7 @@ export default class DonationLightboxForm {
           // Add Last Section Data Attribute
           section.dataset.lastSection = true;
           sectionNavigation.innerHTML = `
-        <button class="section-navigation__previous" data-section-id="${key}">
+        <button class="section-navigation__previous" aria-label="Back" data-section-id="${key}">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 16 16">
               <path fill="currentColor" d="M7.214.786c.434-.434 1.138-.434 1.572 0 .433.434.433 1.137 0 1.571L4.57 6.572h10.172c.694 0 1.257.563 1.257 1.257s-.563 1.257-1.257 1.257H4.229l4.557 4.557c.433.434.433 1.137 0 1.571-.434.434-1.138.434-1.572 0L0 8 7.214.786z"/>
           </svg>
@@ -287,7 +287,7 @@ export default class DonationLightboxForm {
       `;
         } else {
           sectionNavigation.innerHTML = `
-        <button class="section-navigation__previous" data-section-id="${key}">
+        <button class="section-navigation__previous" aria-label="Back" data-section-id="${key}">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 16 16">
               <path fill="currentColor" d="M7.214.786c.434-.434 1.138-.434 1.572 0 .433.434.433 1.137 0 1.571L4.57 6.572h10.172c.694 0 1.257.563 1.257 1.257s-.563 1.257-1.257 1.257H4.229l4.557 4.557c.433.434.433 1.137 0 1.571-.434.434-1.138.434-1.572 0L0 8 7.214.786z"/>
           </svg>
