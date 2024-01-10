@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, January 10, 2024 @ 11:05:04 ET
+ *  Date: Wednesday, January 10, 2024 @ 11:23:04 ET
  *  By: michael
  *  ENGrid styles: v0.16.4
- *  ENGrid scripts: v0.16.7
+ *  ENGrid scripts: v0.16.10
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -12250,6 +12250,12 @@ class DonationAmount {
                 this.amount = currentAmountValue;
             }
         }
+        else if (engrid_ENGrid.checkNested(window.EngagingNetworks, "require", "_defined", "enjs", "getDonationTotal")) {
+            const total = window.EngagingNetworks.require._defined.enjs.getDonationTotal();
+            if (total) {
+                this.amount = total;
+            }
+        }
     }
     // Force a new amount
     setAmount(amount, dispatch = true) {
@@ -12889,12 +12895,20 @@ class DonationFrequency {
     }
     // Set amount var with currently selected amount
     load() {
-        const freqField = engrid_ENGrid.getField("transaction.recurrfreq");
-        if (freqField)
-            this.frequency = engrid_ENGrid.getFieldValue("transaction.recurrfreq");
+        var _a;
+        this.frequency =
+            engrid_ENGrid.getFieldValue("transaction.recurrfreq") ||
+                sessionStorage.getItem("engrid-transaction-recurring-frequency") ||
+                "onetime";
         const recurrField = engrid_ENGrid.getField("transaction.recurrpay");
-        if (recurrField)
+        if (recurrField) {
             this.recurring = engrid_ENGrid.getFieldValue("transaction.recurrpay");
+        }
+        else if (engrid_ENGrid.checkNested(window.EngagingNetworks, "require", "_defined", "enjs", "getSupporterData")) {
+            this.recurring =
+                ((_a = window.EngagingNetworks.require._defined.enjs
+                    .getSupporterData("recurrpay")) === null || _a === void 0 ? void 0 : _a.toLowerCase()) || "n";
+        }
         // ENGrid.enParseDependencies();
     }
     // Force a new recurrency
@@ -13748,6 +13762,9 @@ class CreditCard {
         };
         if (!this.ccField)
             return;
+        // Set credit card field to type="tel" to prevent mobile browsers from
+        //  showing a credit card number keyboard
+        this.ccField.type = "tel";
         const expireFiels = document.getElementsByName("transaction.ccexpire");
         if (expireFiels) {
             this.field_expiration_month = expireFiels[0];
@@ -21380,7 +21397,7 @@ class ENValidators {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.16.7";
+const AppVersion = "0.16.10";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
