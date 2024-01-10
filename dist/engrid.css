@@ -19,10 +19,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, December 21, 2023 @ 10:51:28 ET
- *  By: bryancasler
+ *  Date: Wednesday, January 10, 2024 @ 11:05:04 ET
+ *  By: michael
  *  ENGrid styles: v0.16.4
- *  ENGrid scripts: v0.16.10
+ *  ENGrid scripts: v0.16.7
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -7823,6 +7823,7 @@ body[data-engrid-debug]:before{
   --submit__button_color_checked:#fff;
   --submit__button_background-color_checked:#000;
   --submit__button_border-color_checked:#000;
+  --give-quarterly-donation-amount-appended-label:"/qtr";
   --recurring-frequency__button_count:2;
   --donation-amount__button_count:3;
   --give-by-select__button_count:2;
