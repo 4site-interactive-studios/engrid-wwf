@@ -98,11 +98,10 @@ const options: Options = {
     const regionContainer = document.querySelector(
       ".en__field--region:not(.en__mandatory)"
     ) as HTMLDivElement;
-    if (regionContainer) {
-      const stateField = document.querySelector("#en__field_supporter_region");
-      if (stateField && stateField.nodeName === "INPUT") {
-        regionContainer.classList.add("hide");
-      }
+    const tributeRecipientRegionContainer = document.querySelector(
+      ".en__field--infreg:not(.en__mandatory)"
+    ) as HTMLDivElement;
+    if (regionContainer || tributeRecipientRegionContainer) {
       // Observe changes to the region container
       const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
@@ -117,7 +116,10 @@ const options: Options = {
           ) {
             const stateField = mutation.addedNodes[0] as HTMLInputElement;
             stateField.value = "";
-            regionContainer.classList.add("hide");
+            const fieldContainer = stateField.closest(".en__field--select");
+            if (fieldContainer) {
+              fieldContainer.classList.add("hide");
+            }
           }
           // If it's adding a state SELECT field, show the container
           if (
@@ -125,13 +127,34 @@ const options: Options = {
             mutation.addedNodes.length > 0 &&
             mutation.addedNodes[0].nodeName === "SELECT"
           ) {
-            regionContainer.classList.remove("hide");
+            const stateField = mutation.addedNodes[0] as HTMLSelectElement;
+            const fieldContainer = stateField.closest(".en__field--select");
+            if (fieldContainer) {
+              fieldContainer.classList.remove("hide");
+            }
           }
           // console.log(mutation);
         });
       });
+      const stateField = document.querySelector("#en__field_supporter_region");
+      if (stateField && stateField.nodeName === "INPUT") {
+        regionContainer.classList.add("hide");
+      }
+      const tributeRecipientStateField = document.querySelector(
+        "#en__field_transaction_infreg"
+      );
+      if (
+        tributeRecipientStateField &&
+        tributeRecipientStateField.nodeName === "INPUT"
+      ) {
+        tributeRecipientRegionContainer.classList.add("hide");
+      }
       // Start observing the region container
       observer.observe(regionContainer, { childList: true, subtree: true });
+      observer.observe(tributeRecipientRegionContainer, {
+        childList: true,
+        subtree: true,
+      });
     }
   },
   onResize: () => console.log("Starter Theme Window Resized"),

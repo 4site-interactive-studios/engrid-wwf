@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, January 10, 2024 @ 11:23:04 ET
- *  By: michael
+ *  Date: Thursday, January 11, 2024 @ 12:56:36 ET
+ *  By: fernando
  *  ENGrid styles: v0.16.4
  *  ENGrid scripts: v0.16.10
  *
@@ -23686,33 +23686,53 @@ const options = {
 
 
     const regionContainer = document.querySelector(".en__field--region:not(.en__mandatory)");
+    const tributeRecipientRegionContainer = document.querySelector(".en__field--infreg:not(.en__mandatory)");
 
-    if (regionContainer) {
-      const stateField = document.querySelector("#en__field_supporter_region");
-
-      if (stateField && stateField.nodeName === "INPUT") {
-        regionContainer.classList.add("hide");
-      } // Observe changes to the region container
-
-
+    if (regionContainer || tributeRecipientRegionContainer) {
+      // Observe changes to the region container
       const observer = new MutationObserver(mutations => {
         mutations.forEach(mutation => {
           // If it's adding a state TEXT field, empty it and hide the container
           if (mutation.addedNodes && mutation.addedNodes.length > 0 && mutation.addedNodes[0].nodeName === "INPUT" && mutation.addedNodes[0].getAttribute("type") === "text") {
             const stateField = mutation.addedNodes[0];
             stateField.value = "";
-            regionContainer.classList.add("hide");
+            const fieldContainer = stateField.closest(".en__field--select");
+
+            if (fieldContainer) {
+              fieldContainer.classList.add("hide");
+            }
           } // If it's adding a state SELECT field, show the container
 
 
           if (mutation.addedNodes && mutation.addedNodes.length > 0 && mutation.addedNodes[0].nodeName === "SELECT") {
-            regionContainer.classList.remove("hide");
+            const stateField = mutation.addedNodes[0];
+            const fieldContainer = stateField.closest(".en__field--select");
+
+            if (fieldContainer) {
+              fieldContainer.classList.remove("hide");
+            }
           } // console.log(mutation);
 
         });
-      }); // Start observing the region container
+      });
+      const stateField = document.querySelector("#en__field_supporter_region");
+
+      if (stateField && stateField.nodeName === "INPUT") {
+        regionContainer.classList.add("hide");
+      }
+
+      const tributeRecipientStateField = document.querySelector("#en__field_transaction_infreg");
+
+      if (tributeRecipientStateField && tributeRecipientStateField.nodeName === "INPUT") {
+        tributeRecipientRegionContainer.classList.add("hide");
+      } // Start observing the region container
+
 
       observer.observe(regionContainer, {
+        childList: true,
+        subtree: true
+      });
+      observer.observe(tributeRecipientRegionContainer, {
         childList: true,
         subtree: true
       });
