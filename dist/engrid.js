@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, January 11, 2024 @ 12:56:36 ET
+ *  Date: Thursday, January 11, 2024 @ 13:04:16 ET
  *  By: fernando
- *  ENGrid styles: v0.16.4
- *  ENGrid scripts: v0.16.10
+ *  ENGrid styles: v0.16.11
+ *  ENGrid scripts: v0.16.11
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -20934,6 +20934,8 @@ class ExitIntentLightbox {
         this.opened = false;
         this.dataLayer = window.dataLayer || [];
         this.logger = new EngridLogger("ExitIntentLightbox", "yellow", "black", "🚪");
+        this.triggerDelay = 1000; // Don't run the exit intent lightbox until at least 1 second has passed after page load
+        this.triggerTimeout = null;
         let options = "EngridExitIntent" in window ? window.EngridExitIntent : {};
         this.options = Object.assign(Object.assign({}, ExitIntentOptionsDefaults), options);
         if (!this.options.enabled) {
@@ -20951,12 +20953,16 @@ class ExitIntentLightbox {
         this.watchForTriggers();
     }
     watchForTriggers() {
-        if (this.options.triggers.mousePosition) {
-            this.watchMouse();
-        }
-        if (this.options.triggers.visibilityState) {
-            this.watchDocumentVisibility();
-        }
+        window.onload = () => {
+            setTimeout(() => {
+                if (this.options.triggers.mousePosition) {
+                    this.watchMouse();
+                }
+                if (this.options.triggers.visibilityState) {
+                    this.watchDocumentVisibility();
+                }
+            }, this.triggerDelay); // Delay activation of triggers
+        };
     }
     watchMouse() {
         document.addEventListener("mouseout", (e) => {
@@ -20980,14 +20986,28 @@ class ExitIntentLightbox {
                 this.logger.log("Triggered by mouse position");
                 this.open();
             }
+            if (!this.triggerTimeout) {
+                this.triggerTimeout = window.setTimeout(() => {
+                    if (!from) {
+                        this.logger.log("Triggered by mouse position");
+                        this.open();
+                    }
+                    this.triggerTimeout = null;
+                }, this.triggerDelay);
+            }
         });
     }
     watchDocumentVisibility() {
         const visibilityListener = () => {
             if (document.visibilityState === "hidden") {
-                this.logger.log("Triggered by visibilityState is hidden");
-                this.open();
-                document.removeEventListener("visibilitychange", visibilityListener);
+                if (!this.triggerTimeout) {
+                    this.triggerTimeout = window.setTimeout(() => {
+                        this.logger.log("Triggered by visibilityState is hidden");
+                        this.open();
+                        document.removeEventListener("visibilitychange", visibilityListener);
+                        this.triggerTimeout = null;
+                    }, this.triggerDelay);
+                }
             }
         };
         document.addEventListener("visibilitychange", visibilityListener);
@@ -21397,7 +21417,7 @@ class ENValidators {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.16.10";
+const AppVersion = "0.16.11";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
