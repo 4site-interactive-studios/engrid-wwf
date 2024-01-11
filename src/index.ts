@@ -10,6 +10,7 @@ import {
 //   App,
 //   DonationFrequency,
 //   DonationAmount,
+//   EnForm,
 // } from "../../engrid-scripts/packages/common"; // Uses ENGrid via Visual Studio Workspace
 
 import "./sass/main.scss";
@@ -19,6 +20,7 @@ import DonationLightboxForm from "./scripts/donation-lightbox-form";
 import TweetToTarget from "./scripts/tweet-to-target";
 
 import { PaymentTracker } from "./scripts/payment-tracker";
+import { AnnualLimit } from "./scripts/annual-limit";
 
 const options: Options = {
   applePay: false,
@@ -35,6 +37,7 @@ const options: Options = {
   SkipToMainContentLink: true,
   SrcDefer: true,
   ProgressBar: true,
+  RegionLongFormat: "supporter.NOT_TAGGED_97",
   FreshAddress: {
     // dateField: "supporter.NOT_TAGGED_XXX",
     // statusField: "supporter.NOT_TAGGED_YYY",
@@ -63,8 +66,9 @@ const options: Options = {
     pages: ["ADVOCACY", "EMAILTOTARGET", "TWEETPAGE"],
   },
   onLoad: () => {
+    new AnnualLimit();
     (<any>window).DonationLightboxForm = DonationLightboxForm;
-    new DonationLightboxForm(DonationAmount, DonationFrequency);
+    new DonationLightboxForm(DonationAmount, DonationFrequency, App);
     customScript(App, DonationFrequency);
     pageHeaderFooter(App); // Added this line to trigger pageHeaderFooter
     new TweetToTarget(App, EnForm);
@@ -77,6 +81,86 @@ const options: Options = {
         section.classList.remove("en__contact--closed");
         section.classList.add("en__contact--open");
       });
+    }
+    // Add Plaid Tooltip to Submit Button
+    const submitButton = document.querySelector(
+      ".en__submit button"
+    ) as HTMLButtonElement;
+    if (submitButton) {
+      submitButton.setAttribute(
+        "data-balloon",
+        `When you click the button below, a new window will appear.
+        Follow the steps to securely donate from your bank account to WWF
+        (through Engaging Networks and Plaid).`
+      );
+      submitButton.setAttribute("data-balloon-pos", "up");
+    }
+    // If the page has a State field, and it is not required, make a mutation observer
+    // to watch for changes to the field and hide/show it
+    const regionContainer = document.querySelector(
+      ".en__field--region:not(.en__mandatory)"
+    ) as HTMLDivElement;
+    const tributeRecipientRegionContainer = document.querySelector(
+      ".en__field--infreg:not(.en__mandatory)"
+    ) as HTMLDivElement;
+    if (regionContainer || tributeRecipientRegionContainer) {
+      // Observe changes to the region container
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          // If it's adding a state TEXT field, empty it and hide the container
+          if (
+            mutation.addedNodes &&
+            mutation.addedNodes.length > 0 &&
+            mutation.addedNodes[0].nodeName === "INPUT" &&
+            (mutation.addedNodes[0] as HTMLInputElement).getAttribute(
+              "type"
+            ) === "text"
+          ) {
+            const stateField = mutation.addedNodes[0] as HTMLInputElement;
+            stateField.value = "";
+            const fieldContainer = stateField.closest(".en__field--select");
+            if (fieldContainer) {
+              fieldContainer.classList.add("hide");
+            }
+          }
+          // If it's adding a state SELECT field, show the container
+          if (
+            mutation.addedNodes &&
+            mutation.addedNodes.length > 0 &&
+            mutation.addedNodes[0].nodeName === "SELECT"
+          ) {
+            const stateField = mutation.addedNodes[0] as HTMLSelectElement;
+            const fieldContainer = stateField.closest(".en__field--select");
+            if (fieldContainer) {
+              fieldContainer.classList.remove("hide");
+            }
+          }
+          // console.log(mutation);
+        });
+      });
+      const stateField = document.querySelector("#en__field_supporter_region");
+      if (stateField && stateField.nodeName === "INPUT") {
+        regionContainer.classList.add("hide");
+      }
+      const tributeRecipientStateField = document.querySelector(
+        "#en__field_transaction_infreg"
+      );
+      if (
+        tributeRecipientStateField &&
+        tributeRecipientStateField.nodeName === "INPUT"
+      ) {
+        tributeRecipientRegionContainer.classList.add("hide");
+      }
+      // Start observing the region container
+      if (regionContainer) {
+        observer.observe(regionContainer, { childList: true, subtree: true });
+      }
+      if (tributeRecipientRegionContainer) {
+        observer.observe(tributeRecipientRegionContainer, {
+          childList: true,
+          subtree: true,
+        });
+      }
     }
     // Start the Payment Method Tracker
     new PaymentTracker(App);
@@ -132,7 +216,6 @@ const options: Options = {
         transactionSelprodvariantid.value != maxTheirGift
           ? "Y"
           : "N";
-      //
     }
   },
 };
@@ -143,4 +226,37 @@ const options: Options = {
     { field: "transaction.infpostcd", translation: "Recipient ZIP Code" },
   ],
 };
+// Trying to fix the issue of EN not running the onSubmit & onValidate functions
+// when you use digital wallets
+const paymentButtons = document.querySelectorAll(
+  'input[name="transaction.giveBySelect"]'
+);
+if (paymentButtons.length > 0) {
+  paymentButtons.forEach((button) => {
+    // If the changed radio value is stripedigitalwallet, run the options functions
+    button.addEventListener("change", (e) => {
+      if ((e.target as HTMLInputElement).value === "stripedigitalwallet") {
+        App.log("Stripe Digital Wallet Selected");
+        if (options.onValidate) options.onValidate();
+        if (options.onSubmit) options.onSubmit();
+      }
+    });
+  });
+}
+
 new App(options);
+
+// Adding a new listener to the onSubmit event after the App has been instantiated so that
+// it runs last and can modify the value of the RegionLongFormat field for the District of Columbia
+const enForm = EnForm.getInstance();
+enForm.onSubmit.subscribe(() => {
+  const expandedRegionField = App.getField(
+    App.getOption("RegionLongFormat") as string
+  ) as HTMLInputElement;
+  if (
+    expandedRegionField &&
+    expandedRegionField.value === "District of Columbia"
+  ) {
+    expandedRegionField.value = `the District of Columbia`;
+  }
+});

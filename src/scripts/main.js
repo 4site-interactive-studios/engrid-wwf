@@ -417,8 +417,8 @@ export const customScript = function (App, DonationFrequency) {
 
   if (ecardAddRecipeintButton) {
     ecardAddRecipeintButton.textContent = isSpanish
-      ? "Agrega este contacto"
-      : "Add this contact";
+      ? "Agrega destinatario"
+      : "Add recipient";
   }
 
   // On eCard pages, add a label to the recipients list
@@ -547,11 +547,30 @@ export const customScript = function (App, DonationFrequency) {
   }
 
   // Inserts a email subscription nudge after the element with the 'universal-opt-in' class
-  App.addHtml(
-    '<div style="display: none;" class="en__component en__component--copyblock grey-box email-subscription-nudge engrid__supporterquestions608540-N"><p></p></div>',
-    ".universal-opt-in",
-    "after"
-  );
+  const universalOptInFieldClasses = document.querySelector(
+    ".universal-opt-in > .en__field"
+  )?.classList;
+  if (universalOptInFieldClasses) {
+    const optInClass = [...universalOptInFieldClasses].find((className) => {
+      return (
+        className.startsWith("en__field--") &&
+        !isNaN(Number(className.replace("en__field--", "")))
+      );
+    });
+
+    if (optInClass) {
+      const showHideClassName = `engrid__supporterquestions${optInClass.replace(
+        "en__field--",
+        ""
+      )}-N`;
+
+      App.addHtml(
+        `<div style="display: none;" class="en__component en__component--copyblock grey-box email-subscription-nudge ${showHideClassName}"><p></p></div>`,
+        ".universal-opt-in",
+        "after"
+      );
+    }
+  }
 
   function hideOptInDependentElements() {
     // If the SMS opt-in does not appear on the page hide the Mobile Phone Number field and its disclosure
@@ -853,4 +872,9 @@ export const customScript = function (App, DonationFrequency) {
   };
   // Call the function
   createOther3Field();
+
+  const amountNudge = document.querySelector(".amount-nudge:not(.arrow-up)");
+  if (amountNudge && recurrFrequencyField) {
+    recurrFrequencyField.insertAdjacentElement("beforeend", amountNudge);
+  }
 };
