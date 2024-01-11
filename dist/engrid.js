@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, January 11, 2024 @ 13:13:58 ET
+ *  Date: Thursday, January 11, 2024 @ 13:28:34 ET
  *  By: fernando
  *  ENGrid styles: v0.16.11
  *  ENGrid scripts: v0.16.11
@@ -23760,14 +23760,19 @@ const options = {
       } // Start observing the region container
 
 
-      observer.observe(regionContainer, {
-        childList: true,
-        subtree: true
-      });
-      observer.observe(tributeRecipientRegionContainer, {
-        childList: true,
-        subtree: true
-      });
+      if (regionContainer) {
+        observer.observe(regionContainer, {
+          childList: true,
+          subtree: true
+        });
+      }
+
+      if (tributeRecipientRegionContainer) {
+        observer.observe(tributeRecipientRegionContainer, {
+          childList: true,
+          subtree: true
+        });
+      }
     }
   },
   onResize: () => console.log("Starter Theme Window Resized"),

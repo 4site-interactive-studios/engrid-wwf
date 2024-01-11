@@ -150,11 +150,15 @@ const options: Options = {
         tributeRecipientRegionContainer.classList.add("hide");
       }
       // Start observing the region container
-      observer.observe(regionContainer, { childList: true, subtree: true });
-      observer.observe(tributeRecipientRegionContainer, {
-        childList: true,
-        subtree: true,
-      });
+      if (regionContainer) {
+        observer.observe(regionContainer, { childList: true, subtree: true });
+      }
+      if (tributeRecipientRegionContainer) {
+        observer.observe(tributeRecipientRegionContainer, {
+          childList: true,
+          subtree: true,
+        });
+      }
     }
   },
   onResize: () => console.log("Starter Theme Window Resized"),
