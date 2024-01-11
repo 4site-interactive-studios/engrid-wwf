@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, January 11, 2024 @ 14:01:41 ET
+ *  Date: Thursday, January 11, 2024 @ 15:25:06 ET
  *  By: fernando
  *  ENGrid styles: v0.16.11
  *  ENGrid scripts: v0.16.11
@@ -23894,8 +23894,10 @@ class PaymentTracker {
   }
 
   clearLocalStorage() {
-    this.paymentChanges.forEach(v => {
-      const paymentData = v.includes("error_") ? this.prefix + "-from-" + v : this.prefix + "_" + v;
+    this.paymentChanges.forEach((v, index) => {
+      let paymentData = v.includes("error_") ? this.prefix + "-from-" : this.prefix + "_";
+      paymentData += index === this.paymentChanges.length - 1 ? "last_" : "";
+      paymentData += v;
       this.dataLayer.push({
         event: paymentData
       });

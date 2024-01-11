@@ -74,10 +74,14 @@ export class PaymentTracker {
     return hasError || hasVal ? "error_" : "";
   }
   clearLocalStorage() {
-    this.paymentChanges.forEach((v) => {
-      const paymentData = v.includes("error_")
-        ? this.prefix + "-from-" + v
-        : this.prefix + "_" + v;
+    this.paymentChanges.forEach((v, index) => {
+      let paymentData = v.includes("error_")
+        ? this.prefix + "-from-"
+        : this.prefix + "_";
+
+      paymentData += index === this.paymentChanges.length - 1 ? "last_" : "";
+      paymentData += v;
+
       this.dataLayer.push({
         event: paymentData,
       });
