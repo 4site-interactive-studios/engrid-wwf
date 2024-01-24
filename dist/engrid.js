@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, January 22, 2024 @ 17:01:45 ET
+ *  Date: Tuesday, January 23, 2024 @ 21:15:24 ET
  *  By: fernando
  *  ENGrid styles: v0.16.14
- *  ENGrid scripts: v0.16.14
+ *  ENGrid scripts: v0.16.15
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -13217,9 +13217,13 @@ class App extends engrid_ENGrid {
         new EventTickets();
         // Swap Amounts
         new SwapAmounts();
-        // On the end of the script, after all subscribers defined, let's load the current value
-        this._amount.load();
-        this._frequency.load();
+        // On the end of the script, after all subscribers defined, let's load the current frequency
+        // The amount will be loaded by the frequency change event
+        // This timeout is needed because when you have alternative amounts, EN is slower than Engrid
+        // about 20% of the time and we get a race condition if the client is also using the SwapAmounts feature
+        window.setTimeout(() => {
+            this._frequency.load();
+        }, 150);
         // Fast Form Fill
         new FastFormFill();
         // Currency Related Components
@@ -21423,7 +21427,7 @@ class ENValidators {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.16.14";
+const AppVersion = "0.16.15";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
