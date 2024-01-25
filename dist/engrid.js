@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, January 23, 2024 @ 21:15:24 ET
+ *  Date: Thursday, January 25, 2024 @ 12:05:03 ET
  *  By: fernando
  *  ENGrid styles: v0.16.14
- *  ENGrid scripts: v0.16.15
+ *  ENGrid scripts: v0.16.17
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -12224,8 +12224,8 @@ class DonationAmount {
     // Set amount var with currently selected amount
     load() {
         const currentAmountField = document.querySelector('input[name="' + this._radios + '"]:checked');
-        if (currentAmountField && currentAmountField.value) {
-            let currentAmountValue = parseFloat(currentAmountField.value);
+        if (currentAmountField) {
+            let currentAmountValue = parseFloat(currentAmountField.value || "");
             if (currentAmountValue > 0) {
                 this.amount = parseFloat(currentAmountField.value);
             }
@@ -12235,8 +12235,10 @@ class DonationAmount {
                 this.amount = currentAmountValue;
             }
         }
-        else if (engrid_ENGrid.checkNested(window.EngagingNetworks, "require", "_defined", "enjs", "getDonationTotal")) {
-            const total = window.EngagingNetworks.require._defined.enjs.getDonationTotal();
+        else if (engrid_ENGrid.checkNested(window.EngagingNetworks, "require", "_defined", "enjs", "getDonationTotal") &&
+            engrid_ENGrid.checkNested(window.EngagingNetworks, "require", "_defined", "enjs", "getDonationFee")) {
+            const total = window.EngagingNetworks.require._defined.enjs.getDonationTotal() -
+                window.EngagingNetworks.require._defined.enjs.getDonationFee();
             if (total) {
                 this.amount = total;
             }
@@ -13752,8 +13754,10 @@ class CreditCard {
         if (!this.ccField)
             return;
         // Set credit card field to type="tel" to prevent mobile browsers from
-        //  showing a credit card number keyboard
-        this.ccField.type = "tel";
+        //  showing a credit card number keyboard, only if the field is not hidden
+        if (this.ccField.type !== "hidden") {
+            this.ccField.type = "tel";
+        }
         const expireFiels = document.getElementsByName("transaction.ccexpire");
         if (expireFiels) {
             this.field_expiration_month = expireFiels[0];
@@ -21427,7 +21431,7 @@ class ENValidators {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.16.15";
+const AppVersion = "0.16.17";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
