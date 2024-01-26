@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, January 25, 2024 @ 12:05:03 ET
- *  By: fernando
- *  ENGrid styles: v0.16.14
- *  ENGrid scripts: v0.16.17
+ *  Date: Friday, January 26, 2024 @ 12:05:42 ET
+ *  By: bryancasler
+ *  ENGrid styles: v0.16.18
+ *  ENGrid scripts: v0.16.18
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -21431,7 +21431,7 @@ class ENValidators {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.16.17";
+const AppVersion = "0.16.18";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
