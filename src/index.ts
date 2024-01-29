@@ -63,6 +63,7 @@ const options: Options = {
     label: "Add Your Name",
     pages: ["ADVOCACY", "EMAILTOTARGET", "TWEETPAGE"],
   },
+  PostalCodeValidator: true,
   onLoad: () => {
     new AnnualLimit();
     (<any>window).DonationLightboxForm = DonationLightboxForm;
