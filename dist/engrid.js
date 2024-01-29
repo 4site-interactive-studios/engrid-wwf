@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Sunday, January 28, 2024 @ 23:11:26 ET
+ *  Date: Sunday, January 28, 2024 @ 23:26:18 ET
  *  By: michaelwdc
  *  ENGrid styles: v0.16.18
  *  ENGrid scripts: v0.16.18
@@ -21012,7 +21012,12 @@ class App extends engrid_ENGrid {
     if (this.options.SkipToMainContentLink) new skip_link_SkipToMainContentLink();
     if (this.options.SrcDefer) new src_defer_SrcDefer(); // Progress Bar
 
-    if (this.options.ProgressBar) new progress_bar_ProgressBar(); // RememberMe
+    if (this.options.ProgressBar) new progress_bar_ProgressBar(); // Browser Fingerprinting & IP Address Fetch
+
+    if (this.options.Identification && typeof this.options.Identification === "object") {
+      new Identification(this.options.Identification);
+    } // RememberMe
+
 
     try {
       // Accessing window.localStorage will throw an exception if it isn't permitted due to security reasons
@@ -29598,6 +29603,76 @@ class en_validators_ENValidators {
 
     engrid_ENGrid.removeError(container);
     return true;
+  }
+
+}
+;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/identification.js
+// fingerprint generation & ip generation happen in constructor
+// when the complete their AJAX calls, they populate the associated variables
+class Identification {
+  constructor(options) {
+    console.log('Identification options START');
+    this._fp = '';
+    this._ip = '';
+
+    if (options.enableFP || options.generateFP) {
+      console.log('Setting Identification generateFP');
+      this.generateFP = options.generateFP ? options.generateFP : () => {
+        console.log('setting this.generateFP');
+      };
+    } else {
+      this.generateFP = () => {
+        console.log('test');
+      };
+    }
+
+    if (options.enableIP || options.generateIP) {
+      console.log('Setting Identification generateIP');
+      this.generateIP = options.generateIP ? options.generateIP : () => {
+        return new Promise(function (resolve, reject) {
+          const xhr = new XMLHttpRequest();
+
+          xhr.onload = function () {
+            const matches = this.responseText.match('ip=([0-9\.\-]*)');
+            const ip_address = matches && matches.length > 1 ? matches[1] : '';
+
+            if (ip_address) {
+              resolve(ip_address);
+            } else {
+              reject('ERROR: IP address fetch failed.');
+            }
+          };
+
+          xhr.onerror = reject;
+          xhr.open('GET', 'https://www.cloudflare.com/cdn-cgi/trace');
+          xhr.send();
+        });
+      };
+      console.log('calling generateIP');
+      this.generateIP(ip_address => {
+        console.log('IP address fetch results.', ip_address);
+
+        if (ip_address) {
+          this._ip = ip_address;
+          this.dispatchEvent('ip', ip_address);
+        }
+      }, error => {
+        console.log('ERROR: IP address fetch failed.');
+        this.dispatchEvent('ip', '');
+      });
+    } else {
+      this.generateIP = () => {};
+    }
+  }
+
+  dispatchEvent(type, value) {
+    const event = new CustomEvent('engrid-ident', {
+      detail: {
+        type: type,
+        payload: value
+      }
+    });
+    window.dispatchEvent(event);
   }
 
 }
