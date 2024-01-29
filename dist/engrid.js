@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Sunday, January 28, 2024 @ 23:31:25 ET
+ *  Date: Sunday, January 28, 2024 @ 23:43:57 ET
  *  By: michaelwdc
  *  ENGrid styles: v0.16.18
  *  ENGrid scripts: v0.16.18
@@ -29638,11 +29638,12 @@ class Identification {
           xhr.onload = function () {
             const matches = this.responseText.match('ip=([0-9\.\-]*)');
             const ip_address = matches && matches.length > 1 ? matches[1] : '';
+            console.log('ip_address', ip_address);
 
             if (ip_address) {
               resolve(ip_address);
             } else {
-              reject('ERROR: IP address fetch failed.');
+              reject(new Error('IP address fetch failed.'));
             }
           };
 
@@ -29652,7 +29653,7 @@ class Identification {
         });
       };
       console.log('calling generateIP');
-      this.generateIP(ip_address => {
+      this.generateIP().then(ip_address => {
         console.log('IP address fetch results.', ip_address);
 
         if (ip_address) {
@@ -29660,7 +29661,7 @@ class Identification {
           this.dispatchEvent('ip', ip_address);
         }
       }, error => {
-        console.log('ERROR: IP address fetch failed.');
+        this._ip = '';
         this.dispatchEvent('ip', '');
       });
     } else {
