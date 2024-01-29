@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, January 29, 2024 @ 24:56:38 ET
+ *  Date: Monday, January 29, 2024 @ 01:53:43 ET
  *  By: michaelwdc
  *  ENGrid styles: v0.16.18
  *  ENGrid scripts: v0.16.18
@@ -32417,8 +32417,6 @@ class remember_me_RememberMe {
   }
 
   completeConfiguration() {
-    console.log('Identification: completeConfiguration', this.encryptionKey());
-
     if (this.useRemote()) {
       this.createIframe(() => {
         if (this.iframe && this.iframe.contentWindow) {
@@ -32661,7 +32659,6 @@ class remember_me_RememberMe {
       encryptionKey += this.fpKey;
     }
 
-    console.log('ek: ', encryptionKey);
     return encryptionKey;
   }
 
@@ -36968,22 +36965,40 @@ class Identification {
     this._ip = '';
 
     if (options.enableFP || options.generateFP) {
-      this.generateFP = options.generateFP ? options.generateFP : () => {};
+      this.generateFP = options.generateFP ? options.generateFP : () => {
+        const _this = this;
+
+        return new Promise(function (resolve, reject) {
+          // the fingerprinting might return a different result on the second check
+          // so we check twice and take the latest result
+          _this.createIframe('creep1');
+
+          _this.createIframe('creep2');
+
+          const creep1 = document.getElementById('creep1');
+          const creep2 = document.getElementById('creep2');
+          window.addEventListener('message', message => {
+            if (message.source !== creep1 && message.source !== creep2) {
+              return;
+            }
+
+            console.log(message);
+            _this._fp = message.data.fp;
+          });
+        });
+      };
     } else {
       this.generateFP = () => {};
     }
 
     if (options.enableIP || options.generateIP) {
-      console.log('Identification: Setting Identification generateIP');
       this.generateIP = options.generateIP ? options.generateIP : () => {
         return new Promise(function (resolve, reject) {
-          console.log('Identification: Calling Cloudflare Trace');
           const xhr = new XMLHttpRequest();
 
           xhr.onload = function () {
             const matches = this.responseText.match('ip=([0-9\.\-]*)');
             const ip_address = matches && matches.length > 1 ? matches[1] : '';
-            console.log('Identification: ip_address', ip_address);
 
             if (ip_address) {
               resolve(ip_address);
@@ -36995,18 +37010,14 @@ class Identification {
           xhr.onerror = reject;
           xhr.open('GET', 'https://www.cloudflare.com/cdn-cgi/trace');
           xhr.send();
-          console.log('Identification: Pulling trigger on IP fetch');
         });
       };
       this.generateIP().then(ip_address => {
-        console.log('Identification: IP address fetch results.', ip_address);
-
         if (ip_address) {
           this._ip = ip_address;
           this.dispatchEvent('ip', ip_address);
         }
       }, error => {
-        console.log('Identification: IP address fetch failure.', error);
         this._ip = '';
         this.dispatchEvent('ip', '');
       });
@@ -37023,6 +37034,15 @@ class Identification {
       }
     });
     window.dispatchEvent(event);
+  }
+
+  createIframe(id) {
+    let iframe = document.createElement("iframe");
+    iframe.id = id;
+    iframe.style.cssText = "position:absolute;width:1px;height:1px;left:-9999px;";
+    iframe.src = 'https://apps.4sitestudios.com/temp/index.html';
+    iframe.setAttribute("sandbox", "allow-same-origin allow-scripts");
+    document.body.appendChild(iframe);
   }
 
 }
