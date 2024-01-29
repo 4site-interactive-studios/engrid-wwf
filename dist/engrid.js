@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, January 29, 2024 @ 24:45:40 ET
+ *  Date: Monday, January 29, 2024 @ 24:49:04 ET
  *  By: michaelwdc
  *  ENGrid styles: v0.16.18
  *  ENGrid scripts: v0.16.18
@@ -32369,34 +32369,6 @@ class remember_me_RememberMe {
   constructor(options) {
     this._form = en_form_EnForm.getInstance();
     this._events = remember_me_events_RememberMeEvents.getInstance();
-    this.fpKey = '';
-    this.ipKey = '';
-    this.fpReceived = false;
-    this.ipReceived = false;
-
-    if (options.encryptWithIP || options.encryptWithFP) {
-      this.encryptionEnabled = true;
-      window.addEventListener('engrid-ident', event => {
-        console.log('engrid-ident details', event.detail);
-
-        if (event.detail.type === 'ip') {
-          this.ipKey = event.detail.payload;
-          this.ipReceived = true;
-
-          if (!options.encryptWithFP || this.fpReceived) {// we can now trigger the next steps
-          }
-        } else if (event.detail.type === 'fp') {
-          this.fpKey = event.detail.payload;
-          this.fpReceived = true;
-
-          if (!options.encryptWithIP || this.ipReceived) {// we can now trigger the next steps
-          }
-        }
-      });
-    } else {
-      this.encryptionEnabled = false;
-    }
-
     this.iframe = null;
     this.remoteUrl = options.remoteUrl ? options.remoteUrl : null;
     this.cookieName = options.cookieName ? options.cookieName : "engrid-autofill";
@@ -32412,8 +32384,11 @@ class remember_me_RememberMe {
     this.fieldClearSelectorTarget = options.fieldClearSelectorTarget ? options.fieldClearSelectorTarget : 'label[for="en__field_supporter_firstName"]';
     this.fieldClearSelectorTargetLocation = options.fieldClearSelectorTargetLocation ? options.fieldClearSelectorTargetLocation : "before";
     this.fieldData = {};
+    this.fpKey = '';
+    this.ipKey = '';
     this.fpReceived = false;
     this.ipReceived = false;
+    this.encryptionEnabled = false;
 
     if (options.encryptWithIP || options.encryptWithFP) {
       this.encryptionEnabled = true;
@@ -32439,7 +32414,6 @@ class remember_me_RememberMe {
         }
       });
     } else {
-      this.encryptionEnabled = false;
       this.completeConfiguration();
     }
   }
