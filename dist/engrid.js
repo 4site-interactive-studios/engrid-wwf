@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Sunday, January 28, 2024 @ 23:43:57 ET
+ *  Date: Sunday, January 28, 2024 @ 23:49:27 ET
  *  By: michaelwdc
  *  ENGrid styles: v0.16.18
  *  ENGrid scripts: v0.16.18
@@ -29614,31 +29614,26 @@ class en_validators_ENValidators {
 // when the complete their AJAX calls, they populate the associated variables
 class Identification {
   constructor(options) {
-    console.log('Identification options START');
     this._fp = '';
     this._ip = '';
 
     if (options.enableFP || options.generateFP) {
-      console.log('Setting Identification generateFP');
-      this.generateFP = options.generateFP ? options.generateFP : () => {
-        console.log('setting this.generateFP');
-      };
+      this.generateFP = options.generateFP ? options.generateFP : () => {};
     } else {
-      this.generateFP = () => {
-        console.log('test');
-      };
+      this.generateFP = () => {};
     }
 
     if (options.enableIP || options.generateIP) {
-      console.log('Setting Identification generateIP');
+      console.log('Identification: Setting Identification generateIP');
       this.generateIP = options.generateIP ? options.generateIP : () => {
         return new Promise(function (resolve, reject) {
+          console.log('Identification: Calling Cloudflare Trace');
           const xhr = new XMLHttpRequest();
 
           xhr.onload = function () {
             const matches = this.responseText.match('ip=([0-9\.\-]*)');
             const ip_address = matches && matches.length > 1 ? matches[1] : '';
-            console.log('ip_address', ip_address);
+            console.log('Identification: ip_address', ip_address);
 
             if (ip_address) {
               resolve(ip_address);
@@ -29650,17 +29645,18 @@ class Identification {
           xhr.onerror = reject;
           xhr.open('GET', 'https://www.cloudflare.com/cdn-cgi/trace');
           xhr.send();
+          console.log('Identification: Pulling trigger on IP fetch');
         });
       };
-      console.log('calling generateIP');
       this.generateIP().then(ip_address => {
-        console.log('IP address fetch results.', ip_address);
+        console.log('Identification: IP address fetch results.', ip_address);
 
         if (ip_address) {
           this._ip = ip_address;
           this.dispatchEvent('ip', ip_address);
         }
       }, error => {
+        console.log('Identification: IP address fetch failure.', error);
         this._ip = '';
         this.dispatchEvent('ip', '');
       });
