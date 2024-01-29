@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Sunday, January 28, 2024 @ 22:20:12 ET
+ *  Date: Sunday, January 28, 2024 @ 22:54:02 ET
  *  By: michaelwdc
  *  ENGrid styles: v0.16.18
  *  ENGrid scripts: v0.16.18
@@ -25095,6 +25095,13 @@ class remember_me_RememberMe {
   constructor(options) {
     this._form = en_form_EnForm.getInstance();
     this._events = remember_me_events_RememberMeEvents.getInstance();
+
+    if (options.encryptWithIP || options.encryptWithFP) {
+      window.addEventListener('engrid-ident', event => {
+        console.log(event.detail, event.type);
+      });
+    }
+
     this.iframe = null;
     this.remoteUrl = options.remoteUrl ? options.remoteUrl : null;
     this.cookieName = options.cookieName ? options.cookieName : "engrid-autofill";
