@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, January 26, 2024 @ 12:05:42 ET
- *  By: bryancasler
- *  ENGrid styles: v0.16.18
- *  ENGrid scripts: v0.16.18
+ *  Date: Monday, January 29, 2024 @ 10:32:48 ET
+ *  By: michael
+ *  ENGrid styles: v0.16.19
+ *  ENGrid scripts: v0.16.19
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -11829,6 +11829,7 @@ const OptionsDefaults = {
     ENValidators: false,
     MobileCTA: false,
     CustomCurrency: false,
+    PostalCodeValidator: false,
     PageLayouts: [
         "leftleft1col",
         "centerleft1col",
@@ -13329,6 +13330,7 @@ class App extends engrid_ENGrid {
         new UrlParamsToBodyAttrs();
         new SetAttr();
         new ShowIfPresent();
+        new PostalCodeValidator();
         //Debug panel
         let showDebugPanel = this.options.Debug;
         try {
@@ -21430,11 +21432,124 @@ class ENValidators {
     }
 }
 
+;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/postal-code-validator.js
+
+
+
+// Conditionally validates the postcode field for a US format zip code
+// If US is selected as the country, a country has not been selected yet
+// or if there is no country field
+// Allows blank zip code if zip code is not required.
+class PostalCodeValidator {
+    constructor() {
+        var _a, _b;
+        this.postalCodeField = engrid_ENGrid.getField("supporter.postcode");
+        this._form = EnForm.getInstance();
+        this.logger = new EngridLogger("Postal Code Validator", "white", "red", "📬");
+        this.supportedSeparators = ["+", "-", " "];
+        this.separator = this.getSeparator();
+        this.regexSeparator = this.getRegexSeparator(this.separator);
+        if (this.shouldRun()) {
+            (_a = this.postalCodeField) === null || _a === void 0 ? void 0 : _a.addEventListener("blur", () => this.validate());
+            (_b = this.postalCodeField) === null || _b === void 0 ? void 0 : _b.addEventListener("input", () => this.liveValidate());
+            this._form.onValidate.subscribe(() => {
+                if (!this._form.validate)
+                    return;
+                this.liveValidate();
+                // It seems like we need some delay or EN removes our error message.
+                setTimeout(() => {
+                    this.validate();
+                }, 100);
+                // We dont need to validate the zip code, or it is valid
+                const postalCodeValid = !this.shouldValidateUSZipCode() || this.isValidUSZipCode();
+                this._form.validate = postalCodeValid;
+                if (!postalCodeValid) {
+                    this.logger.log(`Invalid Zip Code ${this.postalCodeField.value}`);
+                    this.postalCodeField.scrollIntoView({ behavior: "smooth" });
+                }
+                return postalCodeValid;
+            });
+        }
+    }
+    shouldRun() {
+        return !!(engrid_ENGrid.getOption("PostalCodeValidator") && this.postalCodeField);
+    }
+    validate() {
+        if (this.shouldValidateUSZipCode() && !this.isValidUSZipCode()) {
+            engrid_ENGrid.setError(".en__field--postcode", `Please enter a valid ZIP Code of ##### or #####${this.separator}####`);
+        }
+        else {
+            engrid_ENGrid.removeError(".en__field--postcode");
+        }
+    }
+    isValidUSZipCode() {
+        var _a, _b;
+        const zipCodeRequired = !!document.querySelector(".en__field--postcode.en__mandatory");
+        // If zip code is not required in EN Form Block and the field is empty, it is valid
+        if (!zipCodeRequired && ((_a = this.postalCodeField) === null || _a === void 0 ? void 0 : _a.value) === "") {
+            return true;
+        }
+        const postalCodeRegex = new RegExp(`^\\d{5}(${this.regexSeparator}\\d{4})?$`);
+        return !!((_b = this.postalCodeField) === null || _b === void 0 ? void 0 : _b.value.match(postalCodeRegex));
+    }
+    /**
+     * Formats the zip code to #####-####  as the user inputs it
+     * The separator is determined by the TidyContact option, but defaults to "-"
+     */
+    liveValidate() {
+        var _a;
+        if (!this.shouldValidateUSZipCode())
+            return;
+        let value = (_a = this.postalCodeField) === null || _a === void 0 ? void 0 : _a.value;
+        // Removing all non-numeric characters and separators in the wrong position
+        value = value.replace(/[^0-9\s+-]|(?<!^.{5})[\s+-]/g, "");
+        //replace + and space with - and insert a dash after the 5th character if a 6th character is entered
+        if (value.match(/\d{5}/)) {
+            value = value.replace(/[\s+]/g, this.separator);
+            value = value.replace(/(\d{5})(\d)/, `$1${this.separator}$2`);
+        }
+        //set field value with max 10 characters
+        this.postalCodeField.value = value.slice(0, 10);
+    }
+    shouldValidateUSZipCode() {
+        // Validating US zip code only if country is US, country has not yet been selected
+        // or if there is no country field
+        const country = engrid_ENGrid.getField("supporter.country")
+            ? engrid_ENGrid.getFieldValue("supporter.country")
+            : "US";
+        return ["us", "united states", "usa", ""].includes(country.toLowerCase());
+    }
+    getSeparator() {
+        const tidyContact = engrid_ENGrid.getOption("TidyContact");
+        if (tidyContact &&
+            tidyContact.us_zip_divider &&
+            this.supportedSeparators.includes(tidyContact.us_zip_divider)) {
+            return tidyContact.us_zip_divider;
+        }
+        return "-";
+    }
+    getRegexSeparator(separator) {
+        switch (separator) {
+            case "+":
+                return "\\+";
+            case "-":
+                return "-";
+            case " ":
+                return "\\s";
+            default:
+                this.logger.log(`Invalid separator "${separator}" provided to PostalCodeValidator, falling back to "-".`);
+                return "-";
+        }
+    }
+}
+
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.16.18";
+const AppVersion = "0.16.19";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
+
+
 
 
 
