@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Sunday, January 28, 2024 @ 23:26:18 ET
+ *  Date: Sunday, January 28, 2024 @ 23:31:25 ET
  *  By: michaelwdc
  *  ENGrid styles: v0.16.18
  *  ENGrid scripts: v0.16.18
@@ -19360,6 +19360,7 @@ const options_OptionsDefaults = {
   AutoYear: false,
   TranslateFields: true,
   Debug: false,
+  Identification: false,
   RememberMe: false,
   TidyContact: false,
   RegionLongFormat: "",
@@ -25100,10 +25101,12 @@ class remember_me_RememberMe {
   constructor(options) {
     this._form = en_form_EnForm.getInstance();
     this._events = remember_me_events_RememberMeEvents.getInstance();
+    console.log('options.encryptWithIP, options.encryptWithFP', options.encryptWithIP, options.encryptWithFP);
 
     if (options.encryptWithIP || options.encryptWithFP) {
+      console.log('adding event listener for identification part');
       window.addEventListener('engrid-ident', event => {
-        console.log(event.detail, event.type);
+        console.log('engrid-ident details', event.detail, event.type);
       });
     }
 
