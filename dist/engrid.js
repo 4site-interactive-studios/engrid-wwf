@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, January 29, 2024 @ 24:49:04 ET
+ *  Date: Monday, January 29, 2024 @ 24:56:38 ET
  *  By: michaelwdc
  *  ENGrid styles: v0.16.18
  *  ENGrid scripts: v0.16.18
@@ -32400,7 +32400,6 @@ class remember_me_RememberMe {
           this.ipReceived = true;
 
           if (!options.encryptWithFP || this.fpReceived) {
-            // we can now trigger the next steps
             this.completeConfiguration();
           }
         } else if (event.detail.type === 'fp') {
@@ -32408,7 +32407,6 @@ class remember_me_RememberMe {
           this.fpReceived = true;
 
           if (!options.encryptWithIP || this.ipReceived) {
-            // we can now trigger the next steps
             this.completeConfiguration();
           }
         }
@@ -32419,6 +32417,8 @@ class remember_me_RememberMe {
   }
 
   completeConfiguration() {
+    console.log('Identification: completeConfiguration', this.encryptionKey());
+
     if (this.useRemote()) {
       this.createIframe(() => {
         if (this.iframe && this.iframe.contentWindow) {
@@ -32669,12 +32669,13 @@ class remember_me_RememberMe {
     const encryptionKey = this.encryptionKey();
 
     if (encryptionKey) {
-      const decryptedText = CryptoJS.AES.decrypt(jsonData, encryptionKey).toString(CryptoJS.enc.Utf8);
+      const decryptedText = CryptoJS.AES.decrypt(jsonData, encryptionKey).toString(CryptoJS.enc.Utf8); // check if the text decrypted correctly; if it did not, we'll clear it
 
       try {
         JSON.parse(decryptedText);
         jsonData = decryptedText;
       } catch (e) {
+        jsonData = '';
         console.log('Decrypted data isnt valid');
       }
     }
@@ -32683,11 +32684,12 @@ class remember_me_RememberMe {
   }
 
   encryptData(jsonData) {
+    console.log('jsonData before encrypt: ', jsonData);
     const encryptionKey = this.encryptionKey();
 
     if (encryptionKey) {
       jsonData = CryptoJS.AES.encrypt(jsonData, encryptionKey).toString(CryptoJS.enc.Utf8);
-      console.log('encrypted data: ', jsonData);
+      console.log('jsonData after encrypt: ', jsonData);
     }
 
     return jsonData;
