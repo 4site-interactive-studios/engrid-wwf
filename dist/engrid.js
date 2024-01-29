@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Sunday, January 28, 2024 @ 23:04:28 ET
+ *  Date: Sunday, January 28, 2024 @ 23:07:21 ET
  *  By: michaelwdc
  *  ENGrid styles: v0.16.18
  *  ENGrid scripts: v0.16.18
@@ -41185,7 +41185,8 @@ const rememberMeOptions = {
   fieldOptInSelectorTargetLocation: "after",
   fieldClearSelectorTarget: "div.en__field--firstName div, div.en__field--email div",
   fieldClearSelectorTargetLocation: "after",
-  fieldNames: ["supporter.firstName", "supporter.lastName", "supporter.address1", "supporter.address2", "supporter.city", "supporter.country", "supporter.region", "supporter.postcode", "supporter.emailAddress"]
+  fieldNames: ["supporter.firstName", "supporter.lastName", "supporter.address1", "supporter.address2", "supporter.city", "supporter.country", "supporter.region", "supporter.postcode", "supporter.emailAddress"],
+  encryptWithIP: true
 };
 const options = {
   applePay: false,

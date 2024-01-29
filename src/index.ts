@@ -39,7 +39,8 @@ const rememberMeOptions = {
     "supporter.region",
     "supporter.postcode",
     "supporter.emailAddress",
-  ]
+  ],
+  encryptWithIP: true
 };
 
 const options: Options = {
