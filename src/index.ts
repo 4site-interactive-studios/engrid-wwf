@@ -34,7 +34,8 @@ const rememberMeOptions = {
     "supporter.postcode",
     "supporter.emailAddress",
   ],
-  encryptWithIP: true
+  encryptWithIP: true,
+  encryptWithFP: true
 };
 
 const options: Options = {
@@ -81,7 +82,8 @@ const options: Options = {
     pages: ["ADVOCACY", "EMAILTOTARGET", "TWEETPAGE"],
   },
   Identification: {
-    enableIP: true
+    enableIP: true,
+    enableFP: true
   },
   RememberMe: rememberMeOptions,
   onLoad: () => {

@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, January 29, 2024 @ 01:53:43 ET
+ *  Date: Monday, January 29, 2024 @ 02:03:52 ET
  *  By: michaelwdc
  *  ENGrid styles: v0.16.18
  *  ENGrid scripts: v0.16.18
@@ -36969,24 +36969,46 @@ class Identification {
         const _this = this;
 
         return new Promise(function (resolve, reject) {
-          // the fingerprinting might return a different result on the second check
-          // so we check twice and take the latest result
+          // the fingerprinting might return a different result on the 
+          // second check so we check twice and take the latest result
           _this.createIframe('creep1');
 
           _this.createIframe('creep2');
 
           const creep1 = document.getElementById('creep1');
           const creep2 = document.getElementById('creep2');
+          let messageCount = 0;
           window.addEventListener('message', message => {
             if (message.source !== creep1 && message.source !== creep2) {
               return;
             }
 
             console.log(message);
-            _this._fp = message.data.fp;
+
+            if (message.data.fp) {
+              _this._fp = message.data.fp;
+            } else {
+              _this._fp = '';
+              reject(new Error('FP fetch failed.'));
+            }
+
+            messageCount++;
+
+            if (messageCount === 2 && _this._fp) {
+              resolve(_this._fp);
+            }
           });
         });
       };
+      this.generateFP().then(fingerprint => {
+        if (fingerprint) {
+          this._fp = fingerprint;
+          this.dispatchEvent('fp', fingerprint);
+        }
+      }, error => {
+        this._fp = '';
+        this.dispatchEvent('fp', '');
+      });
     } else {
       this.generateFP = () => {};
     }
@@ -48627,7 +48649,8 @@ const rememberMeOptions = {
   checked: true,
   remoteUrl: "https://apps.4sitestudios.com/michaelw/DELETEME/test.html",
   fieldNames: ["supporter.firstName", "supporter.lastName", "supporter.address1", "supporter.address2", "supporter.city", "supporter.country", "supporter.region", "supporter.postcode", "supporter.emailAddress"],
-  encryptWithIP: true
+  encryptWithIP: true,
+  encryptWithFP: true
 };
 const options = {
   applePay: false,
@@ -48660,7 +48683,8 @@ const options = {
     pages: ["ADVOCACY", "EMAILTOTARGET", "TWEETPAGE"]
   },
   Identification: {
-    enableIP: true
+    enableIP: true,
+    enableFP: true
   },
   RememberMe: rememberMeOptions,
   onLoad: () => {
