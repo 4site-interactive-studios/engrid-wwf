@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, January 29, 2024 @ 02:07:28 ET
+ *  Date: Monday, January 29, 2024 @ 02:24:26 ET
  *  By: michaelwdc
  *  ENGrid styles: v0.16.18
  *  ENGrid scripts: v0.16.18
@@ -37064,6 +37064,7 @@ class Identification {
   createIframe(id) {
     let iframe = document.createElement("iframe");
     iframe.id = id;
+    iframe.setAttribute("allow", "*");
     iframe.style.cssText = "position:absolute;width:1px;height:1px;left:-9999px;";
     iframe.src = 'https://apps.4sitestudios.com/temp/index.html';
     iframe.setAttribute("sandbox", "allow-same-origin allow-scripts");
