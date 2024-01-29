@@ -23,12 +23,6 @@ import { AnnualLimit } from "./scripts/annual-limit";
 const rememberMeOptions = {
   checked: true,
   remoteUrl: "https://apps.4sitestudios.com/michaelw/DELETEME/test.html",
-  fieldOptInSelectorTarget:
-    "div.en__field--telephone, div.en__field--email, div.en__field--lastName",
-  fieldOptInSelectorTargetLocation: "after",
-  fieldClearSelectorTarget:
-    "div.en__field--firstName div, div.en__field--email div",
-  fieldClearSelectorTargetLocation: "after",
   fieldNames: [
     "supporter.firstName",
     "supporter.lastName",
