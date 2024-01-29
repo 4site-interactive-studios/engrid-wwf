@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Sunday, January 28, 2024 @ 22:54:02 ET
+ *  Date: Sunday, January 28, 2024 @ 23:04:28 ET
  *  By: michaelwdc
  *  ENGrid styles: v0.16.18
  *  ENGrid scripts: v0.16.18
@@ -41178,6 +41178,15 @@ class AnnualLimit {
 
 
 
+const rememberMeOptions = {
+  checked: true,
+  remoteUrl: "https://apps.4sitestudios.com/michaelw/DELETEME/test.html",
+  fieldOptInSelectorTarget: "div.en__field--telephone, div.en__field--email, div.en__field--lastName",
+  fieldOptInSelectorTargetLocation: "after",
+  fieldClearSelectorTarget: "div.en__field--firstName div, div.en__field--email div",
+  fieldClearSelectorTargetLocation: "after",
+  fieldNames: ["supporter.firstName", "supporter.lastName", "supporter.address1", "supporter.address2", "supporter.city", "supporter.country", "supporter.region", "supporter.postcode", "supporter.emailAddress"]
+};
 const options = {
   applePay: false,
   CapitalizeFields: true,
@@ -41208,10 +41217,10 @@ const options = {
     label: "Add Your Name",
     pages: ["ADVOCACY", "EMAILTOTARGET", "TWEETPAGE"]
   },
-
-  /*Identification: {
+  Identification: {
     enableIP: true
-  },*/
+  },
+  RememberMe: rememberMeOptions,
   onLoad: () => {
     new AnnualLimit();
     window.DonationLightboxForm = DonationLightboxForm;
