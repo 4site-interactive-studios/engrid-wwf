@@ -21,7 +21,7 @@ import TweetToTarget from "./scripts/tweet-to-target";
 import { AnnualLimit } from "./scripts/annual-limit";
 
 const rememberMeOptions = {
-  checked: true,
+  checked: false,
   //remoteUrl: "https://apps.4sitestudios.com/michaelw/DELETEME/test.html",
   fieldNames: [
     "supporter.firstName",

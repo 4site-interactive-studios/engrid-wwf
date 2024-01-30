@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, January 30, 2024 @ 24:38:15 ET
+ *  Date: Tuesday, January 30, 2024 @ 24:42:22 ET
  *  By: michael
  *  ENGrid styles: v0.16.18
  *  ENGrid scripts: v0.16.18
@@ -48669,7 +48669,7 @@ class AnnualLimit {
 
 
 const rememberMeOptions = {
-  checked: true,
+  checked: false,
   //remoteUrl: "https://apps.4sitestudios.com/michaelw/DELETEME/test.html",
   fieldNames: ["supporter.firstName", "supporter.lastName", "supporter.address1", "supporter.address2", "supporter.city", "supporter.country", "supporter.region", "supporter.postcode", "supporter.emailAddress"],
   encryptWithIP: true,
