@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, January 30, 2024 @ 15:06:41 ET
+ *  Date: Tuesday, January 30, 2024 @ 17:13:34 ET
  *  By: fernando
  *  ENGrid styles: v0.17.1
- *  ENGrid scripts: v0.17.1
+ *  ENGrid scripts: v0.17.2
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -21515,11 +21515,20 @@ class PostalCodeValidator {
         if (!this.shouldValidateUSZipCode())
             return;
         let value = (_a = this.postalCodeField) === null || _a === void 0 ? void 0 : _a.value;
-        // Removing all non-numeric characters and separators in the wrong position
-        value = value.replace(/[^0-9\s+-]|(?<!^.{5})[\s+-]/g, "");
-        //replace + and space with - and insert a dash after the 5th character if a 6th character is entered
-        if (value.match(/\d{5}/)) {
-            value = value.replace(/[\s+]/g, this.separator);
+        // If the value is 5 characters or less, remove all non-numeric characters
+        if (value.length <= 5) {
+            value = value.replace(/\D/g, "");
+        }
+        // If one of the supported separators is endered as the 6th character, replace it with the official separator
+        else if (value.length === 6 &&
+            this.supportedSeparators.includes(value[5])) {
+            // Removing all non-numeric characters
+            value = value.replace(/\D/g, "") + this.separator;
+        }
+        else {
+            // Removing all non-numeric characters
+            value = value.replace(/\D/g, "");
+            // Adding the separator after the 5th character
             value = value.replace(/(\d{5})(\d)/, `$1${this.separator}$2`);
         }
         //set field value with max 10 characters
@@ -21672,7 +21681,7 @@ class VGS {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.17.1";
+const AppVersion = "0.17.2";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
