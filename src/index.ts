@@ -19,6 +19,7 @@ import { pageHeaderFooter } from "./scripts/page-header-footer";
 import DonationLightboxForm from "./scripts/donation-lightbox-form";
 import TweetToTarget from "./scripts/tweet-to-target";
 import { AnnualLimit } from "./scripts/annual-limit";
+import { OnLoadModal } from "./scripts/on-load-modal";
 
 const options: Options = {
   applePay: false,
@@ -160,6 +161,7 @@ const options: Options = {
         });
       }
     }
+    new OnLoadModal();
   },
   onResize: () => console.log("Starter Theme Window Resized"),
 

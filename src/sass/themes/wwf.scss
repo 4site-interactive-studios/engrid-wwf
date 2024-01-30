@@ -2266,3 +2266,8 @@ button[data-balloon] {
     }
   }
 }
+
+// hide any modal content on the page until it's moved into the modal
+.modal--content:not(.engrid-modal .modal--content) {
+  display: none;
+}
