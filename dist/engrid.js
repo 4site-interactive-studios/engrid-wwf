@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, January 29, 2024 @ 02:24:26 ET
+ *  Date: Tuesday, January 30, 2024 @ 14:07:59 ET
  *  By: michaelwdc
  *  ENGrid styles: v0.16.18
  *  ENGrid scripts: v0.16.18
@@ -32393,8 +32393,6 @@ class remember_me_RememberMe {
     if (options.encryptWithIP || options.encryptWithFP) {
       this.encryptionEnabled = true;
       window.addEventListener('engrid-ident', event => {
-        console.log('engrid-ident details', event.detail);
-
         if (event.detail.type === 'ip') {
           this.ipKey = event.detail.payload;
           this.ipReceived = true;
@@ -32440,6 +32438,10 @@ class remember_me_RememberMe {
         }
 
         if (data && data.key && data.value !== undefined && data.key === this.cookieName) {
+          if (this.encryptionEnabled) {
+            data.value = this.decryptData(data.value);
+          }
+
           this.updateFieldData(data.value);
           this.writeFields();
           let hasFieldData = Object.keys(this.fieldData).length > 0;
@@ -32639,12 +32641,22 @@ class remember_me_RememberMe {
 
   saveCookieToRemote() {
     if (this.iframe && this.iframe.contentWindow) {
-      this.iframe.contentWindow.postMessage(JSON.stringify({
-        key: this.cookieName,
-        value: this.fieldData,
-        operation: "write",
-        expires: this.cookieExpirationDays
-      }), "*");
+      if (this.fieldData && this.encryptionEnabled) {
+        let encryptedFieldData = this.encryptData(JSON.stringify(this.fieldData));
+        this.iframe.contentWindow.postMessage(JSON.stringify({
+          key: this.cookieName,
+          value: encryptedFieldData,
+          operation: "write",
+          expires: this.cookieExpirationDays
+        }), "*");
+      } else {
+        this.iframe.contentWindow.postMessage(JSON.stringify({
+          key: this.cookieName,
+          value: this.fieldData,
+          operation: "write",
+          expires: this.cookieExpirationDays
+        }), "*");
+      }
     }
   }
 
@@ -32666,14 +32678,17 @@ class remember_me_RememberMe {
     const encryptionKey = this.encryptionKey();
 
     if (encryptionKey) {
+      console.log('jsonData before decrypt', jsonData);
       const decryptedText = CryptoJS.AES.decrypt(jsonData, encryptionKey).toString(CryptoJS.enc.Utf8); // check if the text decrypted correctly; if it did not, we'll clear it
+
+      console.log('jsonData after decrypt', decryptedText);
 
       try {
         JSON.parse(decryptedText);
         jsonData = decryptedText;
       } catch (e) {
         jsonData = '';
-        console.log('Decrypted data isnt valid');
+        console.log('Decrypted data isnt valid', decryptedText);
       }
     }
 
@@ -32685,7 +32700,7 @@ class remember_me_RememberMe {
     const encryptionKey = this.encryptionKey();
 
     if (encryptionKey) {
-      jsonData = CryptoJS.AES.encrypt(jsonData, encryptionKey).toString(CryptoJS.enc.Utf8);
+      jsonData = CryptoJS.AES.encrypt(jsonData, encryptionKey).toString();
       console.log('jsonData after encrypt: ', jsonData);
     }
 
@@ -32695,7 +32710,7 @@ class remember_me_RememberMe {
   readCookie() {
     let jsonFieldData = get(this.cookieName) || "";
 
-    if (this.encryptionEnabled) {
+    if (jsonFieldData && this.encryptionEnabled) {
       jsonFieldData = this.decryptData(jsonFieldData);
     }
 
@@ -32705,7 +32720,7 @@ class remember_me_RememberMe {
   saveCookie() {
     let jsonFieldData = JSON.stringify(this.fieldData);
 
-    if (this.encryptionEnabled) {
+    if (jsonFieldData && this.encryptionEnabled) {
       jsonFieldData = this.encryptData(jsonFieldData);
     }
 
@@ -36963,30 +36978,29 @@ class Identification {
   constructor(options) {
     this._fp = '';
     this._ip = '';
+    this.defaultFPRemoteURL = options.defaultFPRemoteURL ? options.defaultFPRemoteURL : '';
+    this.defaultIPRemoteURL = options.defaultIPRemoteURL ? options.defaultIPRemoteURL : location.protocol + '//' + window.location.hostname + '/cdn-cgi/trace';
 
     if (options.enableFP || options.generateFP) {
       this.generateFP = options.generateFP ? options.generateFP : () => {
         const _this = this;
 
         return new Promise(function (resolve, reject) {
-          // the fingerprinting might return a different result on the 
+          if (!_this.defaultFPRemoteURL) {
+            reject(new Error('Default FP Remote URL is missing'));
+          } // the fingerprinting might return a different result on the 
           // second check so we check twice and take the latest result
-          _this.createIframe('creep1');
 
-          _this.createIframe('creep2');
 
-          const creep1 = document.getElementById('creep1');
-          const creep2 = document.getElementById('creep2');
+          _this.createIframe('creep1', _this.defaultFPRemoteURL);
+
+          _this.createIframe('creep2', _this.defaultFPRemoteURL);
+
           let messageCount = 0;
           window.addEventListener('message', message => {
-            console.log('message received', message);
-
-            if (message.source !== creep1 && message.source !== creep2) {
-              console.log('message does not match; discarding');
+            if (!message.data.hasOwnProperty('fp')) {
               return;
             }
-
-            console.log(message);
 
             if (message.data.fp) {
               _this._fp = message.data.fp;
@@ -37018,7 +37032,13 @@ class Identification {
 
     if (options.enableIP || options.generateIP) {
       this.generateIP = options.generateIP ? options.generateIP : () => {
+        const _this = this;
+
         return new Promise(function (resolve, reject) {
+          if (!_this.defaultIPRemoteURL) {
+            reject(new Error('Default IP Remote URL is missing'));
+          }
+
           const xhr = new XMLHttpRequest();
 
           xhr.onload = function () {
@@ -37033,7 +37053,7 @@ class Identification {
           };
 
           xhr.onerror = reject;
-          xhr.open('GET', 'https://www.cloudflare.com/cdn-cgi/trace');
+          xhr.open('GET', _this.defaultIPRemoteURL);
           xhr.send();
         });
       };
@@ -37061,12 +37081,12 @@ class Identification {
     window.dispatchEvent(event);
   }
 
-  createIframe(id) {
+  createIframe(id, url) {
     let iframe = document.createElement("iframe");
     iframe.id = id;
     iframe.setAttribute("allow", "*");
     iframe.style.cssText = "position:absolute;width:1px;height:1px;left:-9999px;";
-    iframe.src = 'https://apps.4sitestudios.com/temp/index.html';
+    iframe.src = url;
     iframe.setAttribute("sandbox", "allow-same-origin allow-scripts");
     document.body.appendChild(iframe);
   }
@@ -48651,7 +48671,7 @@ class AnnualLimit {
 
 const rememberMeOptions = {
   checked: true,
-  remoteUrl: "https://apps.4sitestudios.com/michaelw/DELETEME/test.html",
+  //remoteUrl: "https://apps.4sitestudios.com/michaelw/DELETEME/test.html",
   fieldNames: ["supporter.firstName", "supporter.lastName", "supporter.address1", "supporter.address2", "supporter.city", "supporter.country", "supporter.region", "supporter.postcode", "supporter.emailAddress"],
   encryptWithIP: true,
   encryptWithFP: true
@@ -48688,7 +48708,8 @@ const options = {
   },
   Identification: {
     enableIP: true,
-    enableFP: true
+    enableFP: true,
+    defaultFPRemoteURL: 'https:/apps.4sitestudios.com/temp/index.html'
   },
   RememberMe: rememberMeOptions,
   onLoad: () => {
