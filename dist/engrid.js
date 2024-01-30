@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, January 29, 2024 @ 23:11:37 ET
+ *  Date: Monday, January 29, 2024 @ 23:25:53 ET
  *  By: michael
  *  ENGrid styles: v0.16.18
  *  ENGrid scripts: v0.16.18
@@ -32417,6 +32417,8 @@ class remember_me_RememberMe {
   }
 
   completeConfiguration() {
+    console.log('running configuration completion process');
+
     if (this.useRemote()) {
       this.createIframe(() => {
         if (this.iframe && this.iframe.contentWindow) {
@@ -36963,17 +36965,22 @@ class Identification {
   constructor(options) {
     this._fp = '';
     this._ip = '';
+    this.defaultFPRemoteURL = options.defaultFPRemoteURL ? options.defaultFPRemoteURL : '';
 
     if (options.enableFP || options.generateFP) {
       this.generateFP = options.generateFP ? options.generateFP : () => {
         const _this = this;
 
         return new Promise(function (resolve, reject) {
-          // the fingerprinting might return a different result on the 
+          if (!_this.defaultFPRemoteURL) {
+            reject(new Error('Default FP Remote URL is missing'));
+          } // the fingerprinting might return a different result on the 
           // second check so we check twice and take the latest result
-          _this.createIframe('creep1');
 
-          _this.createIframe('creep2');
+
+          _this.createIframe('creep1', _this.defaultFPRemoteURL);
+
+          _this.createIframe('creep2', _this.defaultFPRemoteURL);
 
           let messageCount = 0;
           window.addEventListener('message', message => {
@@ -36983,8 +36990,6 @@ class Identification {
               console.log('message does not match; discarding');
               return;
             }
-
-            console.log(message);
 
             if (message.data.fp) {
               _this._fp = message.data.fp;
@@ -37059,12 +37064,12 @@ class Identification {
     window.dispatchEvent(event);
   }
 
-  createIframe(id) {
+  createIframe(id, url) {
     let iframe = document.createElement("iframe");
     iframe.id = id;
     iframe.setAttribute("allow", "*");
     iframe.style.cssText = "position:absolute;width:1px;height:1px;left:-9999px;";
-    iframe.src = 'https://apps.4sitestudios.com/temp/index.html';
+    iframe.src = url;
     iframe.setAttribute("sandbox", "allow-same-origin allow-scripts");
     document.body.appendChild(iframe);
   }
@@ -48686,7 +48691,8 @@ const options = {
   },
   Identification: {
     enableIP: true,
-    enableFP: true
+    enableFP: true,
+    defaultFPRemoteURL: 'https://apps.4sitestudios.com/temp/index.html'
   },
   RememberMe: rememberMeOptions,
   onLoad: () => {

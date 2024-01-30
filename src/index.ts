@@ -83,7 +83,8 @@ const options: Options = {
   },
   Identification: {
     enableIP: true,
-    enableFP: true
+    enableFP: true,
+    defaultFPRemoteURL: 'https://apps.4sitestudios.com/temp/index.html'
   },
   RememberMe: rememberMeOptions,
   onLoad: () => {
