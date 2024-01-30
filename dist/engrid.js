@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, January 30, 2024 @ 24:52:36 ET
+ *  Date: Tuesday, January 30, 2024 @ 01:00:53 ET
  *  By: michael
  *  ENGrid styles: v0.16.18
  *  ENGrid scripts: v0.16.18
@@ -32416,6 +32416,7 @@ class remember_me_RememberMe {
 
   completeConfiguration() {
     console.log('running configuration completion process', this.ipKey, this.fpKey);
+    this.encryptData('{"supporter.firstName":"Michael","supporter.lastName":"Wilson","supporter.address1":"3431%2014th%20St%2C%20NW","supporter.address2":"Suite%201","supporter.city":"Washington","supporter.country":"US","supporter.region":"DC","supporter.postcode":"20010","supporter.emailAddress":"michaelw%404sitestudios.com"}');
 
     if (this.useRemote()) {
       this.createIframe(() => {
@@ -32680,7 +32681,6 @@ class remember_me_RememberMe {
       encryptionKey += this.fpKey;
     }
 
-    return 'password';
     return encryptionKey;
   }
 
@@ -32707,7 +32707,7 @@ class remember_me_RememberMe {
     const encryptionKey = this.encryptionKey();
 
     if (encryptionKey) {
-      jsonData = CryptoJS.AES.encrypt(jsonData, encryptionKey).toString(CryptoJS.enc.Utf8);
+      jsonData = CryptoJS.AES.encrypt(jsonData, encryptionKey).toString();
       console.log('jsonData after encrypt: ', jsonData);
     }
 
