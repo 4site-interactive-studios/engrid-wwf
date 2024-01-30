@@ -22,7 +22,7 @@ import { AnnualLimit } from "./scripts/annual-limit";
 
 const rememberMeOptions = {
   checked: true,
-  remoteUrl: "https://apps.4sitestudios.com/michaelw/DELETEME/test.html",
+  //remoteUrl: "https://apps.4sitestudios.com/michaelw/DELETEME/test.html",
   fieldNames: [
     "supporter.firstName",
     "supporter.lastName",
