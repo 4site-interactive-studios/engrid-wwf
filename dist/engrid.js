@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Saturday, January 27, 2024 @ 05:34:10 ET
+ *  Date: Tuesday, January 30, 2024 @ 15:06:41 ET
  *  By: fernando
- *  ENGrid styles: v0.17.0
- *  ENGrid scripts: v0.17.0
+ *  ENGrid styles: v0.17.1
+ *  ENGrid scripts: v0.17.1
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -20875,13 +20875,19 @@ class GiveBySelect {
     constructor() {
         this.logger = new EngridLogger("GiveBySelect", "#FFF", "#333", "🐇");
         this.transactionGiveBySelect = document.getElementsByName("transaction.giveBySelect");
+        this.vgsField = document.querySelector(".en__field--vgs");
         if (!this.transactionGiveBySelect)
             return;
         this.transactionGiveBySelect.forEach((giveBySelect) => {
             giveBySelect.addEventListener("change", () => {
                 this.logger.log("Changed to " + giveBySelect.value);
                 if (giveBySelect.value.toLowerCase() === "card") {
-                    engrid_ENGrid.setPaymentType("");
+                    if (this.vgsField) {
+                        engrid_ENGrid.setPaymentType("visa"); // VGS will not change the payment type field, so we have to do it manually to avoid errors
+                    }
+                    else {
+                        engrid_ENGrid.setPaymentType("");
+                    }
                 }
                 else {
                     engrid_ENGrid.setPaymentType(giveBySelect.value);
@@ -21611,12 +21617,16 @@ class VGS {
                 icons: {
                     cardPlaceholder: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEwAAABMCAYAAADHl1ErAAAACXBIWXMAABYlAAAWJQFJUiTwAAAB8ElEQVR4nO2c4W3CMBBGz1H/NyNkAzoCo2SDrkI3YJSOABt0g9IJXBnOqUkMyifUqkrek04RlvMjT2c7sc6EGKPBfBpcaSBMBGEiCBNBmAjCRBAmgjARhIkgTARhIggTQZhK2q0Yh5l1ZrYzs0PqsrI4+LN3VTeThkvntUm6Fbuxn2E/LITQmtm7mW08Sb/MbO9tpxhjui6WEMLWzJKDdO3N7Nmf9ZjaYoyn8y8X1o6GXxLV1lJyDeE+9oWPQ/ZRG4b9WkVVpqe+8LLLo7ErM6t248qllZnWBc+uV5+zumGsQjm3f/ic9tb4JGeeXcga4U723rptilVx0avgg2Q3m/JNn+y6zeAm+GSWUi/c7L5yfB77RJhACOHs6WnuLfmGpTI3YditEEGYCMJEECaCMJHZqySvHRfIMBGEiSBMBGEiCBNBmAjCRBAmgjARhIkgTGT2t+R/59EdYXZcfwmEiSBMBGEiCBNZzCr5VzvCZJjIIMxrPKFC6abMsHbaFcZuGq8StqKwDqZkN8emKBbrvawHCtxJ7y1nVxQF34lxUXBupOy8EtWy88jBhknUDjbkPhyd+Xn2l9lHZ8rgcNZVTA5nTYRFjv/dPf7HvzuJ8C0pgjARhIkgTARhIggTQZgIwkQQJoIwEYSJIEwEYQpm9g2Ro5zhLcuLBwAAAABJRU5ErkJggg==",
                 },
+                // Autocomplete is not customizable
+                autoComplete: "cc-number",
             },
             "transaction.ccvv": {
                 showCardIcon: false,
                 autoFocus: false,
                 placeholder: "CVV",
                 hideValue: false,
+                // Autocomplete is not customizable
+                autoComplete: "cc-csc",
             },
         };
         // Merge the default options with the options set in the theme
@@ -21662,7 +21672,7 @@ class VGS {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.17.0";
+const AppVersion = "0.17.1";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
@@ -22418,6 +22428,7 @@ const customScript = function (App, DonationFrequency) {
   const createOther3Field = () => {
     const paymentType = document.querySelector("#en__field_transaction_paymenttype");
     const other3Field = document.querySelector('input[name="transaction.othamt3"]');
+    const vgsField = document.querySelector(".en__field--vgs");
 
     if (paymentType && !other3Field) {
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -22432,7 +22443,7 @@ const customScript = function (App, DonationFrequency) {
       inputField.setAttribute("type", "text");
       inputField.classList.add("en__field__input", "en__field__input--text", "foursite-engrid-added-input");
       inputField.setAttribute("name", "transaction.othamt3");
-      inputField.setAttribute("value", "");
+      inputField.setAttribute("value", vgsField ? "card" : ""); // Set the default value to card (VGS won't change the payment type)
 
       if (App.debug) {
         inputField.style.width = "100%";
@@ -22470,7 +22481,7 @@ const customScript = function (App, DonationFrequency) {
           // Set applepay if using IOS or Safari, otherwise set googlepay
           other3Field.value = isIOS || isSafari ? "applepay" : "googlepay";
         } else {
-          other3Field.value = paymentType.value;
+          other3Field.value = vgsField && paymentType.value === "visa" ? "card" : paymentType.value;
         }
       });
     }
