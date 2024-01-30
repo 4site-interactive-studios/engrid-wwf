@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, January 30, 2024 @ 24:44:01 ET
+ *  Date: Tuesday, January 30, 2024 @ 24:52:36 ET
  *  By: michael
  *  ENGrid styles: v0.16.18
  *  ENGrid scripts: v0.16.18
@@ -32680,6 +32680,7 @@ class remember_me_RememberMe {
       encryptionKey += this.fpKey;
     }
 
+    return 'password';
     return encryptionKey;
   }
 
