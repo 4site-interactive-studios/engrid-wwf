@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, January 29, 2024 @ 23:47:37 ET
+ *  Date: Tuesday, January 30, 2024 @ 24:38:15 ET
  *  By: michael
  *  ENGrid styles: v0.16.18
  *  ENGrid scripts: v0.16.18
@@ -32440,6 +32440,10 @@ class remember_me_RememberMe {
         }
 
         if (data && data.key && data.value !== undefined && data.key === this.cookieName) {
+          if (this.encryptionEnabled) {
+            data.value = this.decryptData(data.value);
+          }
+
           this.updateFieldData(data.value);
           this.writeFields();
           let hasFieldData = Object.keys(this.fieldData).length > 0;
@@ -32466,8 +32470,12 @@ class remember_me_RememberMe {
       this.writeFields();
 
       this._form.onSubmit.subscribe(() => {
+        console.log('submit', this.rememberMeOptIn);
+
         if (this.rememberMeOptIn) {
+          console.log('reading fields & saving cookie');
           this.readFields();
+          console.log('field data', this.fieldData);
           this.saveCookie();
         }
       });
@@ -32639,12 +32647,23 @@ class remember_me_RememberMe {
 
   saveCookieToRemote() {
     if (this.iframe && this.iframe.contentWindow) {
-      this.iframe.contentWindow.postMessage(JSON.stringify({
-        key: this.cookieName,
-        value: this.fieldData,
-        operation: "write",
-        expires: this.cookieExpirationDays
-      }), "*");
+      if (this.fieldData && this.encryptionEnabled) {
+        let encryptedFieldData = this.encryptData(JSON.stringify(this.fieldData));
+        console.log('encryptedFieldData', encryptedFieldData);
+        this.iframe.contentWindow.postMessage(JSON.stringify({
+          key: this.cookieName,
+          value: encryptedFieldData,
+          operation: "write",
+          expires: this.cookieExpirationDays
+        }), "*");
+      } else {
+        this.iframe.contentWindow.postMessage(JSON.stringify({
+          key: this.cookieName,
+          value: this.fieldData,
+          operation: "write",
+          expires: this.cookieExpirationDays
+        }), "*");
+      }
     }
   }
 
@@ -32673,7 +32692,7 @@ class remember_me_RememberMe {
         jsonData = decryptedText;
       } catch (e) {
         jsonData = '';
-        console.log('Decrypted data isnt valid');
+        console.log('Decrypted data isnt valid', decryptedText);
       }
     }
 
@@ -32695,7 +32714,7 @@ class remember_me_RememberMe {
   readCookie() {
     let jsonFieldData = get(this.cookieName) || "";
 
-    if (this.encryptionEnabled) {
+    if (jsonFieldData && this.encryptionEnabled) {
       jsonFieldData = this.decryptData(jsonFieldData);
     }
 
@@ -32704,9 +32723,11 @@ class remember_me_RememberMe {
 
   saveCookie() {
     let jsonFieldData = JSON.stringify(this.fieldData);
+    console.log('saveCookie', jsonFieldData);
 
-    if (this.encryptionEnabled) {
+    if (jsonFieldData && this.encryptionEnabled) {
       jsonFieldData = this.encryptData(jsonFieldData);
+      console.log('encrypted jsonFieldData', jsonFieldData);
     }
 
     set(this.cookieName, jsonFieldData, {
