@@ -798,6 +798,7 @@ export const customScript = function (App, DonationFrequency) {
     const other3Field = document.querySelector(
       'input[name="transaction.othamt3"]'
     );
+    const vgsField = document.querySelector(".en__field--vgs");
     if (paymentType && !other3Field) {
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
       const isSafari = /^((?!chrome|android).)*safari/i.test(
@@ -827,7 +828,7 @@ export const customScript = function (App, DonationFrequency) {
         "foursite-engrid-added-input"
       );
       inputField.setAttribute("name", "transaction.othamt3");
-      inputField.setAttribute("value", "");
+      inputField.setAttribute("value", vgsField ? "card" : ""); // Set the default value to card (VGS won't change the payment type)
       if (App.debug) {
         inputField.style.width = "100%";
         inputField.setAttribute(
@@ -865,7 +866,10 @@ export const customScript = function (App, DonationFrequency) {
           // Set applepay if using IOS or Safari, otherwise set googlepay
           other3Field.value = isIOS || isSafari ? "applepay" : "googlepay";
         } else {
-          other3Field.value = paymentType.value;
+          other3Field.value =
+            vgsField && paymentType.value === "visa"
+              ? "card"
+              : paymentType.value;
         }
       });
     }

@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, January 29, 2024 @ 11:07:18 ET
- *  By: michael
- *  ENGrid styles: v0.16.19
- *  ENGrid scripts: v0.16.19
+ *  Date: Tuesday, January 30, 2024 @ 17:25:21 ET
+ *  By: fernando
+ *  ENGrid styles: v0.17.1
+ *  ENGrid scripts: v0.17.2
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -11829,6 +11829,7 @@ const OptionsDefaults = {
     ENValidators: false,
     MobileCTA: false,
     CustomCurrency: false,
+    VGS: false,
     PostalCodeValidator: false,
     PageLayouts: [
         "leftleft1col",
@@ -13331,6 +13332,8 @@ class App extends engrid_ENGrid {
         new SetAttr();
         new ShowIfPresent();
         new PostalCodeValidator();
+        // Very Good Security
+        new VGS();
         //Debug panel
         let showDebugPanel = this.options.Debug;
         try {
@@ -13682,6 +13685,7 @@ class CreditCard {
     constructor() {
         this.logger = new EngridLogger("CreditCard", "#ccc84a", "#333", "💳");
         this._form = EnForm.getInstance();
+        this.vgsField = document.querySelector(".en__field--vgs");
         this.ccField = engrid_ENGrid.getField("transaction.ccnumber");
         this.ccValues = {
             "american-express": [
@@ -13753,6 +13757,10 @@ class CreditCard {
                 }
             }
         };
+        if (this.vgsField) {
+            this.logger.log("The Page is Using VGS. Exiting Credit Card Handler");
+            return;
+        }
         if (!this.ccField)
             return;
         // Set credit card field to type="tel" to prevent mobile browsers from
@@ -20867,13 +20875,19 @@ class GiveBySelect {
     constructor() {
         this.logger = new EngridLogger("GiveBySelect", "#FFF", "#333", "🐇");
         this.transactionGiveBySelect = document.getElementsByName("transaction.giveBySelect");
+        this.vgsField = document.querySelector(".en__field--vgs");
         if (!this.transactionGiveBySelect)
             return;
         this.transactionGiveBySelect.forEach((giveBySelect) => {
             giveBySelect.addEventListener("change", () => {
                 this.logger.log("Changed to " + giveBySelect.value);
                 if (giveBySelect.value.toLowerCase() === "card") {
-                    engrid_ENGrid.setPaymentType("");
+                    if (this.vgsField) {
+                        engrid_ENGrid.setPaymentType("visa"); // VGS will not change the payment type field, so we have to do it manually to avoid errors
+                    }
+                    else {
+                        engrid_ENGrid.setPaymentType("");
+                    }
                 }
                 else {
                     engrid_ENGrid.setPaymentType(giveBySelect.value);
@@ -21632,11 +21646,20 @@ class PostalCodeValidator {
         if (!this.shouldValidateUSZipCode())
             return;
         let value = (_a = this.postalCodeField) === null || _a === void 0 ? void 0 : _a.value;
-        // Removing all non-numeric characters and separators in the wrong position
-        value = value.replace(/[^0-9\s+-]|(?<!^.{5})[\s+-]/g, "");
-        //replace + and space with - and insert a dash after the 5th character if a 6th character is entered
-        if (value.match(/\d{5}/)) {
-            value = value.replace(/[\s+]/g, this.separator);
+        // If the value is 5 characters or less, remove all non-numeric characters
+        if (value.length <= 5) {
+            value = value.replace(/\D/g, "");
+        }
+        // If one of the supported separators is endered as the 6th character, replace it with the official separator
+        else if (value.length === 6 &&
+            this.supportedSeparators.includes(value[5])) {
+            // Removing all non-numeric characters
+            value = value.replace(/\D/g, "") + this.separator;
+        }
+        else {
+            // Removing all non-numeric characters
+            value = value.replace(/\D/g, "");
+            // Adding the separator after the 5th character
             value = value.replace(/(\d{5})(\d)/, `$1${this.separator}$2`);
         }
         //set field value with max 10 characters
@@ -21674,11 +21697,126 @@ class PostalCodeValidator {
     }
 }
 
+;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/vgs.js
+// This component allows you to customize the VGS theme options
+//
+// It is used in the following way:
+//
+// VGS: {
+// "transaction.ccnumber": {
+//     showCardIcon: true,
+//     autoFocus: false,
+//     placeholder: "•••• •••• •••• ••••",
+//     hideValue: false,
+//     icons: {
+//        (icons can't be urls, they have to be base64 encoded images)
+//        cardPlaceholder: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px' fill='%233BBF45'%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3Cpath d='M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z'/%3E%3C/svg%3E"
+//        visa: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3Cpath fill='%233BBF45' d='M384 32H0v448h384V32z'/%3E%3Cpath fill='white' d='M128.5 352.5l-32-192h-32l32 192zm96-192l-32 192h-32l32-192z'/%3E%3C/svg%3E",
+//     },
+// },
+// "transaction.ccvv": {
+//     showCardIcon: false,
+//     autoFocus: false,
+//     placeholder: "CVV",
+//     hideValue: false,
+// },
+// },
+//
+// The VGS component can also be set at the page level, if necessary
+//
+
+class VGS {
+    constructor() {
+        this.logger = new EngridLogger("VGS", "black", "pink", "💳");
+        this.vgsField = document.querySelector(".en__field--vgs");
+        this.options = engrid_ENGrid.getOption("VGS");
+        if (!this.shouldRun())
+            return;
+        const paymentTypeField = document.querySelector("#en__field_transaction_paymenttype");
+        if (paymentTypeField) {
+            // The VGS iFrame Communication doesn't change the value of the payment type field, so we have to do it manually
+            paymentTypeField.value = "visa";
+        }
+        this.setDefaults();
+        this.dumpGlobalVar();
+    }
+    shouldRun() {
+        // Only run if the vgs field is present
+        if (!this.vgsField)
+            return false;
+        return true;
+    }
+    setDefaults() {
+        const options = this.options;
+        const defaultOptions = {
+            "transaction.ccnumber": {
+                showCardIcon: true,
+                autoFocus: false,
+                placeholder: "•••• •••• •••• ••••",
+                hideValue: false,
+                icons: {
+                    cardPlaceholder: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEwAAABMCAYAAADHl1ErAAAACXBIWXMAABYlAAAWJQFJUiTwAAAB8ElEQVR4nO2c4W3CMBBGz1H/NyNkAzoCo2SDrkI3YJSOABt0g9IJXBnOqUkMyifUqkrek04RlvMjT2c7sc6EGKPBfBpcaSBMBGEiCBNBmAjCRBAmgjARhIkgTARhIggTQZhK2q0Yh5l1ZrYzs0PqsrI4+LN3VTeThkvntUm6Fbuxn2E/LITQmtm7mW08Sb/MbO9tpxhjui6WEMLWzJKDdO3N7Nmf9ZjaYoyn8y8X1o6GXxLV1lJyDeE+9oWPQ/ZRG4b9WkVVpqe+8LLLo7ErM6t248qllZnWBc+uV5+zumGsQjm3f/ic9tb4JGeeXcga4U723rptilVx0avgg2Q3m/JNn+y6zeAm+GSWUi/c7L5yfB77RJhACOHs6WnuLfmGpTI3YditEEGYCMJEECaCMJHZqySvHRfIMBGEiSBMBGEiCBNBmAjCRBAmgjARhIkgTGT2t+R/59EdYXZcfwmEiSBMBGEiCBNZzCr5VzvCZJjIIMxrPKFC6abMsHbaFcZuGq8StqKwDqZkN8emKBbrvawHCtxJ7y1nVxQF34lxUXBupOy8EtWy88jBhknUDjbkPhyd+Xn2l9lHZ8rgcNZVTA5nTYRFjv/dPf7HvzuJ8C0pgjARhIkgTARhIggTQZgIwkQQJoIwEYSJIEwEYQpm9g2Ro5zhLcuLBwAAAABJRU5ErkJggg==",
+                },
+                // Autocomplete is not customizable
+                autoComplete: "cc-number",
+            },
+            "transaction.ccvv": {
+                showCardIcon: false,
+                autoFocus: false,
+                placeholder: "CVV",
+                hideValue: false,
+                // Autocomplete is not customizable
+                autoComplete: "cc-csc",
+            },
+        };
+        // Merge the default options with the options set in the theme
+        this.options = Object.assign(Object.assign({}, defaultOptions), options);
+        this.logger.log("Theme Options", options);
+        this.logger.log("Merged Options", this.options);
+    }
+    dumpGlobalVar() {
+        // Dump the global variable for the VGS options
+        window.enVGSFields = this.options;
+        // EN is not reading the global variable because their JS file loads before ENgrid, so we're going to HACK TOWN
+        // Clean up the VGS iFrames
+        window.setTimeout(() => {
+            const vgsIElements = document.querySelectorAll(".en__field__input--vgs");
+            if (vgsIElements.length > 0) {
+                // Create a mutation observer that cleans the VGS Elements before anything is rendered
+                const observer = new MutationObserver((mutations) => {
+                    mutations.forEach((mutation) => {
+                        if (mutation.type === "childList" && mutation.addedNodes.length > 0)
+                            mutation.addedNodes.forEach((node) => {
+                                if (node.nodeName === "IFRAME" &&
+                                    mutation.previousSibling &&
+                                    mutation.previousSibling.nodeName === "IFRAME") {
+                                    // Delete the previous sibling
+                                    mutation.previousSibling.remove();
+                                }
+                            });
+                    });
+                });
+                // Observe the VGS Elements
+                vgsIElements.forEach((vgsIElement) => {
+                    observer.observe(vgsIElement, { childList: true });
+                });
+                if (engrid_ENGrid.checkNested(window.EngagingNetworks, "require", "_defined", "enjs", "vgs")) {
+                    window.EngagingNetworks.require._defined.enjs.vgs.init();
+                }
+                else {
+                    this.logger.log("VGS is not defined");
+                }
+            }
+        }, 1000);
+    }
+}
+
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.16.19";
+const AppVersion = "0.17.2";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
+
 
 
 
@@ -22430,6 +22568,7 @@ const customScript = function (App, DonationFrequency) {
   const createOther3Field = () => {
     const paymentType = document.querySelector("#en__field_transaction_paymenttype");
     const other3Field = document.querySelector('input[name="transaction.othamt3"]');
+    const vgsField = document.querySelector(".en__field--vgs");
 
     if (paymentType && !other3Field) {
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -22444,7 +22583,7 @@ const customScript = function (App, DonationFrequency) {
       inputField.setAttribute("type", "text");
       inputField.classList.add("en__field__input", "en__field__input--text", "foursite-engrid-added-input");
       inputField.setAttribute("name", "transaction.othamt3");
-      inputField.setAttribute("value", "");
+      inputField.setAttribute("value", vgsField ? "card" : ""); // Set the default value to card (VGS won't change the payment type)
 
       if (App.debug) {
         inputField.style.width = "100%";
@@ -22482,7 +22621,7 @@ const customScript = function (App, DonationFrequency) {
           // Set applepay if using IOS or Safari, otherwise set googlepay
           other3Field.value = isIOS || isSafari ? "applepay" : "googlepay";
         } else {
-          other3Field.value = paymentType.value;
+          other3Field.value = vgsField && paymentType.value === "visa" ? "card" : paymentType.value;
         }
       });
     }
