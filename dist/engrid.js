@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, January 29, 2024 @ 02:24:26 ET
- *  By: michaelwdc
+ *  Date: Monday, January 29, 2024 @ 23:11:37 ET
+ *  By: michael
  *  ENGrid styles: v0.16.18
  *  ENGrid scripts: v0.16.18
  *
@@ -36975,13 +36975,11 @@ class Identification {
 
           _this.createIframe('creep2');
 
-          const creep1 = document.getElementById('creep1');
-          const creep2 = document.getElementById('creep2');
           let messageCount = 0;
           window.addEventListener('message', message => {
             console.log('message received', message);
 
-            if (message.source !== creep1 && message.source !== creep2) {
+            if (!message.data.hasOwnProperty('fp')) {
               console.log('message does not match; discarding');
               return;
             }
