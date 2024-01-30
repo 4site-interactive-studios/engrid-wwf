@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, January 29, 2024 @ 23:25:53 ET
+ *  Date: Monday, January 29, 2024 @ 23:41:27 ET
  *  By: michael
  *  ENGrid styles: v0.16.18
  *  ENGrid scripts: v0.16.18
@@ -32393,8 +32393,6 @@ class remember_me_RememberMe {
     if (options.encryptWithIP || options.encryptWithFP) {
       this.encryptionEnabled = true;
       window.addEventListener('engrid-ident', event => {
-        console.log('engrid-ident details', event.detail);
-
         if (event.detail.type === 'ip') {
           this.ipKey = event.detail.payload;
           this.ipReceived = true;
@@ -32417,7 +32415,7 @@ class remember_me_RememberMe {
   }
 
   completeConfiguration() {
-    console.log('running configuration completion process');
+    console.log('running configuration completion process', this.ipKey, this.fpKey);
 
     if (this.useRemote()) {
       this.createIframe(() => {
@@ -36984,10 +36982,7 @@ class Identification {
 
           let messageCount = 0;
           window.addEventListener('message', message => {
-            console.log('message received', message);
-
             if (!message.data.hasOwnProperty('fp')) {
-              console.log('message does not match; discarding');
               return;
             }
 
