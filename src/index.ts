@@ -21,7 +21,7 @@ import TweetToTarget from "./scripts/tweet-to-target";
 import { AnnualLimit } from "./scripts/annual-limit";
 
 const rememberMeOptions = {
-  checked: true,
+  checked: false,
   //remoteUrl: "https://apps.4sitestudios.com/michaelw/DELETEME/test.html",
   fieldNames: [
     "supporter.firstName",
@@ -84,7 +84,7 @@ const options: Options = {
   Identification: {
     enableIP: true,
     enableFP: true,
-    defaultFPRemoteURL: 'https:/apps.4sitestudios.com/temp/index.html'
+    defaultFPRemoteURL: 'https://apps.4sitestudios.com/temp/index.html'
   },
   RememberMe: rememberMeOptions,
   onLoad: () => {
