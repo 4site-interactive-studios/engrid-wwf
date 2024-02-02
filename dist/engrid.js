@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, February 2, 2024 @ 09:21:22 ET
+ *  Date: Friday, February 2, 2024 @ 09:33:49 ET
  *  By: michael
  *  ENGrid styles: v0.17.1
  *  ENGrid scripts: v0.17.2
@@ -31596,6 +31596,15 @@ class vgs_VGS {
 
 }
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/welcome-back.js
+/**
+ * This component adds a welcome back message and a personal details summary to the page.
+ * It depends on the "fast-personal-details" functionality from the FastFormFill component.
+ * The component will only run, when the "WelcomeBack" option is set,
+ * if the "fast-personal-details" class is present on the page and the FastFormFill conditions
+ * are met (all mandatory inputs in that block are filled).
+ *
+ * All the text content and positioning is configurable through the "WelcomeBack" option.
+ */
 
 
 class WelcomeBack {
@@ -31699,7 +31708,7 @@ class WelcomeBack {
 
 }
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/version.js
-const version_AppVersion = "0.17.5";
+const version_AppVersion = "0.17.6";
 ;// CONCATENATED MODULE: ../engrid-scripts/packages/common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
 
