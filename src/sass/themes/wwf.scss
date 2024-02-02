@@ -2271,3 +2271,13 @@ button[data-balloon] {
 .modal--content:not(.engrid-modal .modal--content) {
   display: none;
 }
+
+.engrid-welcome-back {
+  margin-bottom: 27px;
+  margin-top: -27px;
+  padding: 1rem 0;
+
+  p {
+    margin: 0;
+  }
+}
