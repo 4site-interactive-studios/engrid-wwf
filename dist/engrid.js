@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, February 5, 2024 @ 14:42:21 ET
- *  By: fernando
- *  ENGrid styles: v0.17.9
- *  ENGrid scripts: v0.17.9
+ *  Date: Wednesday, February 14, 2024 @ 06:44:03 ET
+ *  By: michael
+ *  ENGrid styles: v0.17.1
+ *  ENGrid scripts: v0.17.2
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -12666,15 +12666,6 @@ class engrid_ENGrid {
         }
         return true;
     }
-    // Deep merge two objects
-    static deepMerge(target, source) {
-        for (const key in source) {
-            if (source[key] instanceof Object)
-                Object.assign(source[key], engrid_ENGrid.deepMerge(target[key], source[key]));
-        }
-        Object.assign(target || {}, source);
-        return target;
-    }
     static setError(element, errorMessage) {
         const errorElement = typeof element === "string" ? document.querySelector(element) : element;
         if (errorElement) {
@@ -21714,7 +21705,9 @@ class PostalCodeValidator {
 // VGS: {
 // "transaction.ccnumber": {
 //     showCardIcon: true,
+//     autoFocus: false,
 //     placeholder: "•••• •••• •••• ••••",
+//     hideValue: false,
 //     icons: {
 //        (icons can't be urls, they have to be base64 encoded images)
 //        cardPlaceholder: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px' fill='%233BBF45'%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3Cpath d='M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z'/%3E%3C/svg%3E"
@@ -21723,6 +21716,7 @@ class PostalCodeValidator {
 // },
 // "transaction.ccvv": {
 //     showCardIcon: false,
+//     autoFocus: false,
 //     placeholder: "CVV",
 //     hideValue: false,
 // },
@@ -21736,20 +21730,15 @@ class VGS {
         this.logger = new EngridLogger("VGS", "black", "pink", "💳");
         this.vgsField = document.querySelector(".en__field--vgs");
         this.options = engrid_ENGrid.getOption("VGS");
-        this.paymentTypeField = document.querySelector("#en__field_transaction_paymenttype");
-        this._form = EnForm.getInstance();
         if (!this.shouldRun())
             return;
-        this.setPaymentType();
+        const paymentTypeField = document.querySelector("#en__field_transaction_paymenttype");
+        if (paymentTypeField) {
+            // The VGS iFrame Communication doesn't change the value of the payment type field, so we have to do it manually
+            paymentTypeField.value = "visa";
+        }
         this.setDefaults();
         this.dumpGlobalVar();
-        this._form.onValidate.subscribe(() => {
-            if (this._form.validate) {
-                const isValid = this.validate();
-                this.logger.log(`Form Validation: ${isValid}`);
-                this._form.validate = isValid;
-            }
-        });
     }
     shouldRun() {
         // Only run if the vgs field is present
@@ -21758,53 +21747,32 @@ class VGS {
         return true;
     }
     setDefaults() {
-        const placeholderStyles = {
-            color: getComputedStyle(document.body).getPropertyValue("--input_placeholder-color") || "#a9a9a9",
-            opacity: getComputedStyle(document.body).getPropertyValue("--input_placeholder-opacity") || "1",
-            fontWeight: getComputedStyle(document.body).getPropertyValue("--input_placeholder-font-weight") || "normal",
-        };
         const options = this.options;
         const defaultOptions = {
             "transaction.ccnumber": {
                 showCardIcon: true,
+                autoFocus: false,
                 placeholder: "•••• •••• •••• ••••",
+                hideValue: false,
                 icons: {
                     cardPlaceholder: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEwAAABMCAYAAADHl1ErAAAACXBIWXMAABYlAAAWJQFJUiTwAAAB8ElEQVR4nO2c4W3CMBBGz1H/NyNkAzoCo2SDrkI3YJSOABt0g9IJXBnOqUkMyifUqkrek04RlvMjT2c7sc6EGKPBfBpcaSBMBGEiCBNBmAjCRBAmgjARhIkgTARhIggTQZhK2q0Yh5l1ZrYzs0PqsrI4+LN3VTeThkvntUm6Fbuxn2E/LITQmtm7mW08Sb/MbO9tpxhjui6WEMLWzJKDdO3N7Nmf9ZjaYoyn8y8X1o6GXxLV1lJyDeE+9oWPQ/ZRG4b9WkVVpqe+8LLLo7ErM6t248qllZnWBc+uV5+zumGsQjm3f/ic9tb4JGeeXcga4U723rptilVx0avgg2Q3m/JNn+y6zeAm+GSWUi/c7L5yfB77RJhACOHs6WnuLfmGpTI3YditEEGYCMJEECaCMJHZqySvHRfIMBGEiSBMBGEiCBNBmAjCRBAmgjARhIkgTGT2t+R/59EdYXZcfwmEiSBMBGEiCBNZzCr5VzvCZJjIIMxrPKFC6abMsHbaFcZuGq8StqKwDqZkN8emKBbrvawHCtxJ7y1nVxQF34lxUXBupOy8EtWy88jBhknUDjbkPhyd+Xn2l9lHZ8rgcNZVTA5nTYRFjv/dPf7HvzuJ8C0pgjARhIkgTARhIggTQZgIwkQQJoIwEYSJIEwEYQpm9g2Ro5zhLcuLBwAAAABJRU5ErkJggg==",
-                },
-                css: {
-                    "&::placeholder": placeholderStyles,
                 },
                 // Autocomplete is not customizable
                 autoComplete: "cc-number",
             },
             "transaction.ccvv": {
                 showCardIcon: false,
+                autoFocus: false,
                 placeholder: "CVV",
                 hideValue: false,
                 // Autocomplete is not customizable
                 autoComplete: "cc-csc",
-                css: {
-                    "&::placeholder": placeholderStyles,
-                },
             },
         };
-        // Deep merge the default options with the options set in the theme
-        this.options = engrid_ENGrid.deepMerge(defaultOptions, options);
+        // Merge the default options with the options set in the theme
+        this.options = Object.assign(Object.assign({}, defaultOptions), options);
         this.logger.log("Theme Options", options);
         this.logger.log("Merged Options", this.options);
-    }
-    setPaymentType() {
-        // Because the VGS iFrame Communication doesn't change the value of the payment type field, we have to set it to Visa by default
-        if (this.paymentTypeField) {
-            // Loop through the payment type field options and set the visa card as the default
-            for (let i = 0; i < this.paymentTypeField.options.length; i++) {
-                if (this.paymentTypeField.options[i].value.toLowerCase() === "visa" ||
-                    this.paymentTypeField.options[i].value.toLowerCase() === "vi") {
-                    this.paymentTypeField.selectedIndex = i;
-                    break;
-                }
-            }
-        }
     }
     dumpGlobalVar() {
         // Dump the global variable for the VGS options
@@ -21841,36 +21809,10 @@ class VGS {
             }
         }, 1000);
     }
-    validate() {
-        if (this.paymentTypeField.value.toLowerCase() === "visa" ||
-            this.paymentTypeField.value.toLowerCase() === "vi") {
-            const cardContainer = document.querySelector(".en__field--vgs.en__field--ccnumber");
-            const cardEmpty = cardContainer.querySelector(".vgs-collect-container__empty");
-            const cvvContainer = document.querySelector(".en__field--vgs.en__field--ccvv");
-            const cvvEmpty = cvvContainer.querySelector(".vgs-collect-container__empty");
-            if (cardContainer && cardEmpty) {
-                window.setTimeout(() => {
-                    engrid_ENGrid.setError(cardContainer, "Please enter a valid card number");
-                    // Scroll to the error
-                    cardContainer.scrollIntoView({ behavior: "smooth" });
-                }, 100);
-                return false;
-            }
-            if (cvvContainer && cvvEmpty) {
-                window.setTimeout(() => {
-                    engrid_ENGrid.setError(cvvContainer, "Please enter a valid CVV");
-                    // Scroll to the error
-                    cvvContainer.scrollIntoView({ behavior: "smooth" });
-                }, 100);
-                return false;
-            }
-        }
-        return true;
-    }
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.17.9";
+const AppVersion = "0.17.2";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
@@ -24166,6 +24108,7 @@ const options = {
     label: "Add Your Name",
     pages: ["ADVOCACY", "EMAILTOTARGET", "TWEETPAGE"]
   },
+  PostalCodeValidator: true,
   onLoad: () => {
     new AnnualLimit();
     window.DonationLightboxForm = DonationLightboxForm;
