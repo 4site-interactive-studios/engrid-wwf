@@ -19,10 +19,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, February 14, 2024 @ 06:19:19 ET
+ *  Date: Friday, February 16, 2024 @ 06:55:48 ET
  *  By: michael
- *  ENGrid styles: v0.17.1
- *  ENGrid scripts: v0.17.2
+ *  ENGrid styles: v0.17.9
+ *  ENGrid scripts: v0.17.9
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -3964,7 +3964,7 @@ body:not[data-engrid-show-ecard-options] .show-if-ecard{
   border-radius:var(--donation-amount__button_border-radius);
 }
 
-.en__field--validationFailed .en__field__input--vgs:not(.vgs-collect-container__empty).vgs-collect-container__invalid{
+.en__field--validationFailed .en__field__input--vgs:not(.vgs-collect-container__focused).vgs-collect-container__empty,.en__field--validationFailed .en__field__input--vgs:not(.vgs-collect-container__focused).vgs-collect-container__invalid{
   background-color:var(--error__color_faded);
   border-color:var(--error__color);
 }
