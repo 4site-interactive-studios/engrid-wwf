@@ -1,17 +1,17 @@
-import {
-  Options,
-  App,
-  DonationFrequency,
-  DonationAmount,
-  EnForm,
-} from "@4site/engrid-common"; // Uses ENGrid via NPM
 // import {
 //   Options,
 //   App,
 //   DonationFrequency,
 //   DonationAmount,
 //   EnForm,
-// } from "../../engrid-scripts/packages/common"; // Uses ENGrid via Visual Studio Workspace
+// } from "@4site/engrid-common"; // Uses ENGrid via NPM
+import {
+  Options,
+  App,
+  DonationFrequency,
+  DonationAmount,
+  EnForm,
+} from "../../engrid-scripts/packages/common"; // Uses ENGrid via Visual Studio Workspace
 
 import "./sass/main.scss";
 import { customScript } from "./scripts/main";
@@ -65,6 +65,22 @@ const options: Options = {
     pages: ["ADVOCACY", "EMAILTOTARGET", "TWEETPAGE"],
   },
   PostalCodeValidator: true,
+  WelcomeBack: {
+    welcomeBackMessage: {
+      display: true,
+      title: "Welcome back, {firstName}!",
+      editText: "Not you?",
+      anchor: ".body-main",
+      placement: "afterbegin",
+    },
+    personalDetailsSummary: {
+      display: true,
+      title: "Your Information",
+      editText: "Change my info",
+      anchor: ".fast-personal-details",
+      placement: "beforebegin",
+    },
+  },
   onLoad: () => {
     new AnnualLimit();
     (<any>window).DonationLightboxForm = DonationLightboxForm;

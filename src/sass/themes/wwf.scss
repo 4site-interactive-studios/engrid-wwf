@@ -2271,3 +2271,18 @@ button[data-balloon] {
 .modal--content:not(.engrid-modal .modal--content) {
   display: none;
 }
+
+&[data-engrid-page-type="premiumgift"],
+&[data-engrid-page-type="donation"] {
+  .engrid-welcome-back {
+    margin-bottom: 27px;
+    margin-top: -27px;
+    padding: 1rem 0;
+  }
+}
+
+.engrid-welcome-back {
+  p {
+    margin: 0;
+  }
+}
