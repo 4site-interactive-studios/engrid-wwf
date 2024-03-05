@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, February 29, 2024 @ 12:31:57 ET
+ *  Date: Tuesday, March 5, 2024 @ 14:53:13 ET
  *  By: fernando
- *  ENGrid styles: v0.17.16
- *  ENGrid scripts: v0.17.18
+ *  ENGrid styles: v0.17.19
+ *  ENGrid scripts: v0.17.20
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -14051,10 +14051,10 @@ class Autocomplete {
         this.logger = new EngridLogger("Autocomplete", "#330033", "#f0f0f0", "📇");
         this.autoCompleteField('[name="supporter.firstName"]', "given-name");
         this.autoCompleteField('[name="supporter.lastName"]', "family-name");
-        this.autoCompleteField('[name="transaction.ccnumber"]', "cc-number");
+        // this.autoCompleteField('[name="transaction.ccnumber"]', "cc-number");
         this.autoCompleteField("#en__field_transaction_ccexpire", "cc-exp-month");
         this.autoCompleteField('[name="transaction.ccexpire"]:not(#en__field_transaction_ccexpire)', "cc-exp-year");
-        this.autoCompleteField('[name="transaction.ccvv"]', "cc-csc");
+        // this.autoCompleteField('[name="transaction.ccvv"]', "cc-csc");
         this.autoCompleteField('[name="supporter.emailAddress"]', "email");
         this.autoCompleteField('[name="supporter.phoneNumber"]', "tel");
         this.autoCompleteField('[name="supporter.country"]', "country");
@@ -21817,10 +21817,21 @@ class VGS {
         return true;
     }
     setDefaults() {
-        const placeholderStyles = {
-            color: getComputedStyle(document.body).getPropertyValue("--input_placeholder-color") || "#a9a9a9",
-            opacity: getComputedStyle(document.body).getPropertyValue("--input_placeholder-opacity") || "1",
-            fontWeight: getComputedStyle(document.body).getPropertyValue("--input_placeholder-font-weight") || "normal",
+        //EN attempts to define a few default styles for VGS fields based on our text field styling
+        //This does not always work, so we will provide our own defaults
+        const bodyStyles = getComputedStyle(document.body);
+        const styles = {
+            fontFamily: bodyStyles.getPropertyValue("--input_font-family") ||
+                "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji'",
+            fontSize: bodyStyles.getPropertyValue("--input_font-size") || "16px",
+            color: bodyStyles.getPropertyValue("--input_color") || "#000",
+            padding: bodyStyles.getPropertyValue("--input_padding") || "10px",
+            "&::placeholder": {
+                color: bodyStyles.getPropertyValue("--input_placeholder-color") || "#a9a9a9",
+                opacity: bodyStyles.getPropertyValue("--input_placeholder-opacity") || "1",
+                fontWeight: bodyStyles.getPropertyValue("--input_placeholder-font-weight") ||
+                    "normal",
+            },
         };
         const options = this.options;
         const defaultOptions = {
@@ -21830,9 +21841,7 @@ class VGS {
                 icons: {
                     cardPlaceholder: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEwAAABMCAYAAADHl1ErAAAACXBIWXMAABYlAAAWJQFJUiTwAAAB8ElEQVR4nO2c4W3CMBBGz1H/NyNkAzoCo2SDrkI3YJSOABt0g9IJXBnOqUkMyifUqkrek04RlvMjT2c7sc6EGKPBfBpcaSBMBGEiCBNBmAjCRBAmgjARhIkgTARhIggTQZhK2q0Yh5l1ZrYzs0PqsrI4+LN3VTeThkvntUm6Fbuxn2E/LITQmtm7mW08Sb/MbO9tpxhjui6WEMLWzJKDdO3N7Nmf9ZjaYoyn8y8X1o6GXxLV1lJyDeE+9oWPQ/ZRG4b9WkVVpqe+8LLLo7ErM6t248qllZnWBc+uV5+zumGsQjm3f/ic9tb4JGeeXcga4U723rptilVx0avgg2Q3m/JNn+y6zeAm+GSWUi/c7L5yfB77RJhACOHs6WnuLfmGpTI3YditEEGYCMJEECaCMJHZqySvHRfIMBGEiSBMBGEiCBNBmAjCRBAmgjARhIkgTGT2t+R/59EdYXZcfwmEiSBMBGEiCBNZzCr5VzvCZJjIIMxrPKFC6abMsHbaFcZuGq8StqKwDqZkN8emKBbrvawHCtxJ7y1nVxQF34lxUXBupOy8EtWy88jBhknUDjbkPhyd+Xn2l9lHZ8rgcNZVTA5nTYRFjv/dPf7HvzuJ8C0pgjARhIkgTARhIggTQZgIwkQQJoIwEYSJIEwEYQpm9g2Ro5zhLcuLBwAAAABJRU5ErkJggg==",
                 },
-                css: {
-                    "&::placeholder": placeholderStyles,
-                },
+                css: styles,
                 // Autocomplete is not customizable
                 autoComplete: "cc-number",
                 validations: ["required", "validCardNumber"],
@@ -21844,9 +21853,7 @@ class VGS {
                 // Autocomplete is not customizable
                 autoComplete: "cc-csc",
                 validations: ["required", "validCardSecurityCode"],
-                css: {
-                    "&::placeholder": placeholderStyles,
-                },
+                css: styles,
             },
         };
         // Deep merge the default options with the options set in the theme
@@ -22209,7 +22216,7 @@ class EcardToTarget {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.17.18";
+const AppVersion = "0.17.20";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
