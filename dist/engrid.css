@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, March 5, 2024 @ 16:31:42 ET
+ *  Date: Tuesday, March 5, 2024 @ 16:40:32 ET
  *  By: fernando
  *  ENGrid styles: v0.17.19
  *  ENGrid scripts: v0.17.20
@@ -9527,7 +9527,6 @@ body[data-engrid-debug]:before{
 }
 [data-engrid-theme=wwf] button[data-balloon]:after{
   background:#f6f5f3;
-  border-radius:2px;
   border-radius:3px;
   color:#1f2937;
   content:attr(data-balloon);
@@ -9543,7 +9542,6 @@ body[data-engrid-debug]:before{
   text-indent:0;
   text-shadow:none;
   transform:translateX(-50%);
-  white-space:nowrap;
   white-space:pre;
   z-index:10;
 }

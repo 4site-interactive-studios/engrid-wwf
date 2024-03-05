@@ -938,7 +938,6 @@
     position: static;
     margin-left: 0 !important;
     margin-right: 0 !important;
-    margin-top: 2rem !important;
     height: auto;
     margin-top: 0 !important;
     width: auto;
@@ -2266,7 +2265,6 @@ button[data-balloon] {
 
   &::after {
     display: none;
-    pointer-events: none;
     text-indent: 0;
     font-weight: normal;
     font-style: normal;
@@ -2274,13 +2272,11 @@ button[data-balloon] {
     font-size: 14px;
     line-height: 1.4;
     background: #f6f5f3;
-    border-radius: 2px;
     color: #1f2937;
     border-radius: 3px;
     content: attr(data-balloon);
     padding: 0.5em 1em;
     position: absolute;
-    white-space: nowrap;
     pointer-events: none;
     white-space: pre;
     transform: translateX(-50%);
