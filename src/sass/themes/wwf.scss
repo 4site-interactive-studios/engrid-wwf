@@ -209,6 +209,9 @@
   --inline-upsell-box_strong_font-size: 20px;
   --inline-upsell-box_strong_line-height: 28px;
 
+  // VGS
+  --en-vgs-height: 64px;
+
   /* Recurring Frequency Button Heart Icon */
   // .radio-to-buttons_recurrfreq
   //   .en__field--recurrfreq.en__field--radio
@@ -230,8 +233,7 @@
   }
 
   // Base styling
-  font-family: "Open Sans",
-  sans-serif;
+  font-family: "Open Sans", sans-serif;
   color: #1f2937;
   font-size: 20px;
   line-height: 32px;
@@ -242,8 +244,14 @@
   }
 
   // Add a Heart Icon to the Monthly Donation Button
-  .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio input[type="radio"][value="MONTHLY"]+label:before,
-  .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio input[type="radio"][value="ANNUAL"]+label:before {
+  .radio-to-buttons_recurrfreq
+    .en__field--recurrfreq.en__field--radio
+    input[type="radio"][value="MONTHLY"]
+    + label:before,
+  .radio-to-buttons_recurrfreq
+    .en__field--recurrfreq.en__field--radio
+    input[type="radio"][value="ANNUAL"]
+    + label:before {
     display: block; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
     min-width: 0; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
     height: auto; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
@@ -263,10 +271,26 @@
     transform: scale(1.2);
   }
 
-  .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio .en__field__item:hover input[type="radio"][value="MONTHLY"]+label:before,
-  .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio .en__field__item input[type="radio"][value="MONTHLY"]:checked+label:before,
-  .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio .en__field__item:hover input[type="radio"][value="ANNUAL"]+label:before,
-  .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio .en__field__item input[type="radio"][value="ANNUAL"]:checked+label:before {
+  .radio-to-buttons_recurrfreq
+    .en__field--recurrfreq.en__field--radio
+    .en__field__item:hover
+    input[type="radio"][value="MONTHLY"]
+    + label:before,
+  .radio-to-buttons_recurrfreq
+    .en__field--recurrfreq.en__field--radio
+    .en__field__item
+    input[type="radio"][value="MONTHLY"]:checked
+    + label:before,
+  .radio-to-buttons_recurrfreq
+    .en__field--recurrfreq.en__field--radio
+    .en__field__item:hover
+    input[type="radio"][value="ANNUAL"]
+    + label:before,
+  .radio-to-buttons_recurrfreq
+    .en__field--recurrfreq.en__field--radio
+    .en__field__item
+    input[type="radio"][value="ANNUAL"]:checked
+    + label:before {
     // display: block; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
     // min-width: 0; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
     // border: none; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
@@ -322,12 +346,12 @@
       // Line Clamp is not working properly in Safari and this most fixes it
       // REF: https://browserstrangeness.bitbucket.io/css_hacks.html#safari
       @supports (-webkit-hyphens: none) {
-        >*:not(:first-child) {
+        > *:not(:first-child) {
           display: none;
         }
       }
 
-      >*:first-child {
+      > *:first-child {
         margin-bottom: 0; // For some reason this causes problems in Safari and on iOS browsers
       }
     }
@@ -344,15 +368,21 @@
   // }
 
   // Prevents modals like the eCard preview modal from being hidden behind the header and footer
-  &[data-ecard-preview="visible"]:not(#en__pagebuilder):not(.freeze) .content-footer,
-  &[data-ecard-preview="visible"]:not(#en__pagebuilder):not(.freeze) .content-footerSpacer,
-  &[data-ecard-preview="visible"]:not(#en__pagebuilder):not(.freeze) .content-header,
-  &[data-ecard-preview="visible"]:not(#en__pagebuilder):not(.freeze) .content-preFooter {
+  &[data-ecard-preview="visible"]:not(#en__pagebuilder):not(.freeze)
+    .content-footer,
+  &[data-ecard-preview="visible"]:not(#en__pagebuilder):not(.freeze)
+    .content-footerSpacer,
+  &[data-ecard-preview="visible"]:not(#en__pagebuilder):not(.freeze)
+    .content-header,
+  &[data-ecard-preview="visible"]:not(#en__pagebuilder):not(.freeze)
+    .content-preFooter {
     z-index: 3;
   }
 
   // Hide the label even when there is an error on the filed (e.g. Amount entered is below the threshold)
-  &:not(#en__pagebuilder):not([data-engrid-debug]) .en__field--donationAmt.en__field--validationFailed>.en__field__label {
+  &:not(#en__pagebuilder):not([data-engrid-debug])
+    .en__field--donationAmt.en__field--validationFailed
+    > .en__field__label {
     display: none;
   }
 
@@ -365,11 +395,11 @@
     margin-top: 120px;
   }
 
-  .body-title>.en__component>*:first-child {
+  .body-title > .en__component > *:first-child {
     margin-top: 0px;
   }
 
-  .body-title>.en__component>*:last-child {
+  .body-title > .en__component > *:last-child {
     margin-bottom: 0px;
   }
 
@@ -420,7 +450,8 @@
     transform: scale(0.8);
   }
 
-  &:not(#en__pagebuilder):not([data-engrid-debug]) .customize-ecard:not([notify-selection="e-card" i]) {
+  &:not(#en__pagebuilder):not([data-engrid-debug])
+    .customize-ecard:not([notify-selection="e-card" i]) {
     display: none;
   }
 
@@ -436,7 +467,7 @@
   //   align-items: self-start;
   // }
 
-  input[type="checkbox"]+label {
+  input[type="checkbox"] + label {
     align-items: flex-start;
     --checkbox_top: 2px;
   }
@@ -447,8 +478,12 @@
   }
 
   .give-by-select {
-    --button_background-color_hover: var(--donation-amount__button_background-color_hover);
-    --button_background-color_checked: var(--donation-amount__button_background-color_hover);
+    --button_background-color_hover: var(
+      --donation-amount__button_background-color_hover
+    );
+    --button_background-color_checked: var(
+      --donation-amount__button_background-color_hover
+    );
     --button_color_checked: var(--button_color);
 
     .en__field__label {
@@ -483,7 +518,9 @@
     }
   }
 
-  .en__component--formblock.give-by-select-wrapper .en__field .en__field__element.en__field__element--radio {
+  .en__component--formblock.give-by-select-wrapper
+    .en__field
+    .en__field__element.en__field__element--radio {
     margin-left: calc(2 * var(--fields_spacing-inline) * -1);
     margin-right: calc(2 * var(--fields_spacing-inline) * -1);
 
@@ -549,7 +586,7 @@
     display: none;
   }
 
-  &[data-engrid-page-type="supporterhub"] .en__component--hubgadget>img {
+  &[data-engrid-page-type="supporterhub"] .en__component--hubgadget > img {
     height: 56px;
     width: auto;
   }
@@ -588,14 +625,14 @@
     border: none;
   }
 
-  &[data-engrid-page-type="supporterhub"] .en__hubTxnGiving__transactions__total {
+  &[data-engrid-page-type="supporterhub"]
+    .en__hubTxnGiving__transactions__total {
     text-align: left;
   }
 
   @media screen and (min-width: 599px) {
     &[data-engrid-page-type="supporterhub"] {
       .en__registrants__registrantDetails {
-
         .en__field--registrant[class*="--firstName"],
         .en__field--registrant[class*="--lastName"] {
           flex: 1 0 50%;
@@ -705,7 +742,9 @@
     }
   }
 
-  &[data-engrid-page-type="advocacypetition"] .en__component--widgetblock .enWidget--progressBar {
+  &[data-engrid-page-type="advocacypetition"]
+    .en__component--widgetblock
+    .enWidget--progressBar {
     background-color: #e5621a;
 
     .enWidget__progress {
@@ -803,7 +842,9 @@
     top: 8px;
   }
 
-  .en__contacts:not(.en__contacts--hideCheck) .en__contactDetails__select:checked+.en__contactDetails__rows:after {
+  .en__contacts:not(.en__contacts--hideCheck)
+    .en__contactDetails__select:checked
+    + .en__contactDetails__rows:after {
     left: 5px;
     top: 9.5px;
   }
@@ -836,7 +877,9 @@
     }
   }
 
-  &[data-engrid-page-type="emailtotarget"] .en__field--title.en__mandatory .en__field__label {
+  &[data-engrid-page-type="emailtotarget"]
+    .en__field--title.en__mandatory
+    .en__field__label {
     display: flex;
 
     &::after {
@@ -895,7 +938,6 @@
     position: static;
     margin-left: 0 !important;
     margin-right: 0 !important;
-    margin-top: 2rem !important;
     height: auto;
     margin-top: 0 !important;
     width: auto;
@@ -1015,9 +1057,9 @@
     margin-top: 13px;
   }
 
-  .en__field--radio.en__field--question>.en__field__label,
-  .en__field--checkbox.en__field--question>.en__field__label,
-  .en__field--radio.en__field--survey>.en__field__label {
+  .en__field--radio.en__field--question > .en__field__label,
+  .en__field--checkbox.en__field--question > .en__field__label,
+  .en__field--radio.en__field--survey > .en__field__label {
     margin-bottom: var(--fields_spacing-block);
   }
 
@@ -1078,11 +1120,11 @@
       margin-bottom: 1.5rem;
     }
 
-    >p {
+    > p {
       margin-top: 0;
     }
 
-    >p:last-child {
+    > p:last-child {
       margin-bottom: 0;
     }
 
@@ -1128,7 +1170,8 @@
   }
 
   // When the email field has a non-invalid error caused by FreshAddress, we want to keep the label in its normal color state
-  .en__field--emailAddress.en__field--validationFailed:not([data-freshaddress-safetosendstatus="invalid"])>label {
+  .en__field--emailAddress.en__field--validationFailed:not([data-freshaddress-safetosendstatus="invalid"])
+    > label {
     color: var(--label_color);
   }
 
@@ -1174,8 +1217,8 @@
     }
   }
 
-  .body-banner>.en__component--codeblock>img,
-  .body-banner>.en__component--codeblock>video,
+  .body-banner > .en__component--codeblock > img,
+  .body-banner > .en__component--codeblock > video,
   figure.media-with-attribution {
     margin-bottom: 3rem;
   }
@@ -1205,7 +1248,7 @@
       --donation-amount__button_padding: 1ch calc(1.2ch - 38px);
     }
 
-    input[type="radio"]+label {
+    input[type="radio"] + label {
       outline: none;
     }
 
@@ -1275,8 +1318,8 @@
   }
 
   // On premium pages, when the visitor is not in the US, hide the premium gift options other than the no gift option
-  &:not([data-engrid-demo])[data-engrid-page-type="premiumgift"]:not([data-engrid-country="US"]) .en__pgList[data-nogift] {
-
+  &:not([data-engrid-demo])[data-engrid-page-type="premiumgift"]:not([data-engrid-country="US"])
+    .en__pgList[data-nogift] {
     // Force the no gift option to always appear selected
     .en__pg__select input:before {
       background-color: var(--radio_background-color_selected);
@@ -1333,7 +1376,8 @@
       grid-template-areas: "en__pg__select en__pg__detail en__pg__display" ". en__pg__detail-mobile .";
       grid-template-columns: min-content auto var(--premium__image_max-width);
       gap: 0 max(calc(var(--fields_spacing-inline) * 2), 0.5rem);
-      padding: calc(var(--fields_spacing-block)) calc(var(--fields_spacing-inline) * 2);
+      padding: calc(var(--fields_spacing-block))
+        calc(var(--fields_spacing-inline) * 2);
     }
 
     // Move premium images on mobile
@@ -1389,27 +1433,30 @@
     background-color: #fff;
   }
 
-  .tippy-box[data-theme~="light"][data-placement^="top"]>.tippy-arrow:before {
+  .tippy-box[data-theme~="light"][data-placement^="top"] > .tippy-arrow:before {
     border-top-color: #fff;
   }
 
-  .tippy-box[data-theme~="light"][data-placement^="bottom"]>.tippy-arrow:before {
+  .tippy-box[data-theme~="light"][data-placement^="bottom"]
+    > .tippy-arrow:before {
     border-bottom-color: #fff;
   }
 
-  .tippy-box[data-theme~="light"][data-placement^="left"]>.tippy-arrow:before {
+  .tippy-box[data-theme~="light"][data-placement^="left"]
+    > .tippy-arrow:before {
     border-left-color: #fff;
   }
 
-  .tippy-box[data-theme~="light"][data-placement^="right"]>.tippy-arrow:before {
+  .tippy-box[data-theme~="light"][data-placement^="right"]
+    > .tippy-arrow:before {
     border-right-color: #fff;
   }
 
-  .tippy-box[data-theme~="light"]>.tippy-backdrop {
+  .tippy-box[data-theme~="light"] > .tippy-backdrop {
     background-color: #fff;
   }
 
-  .tippy-box[data-theme~="light"]>.tippy-svg-arrow {
+  .tippy-box[data-theme~="light"] > .tippy-svg-arrow {
     fill: #fff;
   }
 
@@ -1420,8 +1467,8 @@
   }
 
   // Prevent interactions with the Header and Footer when in Page Builder
-  &#en__pagebuilder>header,
-  &#en__pagebuilder>footer {
+  &#en__pagebuilder > header,
+  &#en__pagebuilder > footer {
     pointer-events: none;
   }
 
@@ -1440,7 +1487,6 @@
     }
 
     .en__pgList[data-non-us-donor][data-nogift] {
-
       // border: 1px solid #bfbfbf;
       // pointer-events: none;
       .en__pg:not(:last-child):not(.en__pg--selected) {
@@ -1481,7 +1527,8 @@
         }
 
         .en__pg__images {
-          filter: brightness(60%) sepia(100%) hue-rotate(-50deg) saturate(250%) contrast(0.9) opacity(0.5);
+          filter: brightness(60%) sepia(100%) hue-rotate(-50deg) saturate(250%)
+            contrast(0.9) opacity(0.5);
           // opacity: 0.5;
           // filter: grayscale(1);
         }
@@ -1535,7 +1582,7 @@
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
   }
 
-  .body-top>.en__component--copyblock:not([class*="box"])>p:first-child {
+  .body-top > .en__component--copyblock:not([class*="box"]) > p:first-child {
     margin-top: 0;
   }
 
@@ -1570,7 +1617,6 @@
 
   /* Tweet to Target Widget */
   .en__component--tweetcontactblock {
-
     /* @TODO Investigate: For some reason the Tweet button border does not appear solely by setting the correspinding variabels */
     .en__tweetButton {
       .en__tweetButton__send a {
@@ -1634,7 +1680,7 @@
     gap: 1.5rem;
 
     // Donation thank you page markup ( e.g. https://protect.worldwildlife.org/page/48243/donate/2 )
-    p>a {
+    p > a {
       --a_color: #000000;
       --a_color_hover: #000000;
       --a_text-decoration: none;
@@ -1642,8 +1688,8 @@
     }
 
     // The markup pulled from luminate for non-donation pages is different (e.g. https://protect.worldwildlife.org/page/50282/survey/2 )
-    >a,
-    >a:hover {
+    > a,
+    > a:hover {
       text-decoration: none;
 
       h4:hover {
@@ -1697,11 +1743,11 @@
     margin-bottom: 0;
   }
 
-  .involved-action__header>*:first-child {
+  .involved-action__header > *:first-child {
     margin-top: 0px;
   }
 
-  .involved-action__header>*:last-child {
+  .involved-action__header > *:last-child {
     margin-bottom: 0px;
   }
 
@@ -1742,7 +1788,7 @@
     text-align: center;
   }
 
-  .wallpapers p+p {
+  .wallpapers p + p {
     margin-top: auto;
   }
 
@@ -1752,7 +1798,7 @@
     gap: 1rem;
   }
 
-  .wallpapers>div {
+  .wallpapers > div {
     flex-basis: calc(50% - 0.5rem);
     position: relative;
   }
@@ -1763,7 +1809,7 @@
     font-size: 14px;
   }
 
-  .stencils.wallpapers>div {
+  .stencils.wallpapers > div {
     display: flex;
     flex-direction: column;
   }
@@ -1784,13 +1830,13 @@
   }
 
   @media screen and (max-width: 1024px) {
-    .wallpapers>div {
+    .wallpapers > div {
       flex-basis: calc(50% - 0.5rem);
     }
   }
 
   @media screen and (max-width: 600px) {
-    .wallpapers>div>span {
+    .wallpapers > div > span {
       display: none;
     }
   }
@@ -1827,7 +1873,6 @@
 }
 
 @mixin full-header-footer {
-
   // STLES
   .content-header {
     margin-bottom: 70px;
@@ -1875,7 +1920,7 @@
 
   &[data-engrid-page-type="premiumgift"],
   &[data-engrid-page-type="donation"] {
-    .nav-content>ul.nav-actions.-mobile {
+    .nav-content > ul.nav-actions.-mobile {
       display: none !important;
     }
 
@@ -1894,12 +1939,15 @@
   }
 }
 
-&:not(#en__pagebuilder):not([data-engrid-debug]):not([data-engrid-page-type="donation"]):not([data-engrid-page-type="premiumgift"]) .showif-donation {
+&:not(#en__pagebuilder):not([data-engrid-debug]):not([data-engrid-page-type="donation"]):not([data-engrid-page-type="premiumgift"])
+  .showif-donation {
   display: none;
 }
 
-&:not(#en__pagebuilder):not([data-engrid-debug])[data-engrid-page-type="donation"] .showif-not-donation,
-&:not(#en__pagebuilder):not([data-engrid-debug])[data-engrid-page-type="premiumgift"] .showif-not-donation {
+&:not(#en__pagebuilder):not([data-engrid-debug])[data-engrid-page-type="donation"]
+  .showif-not-donation,
+&:not(#en__pagebuilder):not([data-engrid-debug])[data-engrid-page-type="premiumgift"]
+  .showif-not-donation {
   display: none;
 }
 
@@ -1907,12 +1955,12 @@
 .en__hubOverlay--supportersubscriptions .en__hubOverlay__popup,
 .en__hubOverlay--pledge .en__hubOverlay__popup,
 .en__hubOverlay--pledgeRoi .en__hubOverlay__popup,
-.en__hubOverlay--membership>.en__hubOverlay__popup,
-.en__hubOverlay--membershipHistory>.en__hubOverlay__popup,
-.en__hubOverlay--memCardUpdate>.en__hubOverlay__popup,
-.en__hubOverlay--membershipRenew>.en__hubOverlay__popup,
-.en__hubOverlay--txngiving>.en__hubOverlay__popup,
-.en__hubOverlay__impact>.en__hubOverlay__popup {
+.en__hubOverlay--membership > .en__hubOverlay__popup,
+.en__hubOverlay--membershipHistory > .en__hubOverlay__popup,
+.en__hubOverlay--memCardUpdate > .en__hubOverlay__popup,
+.en__hubOverlay--membershipRenew > .en__hubOverlay__popup,
+.en__hubOverlay--txngiving > .en__hubOverlay__popup,
+.en__hubOverlay__impact > .en__hubOverlay__popup {
   max-width: 37.5rem;
 }
 
@@ -1922,7 +1970,7 @@
 }
 
 // Remove Impact Icon from Supporter Hub widget
-.en__hubOverlay__impact .en__hubOverlay__content>div {
+.en__hubOverlay__impact .en__hubOverlay__content > div {
   padding: 0;
   background: none;
 }
@@ -1974,7 +2022,9 @@
     --radio_box-shadow_selected: inset 0 0 0 3px #ffffff;
     --radio_border-width: 1px;
 
-    .en__contacts:not(.en__contacts--hideCheck) .en__contactDetails__select:checked+.en__contactDetails__rows:after {
+    .en__contacts:not(.en__contacts--hideCheck)
+      .en__contactDetails__select:checked
+      + .en__contactDetails__rows:after {
       left: 3px;
       top: 6.5px;
     }
@@ -1995,16 +2045,25 @@
     margin-bottom: 20px;
   }
 
-  .radio-to-buttons_donationAmt .en__field--donationAmt .en__field__element--radio {
+  .radio-to-buttons_donationAmt
+    .en__field--donationAmt
+    .en__field__element--radio {
     --fields_spacing-inline: 0.62rem;
     --fields_spacing-block: 0.9rem;
   }
 
-  &[data-engrid-transaction-recurring-frequency] .radio-to-buttons_donationAmt .en__field--donationAmt div:not(.en__field__item--other) .en__field__label--item:after {
+  &[data-engrid-transaction-recurring-frequency]
+    .radio-to-buttons_donationAmt
+    .en__field--donationAmt
+    div:not(.en__field__item--other)
+    .en__field__label--item:after {
     font-size: 15px;
   }
 
-  .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio input[type="radio"][value="MONTHLY"]+label:before {
+  .radio-to-buttons_recurrfreq
+    .en__field--recurrfreq.en__field--radio
+    input[type="radio"][value="MONTHLY"]
+    + label:before {
     width: 16px;
   }
 
@@ -2088,7 +2147,8 @@
 
 /* Force the visibility of Paypal Button when PayPal One Touch / Venmo is enabled */
 /* https://www.bugherd.com/projects/341429/tasks/318 */
-&[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements][data-engrid-transaction-recurring="n"][data-engrid-payment-type-option-paypal-one-touch="true"] .en__field--giveBySelect.paypal.force-paypal-visibility {
+&[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements][data-engrid-transaction-recurring="n"][data-engrid-payment-type-option-paypal-one-touch="true"]
+  .en__field--giveBySelect.paypal.force-paypal-visibility {
   display: inline-block !important;
 }
 
@@ -2205,7 +2265,6 @@ button[data-balloon] {
 
   &::after {
     display: none;
-    pointer-events: none;
     text-indent: 0;
     font-weight: normal;
     font-style: normal;
@@ -2213,13 +2272,11 @@ button[data-balloon] {
     font-size: 14px;
     line-height: 1.4;
     background: #f6f5f3;
-    border-radius: 2px;
     color: #1f2937;
     border-radius: 3px;
     content: attr(data-balloon);
     padding: 0.5em 1em;
     position: absolute;
-    white-space: nowrap;
     pointer-events: none;
     white-space: pre;
     transform: translateX(-50%);
