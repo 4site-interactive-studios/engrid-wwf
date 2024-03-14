@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, March 5, 2024 @ 16:40:32 ET
+ *  Date: Thursday, March 14, 2024 @ 13:24:14 ET
  *  By: fernando
  *  ENGrid styles: v0.17.19
- *  ENGrid scripts: v0.17.20
+ *  ENGrid scripts: v0.17.22
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -12618,19 +12618,20 @@ class engrid_ENGrid {
     }
     static disableSubmit(label = "") {
         const submit = document.querySelector(".en__submit button");
+        if (!submit)
+            return false;
         submit.dataset.originalText = submit.innerHTML;
         let submitButtonProcessingHTML = "<span class='loader-wrapper'><span class='loader loader-quart'></span><span class='submit-button-text-wrapper'>" +
             label +
             "</span></span>";
-        if (submit) {
-            submit.disabled = true;
-            submit.innerHTML = submitButtonProcessingHTML;
-            return true;
-        }
-        return false;
+        submit.disabled = true;
+        submit.innerHTML = submitButtonProcessingHTML;
+        return true;
     }
     static enableSubmit() {
         const submit = document.querySelector(".en__submit button");
+        if (!submit)
+            return false;
         if (submit.dataset.originalText) {
             submit.disabled = false;
             submit.innerHTML = submit.dataset.originalText;
@@ -18047,13 +18048,15 @@ class ExpandRegionName {
                 this.logger.log(`CREATED field ${expandedRegionField}`);
                 engrid_ENGrid.createHiddenInput(expandedRegionField);
             }
-            this._form.onSubmit.subscribe(() => this.expandRegion());
+            this._form.onValidate.subscribe(() => this.expandRegion());
         }
     }
     shouldRun() {
         return !!engrid_ENGrid.getOption("RegionLongFormat");
     }
     expandRegion() {
+        if (!this._form.validate)
+            return;
         const userRegion = document.querySelector('[name="supporter.region"]'); // User entered region on the page
         const expandedRegionField = engrid_ENGrid.getOption("RegionLongFormat");
         const hiddenRegion = document.querySelector(`[name="${expandedRegionField}"]`); // Hidden region long form field
@@ -22216,7 +22219,7 @@ class EcardToTarget {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.17.20";
+const AppVersion = "0.17.22";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
@@ -24696,8 +24699,9 @@ const enForm = EnForm.getInstance();
 enForm.onSubmit.subscribe(() => {
   const expandedRegionField = App.getField(App.getOption("RegionLongFormat"));
 
-  if (expandedRegionField && expandedRegionField.value === "District of Columbia") {
-    expandedRegionField.value = `the District of Columbia`;
+  if (expandedRegionField && ["District of Columbia", "American Samoa", "Northern Mariana Islands", "US Minor Outlying Islands", "Virgin Islands"].includes(expandedRegionField.value)) {
+    // Add "the" to the beginning of the region name
+    expandedRegionField.value = `the ${expandedRegionField.value}`;
   }
 });
 })();

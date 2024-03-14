@@ -270,8 +270,15 @@ enForm.onSubmit.subscribe(() => {
   ) as HTMLInputElement;
   if (
     expandedRegionField &&
-    expandedRegionField.value === "District of Columbia"
+    [
+      "District of Columbia",
+      "American Samoa",
+      "Northern Mariana Islands",
+      "US Minor Outlying Islands",
+      "Virgin Islands",
+    ].includes(expandedRegionField.value)
   ) {
-    expandedRegionField.value = `the District of Columbia`;
+    // Add "the" to the beginning of the region name
+    expandedRegionField.value = `the ${expandedRegionField.value}`;
   }
 });
