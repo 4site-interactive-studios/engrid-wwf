@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, April 2, 2024 @ 15:36:19 ET
+ *  Date: Thursday, April 4, 2024 @ 13:20:58 ET
  *  By: fernando
  *  ENGrid styles: v0.18.1
  *  ENGrid scripts: v0.18.4
@@ -9307,6 +9307,10 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf] .en__hubOverlay__impact .en__hubOverlay__content>div{
   background:none;
   padding:0;
+}
+[data-engrid-theme=wwf] .en__hubUpdateCC__toggle{
+  aspect-ratio:1/1;
+  margin-bottom:0;
 }
 @media screen and (max-width:1024px){
   [data-engrid-theme=wwf]:not(#en__pagebuilder):not([data-engrid-debug]) .showif-desktop{
