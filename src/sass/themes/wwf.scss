@@ -212,6 +212,8 @@
   // VGS
   --en-vgs-height: 64px;
 
+  --maximize_my_donation_image: url(https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/2401_Premiums_NoPremTiger_1050.jpg-250x250.jpg?v=1682005678000);
+
   /* Recurring Frequency Button Heart Icon */
   // .radio-to-buttons_recurrfreq
   //   .en__field--recurrfreq.en__field--radio
@@ -1353,7 +1355,7 @@
         grid-row: 1 / 2;
 
         .en__pg__display {
-          background-image: url("https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/2401_Premiums_NoPremTiger_1050.jpg-250x250.jpg?v=1682005678000");
+          background-image: var(--maximize_my_donation_image);
           // background-image: url("https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-gift_maximize-my-gift-placeholder.jpg?v=1680364148000");
           background-size: contain;
           // min-width: 100%; // Causing this overlay issue on Safari https://cln.sh/mGf3gcGc
