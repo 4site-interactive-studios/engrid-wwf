@@ -5,6 +5,7 @@ import {
   DonationAmount,
   EnForm,
 } from "@4site/engrid-common"; // Uses ENGrid via NPM
+import MultistepForm from "./scripts/multistep-form";
 // import {
 //   Options,
 //   App,
@@ -179,6 +180,7 @@ const options: Options = {
       }
     }
     new OnLoadModal();
+    new MultistepForm();
   },
   onResize: () => console.log("Starter Theme Window Resized"),
 
