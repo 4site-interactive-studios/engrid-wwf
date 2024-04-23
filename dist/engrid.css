@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, April 22, 2024 @ 14:58:45 ET
+ *  Date: Tuesday, April 23, 2024 @ 12:06:47 ET
  *  By: bryancasler
  *  ENGrid styles: v0.18.1
  *  ENGrid scripts: v0.18.4
@@ -11967,7 +11967,7 @@ body[data-engrid-debug]:before{
   --engrid__content-footerSpacer_background-color:#fff;
   --give-by-select__button_count:2;
   --h1_font-size:60px;
-  --en-vgs-height:51px;
+  --en-vgs-height:64px;
   --en-vgs-width:244px;
   --en-vgs-borderWidth:2px;
   --en-vgs-borderStyle:solid;
@@ -12051,6 +12051,7 @@ body[data-engrid-debug]:before{
   }
 }
 [data-engrid-theme=wwf][data-engrid-multistep] .multistep-stepper__step{
+  align-items:center;
   background-color:#e4e4e45c;
   border-bottom:4px solid #0000;
   color:#667085;
@@ -12082,7 +12083,7 @@ body[data-engrid-debug]:before{
   color:#fff;
 }
 [data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="1"]) [data-multistep-step="1"],[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="2"]) [data-multistep-step="2"],[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="3"]) [data-multistep-step="3"],[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="4"]) [data-multistep-step="4"],[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="5"]) [data-multistep-step="5"],[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="6"]) [data-multistep-step="6"]{
-  display:none;
+  display:none !important;
 }
 [data-engrid-theme=wwf][data-engrid-multistep] .multistep-button-container{
   display:flex;
@@ -12107,11 +12108,15 @@ body[data-engrid-debug]:before{
   left:21px;
 }
 [data-engrid-theme=wwf][data-engrid-multistep] .btn-back{
+  align-items:center;
   background-color:var(--submit__button_background-color);
   border-color:var(--submit__button_border-color);
   color:var(--submit__button_color);
+  display:flex;
   flex-basis:60px;
   font-size:var(--submit__button_font-size);
+  height:65px;
+  justify-content:center;
   margin-right:20px;
   margin-top:2rem;
   opacity:.3;
@@ -12125,6 +12130,7 @@ body[data-engrid-debug]:before{
 }
 [data-engrid-theme=wwf][data-engrid-multistep] .multistep-submit{
   grid-column-gap:20px;
+  align-items:flex-end;
   display:grid;
   grid-template-columns:60px 1fr;
   grid-template-rows:auto;
@@ -12154,13 +12160,20 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf][data-engrid-multistep] .en__submit button:hover .live-variable-frequency:after{
   left:21px;
 }
-[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-active-step="2"],[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-active-step="3"],[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-active-step="4"] .en__component.en__component--premiumgiftblock{
+[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="1"]) .en__component.en__component--premiumgiftblock{
   display:none !important;
 }
 @media screen and (max-width:1023px){
-  [data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-active-step="2"] .body-banner,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-active-step="2"] .body-title,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-active-step="2"] .body-top,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-active-step="3"] .body-banner,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-active-step="3"] .body-title,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-active-step="3"] .body-top,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-active-step="4"] .body-banner,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-active-step="4"] .body-title,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-active-step="4"] .body-top{
+  [data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="1"]) .body-banner,[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="1"]) .body-title,[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="1"]) .body-top{
     display:none !important;
   }
+}
+[data-engrid-theme=wwf][data-engrid-multistep] .payment-method.padlock-icon{
+  display:flex;
+  flex-direction:column-reverse;
+}
+[data-engrid-theme=wwf][data-engrid-multistep] .payment-method.padlock-icon h2{
+  margin:0 0 20px !important;
 }
 body{
   opacity:1;
