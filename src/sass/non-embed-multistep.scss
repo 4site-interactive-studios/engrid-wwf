@@ -63,6 +63,68 @@
     }
   }
 
+  &[data-engrid-layout="centerleft1col"] {
+    // Hide the content header and footer when using this layout
+    .content-header,
+    .content-footer {
+      display: none !important;
+    }
+
+    // Start Custom Styles for Donation form with Background
+    &[data-engrid-page-background="image"] .page-backgroundImage:before,
+    &[data-engrid-page-background="image"].page-backgroundImage:before {
+      background-position: center right;
+    }
+
+    @media screen and (max-width: 960px) {
+      .body-title,
+      .body-top {
+        background: white;
+        box-shadow: var(--engrid__body_box-shadow);
+        margin: var(--engrid__body-main_margin);
+        padding: var(--engrid__body-main_padding);
+      }
+
+      .white-box {
+        border: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      // .body-title {
+      //   margin-bottom: 0px !important;
+      //   padding-bottom: 0px !important;
+      //   margin-top: 0px !important;
+      //   padding-top: 0px !important;
+      // }
+    }
+
+    .gradient {
+      background: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.25) 100%
+      );
+    }
+
+    @media screen and (max-width: 1200px) {
+      body[data-engrid-page-background="image"][data-engrid-layout="centerleft1col"]
+        .page-backgroundImage:before,
+      body[data-engrid-page-background="image"][data-engrid-layout="leftleft1col"]
+        .page-backgroundImage:before {
+        background-image: none !important;
+      }
+    }
+    @media screen and (max-width: 600px) {
+      --h1_line-height: calc(33.6px + 1rem);
+
+      .enWidget--progressBar {
+        padding-top: 20px !important;
+      }
+    }
+    // END Custom Styles for Donation form with Background
+  }
+
   @media screen and (max-width: 720px) {
     --body-side-padding: 16px;
     --recurring-frequency__button_count: 2;
@@ -97,9 +159,22 @@
     margin: 0 calc(-1 * var(--body-side-padding));
   }
 
-  @media screen and (max-width: 720px) {
+  @media screen and (max-width: 720px) and (min-width: 601px) {
     .multistep-stepper {
-      margin: 0 calc(-1 * var(--engrid__body-main_padding));
+      margin: 0 calc(-2rem + 3px);
+    }
+  }
+
+  @media screen and (max-width: 600px) {
+    &:not([data-engrid-subtheme])
+      .radio-to-buttons_recurrfreq.radio-to-buttons_recurrfreq_to-tabs
+      .en__field--recurrfreq
+      label {
+      top: 0px;
+    }
+
+    .multistep-stepper {
+      margin: 0 -19px;
     }
   }
 
@@ -261,6 +336,11 @@
     display: none !important; // Temporary CSS: Hide the premium gift block on the second step, it shows up there for some reason even though it's on the first step
   }
 
+  .body-title {
+    background: #ffffff;
+    padding: 26px 29px 20px 29px;
+  }
+
   @media screen and (max-width: 1023px) {
     &:not([data-engrid-multistep-active-step="1"]) {
       .body-title,
@@ -278,5 +358,9 @@
     h2 {
       margin: 0 0 20px 0 !important;
     }
+  }
+
+  &[data-engrid-payment-type="ach"] button[data-balloon]:after {
+    left: calc(50% - 40px);
   }
 }
