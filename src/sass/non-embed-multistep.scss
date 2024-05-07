@@ -4,7 +4,7 @@
   --engrid__body_padding: 0 var(--body-side-padding);
   --engrid__content-footerSpacer_background-color: #ffffff;
   --give-by-select__button_count: 2;
-  --h1_font-size: 60px;
+  // --h1_font-size: 60px;
 
   //VGS styles
   --en-vgs-height: 64px;
@@ -17,10 +17,10 @@
 
   .en__component--copyblock:not(.move-before-transaction-donationamt) {
     h2.section-header {
-      font-size: 60px;
-      margin: 40px 0 20px;
-      text-align: left;
-      line-height: 1;
+      // font-size: 60px;
+      // margin: 40px 0 20px;
+      // text-align: left;
+      // line-height: 1;
       &:before,
       &:after {
         content: none;
@@ -142,8 +142,8 @@
 
     .en__component--copyblock:not(.move-before-transaction-donationamt) {
       h2.section-header {
-        letter-spacing: -1px;
-        font-size: 48px;
+        // letter-spacing: -1px;
+        // font-size: 48px;
       }
     }
   }
@@ -362,5 +362,20 @@
 
   &[data-engrid-payment-type="ach"] button[data-balloon]:after {
     left: calc(50% - 40px);
+  }
+
+  /* Make the Premium Preview images large */
+  .en__pg__image:hover {
+    transform: scale(3);
+    position: relative;
+    z-index: 1;
+  }
+
+  @media only screen and (max-width: 600px) {
+    .en__pg__image:hover {
+      transform: scale(2);
+      position: absolute;
+      z-index: 1;
+    }
   }
 }
