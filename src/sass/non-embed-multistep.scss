@@ -378,4 +378,9 @@
       z-index: 1;
     }
   }
+
+  // Hide this message part of the Welcome Back Message because it's redundant: https://cln.sh/Ny44Xmbw
+  .engrid-welcome-back {
+    display: none;
+  }
 }
