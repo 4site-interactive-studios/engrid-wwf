@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, May 1, 2024 @ 17:35:17 ET
- *  By: fernando
+ *  Date: Tuesday, May 21, 2024 @ 10:38:08 ET
+ *  By: michael
  *  ENGrid styles: v0.18.8
- *  ENGrid scripts: v0.18.9
+ *  ENGrid scripts: v0.18.11
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -15652,9 +15652,10 @@ class RememberMe {
         }
     }
     insertClearRememberMeLink() {
-        if (!document.getElementById("clear-autofill-data")) {
+        let clearRememberMeField = document.getElementById("clear-autofill-data");
+        if (!clearRememberMeField) {
             const clearAutofillLabel = "clear autofill";
-            const clearRememberMeField = document.createElement("a");
+            clearRememberMeField = document.createElement("a");
             clearRememberMeField.setAttribute("id", "clear-autofill-data");
             clearRememberMeField.classList.add("label-tooltip");
             clearRememberMeField.setAttribute("style", "cursor: pointer;");
@@ -15667,27 +15668,27 @@ class RememberMe {
                 else {
                     targetField.prepend(clearRememberMeField);
                 }
-                clearRememberMeField.addEventListener("click", (e) => {
-                    e.preventDefault();
-                    this.clearFields([
-                        "supporter.country" /*, 'supporter.emailAddress'*/,
-                    ]);
-                    if (this.useRemote()) {
-                        this.clearCookieOnRemote();
-                    }
-                    else {
-                        this.clearCookie();
-                    }
-                    let clearAutofillLink = document.getElementById("clear-autofill-data");
-                    if (clearAutofillLink) {
-                        clearAutofillLink.style.display = "none";
-                    }
-                    this.rememberMeOptIn = false;
-                    this._events.dispatchClear();
-                });
             }
         }
+        clearRememberMeField.addEventListener("click", (e) => {
+            e.preventDefault();
+            this.clearFields(["supporter.country" /*, 'supporter.emailAddress'*/]);
+            if (this.useRemote()) {
+                this.clearCookieOnRemote();
+            }
+            else {
+                this.clearCookie();
+            }
+            let clearAutofillLink = document.getElementById("clear-autofill-data");
+            if (clearAutofillLink) {
+                clearAutofillLink.style.display = "none";
+            }
+            this.rememberMeOptIn = false;
+            this._events.dispatchClear();
+            window.dispatchEvent(new CustomEvent("RememberMe_Cleared"));
+        });
         this._events.dispatchLoad(true);
+        window.dispatchEvent(new CustomEvent("RememberMe_Loaded", { detail: { withData: true } }));
     }
     getElementByFirstSelector(selectorsString) {
         // iterate through the selectors until we find one that exists
@@ -15753,6 +15754,7 @@ class RememberMe {
             rememberMeOptInField.checked = true;
         }
         this._events.dispatchLoad(false);
+        window.dispatchEvent(new CustomEvent("RememberMe_Loaded", { detail: { withData: false } }));
     }
     useRemote() {
         return (!!this.remoteUrl &&
@@ -19157,6 +19159,8 @@ class PremiumGift {
     constructor() {
         this.logger = new EngridLogger("PremiumGift", "#232323", "#f7b500", "🎁");
         this.enElements = new Array();
+        this._frequency = DonationFrequency.getInstance();
+        this._amount = DonationAmount.getInstance();
         if (!this.shoudRun())
             return;
         this.searchElements();
@@ -19210,6 +19214,20 @@ class PremiumGift {
             });
             observer.observe(premiumGiftsBlock, { attributes: true });
         }
+        // When frequency or amount changes, restore the selected premium gift
+        this._frequency.onFrequencyChange.subscribe(this.restorePremiumGift.bind(this));
+        this._amount.onAmountChange.subscribe(this.restorePremiumGift.bind(this));
+    }
+    restorePremiumGift() {
+        const premiumGiftId = engrid_ENGrid.getBodyData("premium-gift-id");
+        setTimeout(() => {
+            const newPremiumGift = document.querySelector('[name="en__pg"][value="' + premiumGiftId + '"]');
+            if (newPremiumGift) {
+                newPremiumGift.checked = true;
+                newPremiumGift.dispatchEvent(new Event("change"));
+                this.logger.log("resetting premium gift after donation frequency/amount change", premiumGiftId);
+            }
+        }, 200);
     }
     checkPremiumGift() {
         const premiumGift = document.querySelector('[name="en__pg"]:checked');
@@ -19221,11 +19239,13 @@ class PremiumGift {
                 const premiumGiftName = premiumGiftContainer.querySelector(".en__pg__name");
                 engrid_ENGrid.setBodyData("premium-gift-maximize", "false");
                 engrid_ENGrid.setBodyData("premium-gift-name", engrid_ENGrid.slugify(premiumGiftName.innerText));
+                engrid_ENGrid.setBodyData("premium-gift-id", premiumGiftValue);
                 this.setPremiumTitle(premiumGiftName.innerText);
             }
             else {
                 engrid_ENGrid.setBodyData("premium-gift-maximize", "true");
                 engrid_ENGrid.setBodyData("premium-gift-name", false);
+                engrid_ENGrid.setBodyData("premium-gift-id", false);
                 this.setPremiumTitle("");
             }
             if (!premiumGiftContainer.classList.contains("en__pg--selected")) {
@@ -20059,9 +20079,9 @@ class FastFormFill {
         }
     }
     run() {
-        const fastPersonalDetailsFormBlock = document.querySelector(".en__component--formblock.fast-personal-details");
-        if (fastPersonalDetailsFormBlock) {
-            if (FastFormFill.allMandatoryInputsAreFilled(fastPersonalDetailsFormBlock)) {
+        const fastPersonalDetailsFormBlocks = document.querySelectorAll(".en__component--formblock.fast-personal-details");
+        if (fastPersonalDetailsFormBlocks.length > 0) {
+            if ([...fastPersonalDetailsFormBlocks].every((formBlock) => FastFormFill.allMandatoryInputsAreFilled(formBlock))) {
                 this.logger.log("Personal details - All mandatory inputs are filled");
                 engrid_ENGrid.setBodyData("hide-fast-personal-details", "true");
             }
@@ -20070,9 +20090,9 @@ class FastFormFill {
                 engrid_ENGrid.setBodyData("hide-fast-personal-details", "false");
             }
         }
-        const fastAddressDetailsFormBlock = document.querySelector(".en__component--formblock.fast-address-details");
-        if (fastAddressDetailsFormBlock) {
-            if (FastFormFill.allMandatoryInputsAreFilled(fastAddressDetailsFormBlock)) {
+        const fastAddressDetailsFormBlocks = document.querySelectorAll(".en__component--formblock.fast-address-details");
+        if (fastAddressDetailsFormBlocks.length > 0) {
+            if ([...fastAddressDetailsFormBlocks].every((formBlock) => FastFormFill.allMandatoryInputsAreFilled(formBlock))) {
                 this.logger.log("Address details - All mandatory inputs are filled");
                 engrid_ENGrid.setBodyData("hide-fast-address-details", "true");
             }
@@ -21353,7 +21373,7 @@ class ThankYouPageConditionalContent {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.18.9";
+const AppVersion = "0.18.11";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
