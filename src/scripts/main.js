@@ -268,6 +268,7 @@ export const customScript = function (App, DonationFrequency) {
                 if (node.querySelector('input[type="radio"][value="0"]')) {
                   setTimeout(maxMyGift, 100);
                 }
+                observer.disconnect();
               }
             });
           }
