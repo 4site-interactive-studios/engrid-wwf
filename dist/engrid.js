@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, May 31, 2024 @ 15:03:21 ET
+ *  Date: Friday, May 31, 2024 @ 18:20:22 ET
  *  By: fernando
  *  ENGrid styles: v0.18.8
  *  ENGrid scripts: v0.18.12
@@ -21667,7 +21667,7 @@ const customScript = function (App, DonationFrequency) {
               selectedPremiumId = selectedGift.value;
               selectedVariantId = App.getFieldValue("transaction.selprodvariantid");
             }
-          }, 150);
+          }, 250);
         });
       }); // Mutation observer to check if the "Maximized Their Gift" radio button is present. If it is, hide it.
 
@@ -21710,9 +21710,10 @@ const customScript = function (App, DonationFrequency) {
             const selectedGift = document.querySelector(`input[type="radio"][name="en__pg"][value="${selectedPremiumId}"]`);
 
             if (selectedGift) {
-              selectedGift.checked = true;
               selectedGift.click();
-              App.setFieldValue("transaction.selprodvariantid", selectedVariantId);
+              window.setTimeout(() => {
+                App.setFieldValue("transaction.selprodvariantid", selectedVariantId);
+              }, 100);
             } else {
               maxMyGift();
             }
