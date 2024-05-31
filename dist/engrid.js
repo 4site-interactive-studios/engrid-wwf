@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, May 31, 2024 @ 18:02:49 ET
+ *  Date: Friday, May 31, 2024 @ 18:30:56 ET
  *  By: bryancasler
  *  ENGrid styles: v0.18.8
  *  ENGrid scripts: v0.18.12
@@ -22310,33 +22310,69 @@ const customScript = function (App, DonationFrequency) {
     const premiumBlock = document.querySelector(".en__component--premiumgiftblock");
 
     if (premiumBlock) {
-      // Mutation observer to check if the "Maximized Their Gift" radio button is present. If it is, hide it.
+      //listen for the change event of name "en__pg" using event delegation
+      let selectedPremiumId = null;
+      let selectedVariantId = null;
+      ["change", "click"].forEach(event => {
+        premiumBlock.addEventListener(event, e => {
+          setTimeout(() => {
+            const selectedGift = document.querySelector('[name="en__pg"]:checked');
+
+            if (selectedGift) {
+              selectedPremiumId = selectedGift.value;
+              selectedVariantId = App.getFieldValue("transaction.selprodvariantid");
+            }
+          }, 150);
+        });
+      }); // Mutation observer to check if the "Maximized Their Gift" radio button is present. If it is, hide it.
+
       const observer = new MutationObserver(mutationsList => {
-        // Loop through the mutations that have occurred
+        //loop over the mutations and if we're adding a radio with the "checked" attribute, remove that attribute so nothing gets re-selected
+        //when the premiums list is re-rendered
         for (const mutation of mutationsList) {
-          // Check if a node has been added to the form
           if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
-            // Loop through the added nodes
             mutation.addedNodes.forEach(node => {
-              if (typeof node.querySelector === "function") {
-                if (node.querySelector("h2") && node.querySelector("h2").innerText === "Maximized Their Gift") {
-                  const maxElement = node.closest(".en__pg");
+              if (typeof node.querySelector !== "function") return;
+              const preSelectedRadio = node.querySelector("input[checked]");
 
-                  if (maxElement) {
-                    maxElement.classList.add("hide");
-                    const maxRadio = maxElement.querySelector("input[type='radio'][name='en__pg']");
-
-                    if (maxRadio) {
-                      window.maxTheirGift = getProdVarId(maxRadio.value);
-                    }
-                  }
-                }
-
-                if (node.querySelector('input[type="radio"][value="0"]')) {
-                  setTimeout(maxMyGift, 100);
-                }
+              if (preSelectedRadio) {
+                preSelectedRadio.removeAttribute("checked");
               }
             });
+          }
+        }
+
+        if (mutationsList.some(mutation => mutation.type === "childList")) {
+          // Each time premiums list is re-rendered, hide the "Maximized Their Gift" section
+          const maximizeTheirGiftHeader = [...document.querySelectorAll(".en__pg__name")].find(el => el.innerText === "Maximized Their Gift");
+
+          if (maximizeTheirGiftHeader) {
+            const maxElement = maximizeTheirGiftHeader.closest(".en__pg");
+
+            if (maxElement) {
+              maxElement.classList.add("hide");
+              const maxRadio = maxElement.querySelector("input[type='radio'][name='en__pg']");
+
+              if (maxRadio) {
+                window.maxTheirGift = getProdVarId(maxRadio.value);
+              }
+            }
+          } // Re-select the previously selected gift when gift list is re-rendered
+          // If gift no longer exists, choose maximize my gift
+
+
+          if (selectedPremiumId && selectedVariantId) {
+            const selectedGift = document.querySelector(`input[type="radio"][name="en__pg"][value="${selectedPremiumId}"]`);
+
+            if (selectedGift) {
+              selectedGift.checked = true;
+              selectedGift.click();
+              App.setFieldValue("transaction.selprodvariantid", selectedVariantId);
+            } else {
+              maxMyGift();
+            }
+          } else {
+            maxMyGift();
           }
         }
       }); // Start observing the target node for configured mutations
