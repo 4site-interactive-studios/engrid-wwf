@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, May 31, 2024 @ 18:20:22 ET
+ *  Date: Monday, June 3, 2024 @ 23:57:29 ET
  *  By: fernando
  *  ENGrid styles: v0.18.8
  *  ENGrid scripts: v0.18.12
@@ -23785,7 +23785,18 @@ const options = {
       }
     }
 
-    new OnLoadModal();
+    new OnLoadModal(); // Unsubscribe All Logic
+
+    const unsubscribeAllButton = document.querySelector("#unsubscribe-all");
+    const unsubscribeAllRadio = App.getField("supporter.questions.888498");
+
+    if (unsubscribeAllButton && unsubscribeAllRadio) {
+      unsubscribeAllButton.addEventListener("click", () => {
+        unsubscribeAllRadio.click();
+      }); // Hide the unsubscribe all radio button
+
+      unsubscribeAllRadio.closest(".en__field")?.classList.add("hide");
+    }
   },
   onResize: () => console.log("Starter Theme Window Resized"),
   onSubmit: () => {
