@@ -179,6 +179,20 @@ const options: Options = {
       }
     }
     new OnLoadModal();
+    // Unsubscribe All Logic
+    const unsubscribeAllButton = document.querySelector(
+      "#unsubscribe-all"
+    ) as HTMLInputElement;
+    const unsubscribeAllRadio = App.getField(
+      "supporter.questions.888498"
+    ) as HTMLInputElement;
+    if (unsubscribeAllButton && unsubscribeAllRadio) {
+      unsubscribeAllButton.addEventListener("click", () => {
+        unsubscribeAllRadio.click();
+      });
+      // Hide the unsubscribe all radio button
+      unsubscribeAllRadio.closest(".en__field")?.classList.add("hide");
+    }
   },
   onResize: () => console.log("Starter Theme Window Resized"),
 
