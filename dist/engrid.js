@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, June 3, 2024 @ 23:57:29 ET
+ *  Date: Wednesday, June 5, 2024 @ 22:49:31 ET
  *  By: fernando
  *  ENGrid styles: v0.18.8
- *  ENGrid scripts: v0.18.12
+ *  ENGrid scripts: v0.18.13
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -11747,14 +11747,20 @@ class engrid_ENGrid {
     static setPaymentType(paymentType) {
         const enFieldPaymentType = engrid_ENGrid.getField("transaction.paymenttype");
         if (enFieldPaymentType) {
-            const paymentTypeOption = Array.from(enFieldPaymentType.options).find((option) => option.value.toLowerCase() === paymentType.toLowerCase());
+            const paymentTypeOption = Array.from(enFieldPaymentType.options).find((option) => paymentType.toLowerCase() === "card"
+                ? ["card", "visa", "vi"].includes(option.value.toLowerCase())
+                : paymentType.toLowerCase() === option.value.toLowerCase());
             if (paymentTypeOption) {
                 paymentTypeOption.selected = true;
+                enFieldPaymentType.value = paymentTypeOption.value;
             }
             else {
                 enFieldPaymentType.value = paymentType;
             }
-            const event = new Event("change");
+            const event = new Event("change", {
+                bubbles: true,
+                cancelable: true,
+            });
             enFieldPaymentType.dispatchEvent(event);
         }
     }
@@ -12197,6 +12203,7 @@ class App extends engrid_ENGrid {
             this.logger.success("Validation Passed");
             return true;
         };
+        new DataAttributes();
         // Country Redirect
         new CountryRedirect();
         // iFrame Logic
@@ -12321,7 +12328,6 @@ class App extends engrid_ENGrid {
             new Plaid();
         // Give By Select
         new GiveBySelect();
-        new DataAttributes();
         //Exit Intent Lightbox
         new ExitIntentLightbox();
         new UrlParamsToBodyAttrs();
@@ -19313,6 +19319,11 @@ class DigitalWallets {
             if (stripeContainer) {
                 this.checkForWalletsBeingAdded(stripeContainer, "stripe");
             }
+            // If the default payment type is Stripe Digital Wallet and the page doesnt support it, set the payment type to Card
+            const paymentType = engrid_ENGrid.getPaymentType();
+            if (paymentType.toLowerCase() === "stripedigitalwallet") {
+                engrid_ENGrid.setPaymentType("card");
+            }
         }
         /**
          * Check for presence of elements that indicated Paypal digital wallets
@@ -19368,6 +19379,17 @@ class DigitalWallets {
             walletOption.value = value;
             walletOption.innerText = label;
             paymentTypeField.appendChild(walletOption);
+        }
+        // If this payment type is set as the default on GiveBySelect, set the payment type to this value
+        // We need to do this here because the digital wallets are sometimes slow to load
+        const giveBySelect = document.querySelector('input[name="transaction.giveBySelect"][value="' + value + '"]');
+        if (giveBySelect && giveBySelect.dataset.default === "true") {
+            giveBySelect.checked = true;
+            const event = new Event("change", {
+                bubbles: true,
+                cancelable: true,
+            });
+            giveBySelect.dispatchEvent(event);
         }
     }
     checkForWalletsBeingAdded(node, walletType) {
@@ -19734,12 +19756,7 @@ class GiveBySelect {
         this.transactionGiveBySelect.forEach((giveBySelect) => {
             giveBySelect.addEventListener("change", () => {
                 this.logger.log("Changed to " + giveBySelect.value);
-                if (giveBySelect.value.toLowerCase() === "card") {
-                    this.setCardPaymentType();
-                }
-                else {
-                    engrid_ENGrid.setPaymentType(giveBySelect.value);
-                }
+                engrid_ENGrid.setPaymentType(giveBySelect.value);
             });
         });
         // Set the initial value of giveBySelect to the transaction.paymenttype field
@@ -19769,26 +19786,6 @@ class GiveBySelect {
                     giveBySelect.checked = true;
                 }
             });
-        }
-    }
-    setCardPaymentType() {
-        if (!this.paymentTypeField)
-            return;
-        this.logger.log("Change Payment Type to Card or Visa");
-        // Loop through the payment type field options and set the visa card as the default
-        for (let i = 0; i < this.paymentTypeField.options.length; i++) {
-            if (this.paymentTypeField.options[i].value.toLowerCase() === "card" ||
-                this.paymentTypeField.options[i].value.toLowerCase() === "visa" ||
-                this.paymentTypeField.options[i].value.toLowerCase() === "vi") {
-                this.paymentTypeField.selectedIndex = i;
-                // Trigger the change event
-                const event = new Event("change", {
-                    bubbles: true,
-                    cancelable: true,
-                });
-                this.paymentTypeField.dispatchEvent(event);
-                break;
-            }
         }
     }
 }
@@ -20726,17 +20723,9 @@ class VGS {
         this.logger.log("Options", this.options);
     }
     setPaymentType() {
-        // Because the VGS iFrame Communication doesn't change the value of the payment type field, we have to set it to Visa by default
-        if (this.paymentTypeField) {
-            // Loop through the payment type field options and set the visa card as the default
-            for (let i = 0; i < this.paymentTypeField.options.length; i++) {
-                if (this.paymentTypeField.options[i].value.toLowerCase() === "card" ||
-                    this.paymentTypeField.options[i].value.toLowerCase() === "visa" ||
-                    this.paymentTypeField.options[i].value.toLowerCase() === "vi") {
-                    this.paymentTypeField.selectedIndex = i;
-                    break;
-                }
-            }
+        // If there's no default payment type, set the default to card
+        if (engrid_ENGrid.getPaymentType() === "") {
+            engrid_ENGrid.setPaymentType("card");
         }
     }
     dumpGlobalVar() {
@@ -21355,7 +21344,7 @@ class ThankYouPageConditionalContent {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.18.12";
+const AppVersion = "0.18.13";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
