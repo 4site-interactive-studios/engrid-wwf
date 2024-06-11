@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, May 31, 2024 @ 18:30:56 ET
+ *  Date: Tuesday, June 11, 2024 @ 17:35:33 ET
  *  By: bryancasler
  *  ENGrid styles: v0.18.8
  *  ENGrid scripts: v0.18.12
@@ -12206,7 +12206,8 @@ body[data-engrid-debug]:before{
   box-shadow:0 8px 12px 0 #0000001a,-22px 21px 29px 0 #0000001f;
 }
 [data-engrid-theme=wwf][data-engrid-multistep] .en__submit button .live-variable-frequency:after{
-  content:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='14' fill='none'%3E%3Cpath d='M8.187 13.313a.972.972 0 1 1-1.374-1.375L10.5 8.25H1.6a1.1 1.1 0 0 1 0-2.2h9.2L6.813 2.062A.972.972 0 1 1 8.187.687L14.5 7l-6.313 6.313Z' fill='%23000'/%3E%3C/svg%3E");
+  content:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='14' fill='none'%3E%3Cpath d='M8.187 13.313a.972.972 0 1 1-1.374-1.375L10.5 8.25H1.6a1.1 1.1 0 0 1 0-2.2h9.2L6.813 2.062A.972.972 0 1 1 8.187.687L14.5 7l-6.313 6.313Z' fill='%23fff'/%3E%3C/svg%3E");
+  filter:invert(1);
   left:16px;
   position:relative;
   top:-1px;
