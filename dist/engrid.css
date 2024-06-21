@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, June 11, 2024 @ 17:38:59 ET
+ *  Date: Friday, June 21, 2024 @ 13:40:19 ET
  *  By: bryancasler
  *  ENGrid styles: v0.18.8
  *  ENGrid scripts: v0.18.12
@@ -11995,6 +11995,7 @@ body[data-engrid-debug]:before{
   --en-vgs-backgroundColor:#f5f5f5;
 }
 [data-engrid-theme=wwf][data-engrid-multistep] .en__component--copyblock:not(.move-before-transaction-donationamt) h2.section-header{
+  font-size:var(--h3_font-size);
   text-align:left;
 }
 [data-engrid-theme=wwf][data-engrid-multistep] .en__component--copyblock:not(.move-before-transaction-donationamt) h2.section-header:after,[data-engrid-theme=wwf][data-engrid-multistep] .en__component--copyblock:not(.move-before-transaction-donationamt) h2.section-header:before{
