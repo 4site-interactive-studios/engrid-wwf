@@ -184,7 +184,7 @@ export default class MultistepForm {
       }
     );
 
-    if (!sectionHeader) {
+    if (!sectionHeader || sectionHeader.offsetHeight === 0) {
       this.logger.log(`No section header found. Scrolling to top of page.`);
       window.scrollTo(0, 0);
       return;
