@@ -256,7 +256,7 @@ export const customScript = function (App, DonationFrequency) {
                 "transaction.selprodvariantid"
               );
             }
-          }, 150);
+          }, 250);
         });
       });
 
@@ -302,12 +302,13 @@ export const customScript = function (App, DonationFrequency) {
               `input[type="radio"][name="en__pg"][value="${selectedPremiumId}"]`
             );
             if (selectedGift) {
-              selectedGift.checked = true;
               selectedGift.click();
-              App.setFieldValue(
-                "transaction.selprodvariantid",
-                selectedVariantId
-              );
+              window.setTimeout(() => {
+                App.setFieldValue(
+                  "transaction.selprodvariantid",
+                  selectedVariantId
+                );
+              }, 100);
             } else {
               maxMyGift();
             }

@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, June 21, 2024 @ 13:40:19 ET
- *  By: bryancasler
+ *  Date: Monday, June 24, 2024 @ 05:45:26 ET
+ *  By: michael
  *  ENGrid styles: v0.18.8
- *  ENGrid scripts: v0.18.12
+ *  ENGrid scripts: v0.18.11
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -19585,6 +19585,8 @@ class PremiumGift {
     constructor() {
         this.logger = new EngridLogger("PremiumGift", "#232323", "#f7b500", "🎁");
         this.enElements = new Array();
+        this._frequency = DonationFrequency.getInstance();
+        this._amount = DonationAmount.getInstance();
         if (!this.shoudRun())
             return;
         this.searchElements();
@@ -19638,6 +19640,20 @@ class PremiumGift {
             });
             observer.observe(premiumGiftsBlock, { attributes: true });
         }
+        // When frequency or amount changes, restore the selected premium gift
+        this._frequency.onFrequencyChange.subscribe(this.restorePremiumGift.bind(this));
+        this._amount.onAmountChange.subscribe(this.restorePremiumGift.bind(this));
+    }
+    restorePremiumGift() {
+        const premiumGiftId = engrid_ENGrid.getBodyData("premium-gift-id");
+        setTimeout(() => {
+            const newPremiumGift = document.querySelector('[name="en__pg"][value="' + premiumGiftId + '"]');
+            if (newPremiumGift) {
+                newPremiumGift.checked = true;
+                newPremiumGift.dispatchEvent(new Event("change"));
+                this.logger.log("resetting premium gift after donation frequency/amount change", premiumGiftId);
+            }
+        }, 200);
     }
     checkPremiumGift() {
         const premiumGift = document.querySelector('[name="en__pg"]:checked');
@@ -19649,11 +19665,13 @@ class PremiumGift {
                 const premiumGiftName = premiumGiftContainer.querySelector(".en__pg__name");
                 engrid_ENGrid.setBodyData("premium-gift-maximize", "false");
                 engrid_ENGrid.setBodyData("premium-gift-name", engrid_ENGrid.slugify(premiumGiftName.innerText));
+                engrid_ENGrid.setBodyData("premium-gift-id", premiumGiftValue);
                 this.setPremiumTitle(premiumGiftName.innerText);
             }
             else {
                 engrid_ENGrid.setBodyData("premium-gift-maximize", "true");
                 engrid_ENGrid.setBodyData("premium-gift-name", false);
+                engrid_ENGrid.setBodyData("premium-gift-id", false);
                 this.setPremiumTitle("");
             }
             if (!premiumGiftContainer.classList.contains("en__pg--selected")) {
@@ -21781,7 +21799,7 @@ class ThankYouPageConditionalContent {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.18.12";
+const AppVersion = "0.18.11";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
@@ -21869,237 +21887,8 @@ const AppVersion = "0.18.12";
 // Version
 
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/defineProperty.js
-function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-
-  return obj;
-}
-// EXTERNAL MODULE: ./src/scripts/confetti.js
-var confetti = __webpack_require__(5481);
-;// CONCATENATED MODULE: ./src/scripts/multistep-form.ts
-
-
-
-class MultistepForm {
-  constructor() {
-    _defineProperty(this, "logger", new EngridLogger("MultistepForm", "white", "blue"));
-
-    _defineProperty(this, "validators", []);
-
-    if (this.shouldRun()) {
-      this.logger.log("MultistepForm running");
-
-      if (engrid_ENGrid.checkNested(window.EngagingNetworks, "require", "_defined", "enValidation", "validation", "validators")) {
-        this.validators = window.EngagingNetworks.require._defined.enValidation.validation.validators;
-      }
-
-      this.run();
-      this.handleServerSideError();
-    } // Thank you page confetti
-
-
-    if (engrid_ENGrid.getPageType() === "DONATION" && engrid_ENGrid.getBodyData("multistep") === "" && engrid_ENGrid.getGiftProcess()) {
-      this.startConfetti();
-    }
-  }
-
-  shouldRun() {
-    return engrid_ENGrid.getPageType() === "DONATION" && engrid_ENGrid.getBodyData("multistep") === "" && engrid_ENGrid.getPageNumber() === 1;
-  }
-
-  run() {
-    engrid_ENGrid.setBodyData("multistep-active-step", "1");
-    this.addStepDataAttributes();
-    this.addBackButtonToFinalStep();
-    this.addEventListeners();
-  }
-
-  addStepDataAttributes() {
-    var _document$querySelect, _document$querySelect2, _document$querySelect3;
-
-    (_document$querySelect = document.querySelector(".body-title")) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.setAttribute("data-multistep-step", "1");
-    (_document$querySelect2 = document.querySelector(".body-top")) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.setAttribute("data-multistep-step", "1");
-    (_document$querySelect3 = document.querySelector(".body-bottom")) === null || _document$querySelect3 === void 0 ? void 0 : _document$querySelect3.setAttribute("data-multistep-step", "3");
-    const stepperCodeBlocks = [...document.querySelectorAll(".multistep-stepper")].map(el => el.closest(".en__component--codeblock"));
-    stepperCodeBlocks.forEach((step, index) => {
-      var _document$querySelect4;
-
-      step.setAttribute("data-multistep-step", `${index + 1}`); // if this is the first step, we start from the first element in ".body-main"
-      // (since the first stepper could be outside of ".body-main")
-
-      const start = index === 0 ? (_document$querySelect4 = document.querySelector(".body-main")) === null || _document$querySelect4 === void 0 ? void 0 : _document$querySelect4.firstChild : step;
-      const nextStep = stepperCodeBlocks[index + 1];
-      const elements = this.getElementsBetween(start, nextStep);
-      elements.forEach(element => {
-        element.setAttribute("data-multistep-step", `${index + 1}`);
-      });
-    });
-  }
-
-  getElementsBetween(step, nextStep) {
-    const elements = [];
-    let currentElement = step.nextElementSibling;
-
-    while (currentElement && currentElement !== nextStep) {
-      elements.push(currentElement);
-      currentElement = currentElement.nextElementSibling;
-    }
-
-    return elements;
-  }
-
-  addEventListeners() {
-    //Elements for changing step
-    const buttons = document.querySelectorAll("[data-multistep-change-step]");
-    buttons.forEach(button => {
-      button.addEventListener("click", e => {
-        this.activateStep(button.dataset.multistepChangeStep ?? "");
-      });
-    });
-  }
-
-  activateStep(targetStep) {
-    let bypassValidation = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-    if (!targetStep) return;
-    const activeStep = engrid_ENGrid.getBodyData("multistep-active-step") ?? "1"; //If no validation or we're going backwards, activate the step
-
-    if (bypassValidation || targetStep < activeStep) {
-      this.logger.log(`Bypassing validation or going backwards. Activating step ${targetStep}`);
-      engrid_ENGrid.setBodyData("multistep-active-step", targetStep);
-      window.scrollTo(0, 0);
-      return;
-    } // If we're going forwards, validate the steps between the current and target step
-    // if validation fields, find first error on the page, activate that step and scroll to it
-
-
-    if (!this.validateStepsBetweenCurrentAndTargetStep(activeStep, targetStep)) {
-      var _field$closest;
-
-      const field = document.querySelector(".en__field--validationFailed");
-      const invalidStep = (field === null || field === void 0 ? void 0 : (_field$closest = field.closest(".en__component--formblock")) === null || _field$closest === void 0 ? void 0 : _field$closest.getAttribute("data-multistep-step")) ?? "1";
-      engrid_ENGrid.setBodyData("multistep-active-step", invalidStep);
-      window.scrollTo(0, 0);
-
-      if (field) {
-        field.scrollIntoView({
-          behavior: "smooth"
-        });
-      }
-
-      this.logger.log(`Found error on step ${invalidStep}. Going to that step.`);
-      return;
-    } // If validation passes, activate the step
-
-
-    this.logger.log(`Validation passed. Activating step ${targetStep}`);
-    engrid_ENGrid.setBodyData("multistep-active-step", targetStep);
-    window.scrollTo(0, 0);
-  }
-
-  addBackButtonToFinalStep() {
-    const submitButtonContainer = document.querySelector(".multistep-submit .en__submit");
-    if (!submitButtonContainer) return;
-    submitButtonContainer.insertAdjacentHTML("beforebegin", `<button class="btn-back" data-multistep-change-step="2" type="button">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 16 16">
-          <path fill="currentColor" d="M7.214.786c.434-.434 1.138-.434 1.572 0 .433.434.433 1.137 0 1.571L4.57 6.572h10.172c.694 0 1.257.563 1.257 1.257s-.563 1.257-1.257 1.257H4.229l4.557 4.557c.433.434.433 1.137 0 1.571-.434.434-1.138.434-1.572 0L0 8 7.214.786z"></path>
-         </svg>
-       </button>`);
-  }
-
-  validateStepsBetweenCurrentAndTargetStep(currentStep, targetStep) {
-    const stepsBetween = this.getStepsBetween(currentStep, targetStep);
-    return stepsBetween.every(step => this.validateStep(step));
-  }
-
-  validateStep(step) {
-    if (this.validators.length === 0) return true;
-    const validators = this.validators.filter(validator => {
-      var _document$querySelect5, _document$querySelect6;
-
-      return ((_document$querySelect5 = document.querySelector(`.en__field--${validator.field}`)) === null || _document$querySelect5 === void 0 ? void 0 : (_document$querySelect6 = _document$querySelect5.closest(".en__component--formblock")) === null || _document$querySelect6 === void 0 ? void 0 : _document$querySelect6.getAttribute("data-multistep-step")) === step;
-    });
-    const validationResults = validators.map(validator => {
-      validator.hideMessage();
-      return !validator.isVisible() || validator.test();
-    });
-    return validationResults.every(result => result);
-  }
-
-  getStepsBetween(currentStep, targetStep) {
-    const start = parseInt(currentStep);
-    const end = parseInt(targetStep);
-    let stepsBetween = [];
-
-    for (let i = start; i < end; i++) {
-      stepsBetween.push(i.toString());
-    }
-
-    return stepsBetween;
-  }
-
-  startConfetti() {
-    const duration = 3 * 1000;
-    const animationEnd = Date.now() + duration;
-    const defaults = {
-      startVelocity: 30,
-      spread: 360,
-      ticks: 60,
-      zIndex: 100000,
-      useWorker: false
-    };
-
-    const randomInRange = (min, max) => {
-      return Math.random() * (max - min) + min;
-    };
-
-    const interval = setInterval(function () {
-      const timeLeft = animationEnd - Date.now();
-
-      if (timeLeft <= 0) {
-        return clearInterval(interval);
-      }
-
-      const particleCount = 50 * (timeLeft / duration); // since particles fall down, start a bit higher than random
-
-      window.confetti(Object.assign({}, defaults, {
-        particleCount,
-        origin: {
-          x: randomInRange(0.1, 0.3),
-          y: Math.random() - 0.2
-        }
-      }));
-      window.confetti(Object.assign({}, defaults, {
-        particleCount,
-        origin: {
-          x: randomInRange(0.7, 0.9),
-          y: Math.random() - 0.2
-        }
-      }));
-    }, 250);
-  }
-
-  handleServerSideError() {
-    if (engrid_ENGrid.checkNested(window.EngagingNetworks, "require", "_defined", "enjs", "checkSubmissionFailed") && window.EngagingNetworks.require._defined.enjs.checkSubmissionFailed()) {
-      this.logger.log("Server side error detected");
-      this.activateStep("3", true);
-    }
-  }
-
-}
 ;// CONCATENATED MODULE: ./src/scripts/main.js
 const customScript = function (App, DonationFrequency) {
-  var _document$querySelect;
-
   console.log("ENGrid client scripts are executing");
   const isSpanish = document.querySelector("label[for='en__field_supporter_emailAddress']") && document.querySelector("label[for='en__field_supporter_emailAddress']").textContent === "Correo electrónico";
   let inlineMonthlyUpsell = document.querySelectorAll(".move-after-transaction-recurrfreq")[0];
@@ -22322,7 +22111,7 @@ const customScript = function (App, DonationFrequency) {
               selectedPremiumId = selectedGift.value;
               selectedVariantId = App.getFieldValue("transaction.selprodvariantid");
             }
-          }, 150);
+          }, 250);
         });
       }); // Mutation observer to check if the "Maximized Their Gift" radio button is present. If it is, hide it.
 
@@ -22365,9 +22154,10 @@ const customScript = function (App, DonationFrequency) {
             const selectedGift = document.querySelector(`input[type="radio"][name="en__pg"][value="${selectedPremiumId}"]`);
 
             if (selectedGift) {
-              selectedGift.checked = true;
               selectedGift.click();
-              App.setFieldValue("transaction.selprodvariantid", selectedVariantId);
+              window.setTimeout(() => {
+                App.setFieldValue("transaction.selprodvariantid", selectedVariantId);
+              }, 100);
             } else {
               maxMyGift();
             }
@@ -22598,7 +22388,7 @@ const customScript = function (App, DonationFrequency) {
   } // Inserts a email subscription nudge after the element with the 'universal-opt-in' class
 
 
-  const universalOptInFieldClasses = (_document$querySelect = document.querySelector(".universal-opt-in > .en__field")) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.classList;
+  const universalOptInFieldClasses = document.querySelector(".universal-opt-in > .en__field")?.classList;
 
   if (universalOptInFieldClasses) {
     const optInClass = [...universalOptInFieldClasses].find(className => {
@@ -22833,10 +22623,8 @@ const customScript = function (App, DonationFrequency) {
       const paymentElement = paymentType.closest(".en__component");
 
       if (paymentElement) {
-        var _paymentElement$paren;
-
         // Insert the new field after the submit button
-        (_paymentElement$paren = paymentElement.parentNode) === null || _paymentElement$paren === void 0 ? void 0 : _paymentElement$paren.insertBefore(formBlock, paymentElement.nextSibling);
+        paymentElement.parentNode?.insertBefore(formBlock, paymentElement.nextSibling);
       } else {
         const form = document.querySelector("form");
 
@@ -23058,11 +22846,9 @@ const pageHeaderFooter = function (App) {
         },
         handleDocumentClick: function (e) {
           if (_self.headerNav.mobileHeaderMq.matches) {
-            var _e$target$closest;
-
             // close any open menus (on mobile) with search click
             const _this = _self.headerNav;
-            const clickFromInsideSearch = ((_e$target$closest = e.target.closest(".search")) === null || _e$target$closest === void 0 ? void 0 : _e$target$closest.length) === 1;
+            const clickFromInsideSearch = e.target.closest(".search")?.length === 1;
 
             if (clickFromInsideSearch) {
               _this.closeExpandedPanels();
@@ -23381,8 +23167,6 @@ class DonationLightboxForm {
   buildSectionNavigation() {
     console.log("DonationLightboxForm: buildSectionNavigation");
     this.sections.forEach((section, key) => {
-      var _sectionNavigation$qu, _sectionNavigation$qu2, _sectionNavigation$qu3;
-
       section.dataset.sectionId = key;
       const sectionNavigation = document.createElement("div");
       sectionNavigation.classList.add("section-navigation");
@@ -23434,10 +23218,8 @@ class DonationLightboxForm {
         <span class="section-count__total">${sectionTotal}</span>
       `;
       } else {
-        var _document$querySelect;
-
         // Single Section Pages
-        const submitButtonLabel = ((_document$querySelect = document.querySelector(".en__submit button")) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.innerText) || "Submit";
+        const submitButtonLabel = document.querySelector(".en__submit button")?.innerText || "Submit";
         sectionNavigation.innerHTML = `
         <button class="section-navigation__submit" data-section-id="${key}" type="submit" data-label="${submitButtonLabel}">
           <span>${submitButtonLabel}</span>
@@ -23445,18 +23227,18 @@ class DonationLightboxForm {
       `;
       }
 
-      (_sectionNavigation$qu = sectionNavigation.querySelector(".section-navigation__previous")) === null || _sectionNavigation$qu === void 0 ? void 0 : _sectionNavigation$qu.addEventListener("click", e => {
+      sectionNavigation.querySelector(".section-navigation__previous")?.addEventListener("click", e => {
         e.preventDefault();
         this.scrollToSection(key - 1, key);
       });
-      (_sectionNavigation$qu2 = sectionNavigation.querySelector(".section-navigation__next")) === null || _sectionNavigation$qu2 === void 0 ? void 0 : _sectionNavigation$qu2.addEventListener("click", e => {
+      sectionNavigation.querySelector(".section-navigation__next")?.addEventListener("click", e => {
         e.preventDefault();
 
         if (this.validateForm(key)) {
           this.scrollToSection(key + 1, key);
         }
       });
-      (_sectionNavigation$qu3 = sectionNavigation.querySelector(".section-navigation__submit")) === null || _sectionNavigation$qu3 === void 0 ? void 0 : _sectionNavigation$qu3.addEventListener("click", e => {
+      sectionNavigation.querySelector(".section-navigation__submit")?.addEventListener("click", e => {
         e.preventDefault(); // Validate the entire form again
 
         if (this.validateForm()) {
@@ -24111,9 +23893,7 @@ class TweetToTarget {
     }
 
     if (!dontAutomaticallyRedirect) {
-      var _document$querySelect;
-
-      (_document$querySelect = document.querySelector(".en__submit")) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.classList.add("hide");
+      document.querySelector(".en__submit")?.classList.add("hide");
     }
 
     if (this.tweetToTargetData.tweetedTo) {
@@ -24178,6 +23958,21 @@ class TweetToTarget {
     return newTweetToTargetData.tweetedTo.length < document.querySelectorAll(".en__tweetContact").length && !newTweetToTargetData.singleTweet;
   }
 
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/defineProperty.js
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
 }
 ;// CONCATENATED MODULE: ./src/scripts/annual-limit.ts
 
@@ -24283,16 +24078,220 @@ class OnLoadModal extends Modal {
   }
 
 }
+// EXTERNAL MODULE: ./src/scripts/confetti.js
+var confetti = __webpack_require__(5481);
+;// CONCATENATED MODULE: ./src/scripts/multistep-form.ts
+
+
+
+class MultistepForm {
+  constructor() {
+    _defineProperty(this, "logger", new EngridLogger("MultistepForm", "white", "blue"));
+
+    _defineProperty(this, "validators", []);
+
+    if (this.shouldRun()) {
+      this.logger.log("MultistepForm running");
+
+      if (engrid_ENGrid.checkNested(window.EngagingNetworks, "require", "_defined", "enValidation", "validation", "validators")) {
+        this.validators = window.EngagingNetworks.require._defined.enValidation.validation.validators;
+      }
+
+      this.run();
+      this.handleServerSideError();
+    } // Thank you page confetti
+
+
+    if (engrid_ENGrid.getPageType() === "DONATION" && engrid_ENGrid.getBodyData("multistep") === "" && engrid_ENGrid.getGiftProcess()) {
+      this.startConfetti();
+    }
+  }
+
+  shouldRun() {
+    return engrid_ENGrid.getPageType() === "DONATION" && engrid_ENGrid.getBodyData("multistep") === "" && engrid_ENGrid.getPageNumber() === 1;
+  }
+
+  run() {
+    engrid_ENGrid.setBodyData("multistep-active-step", "1");
+    this.addStepDataAttributes();
+    this.addBackButtonToFinalStep();
+    this.addEventListeners();
+  }
+
+  addStepDataAttributes() {
+    document.querySelector(".body-title")?.setAttribute("data-multistep-step", "1");
+    document.querySelector(".body-top")?.setAttribute("data-multistep-step", "1");
+    document.querySelector(".body-bottom")?.setAttribute("data-multistep-step", "3");
+    const stepperCodeBlocks = [...document.querySelectorAll(".multistep-stepper")].map(el => el.closest(".en__component--codeblock"));
+    stepperCodeBlocks.forEach((step, index) => {
+      step.setAttribute("data-multistep-step", `${index + 1}`); // if this is the first step, we start from the first element in ".body-main"
+      // (since the first stepper could be outside of ".body-main")
+
+      const start = index === 0 ? document.querySelector(".body-main")?.firstChild : step;
+      const nextStep = stepperCodeBlocks[index + 1];
+      const elements = this.getElementsBetween(start, nextStep);
+      elements.forEach(element => {
+        element.setAttribute("data-multistep-step", `${index + 1}`);
+      });
+    });
+  }
+
+  getElementsBetween(step, nextStep) {
+    const elements = [];
+    let currentElement = step.nextElementSibling;
+
+    while (currentElement && currentElement !== nextStep) {
+      elements.push(currentElement);
+      currentElement = currentElement.nextElementSibling;
+    }
+
+    return elements;
+  }
+
+  addEventListeners() {
+    //Elements for changing step
+    const buttons = document.querySelectorAll("[data-multistep-change-step]");
+    buttons.forEach(button => {
+      button.addEventListener("click", e => {
+        this.activateStep(button.dataset.multistepChangeStep ?? "");
+      });
+    });
+  }
+
+  activateStep(targetStep) {
+    let bypassValidation = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+    if (!targetStep) return;
+    const activeStep = engrid_ENGrid.getBodyData("multistep-active-step") ?? "1"; //If no validation or we're going backwards, activate the step
+
+    if (bypassValidation || targetStep < activeStep) {
+      this.logger.log(`Bypassing validation or going backwards. Activating step ${targetStep}`);
+      engrid_ENGrid.setBodyData("multistep-active-step", targetStep);
+      window.scrollTo(0, 0);
+      return;
+    } // If we're going forwards, validate the steps between the current and target step
+    // if validation fields, find first error on the page, activate that step and scroll to it
+
+
+    if (!this.validateStepsBetweenCurrentAndTargetStep(activeStep, targetStep)) {
+      const field = document.querySelector(".en__field--validationFailed");
+      const invalidStep = field?.closest(".en__component--formblock")?.getAttribute("data-multistep-step") ?? "1";
+      engrid_ENGrid.setBodyData("multistep-active-step", invalidStep);
+      window.scrollTo(0, 0);
+
+      if (field) {
+        field.scrollIntoView({
+          behavior: "smooth"
+        });
+      }
+
+      this.logger.log(`Found error on step ${invalidStep}. Going to that step.`);
+      return;
+    } // If validation passes, activate the step
+
+
+    this.logger.log(`Validation passed. Activating step ${targetStep}`);
+    engrid_ENGrid.setBodyData("multistep-active-step", targetStep);
+    window.scrollTo(0, 0);
+  }
+
+  addBackButtonToFinalStep() {
+    const submitButtonContainer = document.querySelector(".multistep-submit .en__submit");
+    if (!submitButtonContainer) return;
+    submitButtonContainer.insertAdjacentHTML("beforebegin", `<button class="btn-back" data-multistep-change-step="2" type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 16 16">
+          <path fill="currentColor" d="M7.214.786c.434-.434 1.138-.434 1.572 0 .433.434.433 1.137 0 1.571L4.57 6.572h10.172c.694 0 1.257.563 1.257 1.257s-.563 1.257-1.257 1.257H4.229l4.557 4.557c.433.434.433 1.137 0 1.571-.434.434-1.138.434-1.572 0L0 8 7.214.786z"></path>
+         </svg>
+       </button>`);
+  }
+
+  validateStepsBetweenCurrentAndTargetStep(currentStep, targetStep) {
+    const stepsBetween = this.getStepsBetween(currentStep, targetStep);
+    return stepsBetween.every(step => this.validateStep(step));
+  }
+
+  validateStep(step) {
+    if (this.validators.length === 0) return true;
+    const validators = this.validators.filter(validator => {
+      return document.querySelector(`.en__field--${validator.field}`)?.closest(".en__component--formblock")?.getAttribute("data-multistep-step") === step;
+    });
+    const validationResults = validators.map(validator => {
+      validator.hideMessage();
+      return !validator.isVisible() || validator.test();
+    });
+    return validationResults.every(result => result);
+  }
+
+  getStepsBetween(currentStep, targetStep) {
+    const start = parseInt(currentStep);
+    const end = parseInt(targetStep);
+    let stepsBetween = [];
+
+    for (let i = start; i < end; i++) {
+      stepsBetween.push(i.toString());
+    }
+
+    return stepsBetween;
+  }
+
+  startConfetti() {
+    const duration = 3 * 1000;
+    const animationEnd = Date.now() + duration;
+    const defaults = {
+      startVelocity: 30,
+      spread: 360,
+      ticks: 60,
+      zIndex: 100000,
+      useWorker: false
+    };
+
+    const randomInRange = (min, max) => {
+      return Math.random() * (max - min) + min;
+    };
+
+    const interval = setInterval(function () {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      const particleCount = 50 * (timeLeft / duration); // since particles fall down, start a bit higher than random
+
+      window.confetti(Object.assign({}, defaults, {
+        particleCount,
+        origin: {
+          x: randomInRange(0.1, 0.3),
+          y: Math.random() - 0.2
+        }
+      }));
+      window.confetti(Object.assign({}, defaults, {
+        particleCount,
+        origin: {
+          x: randomInRange(0.7, 0.9),
+          y: Math.random() - 0.2
+        }
+      }));
+    }, 250);
+  }
+
+  handleServerSideError() {
+    if (engrid_ENGrid.checkNested(window.EngagingNetworks, "require", "_defined", "enjs", "checkSubmissionFailed") && window.EngagingNetworks.require._defined.enjs.checkSubmissionFailed()) {
+      this.logger.log("Server side error detected");
+      this.activateStep("3", true);
+    }
+  }
+
+}
 ;// CONCATENATED MODULE: ./src/index.ts
  // Uses ENGrid via NPM
-
- // import {
+// import {
 //   Options,
 //   App,
 //   DonationFrequency,
 //   DonationAmount,
 //   EnForm,
 // } from "../../engrid-scripts/packages/common"; // Uses ENGrid via Visual Studio Workspace
+
 
 
 
@@ -24436,7 +24435,18 @@ const options = {
     }
 
     new OnLoadModal();
-    new MultistepForm();
+    new MultistepForm(); // Unsubscribe All Logic
+
+    const unsubscribeAllButton = document.querySelector("#unsubscribe-all");
+    const unsubscribeAllRadio = App.getField("supporter.questions.888498");
+
+    if (unsubscribeAllButton && unsubscribeAllRadio) {
+      unsubscribeAllButton.addEventListener("click", () => {
+        unsubscribeAllRadio.click();
+      }); // Hide the unsubscribe all radio button
+
+      unsubscribeAllRadio.closest(".en__field")?.classList.add("hide");
+    }
   },
   onResize: () => console.log("Starter Theme Window Resized"),
   onSubmit: () => {

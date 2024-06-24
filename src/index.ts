@@ -5,7 +5,6 @@ import {
   DonationAmount,
   EnForm,
 } from "@4site/engrid-common"; // Uses ENGrid via NPM
-import MultistepForm from "./scripts/multistep-form";
 // import {
 //   Options,
 //   App,
@@ -21,6 +20,7 @@ import DonationLightboxForm from "./scripts/donation-lightbox-form";
 import TweetToTarget from "./scripts/tweet-to-target";
 import { AnnualLimit } from "./scripts/annual-limit";
 import { OnLoadModal } from "./scripts/on-load-modal";
+import MultistepForm from "./scripts/multistep-form";
 
 const options: Options = {
   applePay: false,
@@ -181,6 +181,20 @@ const options: Options = {
     }
     new OnLoadModal();
     new MultistepForm();
+    // Unsubscribe All Logic
+    const unsubscribeAllButton = document.querySelector(
+      "#unsubscribe-all"
+    ) as HTMLInputElement;
+    const unsubscribeAllRadio = App.getField(
+      "supporter.questions.888498"
+    ) as HTMLInputElement;
+    if (unsubscribeAllButton && unsubscribeAllRadio) {
+      unsubscribeAllButton.addEventListener("click", () => {
+        unsubscribeAllRadio.click();
+      });
+      // Hide the unsubscribe all radio button
+      unsubscribeAllRadio.closest(".en__field")?.classList.add("hide");
+    }
   },
   onResize: () => console.log("Starter Theme Window Resized"),
 
