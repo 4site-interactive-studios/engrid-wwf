@@ -19,8 +19,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, June 3, 2024 @ 23:57:29 ET
- *  By: fernando
+ *  Date: Monday, June 24, 2024 @ 08:14:41 ET
+ *  By: michael
  *  ENGrid styles: v0.18.8
  *  ENGrid scripts: v0.18.12
  *
@@ -9335,6 +9335,7 @@ body[data-engrid-debug]:before{
 @media screen and (max-width:600px){
   [data-engrid-theme=wwf]{
     --default_font-size:15px;
+    --input_font-size:16px;
     --default_line-height:24px;
     --h1_font-size:24px;
     --h1_line-height:33.6px;
