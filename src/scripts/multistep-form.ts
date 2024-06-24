@@ -134,7 +134,7 @@ export default class MultistepForm {
         `Bypassing validation or going backwards. Activating step ${targetStep}`
       );
       ENGrid.setBodyData("multistep-active-step", targetStep);
-      window.scrollTo(0, 0);
+      this.scrollViewport();
       return;
     }
 
@@ -164,7 +164,39 @@ export default class MultistepForm {
     // If validation passes, activate the step
     this.logger.log(`Validation passed. Activating step ${targetStep}`);
     ENGrid.setBodyData("multistep-active-step", targetStep);
-    window.scrollTo(0, 0);
+    this.scrollViewport();
+  }
+
+  private scrollViewport() {
+    /*
+      If a .section-header is present and outside the viewport, we should scroll to the section header
+      If a .section-header is present and in the viewport, then we should not scroll
+      If no .section-header is present we should scroll to the top of the page
+     */
+    const sectionHeaders: NodeListOf<HTMLElement> =
+      document.querySelectorAll(".section-header");
+    const sectionHeader: HTMLElement | undefined = [...sectionHeaders].find(
+      (el) => {
+        const headerStep = el
+          .closest("[data-multistep-step]")
+          ?.getAttribute("data-multistep-step");
+        return headerStep === ENGrid.getBodyData("multistep-active-step");
+      }
+    );
+
+    if (!sectionHeader) {
+      this.logger.log(`No section header found. Scrolling to top of page.`);
+      window.scrollTo(0, 0);
+      return;
+    }
+
+    if (ENGrid.isInViewport(sectionHeader)) {
+      this.logger.log(`Section header is in viewport. Not scrolling.`);
+      return;
+    }
+
+    this.logger.log(`Scrolling to section header.`);
+    sectionHeader.scrollIntoView({ behavior: "smooth" });
   }
 
   private addBackButtonToFinalStep() {

@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, June 24, 2024 @ 05:45:26 ET
+ *  Date: Monday, June 24, 2024 @ 06:04:50 ET
  *  By: michael
  *  ENGrid styles: v0.18.8
  *  ENGrid scripts: v0.18.11
@@ -24166,7 +24166,7 @@ class MultistepForm {
     if (bypassValidation || targetStep < activeStep) {
       this.logger.log(`Bypassing validation or going backwards. Activating step ${targetStep}`);
       engrid_ENGrid.setBodyData("multistep-active-step", targetStep);
-      window.scrollTo(0, 0);
+      this.scrollViewport();
       return;
     } // If we're going forwards, validate the steps between the current and target step
     // if validation fields, find first error on the page, activate that step and scroll to it
@@ -24191,7 +24191,36 @@ class MultistepForm {
 
     this.logger.log(`Validation passed. Activating step ${targetStep}`);
     engrid_ENGrid.setBodyData("multistep-active-step", targetStep);
-    window.scrollTo(0, 0);
+    this.scrollViewport();
+  }
+
+  scrollViewport() {
+    /*
+      If a .section-header is present and outside the viewport, we should scroll to the section header
+      If a .section-header  is present and in the viewport, then we should not scroll
+      If no .section-header  is present we should scroll to the top of the page
+     */
+    const sectionHeaders = document.querySelectorAll(".section-header");
+    const sectionHeader = [...sectionHeaders].find(el => {
+      const headerStep = el.closest("[data-multistep-step]")?.getAttribute("data-multistep-step");
+      return headerStep === engrid_ENGrid.getBodyData("multistep-active-step");
+    });
+
+    if (!sectionHeader) {
+      this.logger.log(`No section header found. Scrolling to top of page.`);
+      window.scrollTo(0, 0);
+      return;
+    }
+
+    if (engrid_ENGrid.isInViewport(sectionHeader)) {
+      this.logger.log(`Section header is in viewport. Not scrolling.`);
+      return;
+    }
+
+    this.logger.log(`Scrolling to section header.`);
+    sectionHeader.scrollIntoView({
+      behavior: "smooth"
+    });
   }
 
   addBackButtonToFinalStep() {
