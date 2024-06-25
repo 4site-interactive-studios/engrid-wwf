@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, June 24, 2024 @ 06:38:27 ET
+ *  Date: Tuesday, June 25, 2024 @ 06:27:50 ET
  *  By: michael
  *  ENGrid styles: v0.18.8
- *  ENGrid scripts: v0.18.11
+ *  ENGrid scripts: v0.18.12
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -19585,8 +19585,6 @@ class PremiumGift {
     constructor() {
         this.logger = new EngridLogger("PremiumGift", "#232323", "#f7b500", "🎁");
         this.enElements = new Array();
-        this._frequency = DonationFrequency.getInstance();
-        this._amount = DonationAmount.getInstance();
         if (!this.shoudRun())
             return;
         this.searchElements();
@@ -19640,20 +19638,6 @@ class PremiumGift {
             });
             observer.observe(premiumGiftsBlock, { attributes: true });
         }
-        // When frequency or amount changes, restore the selected premium gift
-        this._frequency.onFrequencyChange.subscribe(this.restorePremiumGift.bind(this));
-        this._amount.onAmountChange.subscribe(this.restorePremiumGift.bind(this));
-    }
-    restorePremiumGift() {
-        const premiumGiftId = engrid_ENGrid.getBodyData("premium-gift-id");
-        setTimeout(() => {
-            const newPremiumGift = document.querySelector('[name="en__pg"][value="' + premiumGiftId + '"]');
-            if (newPremiumGift) {
-                newPremiumGift.checked = true;
-                newPremiumGift.dispatchEvent(new Event("change"));
-                this.logger.log("resetting premium gift after donation frequency/amount change", premiumGiftId);
-            }
-        }, 200);
     }
     checkPremiumGift() {
         const premiumGift = document.querySelector('[name="en__pg"]:checked');
@@ -19665,13 +19649,11 @@ class PremiumGift {
                 const premiumGiftName = premiumGiftContainer.querySelector(".en__pg__name");
                 engrid_ENGrid.setBodyData("premium-gift-maximize", "false");
                 engrid_ENGrid.setBodyData("premium-gift-name", engrid_ENGrid.slugify(premiumGiftName.innerText));
-                engrid_ENGrid.setBodyData("premium-gift-id", premiumGiftValue);
                 this.setPremiumTitle(premiumGiftName.innerText);
             }
             else {
                 engrid_ENGrid.setBodyData("premium-gift-maximize", "true");
                 engrid_ENGrid.setBodyData("premium-gift-name", false);
-                engrid_ENGrid.setBodyData("premium-gift-id", false);
                 this.setPremiumTitle("");
             }
             if (!premiumGiftContainer.classList.contains("en__pg--selected")) {
@@ -21799,7 +21781,7 @@ class ThankYouPageConditionalContent {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.18.11";
+const AppVersion = "0.18.12";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
@@ -24205,8 +24187,21 @@ class MultistepForm {
       const headerStep = el.closest("[data-multistep-step]")?.getAttribute("data-multistep-step");
       return headerStep === engrid_ENGrid.getBodyData("multistep-active-step");
     });
+    const steppers = document.querySelectorAll(".multistep-stepper");
+    const currentStepper = [...steppers].find(el => {
+      const step = el.closest("[data-multistep-step]")?.getAttribute("data-multistep-step");
+      return step === engrid_ENGrid.getBodyData("multistep-active-step");
+    });
 
     if (!sectionHeader || sectionHeader.offsetHeight === 0) {
+      if (currentStepper && currentStepper.offsetHeight > 0) {
+        this.logger.log(`No section header found. Scrolling to stepper.`);
+        currentStepper.scrollIntoView({
+          behavior: "smooth"
+        });
+        return;
+      }
+
       this.logger.log(`No section header found. Scrolling to top of page.`);
       window.scrollTo(0, 0);
       return;

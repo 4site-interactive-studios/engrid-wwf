@@ -184,7 +184,21 @@ export default class MultistepForm {
       }
     );
 
+    const steppers: NodeListOf<HTMLElement> =
+      document.querySelectorAll(".multistep-stepper");
+    const currentStepper: HTMLElement | undefined = [...steppers].find((el) => {
+      const step = el
+        .closest("[data-multistep-step]")
+        ?.getAttribute("data-multistep-step");
+      return step === ENGrid.getBodyData("multistep-active-step");
+    });
+
     if (!sectionHeader || sectionHeader.offsetHeight === 0) {
+      if (currentStepper && currentStepper.offsetHeight > 0) {
+        this.logger.log(`No section header found. Scrolling to stepper.`);
+        currentStepper.scrollIntoView({ behavior: "smooth" });
+        return;
+      }
       this.logger.log(`No section header found. Scrolling to top of page.`);
       window.scrollTo(0, 0);
       return;
