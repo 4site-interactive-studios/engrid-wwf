@@ -175,14 +175,14 @@ export default class MultistepForm {
      */
     const sectionHeaders: NodeListOf<HTMLElement> =
       document.querySelectorAll(".section-header");
-    const sectionHeader: HTMLElement | undefined = [...sectionHeaders].find(
-      (el) => {
-        const headerStep = el
-          .closest("[data-multistep-step]")
-          ?.getAttribute("data-multistep-step");
-        return headerStep === ENGrid.getBodyData("multistep-active-step");
-      }
-    );
+    const currentSectionHeader: HTMLElement | undefined = [
+      ...sectionHeaders,
+    ].find((el) => {
+      const headerStep = el
+        .closest("[data-multistep-step]")
+        ?.getAttribute("data-multistep-step");
+      return headerStep === ENGrid.getBodyData("multistep-active-step");
+    });
 
     const steppers: NodeListOf<HTMLElement> =
       document.querySelectorAll(".multistep-stepper");
@@ -193,24 +193,35 @@ export default class MultistepForm {
       return step === ENGrid.getBodyData("multistep-active-step");
     });
 
-    if (!sectionHeader || sectionHeader.offsetHeight === 0) {
+    if (!currentSectionHeader || currentSectionHeader.offsetHeight === 0) {
       if (currentStepper && currentStepper.offsetHeight > 0) {
         this.logger.log(`No section header found. Scrolling to stepper.`);
-        currentStepper.scrollIntoView({ behavior: "smooth" });
+        window.scrollTo(
+          0,
+          currentStepper.getBoundingClientRect().top + window.pageYOffset
+        );
         return;
       }
-      this.logger.log(`No section header found. Scrolling to top of page.`);
+      this.logger.log(
+        `No section header or stepper found. Scrolling to top of page.`
+      );
       window.scrollTo(0, 0);
       return;
     }
 
-    if (ENGrid.isInViewport(sectionHeader)) {
+    if (ENGrid.isInViewport(currentSectionHeader)) {
       this.logger.log(`Section header is in viewport. Not scrolling.`);
       return;
     }
 
-    this.logger.log(`Scrolling to section header.`);
-    sectionHeader.scrollIntoView({ behavior: "smooth" });
+    const offset = parseInt(getComputedStyle(currentSectionHeader).marginTop);
+    this.logger.log(`Scrolling to section header. ${offset} offset.`);
+    window.scrollTo(
+      0,
+      currentSectionHeader.getBoundingClientRect().top +
+        window.pageYOffset -
+        offset
+    );
   }
 
   private addBackButtonToFinalStep() {

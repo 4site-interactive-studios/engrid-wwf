@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, June 25, 2024 @ 06:27:50 ET
+ *  Date: Tuesday, June 25, 2024 @ 11:06:47 ET
  *  By: michael
  *  ENGrid styles: v0.18.8
  *  ENGrid scripts: v0.18.12
@@ -24183,7 +24183,7 @@ class MultistepForm {
       If no .section-header is present we should scroll to the top of the page
      */
     const sectionHeaders = document.querySelectorAll(".section-header");
-    const sectionHeader = [...sectionHeaders].find(el => {
+    const currentSectionHeader = [...sectionHeaders].find(el => {
       const headerStep = el.closest("[data-multistep-step]")?.getAttribute("data-multistep-step");
       return headerStep === engrid_ENGrid.getBodyData("multistep-active-step");
     });
@@ -24193,29 +24193,26 @@ class MultistepForm {
       return step === engrid_ENGrid.getBodyData("multistep-active-step");
     });
 
-    if (!sectionHeader || sectionHeader.offsetHeight === 0) {
+    if (!currentSectionHeader || currentSectionHeader.offsetHeight === 0) {
       if (currentStepper && currentStepper.offsetHeight > 0) {
         this.logger.log(`No section header found. Scrolling to stepper.`);
-        currentStepper.scrollIntoView({
-          behavior: "smooth"
-        });
+        window.scrollTo(0, currentStepper.getBoundingClientRect().top + window.pageYOffset);
         return;
       }
 
-      this.logger.log(`No section header found. Scrolling to top of page.`);
+      this.logger.log(`No section header or stepper found. Scrolling to top of page.`);
       window.scrollTo(0, 0);
       return;
     }
 
-    if (engrid_ENGrid.isInViewport(sectionHeader)) {
+    if (engrid_ENGrid.isInViewport(currentSectionHeader)) {
       this.logger.log(`Section header is in viewport. Not scrolling.`);
       return;
     }
 
-    this.logger.log(`Scrolling to section header.`);
-    sectionHeader.scrollIntoView({
-      behavior: "smooth"
-    });
+    const offset = parseInt(getComputedStyle(currentSectionHeader).marginTop);
+    this.logger.log(`Scrolling to section header. ${offset} offset.`);
+    window.scrollTo(0, currentSectionHeader.getBoundingClientRect().top + window.pageYOffset - offset);
   }
 
   addBackButtonToFinalStep() {
