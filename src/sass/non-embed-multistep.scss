@@ -66,9 +66,19 @@
 
   &[data-engrid-layout="centerleft1col"] {
     // Hide the content header and footer when using this layout
-    .content-header,
+    .content-header #header,
     .content-footer {
       display: none !important;
+    }
+
+    .content-header {
+      --engrid__content-header_background-color: #ffffff;
+      padding: 10px 20px;
+      margin-bottom: 30px;
+
+      @media (max-width: 500px) {
+        margin-bottom: 0;
+      }
     }
 
     // Start Custom Styles for Donation form with Background
