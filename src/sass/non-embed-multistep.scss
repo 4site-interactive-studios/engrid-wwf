@@ -66,8 +66,7 @@
 
   &[data-engrid-layout="centerleft1col"] {
     // Hide the content header and footer when using this layout
-    .content-header #header,
-    .content-footer {
+    .content-header #header {
       display: none !important;
     }
 
