@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, June 27, 2024 @ 07:40:00 ET
- *  By: michael
+ *  Date: Thursday, June 27, 2024 @ 09:11:20 ET
+ *  By: bryancasler
  *  ENGrid styles: v0.18.8
  *  ENGrid scripts: v0.18.12
  *
@@ -21871,6 +21871,8 @@ const AppVersion = "0.18.12";
 
 ;// CONCATENATED MODULE: ./src/scripts/main.js
 const customScript = function (App, DonationFrequency) {
+  var _document$querySelect;
+
   console.log("ENGrid client scripts are executing");
   const isSpanish = document.querySelector("label[for='en__field_supporter_emailAddress']") && document.querySelector("label[for='en__field_supporter_emailAddress']").textContent === "Correo electrónico";
   let inlineMonthlyUpsell = document.querySelectorAll(".move-after-transaction-recurrfreq")[0];
@@ -22370,7 +22372,7 @@ const customScript = function (App, DonationFrequency) {
   } // Inserts a email subscription nudge after the element with the 'universal-opt-in' class
 
 
-  const universalOptInFieldClasses = document.querySelector(".universal-opt-in > .en__field")?.classList;
+  const universalOptInFieldClasses = (_document$querySelect = document.querySelector(".universal-opt-in > .en__field")) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.classList;
 
   if (universalOptInFieldClasses) {
     const optInClass = [...universalOptInFieldClasses].find(className => {
@@ -22605,8 +22607,10 @@ const customScript = function (App, DonationFrequency) {
       const paymentElement = paymentType.closest(".en__component");
 
       if (paymentElement) {
+        var _paymentElement$paren;
+
         // Insert the new field after the submit button
-        paymentElement.parentNode?.insertBefore(formBlock, paymentElement.nextSibling);
+        (_paymentElement$paren = paymentElement.parentNode) === null || _paymentElement$paren === void 0 ? void 0 : _paymentElement$paren.insertBefore(formBlock, paymentElement.nextSibling);
       } else {
         const form = document.querySelector("form");
 
@@ -22828,9 +22832,11 @@ const pageHeaderFooter = function (App) {
         },
         handleDocumentClick: function (e) {
           if (_self.headerNav.mobileHeaderMq.matches) {
+            var _e$target$closest;
+
             // close any open menus (on mobile) with search click
             const _this = _self.headerNav;
-            const clickFromInsideSearch = e.target.closest(".search")?.length === 1;
+            const clickFromInsideSearch = ((_e$target$closest = e.target.closest(".search")) === null || _e$target$closest === void 0 ? void 0 : _e$target$closest.length) === 1;
 
             if (clickFromInsideSearch) {
               _this.closeExpandedPanels();
@@ -23149,6 +23155,8 @@ class DonationLightboxForm {
   buildSectionNavigation() {
     console.log("DonationLightboxForm: buildSectionNavigation");
     this.sections.forEach((section, key) => {
+      var _sectionNavigation$qu, _sectionNavigation$qu2, _sectionNavigation$qu3;
+
       section.dataset.sectionId = key;
       const sectionNavigation = document.createElement("div");
       sectionNavigation.classList.add("section-navigation");
@@ -23200,8 +23208,10 @@ class DonationLightboxForm {
         <span class="section-count__total">${sectionTotal}</span>
       `;
       } else {
+        var _document$querySelect;
+
         // Single Section Pages
-        const submitButtonLabel = document.querySelector(".en__submit button")?.innerText || "Submit";
+        const submitButtonLabel = ((_document$querySelect = document.querySelector(".en__submit button")) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.innerText) || "Submit";
         sectionNavigation.innerHTML = `
         <button class="section-navigation__submit" data-section-id="${key}" type="submit" data-label="${submitButtonLabel}">
           <span>${submitButtonLabel}</span>
@@ -23209,18 +23219,18 @@ class DonationLightboxForm {
       `;
       }
 
-      sectionNavigation.querySelector(".section-navigation__previous")?.addEventListener("click", e => {
+      (_sectionNavigation$qu = sectionNavigation.querySelector(".section-navigation__previous")) === null || _sectionNavigation$qu === void 0 ? void 0 : _sectionNavigation$qu.addEventListener("click", e => {
         e.preventDefault();
         this.scrollToSection(key - 1, key);
       });
-      sectionNavigation.querySelector(".section-navigation__next")?.addEventListener("click", e => {
+      (_sectionNavigation$qu2 = sectionNavigation.querySelector(".section-navigation__next")) === null || _sectionNavigation$qu2 === void 0 ? void 0 : _sectionNavigation$qu2.addEventListener("click", e => {
         e.preventDefault();
 
         if (this.validateForm(key)) {
           this.scrollToSection(key + 1, key);
         }
       });
-      sectionNavigation.querySelector(".section-navigation__submit")?.addEventListener("click", e => {
+      (_sectionNavigation$qu3 = sectionNavigation.querySelector(".section-navigation__submit")) === null || _sectionNavigation$qu3 === void 0 ? void 0 : _sectionNavigation$qu3.addEventListener("click", e => {
         e.preventDefault(); // Validate the entire form again
 
         if (this.validateForm()) {
@@ -23875,7 +23885,9 @@ class TweetToTarget {
     }
 
     if (!dontAutomaticallyRedirect) {
-      document.querySelector(".en__submit")?.classList.add("hide");
+      var _document$querySelect;
+
+      (_document$querySelect = document.querySelector(".en__submit")) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.classList.add("hide");
     }
 
     if (this.tweetToTargetData.tweetedTo) {
@@ -24101,15 +24113,19 @@ class MultistepForm {
   }
 
   addStepDataAttributes() {
-    document.querySelector(".body-title")?.setAttribute("data-multistep-step", "1");
-    document.querySelector(".body-top")?.setAttribute("data-multistep-step", "1");
-    document.querySelector(".body-bottom")?.setAttribute("data-multistep-step", "3");
+    var _document$querySelect, _document$querySelect2, _document$querySelect3;
+
+    (_document$querySelect = document.querySelector(".body-title")) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.setAttribute("data-multistep-step", "1");
+    (_document$querySelect2 = document.querySelector(".body-top")) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.setAttribute("data-multistep-step", "1");
+    (_document$querySelect3 = document.querySelector(".body-bottom")) === null || _document$querySelect3 === void 0 ? void 0 : _document$querySelect3.setAttribute("data-multistep-step", "3");
     const stepperCodeBlocks = [...document.querySelectorAll(".multistep-stepper")].map(el => el.closest(".en__component--codeblock"));
     stepperCodeBlocks.forEach((step, index) => {
+      var _document$querySelect4;
+
       step.setAttribute("data-multistep-step", `${index + 1}`); // if this is the first step, we start from the first element in ".body-main"
       // (since the first stepper could be outside of ".body-main")
 
-      const start = index === 0 ? document.querySelector(".body-main")?.firstChild : step;
+      const start = index === 0 ? (_document$querySelect4 = document.querySelector(".body-main")) === null || _document$querySelect4 === void 0 ? void 0 : _document$querySelect4.firstChild : step;
       const nextStep = stepperCodeBlocks[index + 1];
       const elements = this.getElementsBetween(start, nextStep);
       elements.forEach(element => {
@@ -24155,8 +24171,10 @@ class MultistepForm {
 
 
     if (!this.validateStepsBetweenCurrentAndTargetStep(activeStep, targetStep)) {
+      var _field$closest;
+
       const field = document.querySelector(".en__field--validationFailed");
-      const invalidStep = field?.closest(".en__component--formblock")?.getAttribute("data-multistep-step") ?? "1";
+      const invalidStep = (field === null || field === void 0 ? void 0 : (_field$closest = field.closest(".en__component--formblock")) === null || _field$closest === void 0 ? void 0 : _field$closest.getAttribute("data-multistep-step")) ?? "1";
       engrid_ENGrid.setBodyData("multistep-active-step", invalidStep);
       window.scrollTo(0, 0);
 
@@ -24184,12 +24202,16 @@ class MultistepForm {
      */
     const sectionHeaders = document.querySelectorAll(".section-header");
     const currentSectionHeader = [...sectionHeaders].find(el => {
-      const headerStep = el.closest("[data-multistep-step]")?.getAttribute("data-multistep-step");
+      var _el$closest;
+
+      const headerStep = (_el$closest = el.closest("[data-multistep-step]")) === null || _el$closest === void 0 ? void 0 : _el$closest.getAttribute("data-multistep-step");
       return headerStep === engrid_ENGrid.getBodyData("multistep-active-step");
     });
     const steppers = document.querySelectorAll(".multistep-stepper");
     const currentStepper = [...steppers].find(el => {
-      const step = el.closest("[data-multistep-step]")?.getAttribute("data-multistep-step");
+      var _el$closest2;
+
+      const step = (_el$closest2 = el.closest("[data-multistep-step]")) === null || _el$closest2 === void 0 ? void 0 : _el$closest2.getAttribute("data-multistep-step");
       return step === engrid_ENGrid.getBodyData("multistep-active-step");
     });
 
@@ -24233,7 +24255,9 @@ class MultistepForm {
   validateStep(step) {
     if (this.validators.length === 0) return true;
     const validators = this.validators.filter(validator => {
-      return document.querySelector(`.en__field--${validator.field}`)?.closest(".en__component--formblock")?.getAttribute("data-multistep-step") === step;
+      var _document$querySelect5, _document$querySelect6;
+
+      return ((_document$querySelect5 = document.querySelector(`.en__field--${validator.field}`)) === null || _document$querySelect5 === void 0 ? void 0 : (_document$querySelect6 = _document$querySelect5.closest(".en__component--formblock")) === null || _document$querySelect6 === void 0 ? void 0 : _document$querySelect6.getAttribute("data-multistep-step")) === step;
     });
     const validationResults = validators.map(validator => {
       validator.hideMessage();
@@ -24462,11 +24486,13 @@ const options = {
     const unsubscribeAllRadio = App.getField("supporter.questions.888498");
 
     if (unsubscribeAllButton && unsubscribeAllRadio) {
+      var _unsubscribeAllRadio$;
+
       unsubscribeAllButton.addEventListener("click", () => {
         unsubscribeAllRadio.click();
       }); // Hide the unsubscribe all radio button
 
-      unsubscribeAllRadio.closest(".en__field")?.classList.add("hide");
+      (_unsubscribeAllRadio$ = unsubscribeAllRadio.closest(".en__field")) === null || _unsubscribeAllRadio$ === void 0 ? void 0 : _unsubscribeAllRadio$.classList.add("hide");
     }
   },
   onResize: () => console.log("Starter Theme Window Resized"),
