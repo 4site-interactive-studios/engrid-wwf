@@ -19,10 +19,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, June 5, 2024 @ 22:49:31 ET
+ *  Date: Friday, June 28, 2024 @ 16:12:06 ET
  *  By: fernando
- *  ENGrid styles: v0.18.8
- *  ENGrid scripts: v0.18.13
+ *  ENGrid styles: v0.18.14
+ *  ENGrid scripts: v0.18.16
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -5647,7 +5647,7 @@ body[data-engrid-page-type=e-card][data-engrid-embedded-ecard=true] .en__ecardre
   width:100%;
 }
 
-body:not([data-engrid-embedded-ecard-sent=true]) .showif-embedded-ecard-sent,body[data-engrid-page-type=e-card][data-engrid-embedded-ecard=true] .en__ecardrecipients__email .en__ecarditems__addrecipient,body[data-engrid-page-type=e-card][data-engrid-embedded-ecard=true] .en__ecardrecipients__list,body[data-engrid-page-type=e-card][data-engrid-embedded-ecard=true] .en__ecardrecipients__name .en__ecarditems__addrecipient{
+body:not(#en__pagebuilder):not([data-engrid-debug]):not([data-engrid-embedded-ecard-sent=true]) .showif-embedded-ecard-sent,body[data-engrid-page-type=e-card][data-engrid-embedded-ecard=true] .en__ecardrecipients__email .en__ecarditems__addrecipient,body[data-engrid-page-type=e-card][data-engrid-embedded-ecard=true] .en__ecardrecipients__list,body[data-engrid-page-type=e-card][data-engrid-embedded-ecard=true] .en__ecardrecipients__name .en__ecarditems__addrecipient{
   display:none;
 }
 [data-engrid-theme]{
