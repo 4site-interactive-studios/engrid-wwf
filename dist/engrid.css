@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, June 27, 2024 @ 11:42:36 ET
+ *  Date: Monday, July 1, 2024 @ 07:08:12 ET
  *  By: michael
  *  ENGrid styles: v0.18.8
  *  ENGrid scripts: v0.18.12
@@ -12022,13 +12022,32 @@ body[data-engrid-debug]:before{
   display:none !important;
 }
 [data-engrid-theme=wwf][data-engrid-multistep][data-engrid-layout=centerleft1col] .content-header{
-  --engrid__content-header_background-color:#fff;
+  --engrid__content-header_background-color:none;
   margin-bottom:30px;
   padding:10px 20px;
 }
 @media (max-width:500px){
   [data-engrid-theme=wwf][data-engrid-multistep][data-engrid-layout=centerleft1col] .content-header{
     margin-bottom:0;
+  }
+}
+[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-layout=centerleft1col] .content-header>.en__component:has(.logo){
+  display:flex;
+}
+[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-layout=centerleft1col] .content-header>.en__component:has(.logo) .logo{
+  background:#fff;
+  padding:10px;
+}
+@media (max-width:500px){
+  [data-engrid-theme=wwf][data-engrid-multistep][data-engrid-layout=centerleft1col] .content-header>.en__component:has(.logo) .logo{
+    padding:10px 0 0;
+  }
+  [data-engrid-theme=wwf][data-engrid-multistep][data-engrid-layout=centerleft1col] .content-header>.en__component:has(.logo) .logo img{
+    height:auto;
+    width:51px;
+  }
+  [data-engrid-theme=wwf][data-engrid-multistep][data-engrid-layout=centerleft1col] .content-header>.en__component:has(.logo){
+    justify-content:center;
   }
 }
 [data-engrid-theme=wwf][data-engrid-multistep][data-engrid-layout=centerleft1col][data-engrid-page-background=image] .page-backgroundImage:before,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-layout=centerleft1col][data-engrid-page-background=image].page-backgroundImage:before{
@@ -12050,11 +12069,6 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf][data-engrid-multistep][data-engrid-layout=centerleft1col] .gradient{
   background:linear-gradient(90deg, #0000 0, #00000040);
 }
-@media screen and (max-width:1200px){
-  [data-engrid-theme=wwf][data-engrid-multistep][data-engrid-layout=centerleft1col] body[data-engrid-page-background=image][data-engrid-layout=centerleft1col] .page-backgroundImage:before,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-layout=centerleft1col] body[data-engrid-page-background=image][data-engrid-layout=leftleft1col] .page-backgroundImage:before{
-    background-image:none !important;
-  }
-}
 @media screen and (max-width:600px){
   [data-engrid-theme=wwf][data-engrid-multistep][data-engrid-layout=centerleft1col]{
     --h1_line-height:calc(33.6px + 1rem);
@@ -12075,6 +12089,20 @@ body[data-engrid-debug]:before{
   }
   [data-engrid-theme=wwf][data-engrid-multistep] h1{
     letter-spacing:-1px;
+  }
+}
+@media screen and (max-width:500px){
+  [data-engrid-theme=wwf][data-engrid-multistep]{
+    --h1_font-size:24px;
+  }
+  [data-engrid-theme=wwf][data-engrid-multistep] .body-main{
+    --p_font-size:15px;
+    --p_line-height:24px;
+  }
+}
+@media screen and (max-width:1200px){
+  [data-engrid-theme=wwf][data-engrid-multistep][data-engrid-page-background=image][data-engrid-layout=centerleft1col] .page-backgroundImage:before,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-page-background=image][data-engrid-layout=leftleft1col] .page-backgroundImage:before{
+    background-image:none !important;
   }
 }
 [data-engrid-theme=wwf][data-engrid-multistep] [data-multistep-change-step]{
@@ -12197,14 +12225,21 @@ body[data-engrid-debug]:before{
 }
 [data-engrid-theme=wwf][data-engrid-multistep] .multistep-submit .btn-back{
   grid-column:1;
+  height:100%;
   margin-right:0;
 }
 [data-engrid-theme=wwf][data-engrid-multistep] .multistep-submit .en__submit{
   grid-column:2;
+  height:100%;
   padding:0;
 }
 [data-engrid-theme=wwf][data-engrid-multistep] .multistep-submit .en__submit button{
   box-shadow:0 8px 12px 0 #0000001a,-22px 21px 29px 0 #0000001f;
+  height:100%;
+}
+[data-engrid-theme=wwf][data-engrid-multistep] .multistep-submit button{
+  margin-bottom:0;
+  margin-top:0;
 }
 [data-engrid-theme=wwf][data-engrid-multistep] .en__submit button .live-variable-frequency:after{
   content:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='14' fill='none'%3E%3Cpath d='M8.187 13.313a.972.972 0 1 1-1.374-1.375L10.5 8.25H1.6a1.1 1.1 0 0 1 0-2.2h9.2L6.813 2.062A.972.972 0 1 1 8.187.687L14.5 7l-6.313 6.313Z' fill='%23fff'/%3E%3C/svg%3E");

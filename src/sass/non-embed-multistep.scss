@@ -71,12 +71,33 @@
     }
 
     .content-header {
-      --engrid__content-header_background-color: #ffffff;
+      --engrid__content-header_background-color: none;
       padding: 10px 20px;
       margin-bottom: 30px;
 
       @media (max-width: 500px) {
         margin-bottom: 0;
+      }
+
+      > .en__component:has(.logo) {
+        display: flex;
+        .logo {
+          padding: 10px;
+          background: white;
+          @media (max-width: 500px) {
+            padding: 10px 0 0;
+          }
+
+          img {
+            @media (max-width: 500px) {
+              width: 51px;
+              height: auto;
+            }
+          }
+        }
+        @media (max-width: 500px) {
+          justify-content: center;
+        }
       }
     }
 
@@ -117,14 +138,6 @@
       );
     }
 
-    @media screen and (max-width: 1200px) {
-      body[data-engrid-page-background="image"][data-engrid-layout="centerleft1col"]
-        .page-backgroundImage:before,
-      body[data-engrid-page-background="image"][data-engrid-layout="leftleft1col"]
-        .page-backgroundImage:before {
-        background-image: none !important;
-      }
-    }
     @media screen and (max-width: 600px) {
       --h1_line-height: calc(33.6px + 1rem);
 
@@ -155,6 +168,24 @@
         // letter-spacing: -1px;
         // font-size: 48px;
       }
+    }
+  }
+
+  @media screen and (max-width: 500px) {
+    --h1_font-size: 24px;
+
+    .body-main {
+      --p_font-size: 15px;
+      --p_line-height: 24px;
+    }
+  }
+
+  @media screen and (max-width: 1200px) {
+    &[data-engrid-page-background="image"][data-engrid-layout="centerleft1col"]
+    .page-backgroundImage:before,
+    &[data-engrid-page-background="image"][data-engrid-layout="leftleft1col"]
+    .page-backgroundImage:before {
+      background-image: none !important;
     }
   }
 
@@ -312,18 +343,26 @@
     }
 
     .btn-back {
+      height: 100%;
       grid-column: 1;
       margin-right: 0;
     }
 
     .en__submit {
+      height: 100%;
       grid-column: 2;
       padding: 0;
 
       button {
+        height: 100%;
         box-shadow: 0 8px 12px 0 rgba(0, 0, 0, 0.1),
           -22px 21px 29px 0px rgba(0, 0, 0, 0.12);
       }
+    }
+
+    button {
+      margin-top: 0;
+      margin-bottom: 0;
     }
   }
 
