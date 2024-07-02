@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, June 28, 2024 @ 16:12:06 ET
+ *  Date: Tuesday, July 2, 2024 @ 15:52:23 ET
  *  By: fernando
- *  ENGrid styles: v0.18.14
- *  ENGrid scripts: v0.18.16
+ *  ENGrid styles: v0.18.17
+ *  ENGrid scripts: v0.18.17
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -19862,7 +19862,7 @@ class GiveBySelect {
     isSelectedPaymentVisible() {
         let visible = true;
         this.transactionGiveBySelect.forEach((giveBySelect) => {
-            const container = giveBySelect.closest(".en__field--giveBySelect");
+            const container = giveBySelect.parentElement;
             if (giveBySelect.checked && !engrid_ENGrid.isVisible(container)) {
                 this.logger.log(`Selected Payment Type is not visible: ${giveBySelect.value}`);
                 visible = false;
@@ -19878,12 +19878,12 @@ class GiveBySelect {
             if (!this.isSelectedPaymentVisible()) {
                 this.logger.log("Setting payment type to first visible option");
                 const firstVisible = Array.from(this.transactionGiveBySelect).find((giveBySelect) => {
-                    const container = giveBySelect.closest(".en__field--giveBySelect");
+                    const container = giveBySelect.parentElement;
                     return engrid_ENGrid.isVisible(container);
                 });
                 if (firstVisible) {
                     this.logger.log("Setting payment type to ", firstVisible.value);
-                    const container = firstVisible.closest(".en__field--giveBySelect");
+                    const container = firstVisible.parentElement;
                     (_a = container.querySelector("label")) === null || _a === void 0 ? void 0 : _a.click();
                     engrid_ENGrid.setPaymentType(firstVisible.value);
                 }
@@ -21484,7 +21484,7 @@ class ThankYouPageConditionalContent {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/version.js
-const AppVersion = "0.18.16";
+const AppVersion = "0.18.17";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-common/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
