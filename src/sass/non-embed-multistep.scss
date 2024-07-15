@@ -284,11 +284,6 @@
     flex-basis: 60px;
     margin-bottom: 30px;
 
-    .btn-back + button {
-      box-shadow: 0 8px 12px 0 rgba(0, 0, 0, 0.1),
-        -22px 21px 29px 0px rgba(0, 0, 0, 0.12);
-    }
-
     button:not(.btn-back) {
       display: flex;
       align-items: center;
@@ -355,8 +350,6 @@
 
       button {
         height: 100%;
-        box-shadow: 0 8px 12px 0 rgba(0, 0, 0, 0.1),
-          -22px 21px 29px 0px rgba(0, 0, 0, 0.12);
       }
     }
 
