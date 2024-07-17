@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, June 3, 2024 @ 23:57:29 ET
- *  By: fernando
+ *  Date: Wednesday, July 17, 2024 @ 06:15:22 ET
+ *  By: michael
  *  ENGrid styles: v0.18.8
  *  ENGrid scripts: v0.18.12
  *
@@ -21966,14 +21966,6 @@ const customScript = function (App, DonationFrequency) {
     if (!smsOptIn && phoneNumberField && smsDisclosure) {
       phoneNumberField.classList.add("hide");
       smsDisclosure.classList.add("hide");
-    } // If the SMS opt-in and the EMail opt-in do not appear on the page hide the "be a part of our community" copy block
-
-
-    let emailOptIn = document.querySelector(".en__field--608540");
-    let communityBlock = document.querySelector(".be-a-part-of-our-community");
-
-    if (!smsOptIn && !emailOptIn && communityBlock) {
-      communityBlock.classList.add("hide");
     }
   } // Call the function
 
