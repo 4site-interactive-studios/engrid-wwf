@@ -20,6 +20,7 @@ import DonationLightboxForm from "./scripts/donation-lightbox-form";
 import TweetToTarget from "./scripts/tweet-to-target";
 import { AnnualLimit } from "./scripts/annual-limit";
 import { OnLoadModal } from "./scripts/on-load-modal";
+import MultistepForm from "./scripts/multistep-form";
 
 const options: Options = {
   applePay: false,
@@ -179,6 +180,7 @@ const options: Options = {
       }
     }
     new OnLoadModal();
+    new MultistepForm();
     // Unsubscribe All Logic
     const unsubscribeAllButton = document.querySelector(
       "#unsubscribe-all"
