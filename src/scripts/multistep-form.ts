@@ -74,15 +74,17 @@ export default class MultistepForm {
   }
 
   private addStepDataAttributes() {
-    document
-      .querySelector(".body-title")
-      ?.setAttribute("data-multistep-step", "1");
-    document
-      .querySelector(".body-top")
-      ?.setAttribute("data-multistep-step", "1");
-    document
-      .querySelector(".body-bottom")
-      ?.setAttribute("data-multistep-step", "3");
+    if (ENGrid.getBodyData("layout") !== "centercenter2col") {
+      document
+        .querySelector(".body-title")
+        ?.setAttribute("data-multistep-step", "1");
+      document
+        .querySelector(".body-top")
+        ?.setAttribute("data-multistep-step", "1");
+      document
+        .querySelector(".body-bottom")
+        ?.setAttribute("data-multistep-step", "3");
+    }
 
     const stepperCodeBlocks = [
       ...document.querySelectorAll(".multistep-stepper"),

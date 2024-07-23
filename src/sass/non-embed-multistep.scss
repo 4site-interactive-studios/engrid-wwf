@@ -33,6 +33,12 @@
     margin-top: 25px;
   }
 
+  &[data-engrid-layout="centercenter2col"] {
+    .body-main {
+      align-self: start;
+    }
+  }
+
   &[data-engrid-layout="leftleft1col"] {
     --engrid__content-footer_background-color: var(--color-gray);
 
@@ -378,9 +384,11 @@
     display: none !important; // Temporary CSS: Hide the premium gift block on the second step, it shows up there for some reason even though it's on the first step
   }
 
-  .body-title {
-    background: #ffffff;
-    padding: 26px 29px 20px 29px;
+  &:not([data-engrid-layout="centercenter2col"]) {
+    .body-title {
+      background: #ffffff;
+      padding: 26px 29px 20px 29px;
+    }
   }
 
   @media screen and (max-width: 1023px) {

@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, July 22, 2024 @ 06:34:51 ET
+ *  Date: Tuesday, July 23, 2024 @ 11:42:32 ET
  *  By: michael
  *  ENGrid styles: v0.18.8
  *  ENGrid scripts: v0.18.12
@@ -24093,9 +24093,12 @@ class MultistepForm {
   }
 
   addStepDataAttributes() {
-    document.querySelector(".body-title")?.setAttribute("data-multistep-step", "1");
-    document.querySelector(".body-top")?.setAttribute("data-multistep-step", "1");
-    document.querySelector(".body-bottom")?.setAttribute("data-multistep-step", "3");
+    if (engrid_ENGrid.getBodyData("layout") !== "centercenter2col") {
+      document.querySelector(".body-title")?.setAttribute("data-multistep-step", "1");
+      document.querySelector(".body-top")?.setAttribute("data-multistep-step", "1");
+      document.querySelector(".body-bottom")?.setAttribute("data-multistep-step", "3");
+    }
+
     const stepperCodeBlocks = [...document.querySelectorAll(".multistep-stepper")].map(el => el.closest(".en__component--codeblock"));
     stepperCodeBlocks.forEach((step, index) => {
       step.setAttribute("data-multistep-step", `${index + 1}`); // if this is the first step, we start from the first element in ".body-main"
