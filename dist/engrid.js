@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, August 5, 2024 @ 08:38:03 ET
+ *  Date: Monday, August 5, 2024 @ 09:02:54 ET
  *  By: michael
  *  ENGrid styles: v0.18.8
  *  ENGrid scripts: v0.18.12
@@ -30163,7 +30163,8 @@ class embedded_ecard_EmbeddedEcard {
   constructor() {
     this.logger = new logger_EngridLogger("Embedded Ecard", "#D95D39", "#0E1428", "📧");
     this.options = embedded_ecard_options_EmbeddedEcardOptionsDefaults;
-    this._form = en_form_EnForm.getInstance(); // For the page hosting the embedded ecard
+    this._form = en_form_EnForm.getInstance();
+    this.isSubmitting = false; // For the page hosting the embedded ecard
 
     if (this.onHostPage()) {
       // Clean up session variables if the page is reloaded, and it isn't a submission failure
@@ -30336,15 +30337,15 @@ class embedded_ecard_EmbeddedEcard {
     let recipientEmail = document.querySelector(".en__ecardrecipients__email > input");
     [ecardVariant, ecardSendDate, ecardMessage, recipientName, recipientEmail].forEach(el => {
       el.addEventListener("input", () => {
+        if (this.isSubmitting) return;
         this.setEmbeddedEcardSessionData();
       });
     }); // MutationObserver to detect changes in the recipient list and update the session data
 
     const observer = new MutationObserver(mutationsList => {
       for (let mutation of mutationsList) {
-        console.log(mutation);
-
         if (mutation.type === "childList") {
+          if (this.isSubmitting) return;
           this.setEmbeddedEcardSessionData();
         }
       }
@@ -30369,6 +30370,7 @@ class embedded_ecard_EmbeddedEcard {
 
       switch (e.data.action) {
         case "submit_form":
+          this.isSubmitting = true;
           let embeddedEcardData = JSON.parse(sessionStorage.getItem("engrid-embedded-ecard") || "{}");
 
           if (ecardVariant) {
