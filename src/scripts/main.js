@@ -626,14 +626,6 @@ export const customScript = function (App, DonationFrequency) {
       phoneNumberField.classList.add("hide");
       smsDisclosure.classList.add("hide");
     }
-
-    // If the SMS opt-in and the EMail opt-in do not appear on the page hide the "be a part of our community" copy block
-    let emailOptIn = document.querySelector(".en__field--608540");
-    let communityBlock = document.querySelector(".be-a-part-of-our-community");
-
-    if (!smsOptIn && !emailOptIn && communityBlock) {
-      communityBlock.classList.add("hide");
-    }
   }
 
   // Call the function
