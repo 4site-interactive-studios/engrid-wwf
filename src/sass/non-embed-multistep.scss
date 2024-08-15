@@ -379,11 +379,6 @@
     }
   }
 
-  &:not([data-engrid-multistep-active-step="1"])
-    .en__component.en__component--premiumgiftblock {
-    display: none !important; // Temporary CSS: Hide the premium gift block on the second step, it shows up there for some reason even though it's on the first step
-  }
-
   &:not([data-engrid-layout="centercenter2col"]) {
     .body-title {
       background: #ffffff;
