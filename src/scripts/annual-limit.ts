@@ -5,7 +5,7 @@ import {
   DonationFrequency,
   ENGrid,
   EngridLogger,
-} from "@4site/engrid-common";
+} from "@4site/engrid-scripts";
 
 export class AnnualLimit {
   private logger: EngridLogger = new EngridLogger(
