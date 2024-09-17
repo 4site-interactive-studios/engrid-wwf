@@ -2357,8 +2357,11 @@ button[data-balloon] {
   --engrid__body-title_background-color: #ffffff;
   --engrid__body-top_background-color: #ffffff;
   --engrid__body_margin: 0;
-  --engrid__body-top_padding: 20px 29px;
-  --engrid__body-title_padding: 20px 29px 28px;
+  --engrid__body-top_padding: 20px 80px;
+  --engrid__body-title_padding: 20px 80px 28px;
+  --engrid__body-main_padding: 26px 80px 20px;
+  --engrid__content-footer_padding: 0 80px;
+
 
   .content-header {
     margin-top: 0;
@@ -2406,6 +2409,11 @@ button[data-balloon] {
   }
 
   @media screen and (max-width: 1023px) {
+    --engrid__body-top_padding: 20px 29px;
+    --engrid__body-title_padding: 20px 29px 28px;
+    --engrid__body-main_padding: 26px 29px 20px;
+    --engrid__content-footer_padding: 0;
+
     .en__component--advrow > div:not(.page-alert):not(.content-header) {
       width: 100%;
       max-width: 700px;

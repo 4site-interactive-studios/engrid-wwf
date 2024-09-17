@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, September 17, 2024 @ 08:36:48 ET
+ *  Date: Tuesday, September 17, 2024 @ 08:57:04 ET
  *  By: michael
  *  ENGrid styles: v0.18.19
  *  ENGrid scripts: v0.18.19
@@ -9576,8 +9576,10 @@ body[data-engrid-debug]:before{
   --engrid__body-title_background-color:#fff;
   --engrid__body-top_background-color:#fff;
   --engrid__body_margin:0;
-  --engrid__body-top_padding:20px 29px;
-  --engrid__body-title_padding:20px 29px 28px;
+  --engrid__body-top_padding:20px 80px;
+  --engrid__body-title_padding:20px 80px 28px;
+  --engrid__body-main_padding:26px 80px 20px;
+  --engrid__content-footer_padding:0 80px;
 }
 [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .body-title,[data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .content-header{
   margin-bottom:0;
@@ -9612,6 +9614,12 @@ body[data-engrid-debug]:before{
   }
 }
 @media screen and (max-width:1023px){
+  [data-engrid-theme=wwf][data-engrid-layout=leftleft1col]{
+    --engrid__body-top_padding:20px 29px;
+    --engrid__body-title_padding:20px 29px 28px;
+    --engrid__body-main_padding:26px 29px 20px;
+    --engrid__content-footer_padding:0;
+  }
   [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .en__component--advrow>div:not(.page-alert):not(.content-header){
     margin:0 auto;
     max-width:700px;
