@@ -2365,7 +2365,8 @@ button[data-balloon] {
 
   .content-header {
     margin-top: 0;
-    margin-bottom: 0;
+    grid-column: bc;
+    margin-bottom: 30px;
   }
 
   .body-title {
