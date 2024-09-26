@@ -1,4 +1,4 @@
-import { ENGrid, EngridLogger } from "@4site/engrid-common";
+import { ENGrid, EngridLogger } from "@4site/engrid-scripts";
 import "./confetti";
 
 declare global {
