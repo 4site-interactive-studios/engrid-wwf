@@ -63,10 +63,10 @@ export const customScript = function (App, DonationFrequency) {
     if (otherAmount) {
       switch (s) {
         case "monthly":
-          otherAmount.placeholder = "Other /mo";
+          otherAmount.placeholder = "Other/mo";
           break;
         case "annual":
-          otherAmount.placeholder = "Other /yr";
+          otherAmount.placeholder = "Other/yr";
           break;
         default:
           otherAmount.placeholder = "Other";

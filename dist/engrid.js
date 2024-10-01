@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, September 23, 2024 @ 18:12:03 ET
+ *  Date: Monday, September 30, 2024 @ 23:41:11 ET
  *  By: fernando
  *  ENGrid styles: v0.19.8
  *  ENGrid scripts: v0.19.8
@@ -22201,11 +22201,11 @@ const customScript = function (App, DonationFrequency) {
     if (otherAmount) {
       switch (s) {
         case "monthly":
-          otherAmount.placeholder = "Other /mo";
+          otherAmount.placeholder = "Other/mo";
           break;
 
         case "annual":
-          otherAmount.placeholder = "Other /yr";
+          otherAmount.placeholder = "Other/yr";
           break;
 
         default:

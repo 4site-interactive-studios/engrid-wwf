@@ -51,7 +51,7 @@
   // TYPOGRAPHY DEFAULT
   --default_font-family: "Open Sans", sans-serif;
   --default_color: ##1f2937;
-  --default_font-size: 20px;
+  --default_font-size: 21px;
   // --default_font-weight: initial;
   --default_line-height: 32px;
 
@@ -65,9 +65,9 @@
   // TYPOGRAPHY H2
   // --h2_font-family: var(--default_font-family);
   // --h2_color: initial;
-  --h2_font-size: 20px;
+  --h2_font-size: 24px;
   --h2_font-weight: 700;
-  --h2_line-height: 32px;
+  --h2_line-height: 1.5;
 
   // TYPOGRAPHY P
   // --p_font-family: var(--default_font-family);
@@ -93,9 +93,9 @@
   // --input_font-weight: initial;
   // --input_line-height: initial;
   --input_background-color: #ffffff;
-  // --input_border-width: 1px;
+  --input_border-width: 2px;
   --input_border-color: #808080;
-  --input_border-radius: 2px;
+  --input_border-radius: 4px;
   // --input_placeholder-color: var(--color_light-gray);
   // --input_box-shadow: inset 0 2px 2px -1px rgba(74, 74, 104, 0.1);
   --input_padding: 1.3ch 1.2ch;
@@ -113,13 +113,15 @@
   // TYPOGRAPHY BUTTON
   // --button_font-family: var(--default_font-family);
   --button_color: #006ea3;
-  --button_font-size: 24px;
+  --button_font-size: 28px;
   --button_font-weight: 700;
-  --button_line-height: 36px;
+  --button_line-height: 1;
   --button_background-color: #ffffff;
-  // --button_border-width: 1px;
+  --button_border-width: 2px;
   --button_border-color: #006ea3;
-  --button_border-radius: 2px;
+  --button_border-radius: 8px;
+
+  --donation-amount__button_font-size: 34px;
 
   // TYPOGRAPHY BUTTON:HOVER
   // --button_color_hover: var(--button_color);
@@ -131,7 +133,7 @@
   --button_background-color_checked: #006ea3;
   --button_border-color_checked: #006ea3;
 
-  --recurring-frequency__button_font-size: 24px;
+  --recurring-frequency__button_font-size: 28px;
   --recurring-frequency__button_font-weight: 700;
   --recurring-frequency__button_line-height: 36px;
 
@@ -155,7 +157,7 @@
   --donation-amount__button_count: 3;
   --give-by-select__button_count: 2;
 
-  --label_font-size: 16px;
+  --label_font-size: 18px;
   --label_line-height: 24px;
   --label_font-weight: 700;
   --label_color: #222222;
@@ -237,11 +239,11 @@
   // Base styling
   font-family: "Open Sans", sans-serif;
   color: #1f2937;
-  font-size: 20px;
+  font-size: 21px;
   line-height: 32px;
 
   .body-main {
-    --p_font-size: 17px;
+    --p_font-size: 18px;
     --p_line-height: 27.2px;
   }
 
@@ -271,6 +273,9 @@
     box-shadow: none; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
     background-color: transparent; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
     transform: scale(1.2);
+    @media screen and (max-width: 500px) {
+      content: none;
+    }
   }
 
   .radio-to-buttons_recurrfreq
@@ -300,6 +305,9 @@
     // border-radius: 0; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
     // background-image: url("https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-icon_monthly-heart.png?v=1680364166000");
     background-image: url(data:image/png;base64,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);
+    @media screen and (max-width: 500px) {
+      content: none;
+    }
   }
 
   .payment-method {
@@ -491,6 +499,7 @@
     .en__field__label {
       outline: none;
       height: 64px;
+      line-height: 0 !important;
     }
 
     &.ach {
@@ -529,11 +538,11 @@
     .en__field__item.give-by-select {
       // --fields_spacing-block: 0.95rem;
       // --fields_spacing-inline: 0.95rem;
-      --fields_spacing-inline: 0.9rem;
-      --fields_spacing-block: 1.2rem;
+      --fields_spacing-inline: 0.5rem;
+      --fields_spacing-block: 0.5rem;
 
       @media screen and (max-width: 600px) {
-        --fields_spacing-block: 0.9rem;
+        --fields_spacing-block: 0.4rem;
       }
     }
   }
@@ -1244,9 +1253,33 @@
   }
 
   .radio-to-buttons_donationAmt .en__field--donationAmt {
+    &.en__field--radio {
+      input[type="radio"] {
+        + label {
+          .engrid-currency-symbol {
+            font-family: var(--default_font-family);
+            font-size: 22px;
+            font-weight: 400;
+            padding-right: 2px;
+          }
+        }
+      }
+    }
+    // /mo appended label
+    div:not(.en__field__item--other) {
+      .en__field__label--item {
+        &:after {
+          font-size: 50%;
+          margin-bottom: 5px;
+          opacity: 1;
+          margin-left: 0;
+          letter-spacing: 0;
+        }
+      }
+    }
     .en__field__element--radio {
-      --fields_spacing-inline: 0.9rem;
-      --fields_spacing-block: 1.2rem;
+      --fields_spacing-inline: 0.5rem;
+      --fields_spacing-block: 0.5rem;
       --donation-amount__button_padding: 1ch calc(1.2ch - 38px);
     }
 
@@ -1256,7 +1289,7 @@
 
     .en__field__input--other {
       --input_padding: var(--donation-amount__button_padding);
-      font-size: var(--donation-amount__button_font-size);
+      font-size: 30px;
       font-weight: 700;
       justify-content: center;
       line-height: var(--donation-amount__button_line-height);
@@ -1266,8 +1299,13 @@
     .en__field__item--other {
       position: relative;
 
+      align-self: stretch;
+
       input {
-        padding-left: 34px;
+        height: 100%;
+        display: block;
+        padding: 0 5px;
+        padding-left: 25px;
         font-weight: 400;
         border-color: var(--donation-amount__button_border-color);
       }
@@ -1276,14 +1314,14 @@
         content: "$";
         display: block;
         height: 0;
-        left: 2.25ch;
+        left: 1.5ch;
         line-height: 0;
         position: absolute;
-        top: calc(50% - 5px);
-        font-size: var(--donation-amount__button_font-size);
+        top: calc(50% - 3px);
+        font-size: 22px;
         color: var(--donation-amount__button_color);
         font-family: var(--donation-amount__button_font-family);
-        font-weight: var(--donation-amount__button_font-weight);
+        font-weight: 400;
         // line-height: var(--donation-amount__button_line-height);
       }
     }
@@ -1369,21 +1407,43 @@
         }
       }
     }
+    .en__pg {
+      border: var(--donation-amount__button_border-width) solid transparent;
+      overflow: hidden;
+      &:hover {
+        --premium__item_background-color: #e9f7f6;
+      }
+    }
 
     .en__pg--selected {
       --premium__item_background-color: #e9f7f6;
+      border: var(--donation-amount__button_border-width) solid
+        var(--donation-amount__button_border-color);
+      border-radius: var(--donation-amount__button_border-radius);
     }
 
     .en__pg__body {
-      grid-template-areas: "en__pg__select en__pg__detail en__pg__display" ". en__pg__detail-mobile .";
-      grid-template-columns: min-content auto var(--premium__image_max-width);
+      grid-template-areas: "en__pg__select en__pg__display en__pg__detail" ". en__pg__detail-mobile .";
+      grid-template-columns: min-content var(--premium__image_max-width) auto;
       gap: 0 max(calc(var(--fields_spacing-inline) * 2), 0.5rem);
       padding: calc(var(--fields_spacing-block))
         calc(var(--fields_spacing-inline) * 2);
+      .en__pg__select {
+        display: none;
+      }
+      .en__pg__image:hover {
+        transform: none;
+        margin: 0;
+        position: relative;
+      }
     }
 
     // Move premium images on mobile
     @media screen and (max-width: $centercenter1col_body-column_max-width) {
+      .en__pg__description {
+        --p_font-size: 12px;
+        --p_line-height: 18px;
+      }
       .en__pg__display {
         grid-area: en__pg__detail-mobile;
 
@@ -1395,14 +1455,10 @@
       }
 
       // Hide unselected premium images on mobile
-      .en__pg:not(.en__pg--selected) {
+      .en__pg {
         .en__pg__body {
-          --premium__image_max-width: 0px;
-          grid-template-columns: min-content auto 0px;
-        }
-
-        .en__pg__display {
-          display: none;
+          --premium__image_max-width: 65px;
+          grid-template-columns: min-content var(--premium__image_max-width) auto;
         }
       }
     }
@@ -1475,8 +1531,7 @@
   }
 
   .en__component--premiumgiftblock {
-    --h2_font-size: 20px;
-    --h2_line-height: 30px;
+    --h2_font-size: 24px;
 
     border-left: 0;
     border-right: 0;
@@ -1485,6 +1540,7 @@
 
     // [data-engrid-premium-gift-maximize="true"]
     .en__pgList {
+      --h2_font-size: 20px;
       --h2_font-weight: 400;
     }
 
@@ -1554,8 +1610,8 @@
     // Styles the Maximize my gift option
     // @TODO: See if there is a way to apply this only when there is a maximize my gift option.
     [data-nogift] .en__pg:last-child .en__pg__description {
-      font-size: var(--h2_font-size);
-      line-height: var(--h2_line-height);
+      font-size: 22px;
+      line-height: 1.2;
       font-weight: var(--h2_font-weight);
 
       &:after {
@@ -1996,10 +2052,10 @@
 
 @media screen and (max-width: 600px) {
   & {
-    --default_font-size: 15px;
-    --input_font-size: 16px;
-    --default_line-height: 24px;
-    --h1_font-size: 24px;
+    --default_font-size: 18px;
+    --input_font-size: 18px;
+    --default_line-height: 1.4;
+    --h1_font-size: 28px;
     --h1_line-height: 33.6px;
     --engrid__body_margin: 0px;
 
@@ -2011,24 +2067,26 @@
     --engrid__body-top_padding: 0 20px;
     --media-attribution__padding: 0 20px;
 
-    --button_font-size: 20px;
-    --button_line-height: 30px;
+    --button_font-size: 26px;
 
-    --recurring-frequency__button_font-size: 16px;
-    --recurring-frequency__button_line-height: 24px;
+    --recurring-frequency__button_font-size: 24px;
+    --recurring-frequency__button_line-height: 1;
 
     --click-to-expand__cta-image_width: 96px;
     --click-to-expand__cta-image_height: 13px;
 
     --p_line-height: 24px;
 
-    --label_font-size: 14px;
+    --label_font-size: 16px;
     --label_line-height: 18.2px;
 
     --radio_height: 20px;
     --radio_width: 20px;
     --radio_box-shadow_selected: inset 0 0 0 3px #ffffff;
     --radio_border-width: 1px;
+
+    --fields_spacing-inline: 0.2rem;
+    --fields_spacing-block: 0.2rem;
 
     .en__contacts:not(.en__contacts--hideCheck)
       .en__contactDetails__select:checked
@@ -2081,11 +2139,6 @@
 
   .en__component--premiumgiftblock .en__pg__description {
     max-width: 100%;
-  }
-
-  .en__component--premiumgiftblock {
-    --h2_font-size: 16px;
-    --h2_line-height: 24px;
   }
 
   .inline-upsell-box {
@@ -2145,14 +2198,19 @@
     padding: var(--engrid__body-main_padding);
   }
 }
-
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 450px) {
   & {
-    --h2_font-size: 16px;
-    --h2_line-height: 24px;
+    --recurring-frequency__button_font-size: 30px;
+    --h2_font-size: 22px;
+    --h2_line-height: 1.4;
+    --button_padding: 20px 15px;
+    .radio-to-buttons_donationAmt
+      .en__field--donationAmt
+      .en__field__input--other {
+      font-size: 26px;
+    }
   }
 }
-
 /* Force the visibility of Paypal Button when PayPal One Touch / Venmo is enabled */
 /* https://www.bugherd.com/projects/341429/tasks/318 */
 &[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements][data-engrid-transaction-recurring="n"][data-engrid-payment-type-option-paypal-one-touch="true"]
