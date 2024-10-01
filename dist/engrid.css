@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, September 30, 2024 @ 23:41:11 ET
+ *  Date: Tuesday, October 1, 2024 @ 13:30:10 ET
  *  By: fernando
  *  ENGrid styles: v0.19.8
  *  ENGrid scripts: v0.19.8
@@ -8030,6 +8030,54 @@ body[data-engrid-debug]:before{
   src:url(https://fonts.gstatic.com/s/architectsdaughter/v18/KtkxAKiDZI_td1Lkx62xHZHDtgO_Y-bvTYlg4-7jA-U.woff2) format("woff2");
   unicode-range:u+00??, u+0131, u+0152-0153, u+02bb-02bc, u+02c6, u+02da, u+02dc, u+0304, u+0308, u+0329, u+2000-206f, u+2074, u+20ac, u+2122, u+2191, u+2193, u+2212, u+2215, u+feff, u+fffd;
 }
+@font-face{
+  font-display:swap;
+  font-family:Fuzzy Bubbles;
+  font-style:normal;
+  font-weight:400;
+  src:url(https://fonts.gstatic.com/s/fuzzybubbles/v7/6qLGKZMbrgv9pwtjPEVNV0F2BnvzZjkoaksMvw.woff2) format("woff2");
+  unicode-range:u+0102-0103, u+0110-0111, u+0128-0129, u+0168-0169, u+01a0-01a1, u+01af-01b0, u+0300-0301, u+0303-0304, u+0308-0309, u+0323, u+0329, u+1ea0-1ef9, u+20ab;
+}
+@font-face{
+  font-display:swap;
+  font-family:Fuzzy Bubbles;
+  font-style:normal;
+  font-weight:400;
+  src:url(https://fonts.gstatic.com/s/fuzzybubbles/v7/6qLGKZMbrgv9pwtjPEVNV0F2BnrzZjkoaksMvw.woff2) format("woff2");
+  unicode-range:u+0100-02af, u+0304, u+0308, u+0329, u+1e00-1e9f, u+1ef2-1eff, u+2020, u+20a0-20ab, u+20ad-20c0, u+2113, u+2c60-2c7f, u+a720-a7ff;
+}
+@font-face{
+  font-display:swap;
+  font-family:Fuzzy Bubbles;
+  font-style:normal;
+  font-weight:400;
+  src:url(https://fonts.gstatic.com/s/fuzzybubbles/v7/6qLGKZMbrgv9pwtjPEVNV0F2BnTzZjkoaks.woff2) format("woff2");
+  unicode-range:u+00??, u+0131, u+0152-0153, u+02bb-02bc, u+02c6, u+02da, u+02dc, u+0304, u+0308, u+0329, u+2000-206f, u+2074, u+20ac, u+2122, u+2191, u+2193, u+2212, u+2215, u+feff, u+fffd;
+}
+@font-face{
+  font-display:swap;
+  font-family:Fuzzy Bubbles;
+  font-style:normal;
+  font-weight:700;
+  src:url(https://fonts.gstatic.com/s/fuzzybubbles/v7/6qLbKZMbrgv9pwtjPEVNV0F2Ds_WcxsKZ2E2tn-Y9g.woff2) format("woff2");
+  unicode-range:u+0102-0103, u+0110-0111, u+0128-0129, u+0168-0169, u+01a0-01a1, u+01af-01b0, u+0300-0301, u+0303-0304, u+0308-0309, u+0323, u+0329, u+1ea0-1ef9, u+20ab;
+}
+@font-face{
+  font-display:swap;
+  font-family:Fuzzy Bubbles;
+  font-style:normal;
+  font-weight:700;
+  src:url(https://fonts.gstatic.com/s/fuzzybubbles/v7/6qLbKZMbrgv9pwtjPEVNV0F2Ds_WcxoKZ2E2tn-Y9g.woff2) format("woff2");
+  unicode-range:u+0100-02af, u+0304, u+0308, u+0329, u+1e00-1e9f, u+1ef2-1eff, u+2020, u+20a0-20ab, u+20ad-20c0, u+2113, u+2c60-2c7f, u+a720-a7ff;
+}
+@font-face{
+  font-display:swap;
+  font-family:Fuzzy Bubbles;
+  font-style:normal;
+  font-weight:700;
+  src:url(https://fonts.gstatic.com/s/fuzzybubbles/v7/6qLbKZMbrgv9pwtjPEVNV0F2Ds_WcxQKZ2E2tn8.woff2) format("woff2");
+  unicode-range:u+00??, u+0131, u+0152-0153, u+02bb-02bc, u+02c6, u+02da, u+02dc, u+0304, u+0308, u+0329, u+2000-206f, u+2074, u+20ac, u+2122, u+2191, u+2193, u+2212, u+2215, u+feff, u+fffd;
+}
 [data-engrid-theme=wwf]{
   --engrid__body_margin:0 22px;
   --engrid__body-main_padding:26px 29px 20px 29px;
@@ -8121,7 +8169,7 @@ body[data-engrid-debug]:before{
   --textarea_line-height:24px;
   --inline-upsell-box_margin-left:8px;
   --inline-upsell-box_margin-right:8px;
-  --inline-upsell-box_font-size:15px;
+  --inline-upsell-box_font-size:18px;
   --inline-upsell-box_line-height:24px;
   --inline-upsell-box-svg_margin-left:53px;
   --inline-upsell-box_strong_font-size:20px;
@@ -8780,16 +8828,17 @@ body[data-engrid-debug]:before{
   --p_line-height:var(--inline-upsell-box_line-height);
   --p_font-weight:400;
   align-items:center;
-  background-color:#f7e6ed;
   border-radius:4px;
   color:#c60060;
   display:flex;
   font-style:italic;
   justify-content:center;
-  margin-top:1.75rem;
   min-height:88px;
-  padding:1rem 1ch;
+  padding:16px 8px;
   text-align:center;
+}
+[data-engrid-theme=wwf] .inline-upsell-box p{
+  font-family:Fuzzy Bubbles,sans-serif !important;
 }
 [data-engrid-theme=wwf] .inline-upsell-box strong{
   font-size:var(--inline-upsell-box_strong_font-size);

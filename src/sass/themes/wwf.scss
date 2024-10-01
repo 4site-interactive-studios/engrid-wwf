@@ -205,7 +205,7 @@
 
   --inline-upsell-box_margin-left: 8px;
   --inline-upsell-box_margin-right: 8px;
-  --inline-upsell-box_font-size: 15px;
+  --inline-upsell-box_font-size: 18px;
   --inline-upsell-box_line-height: 24px;
   --inline-upsell-box-svg_margin-left: 53px;
   --inline-upsell-box_strong_font-size: 20px;
@@ -1192,8 +1192,7 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 1rem 1ch;
-    background-color: #f7e6ed;
+    padding: 16px 8px;
     color: #c60060;
     // margin-bottom: 1.25rem;
     font-style: italic;
@@ -1202,7 +1201,9 @@
     --p_font-weight: 400;
     min-height: 88px;
     border-radius: 4px;
-    margin-top: 1.75rem;
+    p {
+      font-family: "Fuzzy Bubbles", sans-serif !important;
+    }
 
     strong {
       font-size: var(--inline-upsell-box_strong_font-size);
