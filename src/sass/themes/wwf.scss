@@ -495,6 +495,11 @@
       flex-basis: 100%;
     }
   }
+  &[data-engrid-payment-type-option-apple-pay="false"][data-engrid-payment-type-option-google-pay="false"] {
+    .give-by-select.en__field__item:not(.hide):nth-child(even).ach {
+      flex-basis: 50%;
+    }
+  }
 
   .give-by-select .en__field__element--radio {
     align-items: stretch;
