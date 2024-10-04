@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, September 23, 2024 @ 18:12:03 ET
+ *  Date: Thursday, October 3, 2024 @ 20:15:30 ET
  *  By: fernando
  *  ENGrid styles: v0.19.8
  *  ENGrid scripts: v0.19.8
@@ -8267,51 +8267,33 @@ body[data-engrid-debug]:before{
   font-size:var(--p_font-size);
   margin-bottom:var(--fields_spacing-block);
 }
-[data-engrid-theme=wwf] .give-by-select{
-  --button_background-color_hover:var(
-    --donation-amount__button_background-color_hover
-  );
-  --button_background-color_checked:var(
-    --donation-amount__button_background-color_hover
-  );
-  --button_color_checked:var(--button_color);
+@media screen and (max-width:600px){
+  [data-engrid-theme=wwf] .give-by-select{
+    --give-by-select__button_count:1;
+  }
+}
+[data-engrid-theme=wwf][data-engrid-transaction-recurring=n] .give-by-select.en__field__item:not(.hide):not(.recurring-frequency-n-hide):nth-child(2n).ach,[data-engrid-theme=wwf][data-engrid-transaction-recurring=y] .give-by-select.en__field__item:not(.hide):not(.recurring-frequency-y-hide):nth-child(2n).ach{
+  flex-basis:100%;
+}
+[data-engrid-theme=wwf] .give-by-select .en__field__element--radio{
+  align-items:stretch;
+}
+[data-engrid-theme=wwf] .give-by-select input[type=radio]+label{
+  height:65px;
+  max-height:65px;
+  padding:12px 22px;
 }
 [data-engrid-theme=wwf] .give-by-select .en__field__label{
-  height:64px;
-  outline:none;
+  flex-direction:column !important;
 }
-[data-engrid-theme=wwf] .give-by-select.ach{
-  flex-grow:1;
-}
-[data-engrid-theme=wwf] .give-by-select img{
+[data-engrid-theme=wwf] .give-by-select .en__field__label img{
   height:auto;
-  max-height:35px;
+  max-height:70%;
   width:auto;
 }
-[data-engrid-theme=wwf] .give-by-select img.paypal{
-  max-width:min(91px, 100%);
-}
-[data-engrid-theme=wwf] .give-by-select img.apple-pay-google-pay{
-  max-width:min(171px, 100%);
-}
-[data-engrid-theme=wwf] .give-by-select img.paypal-venmo{
-  max-width:min(214px, 100%);
-}
-[data-engrid-theme=wwf] .give-by-select img.credit-card-logos{
-  max-width:min(220px, 100%);
-}
-[data-engrid-theme=wwf] .en__component--formblock.give-by-select-wrapper .en__field .en__field__element.en__field__element--radio{
-  margin-left:calc(var(--fields_spacing-inline)*2*-1);
-  margin-right:calc(var(--fields_spacing-inline)*2*-1);
-}
-[data-engrid-theme=wwf] .en__component--formblock.give-by-select-wrapper .en__field .en__field__element.en__field__element--radio .en__field__item.give-by-select{
-  --fields_spacing-inline:0.9rem;
-  --fields_spacing-block:1.2rem;
-}
-@media screen and (max-width:600px){
-  [data-engrid-theme=wwf] .en__component--formblock.give-by-select-wrapper .en__field .en__field__element.en__field__element--radio .en__field__item.give-by-select{
-    --fields_spacing-block:0.9rem;
-  }
+[data-engrid-theme=wwf] .give-by-select .venmo label>img:last-of-type{
+  height:20px;
+  margin-top:5px;
 }
 [data-engrid-theme=wwf] .divider-top{
   border-top:1px solid #ccc;
@@ -9533,6 +9515,35 @@ body[data-engrid-debug]:before{
   [data-engrid-theme=wwf] .amount-nudge.i3-arrow:not(.arrow-up) svg{
     display:none;
   }
+}
+[data-engrid-theme=wwf][data-engrid-payment-type=daf] .en__component--dd360confirmation,[data-engrid-theme=wwf][data-engrid-payment-type=daf] .hideif-daf-selected{
+  display:none !important;
+}
+[data-engrid-theme=wwf] .balloon{
+  background-color:#f6f5f3;
+  border:2px solid #013a53;
+  border-radius:3px;
+  color:#1f2937;
+  font-size:14px;
+  line-height:1.4;
+  margin-bottom:-20px;
+  margin-left:auto;
+  margin-right:auto;
+  padding:.5em;
+  position:relative;
+  text-align:center;
+}
+[data-engrid-theme=wwf] .balloon:after{
+  border:10px solid #0000;
+  border-top-color:#013a53;
+  bottom:-20px;
+  content:"";
+  height:0;
+  left:50%;
+  position:absolute;
+  transform:translateX(-50%);
+  width:0;
+  z-index:-1;
 }
 [data-engrid-theme=wwf] button[data-balloon]{
   cursor:pointer;

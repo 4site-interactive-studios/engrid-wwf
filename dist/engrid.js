@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, September 23, 2024 @ 18:12:03 ET
+ *  Date: Thursday, October 3, 2024 @ 20:15:30 ET
  *  By: fernando
  *  ENGrid styles: v0.19.8
  *  ENGrid scripts: v0.19.8
@@ -24589,6 +24589,122 @@ class MultistepForm {
   }
 
 }
+;// CONCATENATED MODULE: ./src/scripts/add-daf.ts
+
+// This script adds a DAF payment option to the donation form, only if the DAF payment option is available.
+
+class AddDAF {
+  constructor() {
+    _defineProperty(this, "logger", new EngridLogger("AddDAF", "lightgray", "darkblue", "🪙"));
+
+    _defineProperty(this, "donorAdvisedFundButtonContainer", document.getElementById("en__digitalWallet__chariot__container"));
+
+    if (!this.shouldRun()) return;
+
+    if (this.donorAdvisedFundButtonContainer?.querySelector("*")) {
+      this.addDAF();
+    } else {
+      this.checkForDafBeingAdded();
+    }
+  }
+
+  shouldRun() {
+    return !!this.donorAdvisedFundButtonContainer;
+  }
+
+  checkForDafBeingAdded() {
+    const donorAdvisedFundButtonContainer = document.getElementById("en__digitalWallet__chariot__container");
+
+    if (!donorAdvisedFundButtonContainer) {
+      this.logger.log("No DAF container found");
+      return;
+    }
+
+    const callback = (mutationList, observer) => {
+      for (const mutation of mutationList) {
+        //Once a child node has been added, set up the appropriate digital wallet
+        if (mutation.type === "childList" && mutation.addedNodes.length) {
+          this.addDAF(); //Disconnect observer to prevent multiple additions
+
+          observer.disconnect();
+        }
+      }
+    };
+
+    const observer = new MutationObserver(callback);
+    observer.observe(donorAdvisedFundButtonContainer, {
+      childList: true,
+      subtree: true
+    });
+  }
+
+  addDAF() {
+    // Check if DAF is already added to the payment options
+    const dafPaymentOption = document.querySelector("input[name='transaction.giveBySelect'][value='daf']");
+
+    if (dafPaymentOption) {
+      this.logger.log("DAF already added");
+      return;
+    }
+
+    this.logger.log("Adding DAF");
+    const giveBySelectWrapper = document.querySelector(".give-by-select-wrapper .en__field__element--radio");
+
+    if (!giveBySelectWrapper) {
+      this.logger.log("No giveBySelectWrapper found");
+      return;
+    }
+
+    const dafPaymentButton = `
+    <!-- DAF (added dynamically) -->
+      <div class="en__field__item en__field--giveBySelect give-by-select pseudo-en-field showif-daf-available recurring-frequency-y-hide daf">
+        <input class="en__field__input en__field__input--radio" id="en__field_transaction_giveBySelectDAF" name="transaction.giveBySelect" type="radio" value="daf">
+        <label class="en__field__label en__field__label--item" for="en__field_transaction_giveBySelectDAF">
+          <img alt="DAF Logo" class="daf-logo" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/daf-logo.png">
+        </label>
+      </div>
+    `; // Add the DAF payment option to the payment options, before ACH
+
+    const achPaymentOption = document.querySelector(".en__field__item.ach");
+
+    if (achPaymentOption) {
+      achPaymentOption.insertAdjacentHTML("beforebegin", dafPaymentButton);
+    } else {
+      giveBySelectWrapper.insertAdjacentHTML("beforeend", dafPaymentButton);
+    } // Add hide-if-daf-selected class to the premium gift container
+
+
+    const premiumGiftContainer = document.querySelector(".en__component--premiumgiftblock");
+
+    if (premiumGiftContainer) {
+      premiumGiftContainer.classList.add("hideif-daf-selected");
+    }
+
+    new ShowHideRadioCheckboxes("transaction.giveBySelect", "giveBySelect-");
+    this.logger.log("DAF added"); // Set the on change event for the DAF payment option
+
+    const dafOption = document.querySelector("input[name='transaction.giveBySelect'][value='daf']");
+
+    if (!dafOption) {
+      this.logger.log("Somehow DAF was not added");
+      return;
+    }
+
+    dafOption.addEventListener("change", () => {
+      this.logger.log("Payment DAF selected");
+      engrid_ENGrid.setPaymentType("daf"); // Set "Maximize your impact" on Premiums when DAF is selected
+
+      const maxRadio = document.querySelector("input[type='radio'][name='en__pg'][value='0']");
+
+      if (maxRadio) {
+        maxRadio.checked = true;
+        maxRadio.click();
+        engrid_ENGrid.setFieldValue("transaction.selprodvariantid", "");
+      }
+    });
+  }
+
+}
 ;// CONCATENATED MODULE: ./src/index.ts
  // Uses ENGrid via NPM
 // import {
@@ -24598,6 +24714,7 @@ class MultistepForm {
 //   DonationAmount,
 //   EnForm,
 // } from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
+
 
 
 
@@ -24655,6 +24772,11 @@ const options = {
     }
   },
   onLoad: () => {
+    // If we're on a Thank You page, let's try to add pageJson.other3 as data-engrid-payment-type body attribute
+    if (App.getPageNumber() === App.getPageCount() && "pageJson" in window && "other3" in window.pageJson) {
+      document.body.setAttribute("data-engrid-payment-type", window.pageJson.other3);
+    }
+
     new AnnualLimit();
     window.DonationLightboxForm = DonationLightboxForm;
     new DonationLightboxForm(DonationAmount, DonationFrequency, App);
@@ -24742,7 +24864,8 @@ const options = {
     }
 
     new OnLoadModal();
-    new MultistepForm(); // Unsubscribe All Logic
+    new MultistepForm();
+    new AddDAF(); // Unsubscribe All Logic
 
     const unsubscribeAllButton = document.querySelector("#unsubscribe-all");
     const unsubscribeAllRadio = App.getField("supporter.questions.888498");
