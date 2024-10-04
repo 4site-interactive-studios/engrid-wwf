@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, October 4, 2024 @ 16:11:00 ET
+ *  Date: Friday, October 4, 2024 @ 16:12:52 ET
  *  By: fernando
  *  ENGrid styles: v0.19.8
  *  ENGrid scripts: v0.19.8
@@ -8275,7 +8275,7 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf][data-engrid-transaction-recurring=n] .give-by-select.en__field__item:not(.hide):not(.recurring-frequency-n-hide):nth-child(2n).ach,[data-engrid-theme=wwf][data-engrid-transaction-recurring=y] .give-by-select.en__field__item:not(.hide):not(.recurring-frequency-y-hide):nth-child(2n).ach{
   flex-basis:100%;
 }
-[data-engrid-theme=wwf][data-engrid-payment-type-option-apple-pay=false][data-engrid-payment-type-option-google-pay=false] .give-by-select.en__field__item:not(.hide):nth-child(2n).ach{
+[data-engrid-theme=wwf][data-engrid-payment-type-option-apple-pay=false][data-engrid-payment-type-option-google-pay=false][data-engrid-transaction-recurring=n] .give-by-select.en__field__item:not(.hide):nth-child(2n).ach{
   flex-basis:50%;
 }
 [data-engrid-theme=wwf] .give-by-select .en__field__element--radio{

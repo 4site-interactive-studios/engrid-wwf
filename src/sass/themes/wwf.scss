@@ -495,7 +495,7 @@
       flex-basis: 100%;
     }
   }
-  &[data-engrid-payment-type-option-apple-pay="false"][data-engrid-payment-type-option-google-pay="false"] {
+  &[data-engrid-payment-type-option-apple-pay="false"][data-engrid-payment-type-option-google-pay="false"][data-engrid-transaction-recurring="n"] {
     .give-by-select.en__field__item:not(.hide):nth-child(even).ach {
       flex-basis: 50%;
     }
