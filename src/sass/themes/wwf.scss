@@ -479,63 +479,51 @@
     font-size: var(--p_font-size);
   }
 
+  // GIVE BY SELECT STYLES
   .give-by-select {
-    --button_background-color_hover: var(
-      --donation-amount__button_background-color_hover
-    );
-    --button_background-color_checked: var(
-      --donation-amount__button_background-color_hover
-    );
-    --button_color_checked: var(--button_color);
-
-    .en__field__label {
-      outline: none;
-      height: 64px;
+    @media screen and (max-width: 600px) {
+      --give-by-select__button_count: 1;
     }
-
-    &.ach {
-      flex-grow: 1;
+  }
+  &[data-engrid-transaction-recurring="n"] {
+    .give-by-select.en__field__item:not(.hide):not(.recurring-frequency-n-hide):nth-child(even).ach {
+      flex-basis: 100%;
     }
-
-    img {
-      max-height: 35px;
-      height: auto;
-      width: auto;
+  }
+  &[data-engrid-transaction-recurring="y"] {
+    .give-by-select.en__field__item:not(.hide):not(.recurring-frequency-y-hide):nth-child(even).ach {
+      flex-basis: 100%;
     }
-
-    img.paypal {
-      max-width: min(91px, 100%);
-    }
-
-    img.apple-pay-google-pay {
-      max-width: min(171px, 100%);
-    }
-
-    img.paypal-venmo {
-      max-width: min(214px, 100%);
-    }
-
-    img.credit-card-logos {
-      max-width: min(220px, 100%);
+  }
+  &[data-engrid-payment-type-option-apple-pay="false"][data-engrid-payment-type-option-google-pay="false"][data-engrid-transaction-recurring="n"] {
+    .give-by-select.en__field__item:not(.hide):nth-child(even).ach {
+      flex-basis: 50%;
     }
   }
 
-  .en__component--formblock.give-by-select-wrapper
-    .en__field
-    .en__field__element.en__field__element--radio {
-    margin-left: calc(2 * var(--fields_spacing-inline) * -1);
-    margin-right: calc(2 * var(--fields_spacing-inline) * -1);
+  .give-by-select .en__field__element--radio {
+    align-items: stretch;
+  }
 
-    .en__field__item.give-by-select {
-      // --fields_spacing-block: 0.95rem;
-      // --fields_spacing-inline: 0.95rem;
-      --fields_spacing-inline: 0.9rem;
-      --fields_spacing-block: 1.2rem;
+  .give-by-select input[type="radio"] + label {
+    padding: 12px 22px;
+    height: 65px;
+    max-height: 65px;
+  }
 
-      @media screen and (max-width: 600px) {
-        --fields_spacing-block: 0.9rem;
-      }
-    }
+  .give-by-select .en__field__label {
+    flex-direction: column !important;
+  }
+
+  .give-by-select .en__field__label img {
+    width: auto;
+    height: auto;
+    max-height: 70%;
+  }
+
+  .give-by-select .venmo label > img:last-of-type {
+    height: 20px;
+    margin-top: 5px;
   }
 
   .divider-top {
@@ -2263,6 +2251,39 @@
     @media screen and (max-width: 768px) {
       display: none;
     }
+  }
+}
+
+&[data-engrid-payment-type="daf"] .hideif-daf-selected,
+&[data-engrid-payment-type="daf"] .en__component--dd360confirmation {
+  display: none !important;
+}
+
+.balloon {
+  position: relative;
+  background-color: #f6f5f3;
+  border-radius: 3px;
+  padding: 0.5em;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #1f2937;
+  text-align: center;
+  border: 2px solid #013a53;
+  margin-bottom: -20px;
+  margin-left: auto;
+  margin-right: auto;
+
+  &:after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    border: 10px solid transparent;
+    border-top-color: #013a53;
+    bottom: -20px;
+    z-index: -1;
+    left: 50%;
+    transform: translateX(-50%);
   }
 }
 
