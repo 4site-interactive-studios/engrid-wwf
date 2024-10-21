@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, October 21, 2024 @ 11:25:24 ET
- *  By: michael
- *  ENGrid styles: v0.19.8
- *  ENGrid scripts: v0.19.8
+ *  Date: Monday, October 21, 2024 @ 17:10:34 ET
+ *  By: fernando
+ *  ENGrid styles: v0.19.9
+ *  ENGrid scripts: v0.19.10
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -13674,6 +13674,7 @@ class iFrame {
         const excludeClasses = [
             "giveBySelect-Card",
             "en__field--ccnumber",
+            "en__field--survey",
             "give-by-select",
             "give-by-select-header",
             "en__submit",
@@ -20315,7 +20316,6 @@ class GiveBySelect {
     constructor() {
         this.logger = new EngridLogger("GiveBySelect", "#FFF", "#333", "🐇");
         this.transactionGiveBySelect = document.getElementsByName("transaction.giveBySelect");
-        this.paymentTypeField = document.querySelector("select[name='transaction.paymenttype']");
         this._frequency = DonationFrequency.getInstance();
         if (!this.transactionGiveBySelect)
             return;
@@ -22071,7 +22071,7 @@ class CheckboxLabel {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/version.js
-const AppVersion = "0.19.8";
+const AppVersion = "0.19.10";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
