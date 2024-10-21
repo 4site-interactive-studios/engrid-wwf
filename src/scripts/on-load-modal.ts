@@ -1,4 +1,4 @@
-import { Modal } from "@4site/engrid-common";
+import { Modal } from "@4site/engrid-scripts";
 
 export class OnLoadModal extends Modal {
   constructor() {
