@@ -2372,3 +2372,110 @@ button[data-balloon] {
     margin: 0;
   }
 }
+
+&[data-engrid-layout="leftleft1col"] {
+  --engrid__page_background-color: #ffffff;
+  --engrid__body-title_background-color: #ffffff;
+  --engrid__body-top_background-color: #ffffff;
+  --engrid__body_margin: 0;
+  --engrid__body-top_padding: 20px 80px;
+  --engrid__body-title_padding: 20px 80px 28px;
+  --engrid__body-main_padding: 26px 80px 20px;
+  --engrid__content-footer_padding: 0 80px;
+
+
+  .content-header {
+    margin-top: 0;
+    grid-column: bc;
+    margin-bottom: 30px;
+  }
+
+  .body-title {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .content-footer {
+    margin-top: 0;
+    grid-column: bc;
+  }
+
+  .body-main {
+    border: none;
+  }
+
+  #footer {
+    border-top: 1px solid #ccc;
+  }
+
+  @media screen and (max-width: 769px) {
+    #footer {
+      padding-top: 20px;
+    }
+  }
+
+  @media screen and (min-width: 770px) {
+    #footer .footer-wrapper.footer-flex-container {
+      flex-direction: column !important;
+    }
+
+    #footer .footer-wrapper.footer-flex-container > * {
+      max-width: 80% !important;
+      margin-bottom: 20px;
+    }
+
+    #footer .footer-links {
+      flex-direction: column !important;
+      align-items: center !important;
+    }
+  }
+
+  @media screen and (max-width: 1023px) {
+    --engrid__body-top_padding: 20px 29px;
+    --engrid__body-title_padding: 20px 29px 28px;
+    --engrid__body-main_padding: 26px 29px 20px;
+    --engrid__content-footer_padding: 0;
+
+    .en__component--advrow > div:not(.page-alert):not(.content-header) {
+      width: 100%;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+  }
+
+  @media screen and (min-width: 700px) and (max-width: 1023px) {
+    --engrid__page_background-color: #f3f7ed;
+  }
+}
+
+// 1024px is where the show-if-mobile / show-if-desktop classes consider the breakpoint
+// So we will match that here
+@media screen and (min-width: 1024px) {
+  &:not(#en__pagebuilder)[data-engrid-layout="leftleft1col"] {
+    .page-backgroundImage {
+      grid-column: rpc/pc;
+
+      figure.media-with-attribution,
+      &:before {
+        left: $leftleft1col_body-column_max-width;
+        right: 0;
+        width: calc(100% - $leftleft1col_body-column_max-width);
+        background-position: center!important;
+      }
+    }
+  }
+
+  &:not(#en__pagebuilder)[data-engrid-layout="rightright1col"] {
+    .page-backgroundImage {
+      grid-column: pc/lpc;
+
+      &:before,
+      figure.media-with-attribution {
+        left: 0;
+        right: $rightright1col_body-column_max-width;
+        width: calc(100% - $rightright1col_body-column_max-width);
+        background-position: center !important;
+      }
+    }
+  }
+}
