@@ -917,4 +917,18 @@ export const customScript = function (App, DonationFrequency) {
   if (amountNudge && recurrFrequencyField) {
     recurrFrequencyField.insertAdjacentElement("beforeend", amountNudge);
   }
+
+  // Add logo for no header style
+  if (window.wwfHeaderStyle && window.wwfHeaderStyle === "None") {
+    const bodyTitle = document.querySelector(".body-title > .en__component");
+    bodyTitle?.insertAdjacentHTML(
+      "afterbegin",
+      `<a class="minimal-header-logo" href="https://www.worldwildlife.org/" target="_blank"><img class="no-header-wwf-logo" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo-standalone.png?3" alt="WWF Logo"></a>`
+    );
+    const contentHeader = document.querySelector(".content-header");
+    contentHeader?.insertAdjacentHTML(
+      "afterbegin",
+      `<a class="minimal-header-logo" href="https://www.worldwildlife.org/" target="_blank"><img class="no-header-wwf-logo" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo-no-tab.png?3" alt="WWF Logo"></a>`
+    );
+  }
 };

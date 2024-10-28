@@ -19,8 +19,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, October 21, 2024 @ 17:10:34 ET
- *  By: fernando
+ *  Date: Monday, October 28, 2024 @ 08:12:05 ET
+ *  By: michael
  *  ENGrid styles: v0.19.9
  *  ENGrid scripts: v0.19.10
  *
@@ -11978,27 +11978,26 @@ body[data-engrid-debug]:before{
 [data-header-footer-layout=none] form>.en__component--row.en__component--advrow>.content-header>*{
   display:none;
 }
+[data-header-footer-layout=none] .no-header-wwf-logo{
+  height:100px;
+  max-width:80px;
+  width:80px;
+}
+[data-header-footer-layout=none] .minimal-header-logo{
+  display:none;
+}
+[data-header-footer-layout=none] .body-title .en__component .minimal-header-logo+h1{
+  margin-bottom:0;
+  margin-top:0;
+}
 @media screen and (min-width:600px){
   [data-header-footer-layout=none] .body-title .en__component{
     align-items:center;
     display:flex;
     gap:1rem;
   }
-  [data-header-footer-layout=none] .body-title .en__component:before{
-    align-items:center;
-    background:#fff url(https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo-standalone.png?3) no-repeat;
-    background-position:50%;
-    background-size:contain;
-    content:"WWF Logo";
-    display:flex;
-    flex-shrink:0;
-    height:100px;
-    justify-content:center;
-    margin:0;
-    max-width:80px;
-    text-indent:-9999px;
-    width:100%;
-    z-index:3;
+  [data-header-footer-layout=none] .body-title .en__component .minimal-header-logo{
+    display:block;
   }
 }
 @media screen and (max-width:599px){
@@ -12007,22 +12006,8 @@ body[data-engrid-debug]:before{
     justify-items:center;
     margin-top:10px;
   }
-  [data-header-footer-layout=none] .content-header:before{
-    align-items:center;
-    background:#fff url(https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo-no-tab.png?3) no-repeat;
-    background-position:50%;
-    background-size:contain;
-    content:"WWF Logo";
-    display:flex;
-    flex-shrink:0;
-    grid-column:pc;
-    height:100px;
-    justify-content:center;
-    margin:0;
-    max-width:80px;
-    text-indent:-9999px;
-    width:100%;
-    z-index:3;
+  [data-header-footer-layout=none] .content-header .minimal-header-logo{
+    display:block !important;
   }
 }
 

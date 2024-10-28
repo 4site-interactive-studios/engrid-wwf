@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, October 21, 2024 @ 17:10:34 ET
- *  By: fernando
+ *  Date: Monday, October 28, 2024 @ 08:12:05 ET
+ *  By: michael
  *  ENGrid styles: v0.19.9
  *  ENGrid scripts: v0.19.10
  *
@@ -22923,6 +22923,14 @@ const customScript = function (App, DonationFrequency) {
 
   if (amountNudge && recurrFrequencyField) {
     recurrFrequencyField.insertAdjacentElement("beforeend", amountNudge);
+  } // Add logo for no header style
+
+
+  if (window.wwfHeaderStyle && window.wwfHeaderStyle === "None") {
+    const bodyTitle = document.querySelector(".body-title > .en__component");
+    bodyTitle?.insertAdjacentHTML("afterbegin", `<a class="minimal-header-logo" href="https://www.worldwildlife.org/" target="_blank"><img class="no-header-wwf-logo" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo-standalone.png?3" alt="WWF Logo"></a>`);
+    const contentHeader = document.querySelector(".content-header");
+    contentHeader?.insertAdjacentHTML("afterbegin", `<a class="minimal-header-logo" href="https://www.worldwildlife.org/" target="_blank"><img class="no-header-wwf-logo" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo-no-tab.png?3" alt="WWF Logo"></a>`);
   }
 };
 ;// CONCATENATED MODULE: ./src/scripts/page-header-footer.js
