@@ -19,10 +19,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, October 1, 2024 @ 13:30:10 ET
+ *  Date: Monday, October 28, 2024 @ 16:03:19 ET
  *  By: fernando
- *  ENGrid styles: v0.19.8
- *  ENGrid scripts: v0.19.8
+ *  ENGrid styles: v0.19.9
+ *  ENGrid scripts: v0.19.11
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -3205,7 +3205,7 @@ body:not(#en__pagebuilder):not([data-engrid-debug]) .hide-labels .en__field:not(
 [data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements]:not([data-engrid-payment-type-option-apple-pay=true]) .showif-apple-pay-available,[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements]:not([data-engrid-payment-type-option-daf=true]) .showif-daf-available,[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements]:not([data-engrid-payment-type-option-google-pay=true]) .showif-google-pay-available,[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements]:not([data-engrid-payment-type-option-paypal-one-touch=true]) .showif-paypal-one-touch-available,[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements]:not([data-engrid-payment-type-option-venmo=true]) .showif-venmo-available,[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements]:not([data-engrid-payment-type=daf]) .showif-daf-selected,[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements]:not([data-engrid-payment-type=paypaltouch]) .showif-paypaltouch-selected,[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements]:not([data-engrid-payment-type=stripedigitalwallet]) .showif-stripedigitalwallet-selected{
   display:none;
 }
-[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements][data-engrid-payment-type=daf] .hideif-daf-selected,[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements][data-engrid-payment-type=paypaltouch] .hideif-paypaltouch-selected,[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements][data-engrid-payment-type=stripedigitalwallet] .hideif-stripedigitalwallet-selected,[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements][data-engrid-transaction-recurring=n][data-engrid-payment-type-option-paypal-one-touch=true] .en__field--giveBySelect.paypal,[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements][data-engrid-transaction-recurring=y] .en__field--giveBySelect.paypaltouch{
+[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements][data-engrid-payment-type=daf] .hideif-daf-selected,[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements][data-engrid-payment-type=daf] .hideif-daf-selected_hide-vanilla-submit-button .en__submit,[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements][data-engrid-payment-type=paypaltouch] .hideif-paypaltouch-selected,[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements][data-engrid-payment-type=stripedigitalwallet] .hideif-stripedigitalwallet-selected,[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements][data-engrid-transaction-recurring=n][data-engrid-payment-type-option-paypal-one-touch=true] .en__field--giveBySelect.paypal,[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements][data-engrid-transaction-recurring=y] .en__field--giveBySelect.paypaltouch{
   display:none;
 }
 [data-engrid-theme] iframe.plaid-link-iframe,[data-engrid-theme] iframe[id^=plaid-link-iframe]{
@@ -8139,8 +8139,8 @@ body[data-engrid-debug]:before{
   --recurring-frequency__button_count:2;
   --donation-amount__button_count:3;
   --give-by-select__button_count:2;
-  --label_font-size:18px;
-  --label_line-height:24px;
+  --label_font-size:20px;
+  --label_line-height:1.2;
   --label_font-weight:700;
   --label_color:#222;
   --input_placeholder-color:#989b97;
@@ -8172,7 +8172,7 @@ body[data-engrid-debug]:before{
   --inline-upsell-box_font-size:18px;
   --inline-upsell-box_line-height:24px;
   --inline-upsell-box-svg_margin-left:53px;
-  --inline-upsell-box_strong_font-size:20px;
+  --inline-upsell-box_strong_font-size:22px;
   --inline-upsell-box_strong_line-height:28px;
   --en-vgs-height:64px;
   --maximize_my_donation_image:url(https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/2401_Premiums_NoPremTiger_1050.jpg-250x250.jpg?v=1682005678000);
@@ -8210,7 +8210,7 @@ body[data-engrid-debug]:before{
   transform:scale(1.2);
   width:21px;
 }
-@media screen and (max-width:500px){
+@media screen and (max-width:550px){
   [data-engrid-theme=wwf] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio input[type=radio][value=ANNUAL]+label:before,[data-engrid-theme=wwf] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio input[type=radio][value=MONTHLY]+label:before{
     content:none;
   }
@@ -8218,7 +8218,7 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio .en__field__item input[type=radio][value=ANNUAL]:checked+label:before,[data-engrid-theme=wwf] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio .en__field__item input[type=radio][value=MONTHLY]:checked+label:before,[data-engrid-theme=wwf] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio .en__field__item:hover input[type=radio][value=ANNUAL]+label:before,[data-engrid-theme=wwf] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio .en__field__item:hover input[type=radio][value=MONTHLY]+label:before{
   background-image:url(data:image/png;base64,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);
 }
-@media screen and (max-width:500px){
+@media screen and (max-width:550px){
   [data-engrid-theme=wwf] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio .en__field__item input[type=radio][value=ANNUAL]:checked+label:before,[data-engrid-theme=wwf] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio .en__field__item input[type=radio][value=MONTHLY]:checked+label:before,[data-engrid-theme=wwf] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio .en__field__item:hover input[type=radio][value=ANNUAL]+label:before,[data-engrid-theme=wwf] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio .en__field__item:hover input[type=radio][value=MONTHLY]+label:before{
     content:none;
   }
@@ -9448,9 +9448,9 @@ body[data-engrid-debug]:before{
     --recurring-frequency__button_line-height:1;
     --click-to-expand__cta-image_width:96px;
     --click-to-expand__cta-image_height:13px;
-    --p_line-height:24px;
-    --label_font-size:16px;
-    --label_line-height:18.2px;
+    --p_line-height:1.5;
+    --label_font-size:18px;
+    --label_line-height:1.2;
     --radio_height:20px;
     --radio_width:20px;
     --radio_box-shadow_selected:inset 0 0 0 3px #fff;
@@ -9490,7 +9490,7 @@ body[data-engrid-debug]:before{
     padding:1rem .5rem;
   }
   [data-engrid-theme=wwf] .inline-upsell-box strong{
-    --inline-upsell-box_strong_font-size:15px;
+    --inline-upsell-box_strong_font-size:20px;
     --inline-upsell-box_strong_line-height:24px;
   }
   [data-engrid-theme=wwf] .inline-upsell-box svg{
@@ -9518,6 +9518,11 @@ body[data-engrid-debug]:before{
     margin-right:0;
     padding:var(--engrid__body-main_padding);
     width:100%;
+  }
+}
+@media screen and (max-width:550px){
+  [data-engrid-theme=wwf] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio input[type=radio]+label{
+    word-spacing:100px;
   }
 }
 @media screen and (max-width:450px){
@@ -9703,6 +9708,17 @@ body[data-engrid-debug]:before{
 }
 [data-engrid-theme=wwf] .engrid-welcome-back p{
   margin:0;
+}
+[data-engrid-theme=wwf] .label{
+  color:var(--label_color);
+  display:flex;
+  font-family:var(--label_font-family);
+  font-size:var(--label_font-size);
+  font-weight:var(--label_font-weight);
+  letter-spacing:var(--label_letter-spacing);
+  line-height:var(--label_line-height);
+  margin-bottom:var(--fields_spacing-block);
+  text-transform:var(--label_text-transform);
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=multistep]{
   --fields_spacing-inline:5px;
