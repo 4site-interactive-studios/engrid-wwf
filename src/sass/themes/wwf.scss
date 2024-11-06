@@ -122,8 +122,8 @@
   --button_border-radius: 2px;
 
   // TYPOGRAPHY BUTTON:HOVER
-  // --button_color_hover: var(--button_color);
-  --button_background-color_hover: #e5f0f6;
+  --button_color_hover: #ffffff;
+  --button_background-color_hover: #016da3;
   --button_border-color_hover: #006ea3;
 
   // TYPOGRAPHY BUTTON:SELECTED
@@ -152,6 +152,7 @@
   // --give-annual-donation-amount-appended-label: "/yr";
   --give-quarterly-donation-amount-appended-label: "/qtr";
   --recurring-frequency__button_count: 2;
+  --recurring-frequency__button_color_checked: #ffffff;
   --donation-amount__button_count: 3;
   --give-by-select__button_count: 2;
 
@@ -2383,7 +2384,6 @@ button[data-balloon] {
   --engrid__body-main_padding: 26px 80px 20px;
   --engrid__content-footer_padding: 0 80px;
 
-
   .content-header {
     margin-top: 0;
     grid-column: bc;
@@ -2460,7 +2460,7 @@ button[data-balloon] {
         left: $leftleft1col_body-column_max-width;
         right: 0;
         width: calc(100% - $leftleft1col_body-column_max-width);
-        background-position: center!important;
+        background-position: center !important;
       }
     }
   }
