@@ -19,10 +19,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, October 28, 2024 @ 16:03:19 ET
+ *  Date: Thursday, November 7, 2024 @ 11:36:56 ET
  *  By: fernando
- *  ENGrid styles: v0.19.9
- *  ENGrid scripts: v0.19.11
+ *  ENGrid styles: v0.19.15
+ *  ENGrid scripts: v0.19.14
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -1749,21 +1749,25 @@ template{
   --h2_line-height:initial;
   --h2_text-transform:initial;
   --h3_font-family:var(--h1_font-family);
+  --h3_color:initial;
   --h3_font-size:calc(var(--default_font-size)*var(--scale-up_40pct));
   --h3_font-weight:initial;
   --h3_line-height:initial;
   --h3_text-transform:initial;
   --h4_font-family:var(--h1_font-family);
+  --h4_color:initial;
   --h4_font-size:calc(var(--default_font-size)*var(--scale-up_40pct));
   --h4_font-weight:initial;
   --h4_line-height:initial;
   --h4_text-transform:initial;
   --h5_font-family:var(--h1_font-family);
+  --h5_color:initial;
   --h5_font-size:calc(var(--default_font-size)*var(--scale-up_40pct));
   --h5_font-weight:initial;
   --h5_line-height:initial;
   --h5_text-transform:initial;
   --h6_font-family:var(--h1_font-family);
+  --h6_color:initial;
   --h6_font-size:calc(var(--default_font-size)*var(--scale-up_40pct));
   --h6_font-weight:initial;
   --h6_line-height:initial;
@@ -1808,24 +1812,48 @@ h2{
 }
 
 h3{
+  color:var(--h3_color);
+  font-family:var(--h3_font-family);
   font-size:var(--h3_font-size);
+  font-weight:var(--h3_font-weight);
+  line-height:var(--h3_line-height);
   margin-bottom:calc(1rem*var(--scale-down_40pct));
   margin-top:calc(2rem*var(--scale-down_40pct));
   text-transform:var(--h3_text-transform);
 }
 
-h3,h4,h5,h6{
-  color:var(--h3_color);
-  font-family:var(--h3_font-family);
-  font-weight:var(--h3_font-weight);
-  line-height:var(--h3_line-height);
+h4{
+  color:var(--h4_color);
+  font-family:var(--h4_font-family);
+  font-size:var(--h4_font-size);
+  font-weight:var(--h4_font-weight);
+  line-height:var(--h4_line-height);
+  text-transform:var(--h4_text-transform);
 }
 
-h4,h5,h6{
-  font-size:calc(var(--h3_font-size)*var(--scale-down_20pct));
-  margin-bottom:calc(1rem*var(--scale-down_80pct));
-  margin-top:calc(2rem*var(--scale-down_80pct));
-  text-transform:var(--h4_text-transform);
+h4,h5{
+  margin-bottom:calc(1rem*var(--scale-down_60pct));
+  margin-top:calc(2rem*var(--scale-down_60pct));
+}
+
+h5{
+  color:var(--h5_color);
+  font-family:var(--h5_font-family);
+  font-size:var(--h5_font-size);
+  font-weight:var(--h5_font-weight);
+  line-height:var(--h5_line-height);
+  text-transform:var(--h5_text-transform);
+}
+
+h6{
+  color:var(--h6_color);
+  font-family:var(--h6_font-family);
+  font-size:var(--h6_font-size);
+  font-weight:var(--h6_font-weight);
+  line-height:var(--h6_line-height);
+  margin-bottom:calc(1rem*var(--scale-down_60pct));
+  margin-top:calc(2rem*var(--scale-down_60pct));
+  text-transform:var(--h6_text-transform);
 }
 
 p{
@@ -8096,7 +8124,7 @@ body[data-engrid-debug]:before{
   --default_line-height:32px;
   --h1_font-size:46px;
   --h1_font-weight:700;
-  --h1_line-height:55.2px;
+  --h1_line-height:1.2;
   --h2_font-size:24px;
   --h2_font-weight:700;
   --h2_line-height:1.5;
@@ -8106,7 +8134,7 @@ body[data-engrid-debug]:before{
   --input_background-color:#fff;
   --input_border-width:2px;
   --input_border-color:grey;
-  --input_border-radius:4px;
+  --input_border-radius:8px;
   --input_padding:1.3ch 1.2ch;
   --color_primary:#e5621a;
   --button_color:#006ea3;
@@ -8117,8 +8145,9 @@ body[data-engrid-debug]:before{
   --button_border-width:2px;
   --button_border-color:#006ea3;
   --button_border-radius:8px;
-  --donation-amount__button_font-size:34px;
-  --button_background-color_hover:#e5f0f6;
+  --donation-amount__button_font-size:28px;
+  --button_color_hover:#fff;
+  --button_background-color_hover:#016da3;
   --button_border-color_hover:#006ea3;
   --button_color_checked:#fff;
   --button_background-color_checked:#006ea3;
@@ -8137,6 +8166,7 @@ body[data-engrid-debug]:before{
   --submit__button_border-color_checked:#000;
   --give-quarterly-donation-amount-appended-label:"/qtr";
   --recurring-frequency__button_count:2;
+  --recurring-frequency__button_color_checked:#fff;
   --donation-amount__button_count:3;
   --give-by-select__button_count:2;
   --label_font-size:20px;
@@ -8190,7 +8220,7 @@ body[data-engrid-debug]:before{
 }
 [data-engrid-theme=wwf] .body-main{
   --p_font-size:18px;
-  --p_line-height:27.2px;
+  --p_line-height:1.4;
 }
 [data-engrid-theme=wwf] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio input[type=radio][value=ANNUAL]+label:before,[data-engrid-theme=wwf] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio input[type=radio][value=MONTHLY]+label:before{
   background-color:initial;
@@ -8335,7 +8365,6 @@ body[data-engrid-debug]:before{
   --button_background-color_checked:var(
     --donation-amount__button_background-color_hover
   );
-  --button_color_checked:var(--button_color);
 }
 [data-engrid-theme=wwf] .give-by-select .en__field__label{
   height:64px;
@@ -8709,8 +8738,8 @@ body[data-engrid-debug]:before{
   padding-right:1rem;
 }
 [data-engrid-theme=wwf] .donation-summary{
-  --p_font-size:17px;
-  --p_line-height:27.2px;
+  --p_font-size:21px;
+  --p_line-height:1.5;
   --p_font-weight:700;
   margin-top:14px;
 }
@@ -8718,8 +8747,13 @@ body[data-engrid-debug]:before{
   padding-bottom:22px;
   padding-top:22px;
 }
+@media screen and (max-width:600px){
+  [data-engrid-theme=wwf] .donation-summary{
+    --p_font-size:18px;
+  }
+}
 [data-engrid-theme=wwf] .alternative-donation-methods{
-  --p_font-size:17px;
+  --p_font-size:21px;
   --p_line-height:27.2px;
 }
 [data-engrid-theme=wwf] .alternative-donation-methods p:first-child{
@@ -8731,6 +8765,11 @@ body[data-engrid-debug]:before{
   -webkit-text-decoration:none;
   text-decoration:none;
 }
+@media screen and (max-width:600px){
+  [data-engrid-theme=wwf] .alternative-donation-methods{
+    --p_font-size:18px;
+  }
+}
 [data-engrid-theme=wwf] .cn-bbb-badges{
   margin-top:13px;
 }
@@ -8738,8 +8777,7 @@ body[data-engrid-debug]:before{
   margin-bottom:var(--fields_spacing-block);
 }
 [data-engrid-theme=wwf] .grey-box{
-  --p_font-size:17px;
-  --p_line-height:27.2px;
+  --p_font-size:18px;
   background-color:#f6f5f3;
   margin-left:0;
   margin-right:0;
@@ -8754,6 +8792,11 @@ body[data-engrid-debug]:before{
   font-weight:700;
   -webkit-text-decoration:none;
   text-decoration:none;
+}
+@media screen and (max-width:600px){
+  [data-engrid-theme=wwf] .grey-box{
+    --p_font-size:16px;
+  }
 }
 [data-engrid-theme=wwf] .white-box{
   background-color:#fff;
@@ -8833,7 +8876,7 @@ body[data-engrid-debug]:before{
   display:flex;
   font-style:italic;
   justify-content:center;
-  min-height:88px;
+  min-height:70px;
   padding:16px 8px;
   text-align:center;
 }
@@ -8841,6 +8884,7 @@ body[data-engrid-debug]:before{
   font-family:Fuzzy Bubbles,sans-serif !important;
 }
 [data-engrid-theme=wwf] .inline-upsell-box strong{
+  display:inline-block;
   font-size:var(--inline-upsell-box_strong_font-size);
   font-weight:700;
   line-height:var(--inline-upsell-box_strong_line-height);
@@ -8855,6 +8899,7 @@ body[data-engrid-debug]:before{
   height:80px;
   margin-left:var(--inline-upsell-box-svg_margin-left);
   position:absolute;
+  right:20px;
   top:1px;
   width:40px;
 }
@@ -9075,7 +9120,7 @@ body[data-engrid-debug]:before{
   pointer-events:none;
 }
 [data-engrid-theme=wwf] .en__component--premiumgiftblock{
-  --h2_font-size:24px;
+  --h2_font-size:22px;
   border-bottom:0;
   border-left:0;
   border-right:0;
@@ -9084,6 +9129,11 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf] .en__component--premiumgiftblock .en__pgList{
   --h2_font-size:20px;
   --h2_font-weight:400;
+}
+@media screen and (max-width:600px){
+  [data-engrid-theme=wwf] .en__component--premiumgiftblock .en__pgList{
+    --h2_font-size:18px;
+  }
 }
 [data-engrid-theme=wwf] .en__component--premiumgiftblock .en__pgList[data-non-us-donor][data-nogift] .en__pg:not(:last-child):not(.en__pg--selected){
   filter:grayscale(1);
@@ -9123,18 +9173,23 @@ body[data-engrid-debug]:before{
   margin-bottom:0;
 }
 [data-engrid-theme=wwf] .en__component--premiumgiftblock .en__pg__description{
-  --p_font-size:14px;
-  --p_line-height:18.2px;
+  --p_font-size:16px;
+  --p_line-height:1.4;
   max-width:238px;
 }
 [data-engrid-theme=wwf] .en__component--premiumgiftblock [data-nogift] .en__pg:last-child .en__pg__description{
-  font-size:22px;
+  font-size:20px;
   font-weight:var(--h2_font-weight);
-  line-height:1.2;
+  line-height:1.4;
 }
 [data-engrid-theme=wwf] .en__component--premiumgiftblock [data-nogift] .en__pg:last-child .en__pg__description:after{
-  font-size:14px;
-  line-height:18.2px;
+  font-size:16px;
+  line-height:1.4;
+}
+@media screen and (max-width:600px){
+  [data-engrid-theme=wwf] .en__component--premiumgiftblock [data-nogift] .en__pg:last-child .en__pg__description{
+    font-size:18px;
+  }
 }
 [data-engrid-theme=wwf]:not([data-engrid-country=US]) .en__pg:last-child .en__pg__description{
   display:flex;
@@ -9379,9 +9434,6 @@ body[data-engrid-debug]:before{
   }
 }
 @media screen and (max-width:768px){
-  [data-engrid-theme=wwf] .radio-to-buttons_donationAmt{
-    --donation-amount__button_count:2;
-  }
   [data-engrid-theme=wwf] .engrid-mobile-cta-container{
     bottom:12px;
     left:calc(20px + 1rem);
@@ -9433,8 +9485,7 @@ body[data-engrid-debug]:before{
     --default_font-size:18px;
     --input_font-size:18px;
     --default_line-height:1.4;
-    --h1_font-size:28px;
-    --h1_line-height:33.6px;
+    --h1_font-size:32px;
     --engrid__body_margin:0px;
     --engrid__page_background-color:#fff;
     --engrid__content-footer_background-color:#0000;
@@ -9444,7 +9495,8 @@ body[data-engrid-debug]:before{
     --engrid__body-top_padding:0 20px;
     --media-attribution__padding:0 20px;
     --button_font-size:26px;
-    --recurring-frequency__button_font-size:24px;
+    --donation-amount__button_font-size:22px;
+    --recurring-frequency__button_font-size:22px;
     --recurring-frequency__button_line-height:1;
     --click-to-expand__cta-image_width:96px;
     --click-to-expand__cta-image_height:13px;
@@ -9455,7 +9507,7 @@ body[data-engrid-debug]:before{
     --radio_width:20px;
     --radio_box-shadow_selected:inset 0 0 0 3px #fff;
     --radio_border-width:1px;
-    --fields_spacing-inline:0.2rem;
+    --fields_spacing-inline:0.4rem;
     --fields_spacing-block:0.2rem;
     --checkbox_content_checked:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='11' viewBox='0 0 20 15'%3E%3Cpath style='stroke:none;fill-rule:nonzero;fill:%23fff;fill-opacity:1' d='m12.75 6.117-5.914 6.117-5.5-5.687L0 7.93l3.418 3.535 3.418 3.539 6.582-6.813L20 1.383 18.664 0Zm0 0'/%3E%3C/svg%3E");
   }
@@ -9470,8 +9522,8 @@ body[data-engrid-debug]:before{
     margin-bottom:20px;
   }
   [data-engrid-theme=wwf] .radio-to-buttons_donationAmt .en__field--donationAmt .en__field__element--radio{
-    --fields_spacing-inline:0.62rem;
-    --fields_spacing-block:0.9rem;
+    --fields_spacing-inline:0.42rem;
+    --fields_spacing-block:0.65rem;
   }
   [data-engrid-theme=wwf][data-engrid-transaction-recurring-frequency] .radio-to-buttons_donationAmt .en__field--donationAmt div:not(.en__field__item--other) .en__field__label--item:after{
     font-size:15px;
@@ -9489,16 +9541,16 @@ body[data-engrid-debug]:before{
     border-radius:0;
     padding:1rem .5rem;
   }
+  [data-engrid-theme=wwf] .inline-upsell-box.recurring-frequency-n-show p{
+    padding-right:40px;
+  }
   [data-engrid-theme=wwf] .inline-upsell-box strong{
     --inline-upsell-box_strong_font-size:20px;
-    --inline-upsell-box_strong_line-height:24px;
+    --inline-upsell-box_strong_line-height:1.2;
   }
   [data-engrid-theme=wwf] .inline-upsell-box svg{
     --inline-upsell-box-svg_margin-left:30px;
-  }
-  [data-engrid-theme=wwf] .grey-box p{
-    --p_font-size:12px;
-    --p_line-height:19px;
+    top:8px;
   }
   [data-engrid-theme=wwf] .white-box{
     padding-left:1.5rem;
@@ -9527,13 +9579,12 @@ body[data-engrid-debug]:before{
 }
 @media screen and (max-width:450px){
   [data-engrid-theme=wwf]{
-    --recurring-frequency__button_font-size:30px;
+    --recurring-frequency__button_font-size:22px;
     --h2_font-size:22px;
-    --h2_line-height:1.4;
-    --button_padding:20px 15px;
+    --button_padding:15px;
   }
   [data-engrid-theme=wwf] .radio-to-buttons_donationAmt .en__field--donationAmt .en__field__input--other{
-    font-size:26px;
+    font-size:20px;
   }
 }
 [data-engrid-theme=wwf][data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements][data-engrid-transaction-recurring=n][data-engrid-payment-type-option-paypal-one-touch=true] .en__field--giveBySelect.paypal.force-paypal-visibility{
@@ -9649,7 +9700,7 @@ body[data-engrid-debug]:before{
   color:#1f2937;
   content:attr(data-balloon);
   display:none;
-  font-size:14px;
+  font-size:18px;
   font-style:normal;
   font-weight:400;
   left:50%;
@@ -9660,12 +9711,12 @@ body[data-engrid-debug]:before{
   text-indent:0;
   text-shadow:none;
   transform:translateX(-50%);
-  white-space:pre;
+  width:100%;
   z-index:10;
 }
 @media screen and (max-width:600px){
   [data-engrid-theme=wwf] button[data-balloon]:after{
-    white-space:normal;
+    font-size:16px;
     width:90%;
   }
 }
@@ -9683,11 +9734,11 @@ body[data-engrid-debug]:before{
   z-index:10;
 }
 [data-engrid-theme=wwf][data-engrid-payment-type=ach] button[data-balloon]{
-  margin-top:90px;
+  margin-top:120px;
 }
 @media screen and (max-width:600px){
   [data-engrid-theme=wwf][data-engrid-payment-type=ach] button[data-balloon]{
-    margin-top:120px;
+    margin-top:150px;
   }
 }
 [data-engrid-theme=wwf][data-engrid-payment-type=ach] button[data-balloon]:after{
@@ -9719,6 +9770,11 @@ body[data-engrid-debug]:before{
   line-height:var(--label_line-height);
   margin-bottom:var(--fields_spacing-block);
   text-transform:var(--label_text-transform);
+}
+[data-engrid-theme=wwf] .en__field.en__field--600292 .en__field__element.en__field__element--radio,[data-engrid-theme=wwf] .en__field.en__field--600302 .en__field__element.en__field__element--radio{
+  display:flex;
+  flex-direction:row;
+  gap:60px;
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=multistep]{
   --fields_spacing-inline:5px;

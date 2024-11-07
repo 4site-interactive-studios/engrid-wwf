@@ -60,7 +60,7 @@
   // --h1_color: initial;
   --h1_font-size: 46px;
   --h1_font-weight: 700;
-  --h1_line-height: 55.2px;
+  --h1_line-height: 1.2;
 
   // TYPOGRAPHY H2
   // --h2_font-family: var(--default_font-family);
@@ -95,7 +95,7 @@
   --input_background-color: #ffffff;
   --input_border-width: 2px;
   --input_border-color: #808080;
-  --input_border-radius: 4px;
+  --input_border-radius: 8px;
   // --input_placeholder-color: var(--color_light-gray);
   // --input_box-shadow: inset 0 2px 2px -1px rgba(74, 74, 104, 0.1);
   --input_padding: 1.3ch 1.2ch;
@@ -121,11 +121,11 @@
   --button_border-color: #006ea3;
   --button_border-radius: 8px;
 
-  --donation-amount__button_font-size: 34px;
+  --donation-amount__button_font-size: 28px;
 
   // TYPOGRAPHY BUTTON:HOVER
-  // --button_color_hover: var(--button_color);
-  --button_background-color_hover: #e5f0f6;
+  --button_color_hover: #ffffff;
+  --button_background-color_hover: #016da3;
   --button_border-color_hover: #006ea3;
 
   // TYPOGRAPHY BUTTON:SELECTED
@@ -154,6 +154,7 @@
   // --give-annual-donation-amount-appended-label: "/yr";
   --give-quarterly-donation-amount-appended-label: "/qtr";
   --recurring-frequency__button_count: 2;
+  --recurring-frequency__button_color_checked: #ffffff;
   --donation-amount__button_count: 3;
   --give-by-select__button_count: 2;
 
@@ -244,7 +245,7 @@
 
   .body-main {
     --p_font-size: 18px;
-    --p_line-height: 27.2px;
+    --p_line-height: 1.4;
   }
 
   // Add a Heart Icon to the Monthly Donation Button
@@ -494,7 +495,6 @@
     --button_background-color_checked: var(
       --donation-amount__button_background-color_hover
     );
-    --button_color_checked: var(--button_color);
 
     .en__field__label {
       outline: none;
@@ -1038,8 +1038,8 @@
   // }
 
   .donation-summary {
-    --p_font-size: 17px;
-    --p_line-height: 27.2px;
+    --p_font-size: 21px;
+    --p_line-height: 1.5;
     --p_font-weight: 700;
     margin-top: 14px;
 
@@ -1047,10 +1047,13 @@
       padding-top: 22px;
       padding-bottom: 22px;
     }
+    @media screen and (max-width: 600px) {
+      --p_font-size: 18px;
+    }
   }
 
   .alternative-donation-methods {
-    --p_font-size: 17px;
+    --p_font-size: 21px;
     --p_line-height: 27.2px;
 
     p:first-child {
@@ -1061,6 +1064,9 @@
       text-decoration: none;
       color: #006da4;
       font-weight: 700;
+    }
+    @media screen and (max-width: 600px) {
+      --p_font-size: 18px;
     }
   }
 
@@ -1077,8 +1083,7 @@
   .grey-box {
     background-color: #f6f5f3;
     padding: 12px 16px;
-    --p_font-size: 17px;
-    --p_line-height: 27.2px;
+    --p_font-size: 18px;
     margin-left: 0;
     margin-right: 0;
 
@@ -1091,6 +1096,9 @@
       color: #006da4;
       text-decoration: none;
       font-weight: 700;
+    }
+    @media screen and (max-width: 600px) {
+      --p_font-size: 16px;
     }
   }
 
@@ -1199,13 +1207,14 @@
     --p_font-size: var(--inline-upsell-box_font-size);
     --p_line-height: var(--inline-upsell-box_line-height);
     --p_font-weight: 400;
-    min-height: 88px;
+    min-height: 70px;
     border-radius: 4px;
     p {
       font-family: "Fuzzy Bubbles", sans-serif !important;
     }
 
     strong {
+      display: inline-block;
       font-size: var(--inline-upsell-box_strong_font-size);
       line-height: var(--inline-upsell-box_strong_line-height);
       font-weight: 700; // Is 700 in figma mockup but not worth loading in a whole new font weight just for that
@@ -1225,6 +1234,7 @@
       top: 1px;
       // transform: scaleX(-1);
       width: 40px;
+      right: 20px;
       margin-left: var(--inline-upsell-box-svg_margin-left);
     }
   }
@@ -1532,7 +1542,7 @@
   }
 
   .en__component--premiumgiftblock {
-    --h2_font-size: 24px;
+    --h2_font-size: 22px;
 
     border-left: 0;
     border-right: 0;
@@ -1543,6 +1553,9 @@
     .en__pgList {
       --h2_font-size: 20px;
       --h2_font-weight: 400;
+      @media screen and (max-width: 600px) {
+        --h2_font-size: 18px;
+      }
     }
 
     .en__pgList[data-non-us-donor][data-nogift] {
@@ -1603,21 +1616,24 @@
     }
 
     .en__pg__description {
-      --p_font-size: 14px;
-      --p_line-height: 18.2px;
+      --p_font-size: 16px;
+      --p_line-height: 1.4;
       max-width: 238px;
     }
 
     // Styles the Maximize my gift option
     // @TODO: See if there is a way to apply this only when there is a maximize my gift option.
     [data-nogift] .en__pg:last-child .en__pg__description {
-      font-size: 22px;
-      line-height: 1.2;
+      font-size: 20px;
+      line-height: 1.4;
       font-weight: var(--h2_font-weight);
 
       &:after {
-        font-size: 14px;
-        line-height: 18.2px;
+        font-size: 16px;
+        line-height: 1.4;
+      }
+      @media screen and (max-width: 600px) {
+        font-size: 18px;
       }
     }
   }
@@ -1967,10 +1983,6 @@
 }
 
 @media screen and (max-width: 768px) {
-  .radio-to-buttons_donationAmt {
-    --donation-amount__button_count: 2;
-  }
-
   .engrid-mobile-cta-container {
     bottom: 12px;
     width: calc(100% - 40px - 2rem - var(--launcher-width));
@@ -2056,8 +2068,7 @@
     --default_font-size: 18px;
     --input_font-size: 18px;
     --default_line-height: 1.4;
-    --h1_font-size: 28px;
-    --h1_line-height: 33.6px;
+    --h1_font-size: 32px;
     --engrid__body_margin: 0px;
 
     --engrid__page_background-color: #ffffff;
@@ -2070,7 +2081,9 @@
 
     --button_font-size: 26px;
 
-    --recurring-frequency__button_font-size: 24px;
+    --donation-amount__button_font-size: 22px;
+
+    --recurring-frequency__button_font-size: 22px;
     --recurring-frequency__button_line-height: 1;
 
     --click-to-expand__cta-image_width: 96px;
@@ -2086,7 +2099,7 @@
     --radio_box-shadow_selected: inset 0 0 0 3px #ffffff;
     --radio_border-width: 1px;
 
-    --fields_spacing-inline: 0.2rem;
+    --fields_spacing-inline: 0.4rem;
     --fields_spacing-block: 0.2rem;
 
     .en__contacts:not(.en__contacts--hideCheck)
@@ -2115,8 +2128,8 @@
   .radio-to-buttons_donationAmt
     .en__field--donationAmt
     .en__field__element--radio {
-    --fields_spacing-inline: 0.62rem;
-    --fields_spacing-block: 0.9rem;
+    --fields_spacing-inline: 0.42rem;
+    --fields_spacing-block: 0.65rem;
   }
 
   &[data-engrid-transaction-recurring-frequency]
@@ -2148,19 +2161,19 @@
     // margin-right: -8px;
     padding: 1rem 0.5rem;
 
+    &.recurring-frequency-n-show p {
+      padding-right: 40px;
+    }
+
     strong {
       --inline-upsell-box_strong_font-size: 20px;
-      --inline-upsell-box_strong_line-height: 24px;
+      --inline-upsell-box_strong_line-height: 1.2;
     }
 
     svg {
+      top: 8px;
       --inline-upsell-box-svg_margin-left: 30px;
     }
-  }
-
-  .grey-box p {
-    --p_font-size: 12px;
-    --p_line-height: 19px;
   }
 
   .white-box {
@@ -2209,14 +2222,13 @@
 }
 @media screen and (max-width: 450px) {
   & {
-    --recurring-frequency__button_font-size: 30px;
+    --recurring-frequency__button_font-size: 22px;
     --h2_font-size: 22px;
-    --h2_line-height: 1.4;
-    --button_padding: 20px 15px;
+    --button_padding: 15px;
     .radio-to-buttons_donationAmt
       .en__field--donationAmt
       .en__field__input--other {
-      font-size: 26px;
+      font-size: 20px;
     }
   }
 }
@@ -2340,11 +2352,12 @@ button[data-balloon] {
 
   &::after {
     display: none;
+    width: 100%;
     text-indent: 0;
     font-weight: normal;
     font-style: normal;
     text-shadow: none;
-    font-size: 14px;
+    font-size: 18px;
     line-height: 1.4;
     background: #f6f5f3;
     color: #1f2937;
@@ -2353,14 +2366,13 @@ button[data-balloon] {
     padding: 0.5em 1em;
     position: absolute;
     pointer-events: none;
-    white-space: pre;
     transform: translateX(-50%);
     left: 50%;
     z-index: 10;
 
     @media screen and (max-width: 600px) {
+      font-size: 16px;
       width: 90%;
-      white-space: initial;
     }
   }
 
@@ -2381,10 +2393,10 @@ button[data-balloon] {
 
 &[data-engrid-payment-type="ach"] {
   button[data-balloon] {
-    margin-top: 90px;
+    margin-top: 120px;
 
     @media screen and (max-width: 600px) {
-      margin-top: 120px;
+      margin-top: 150px;
     }
 
     &::after {
@@ -2429,4 +2441,12 @@ button[data-balloon] {
   line-height: var(--label_line-height);
   text-transform: var(--label_text-transform);
   margin-bottom: var(--fields_spacing-block);
+}
+
+// Making the radio buttons horizontal only for 2 opt-in fields
+.en__field.en__field--600292 .en__field__element.en__field__element--radio,
+.en__field.en__field--600302 .en__field__element.en__field__element--radio {
+  display: flex;
+  flex-direction: row;
+  gap: 60px;
 }
