@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, November 19, 2024 @ 09:50:40 ET
+ *  Date: Tuesday, November 19, 2024 @ 09:54:07 ET
  *  By: fernando
  *  ENGrid styles: v0.19.15
  *  ENGrid scripts: v0.19.14
@@ -8359,6 +8359,7 @@ body[data-engrid-debug]:before{
   margin-bottom:var(--fields_spacing-block);
 }
 [data-engrid-theme=wwf] .give-by-select{
+  --button_padding:12px 16px;
   --button_background-color_hover:var(
     --donation-amount__button_background-color_hover
   );

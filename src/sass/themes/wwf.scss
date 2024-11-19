@@ -489,6 +489,7 @@
   }
 
   .give-by-select {
+    --button_padding: 12px 16px;
     --button_background-color_hover: var(
       --donation-amount__button_background-color_hover
     );
