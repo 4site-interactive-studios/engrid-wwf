@@ -21,6 +21,7 @@ import TweetToTarget from "./scripts/tweet-to-target";
 import { AnnualLimit } from "./scripts/annual-limit";
 import { OnLoadModal } from "./scripts/on-load-modal";
 import MultistepForm from "./scripts/multistep-form";
+import { AddDAF } from "./scripts/add-daf";
 
 const options: Options = {
   applePay: false,
@@ -83,6 +84,17 @@ const options: Options = {
     },
   },
   onLoad: () => {
+    // If we're on a Thank You page, let's try to add pageJson.other3 as data-engrid-payment-type body attribute
+    if (
+      App.getPageNumber() === App.getPageCount() &&
+      "pageJson" in window &&
+      "other3" in (window as any).pageJson
+    ) {
+      document.body.setAttribute(
+        "data-engrid-payment-type",
+        (window as any).pageJson.other3
+      );
+    }
     new AnnualLimit();
     (<any>window).DonationLightboxForm = DonationLightboxForm;
     new DonationLightboxForm(DonationAmount, DonationFrequency, App);
@@ -181,6 +193,7 @@ const options: Options = {
     }
     new OnLoadModal();
     new MultistepForm();
+    new AddDAF();
     // Unsubscribe All Logic
     const unsubscribeAllButton = document.querySelector(
       "#unsubscribe-all"
