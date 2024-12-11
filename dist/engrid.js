@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, December 11, 2024 @ 16:42:43 ET
+ *  Date: Wednesday, December 11, 2024 @ 17:03:31 ET
  *  By: bryancasler
  *  ENGrid styles: v0.19.15
  *  ENGrid scripts: v0.19.14
@@ -24727,9 +24727,11 @@ class MultistepForm {
     let where = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
     if (this.inIframe()) {
-      window.parent.postMessage({
-        scrollTo: where
-      }, "*");
+      setTimeout(() => {
+        window.parent.postMessage({
+          scrollTo: where
+        }, "*");
+      }, 200);
       this.logger.log("IS in an iFrame, scrolling to top");
     } else {
       window.scrollTo(0, where);

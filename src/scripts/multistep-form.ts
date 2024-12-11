@@ -136,7 +136,9 @@ export default class MultistepForm {
 
   private scrollTo(where = 0) {
     if (this.inIframe()){
-      window.parent.postMessage({ scrollTo: where }, "*");
+      setTimeout(() => {
+        window.parent.postMessage({ scrollTo: where }, "*");
+      }, 200);
       this.logger.log("IS in an iFrame, scrolling to top");
     }else{
       window.scrollTo(0, where);
