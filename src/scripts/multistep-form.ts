@@ -174,7 +174,19 @@ export default class MultistepForm {
           ?.getAttribute("data-multistep-step") ?? "1";
       ENGrid.setBodyData("multistep-active-step", invalidStep);
       if (field) {
-        field.scrollIntoView({ behavior: "smooth" });
+          const scrollToError = field
+            ? field.getBoundingClientRect().top
+            : 0;
+
+          // Parent pages listens for this message and scrolls to the correct position
+          if(this.inIframe()){
+            this.scrollTo(scrollToError);
+            this.logger.log(
+              `iFrame Event 'scrollTo' - Position of top of first error ${scrollTo} px`
+            ); // check the message is being sent correctly
+          } else {
+            field.scrollIntoView({ behavior: "smooth" });
+          }
       }
       this.logger.log(
         `Found error on step ${invalidStep}. Going to that step.`

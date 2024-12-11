@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, December 11, 2024 @ 17:03:31 ET
+ *  Date: Wednesday, December 11, 2024 @ 17:24:37 ET
  *  By: bryancasler
  *  ENGrid styles: v0.19.15
  *  ENGrid scripts: v0.19.14
@@ -24759,9 +24759,16 @@ class MultistepForm {
       engrid_ENGrid.setBodyData("multistep-active-step", invalidStep);
 
       if (field) {
-        field.scrollIntoView({
-          behavior: "smooth"
-        });
+        const scrollToError = field ? field.getBoundingClientRect().top : 0; // Parent pages listens for this message and scrolls to the correct position
+
+        if (this.inIframe()) {
+          this.scrollTo(scrollToError);
+          this.logger.log(`iFrame Event 'scrollTo' - Position of top of first error ${scrollTo} px`); // check the message is being sent correctly
+        } else {
+          field.scrollIntoView({
+            behavior: "smooth"
+          });
+        }
       }
 
       this.logger.log(`Found error on step ${invalidStep}. Going to that step.`);
