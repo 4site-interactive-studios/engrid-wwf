@@ -126,6 +126,24 @@ export default class MultistepForm {
     });
   }
 
+  private inIframe() {
+    try {
+      return window.self !== window.top;
+    } catch (e) {
+      return true;
+    }
+  }
+
+  private scrollTo(where = 0) {
+    if (this.inIframe()){
+      window.parent.postMessage({ scrollTo: where }, "*");
+      this.logger.log("IS in an iFrame, scrolling to top");
+    }else{
+      window.scrollTo(0, where);
+      this.logger.log("NOT in an iFrame, scrolling to top");
+    }
+  }
+
   private activateStep(targetStep: string, bypassValidation: boolean = false) {
     if (!targetStep) return;
     const activeStep = ENGrid.getBodyData("multistep-active-step") ?? "1";
@@ -153,7 +171,6 @@ export default class MultistepForm {
           ?.closest(".en__component--formblock")
           ?.getAttribute("data-multistep-step") ?? "1";
       ENGrid.setBodyData("multistep-active-step", invalidStep);
-      window.scrollTo(0, 0);
       if (field) {
         field.scrollIntoView({ behavior: "smooth" });
       }
@@ -166,6 +183,10 @@ export default class MultistepForm {
     // If validation passes, activate the step
     this.logger.log(`Validation passed. Activating step ${targetStep}`);
     ENGrid.setBodyData("multistep-active-step", targetStep);
+    if(this.inIframe()){
+      this.scrollTo();
+      return;
+    }
     this.scrollViewport();
   }
 
@@ -198,32 +219,32 @@ export default class MultistepForm {
     if (!currentSectionHeader || currentSectionHeader.offsetHeight === 0) {
       if (currentStepper && currentStepper.offsetHeight > 0) {
         this.logger.log(`No section header found. Scrolling to stepper.`);
-        window.scrollTo(
-          0,
-          currentStepper.getBoundingClientRect().top + window.pageYOffset
-        );
+        //HERE
+        this.scrollTo(currentStepper.getBoundingClientRect().top + window.pageYOffset);
         return;
       }
       this.logger.log(
         `No section header or stepper found. Scrolling to top of page.`
       );
-      window.scrollTo(0, 0);
+      
+      this.scrollTo();
       return;
     }
 
     if (ENGrid.isInViewport(currentSectionHeader)) {
+      if(this.inIframe()){
+        this.scrollTo();
+        return;
+      }
       this.logger.log(`Section header is in viewport. Not scrolling.`);
       return;
     }
 
     const offset = parseInt(getComputedStyle(currentSectionHeader).marginTop);
     this.logger.log(`Scrolling to section header. ${offset} offset.`);
-    window.scrollTo(
-      0,
-      currentSectionHeader.getBoundingClientRect().top +
-        window.pageYOffset -
-        offset
-    );
+    this.scrollTo(currentSectionHeader.getBoundingClientRect().top +
+    window.pageYOffset -
+    offset);
   }
 
   private addBackButtonToFinalStep() {

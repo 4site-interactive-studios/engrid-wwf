@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, November 5, 2024 @ 21:07:58 ET
- *  By: fernando
+ *  Date: Wednesday, December 11, 2024 @ 16:42:43 ET
+ *  By: bryancasler
  *  ENGrid styles: v0.19.15
  *  ENGrid scripts: v0.19.14
  *
@@ -24715,6 +24715,28 @@ class MultistepForm {
     });
   }
 
+  inIframe() {
+    try {
+      return window.self !== window.top;
+    } catch (e) {
+      return true;
+    }
+  }
+
+  scrollTo() {
+    let where = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+
+    if (this.inIframe()) {
+      window.parent.postMessage({
+        scrollTo: where
+      }, "*");
+      this.logger.log("IS in an iFrame, scrolling to top");
+    } else {
+      window.scrollTo(0, where);
+      this.logger.log("NOT in an iFrame, scrolling to top");
+    }
+  }
+
   activateStep(targetStep) {
     let bypassValidation = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
     if (!targetStep) return;
@@ -24733,7 +24755,6 @@ class MultistepForm {
       const field = document.querySelector(".en__field--validationFailed");
       const invalidStep = field?.closest(".en__component--formblock")?.getAttribute("data-multistep-step") ?? "1";
       engrid_ENGrid.setBodyData("multistep-active-step", invalidStep);
-      window.scrollTo(0, 0);
 
       if (field) {
         field.scrollIntoView({
@@ -24748,6 +24769,12 @@ class MultistepForm {
 
     this.logger.log(`Validation passed. Activating step ${targetStep}`);
     engrid_ENGrid.setBodyData("multistep-active-step", targetStep);
+
+    if (this.inIframe()) {
+      this.scrollTo();
+      return;
+    }
+
     this.scrollViewport();
   }
 
@@ -24770,24 +24797,30 @@ class MultistepForm {
 
     if (!currentSectionHeader || currentSectionHeader.offsetHeight === 0) {
       if (currentStepper && currentStepper.offsetHeight > 0) {
-        this.logger.log(`No section header found. Scrolling to stepper.`);
-        window.scrollTo(0, currentStepper.getBoundingClientRect().top + window.pageYOffset);
+        this.logger.log(`No section header found. Scrolling to stepper.`); //HERE
+
+        this.scrollTo(currentStepper.getBoundingClientRect().top + window.pageYOffset);
         return;
       }
 
       this.logger.log(`No section header or stepper found. Scrolling to top of page.`);
-      window.scrollTo(0, 0);
+      this.scrollTo();
       return;
     }
 
     if (engrid_ENGrid.isInViewport(currentSectionHeader)) {
+      if (this.inIframe()) {
+        this.scrollTo();
+        return;
+      }
+
       this.logger.log(`Section header is in viewport. Not scrolling.`);
       return;
     }
 
     const offset = parseInt(getComputedStyle(currentSectionHeader).marginTop);
     this.logger.log(`Scrolling to section header. ${offset} offset.`);
-    window.scrollTo(0, currentSectionHeader.getBoundingClientRect().top + window.pageYOffset - offset);
+    this.scrollTo(currentSectionHeader.getBoundingClientRect().top + window.pageYOffset - offset);
   }
 
   addBackButtonToFinalStep() {
