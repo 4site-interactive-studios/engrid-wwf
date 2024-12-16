@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, November 5, 2024 @ 21:07:58 ET
+ *  Date: Monday, December 16, 2024 @ 18:35:46 ET
  *  By: fernando
  *  ENGrid styles: v0.19.15
  *  ENGrid scripts: v0.19.14
@@ -24994,6 +24994,75 @@ class AddDAF {
   }
 
 }
+;// CONCATENATED MODULE: ./src/scripts/device-redirect.ts
+
+
+/**
+ * The `DeviceRedirect` class handles the redirection of users to a specified URL
+ * based on the device they are using. It checks for the presence of global
+ * `MobileRedirect` or `DesktopRedirect` variables and uses them as the redirection URL.
+ *
+ * @example
+ *
+ * ```html
+ * <script>
+ *      // If the user is on a mobile device, redirect them to a different URL
+ *      window.MobileRedirect = "https://m.example.com";
+ *      // If the user is on a desktop device, redirect them to a different URL
+ *      window.DesktopRedirect = "https://www.example.com";
+ * </script>
+ * ```
+ *
+ * @remarks
+ * This class determines if the user is on a mobile or desktop device based on the screen width.
+ * If the screen width is less than 768 pixels, it is considered a mobile device.
+ * If the screen width is 768 pixels or greater, it is considered a desktop device.
+ * You are not supposed to use both `MobileRedirect` and `DesktopRedirect` variables at the same time.
+ */
+
+class DeviceRedirect {
+  constructor() {
+    _defineProperty(this, "redirectUrl", null);
+
+    _defineProperty(this, "logger", void 0);
+
+    this.logger = new EngridLogger("DeviceRedirect", "purple", "aliceblue", "🔀");
+    this.initializeRedirect();
+  }
+
+  initializeRedirect() {
+    if (typeof window.MobileRedirect !== "undefined") {
+      this.logger.log("MobileRedirect variable found");
+      this.redirectUrl = window.MobileRedirect;
+      this.checkAndRedirect("mobile");
+    } else if (typeof window.DesktopRedirect !== "undefined") {
+      this.logger.log("DesktopRedirect variable found");
+      this.redirectUrl = window.DesktopRedirect;
+      this.checkAndRedirect("desktop");
+    }
+  }
+
+  checkAndRedirect(type) {
+    const typeMatch = type === "mobile" ? this.isMobileDevice() : !this.isMobileDevice();
+
+    if (typeMatch && this.redirectUrl) {
+      this.logger.log(`Redirecting to ${this.redirectUrl}`);
+      const url = new URL(this.redirectUrl);
+      const currentUrl = new URL(window.location.href);
+      currentUrl.searchParams.forEach((value, key) => {
+        url.searchParams.set(key, value);
+      });
+      window.location.href = url.toString();
+    } else {
+      this.logger.log("Device type not detected. No redirection will be performed.");
+    }
+  }
+
+  isMobileDevice() {
+    return window.innerWidth <= 768;
+  }
+
+}
 ;// CONCATENATED MODULE: ./src/index.ts
  // Uses ENGrid via NPM
 // import {
@@ -25003,6 +25072,7 @@ class AddDAF {
 //   DonationAmount,
 //   EnForm,
 // } from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
+
 
 
 
@@ -25061,7 +25131,8 @@ const options = {
     }
   },
   onLoad: () => {
-    // If we're on a Thank You page, let's try to add pageJson.other3 as data-engrid-payment-type body attribute
+    new DeviceRedirect(); // If we're on a Thank You page, let's try to add pageJson.other3 as data-engrid-payment-type body attribute
+
     if (App.getPageNumber() === App.getPageCount() && "pageJson" in window && "other3" in window.pageJson) {
       document.body.setAttribute("data-engrid-payment-type", window.pageJson.other3);
     }
