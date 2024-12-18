@@ -22,7 +22,6 @@ import { AnnualLimit } from "./scripts/annual-limit";
 import { OnLoadModal } from "./scripts/on-load-modal";
 import MultistepForm from "./scripts/multistep-form";
 import { AddDAF } from "./scripts/add-daf";
-import { DeviceRedirect } from "./scripts/device-redirect";
 
 const options: Options = {
   applePay: false,
@@ -85,7 +84,6 @@ const options: Options = {
     },
   },
   onLoad: () => {
-    new DeviceRedirect();
     // If we're on a Thank You page, let's try to add pageJson.other3 as data-engrid-payment-type body attribute
     if (
       App.getPageNumber() === App.getPageCount() &&
