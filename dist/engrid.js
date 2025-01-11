@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, January 7, 2025 @ 16:53:14 ET
+ *  Date: Friday, January 10, 2025 @ 19:34:28 ET
  *  By: fernando
  *  ENGrid styles: v0.20.0
  *  ENGrid scripts: v0.20.4
@@ -25301,6 +25301,7 @@ class AddDAF {
 
 
 const options = {
+  AutoYear: true,
   applePay: false,
   CapitalizeFields: true,
   ClickToExpand: true,
