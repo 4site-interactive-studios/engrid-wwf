@@ -19,10 +19,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, December 17, 2024 @ 23:31:09 ET
+ *  Date: Friday, January 10, 2025 @ 19:34:28 ET
  *  By: fernando
- *  ENGrid styles: v0.19.15
- *  ENGrid scripts: v0.19.14
+ *  ENGrid styles: v0.20.0
+ *  ENGrid scripts: v0.20.4
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -1749,25 +1749,21 @@ template{
   --h2_line-height:initial;
   --h2_text-transform:initial;
   --h3_font-family:var(--h1_font-family);
-  --h3_color:initial;
   --h3_font-size:calc(var(--default_font-size)*var(--scale-up_40pct));
   --h3_font-weight:initial;
   --h3_line-height:initial;
   --h3_text-transform:initial;
   --h4_font-family:var(--h1_font-family);
-  --h4_color:initial;
   --h4_font-size:calc(var(--default_font-size)*var(--scale-up_40pct));
   --h4_font-weight:initial;
   --h4_line-height:initial;
   --h4_text-transform:initial;
   --h5_font-family:var(--h1_font-family);
-  --h5_color:initial;
   --h5_font-size:calc(var(--default_font-size)*var(--scale-up_40pct));
   --h5_font-weight:initial;
   --h5_line-height:initial;
   --h5_text-transform:initial;
   --h6_font-family:var(--h1_font-family);
-  --h6_color:initial;
   --h6_font-size:calc(var(--default_font-size)*var(--scale-up_40pct));
   --h6_font-weight:initial;
   --h6_line-height:initial;
@@ -4425,12 +4421,10 @@ button.en__eventOccurrence__select>label{
 }
 @keyframes spin{
   0%{
-    tranform:rotate(0deg);
-    -webkit-transform:rotate(0deg);
+    transform:rotate(0deg);
   }
   to{
-    tranform:rotate(1turn);
-    -webkit-transform:rotate(1turn);
+    transform:rotate(1turn);
   }
 }
 [data-engrid-theme]{

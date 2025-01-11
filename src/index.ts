@@ -24,6 +24,7 @@ import MultistepForm from "./scripts/multistep-form";
 import { AddDAF } from "./scripts/add-daf";
 
 const options: Options = {
+  AutoYear: true,
   applePay: false,
   CapitalizeFields: true,
   ClickToExpand: true,
