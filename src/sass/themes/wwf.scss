@@ -1590,14 +1590,6 @@
     --submit__button_background-color: #e98300;
     min-width: max-content;
     padding: 1ch;
-
-    &:after {
-      content: ">";
-      margin-left: 0.75rem;
-      display: inline-block;
-      transform: scale(1.6, 0.7) rotate(90deg);
-      font-family: none;
-    }
   }
 
   .en__component--socialshareblock::before {
