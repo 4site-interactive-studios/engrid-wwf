@@ -19,8 +19,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, January 10, 2025 @ 19:34:28 ET
- *  By: fernando
+ *  Date: Monday, February 3, 2025 @ 12:07:52 ET
+ *  By: michael
  *  ENGrid styles: v0.20.0
  *  ENGrid scripts: v0.20.4
  *
@@ -12276,7 +12276,7 @@ body[data-engrid-debug]:before{
   border-color:#000;
   color:#fff;
 }
-[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="1"]) [data-multistep-step="1"],[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="2"]) [data-multistep-step="2"],[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="3"]) [data-multistep-step="3"],[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="4"]) [data-multistep-step="4"],[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="5"]) [data-multistep-step="5"],[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="6"]) [data-multistep-step="6"]{
+[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="1"]):not([data-engrid-multistep-expand=true]) [data-multistep-step="1"],[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="2"]):not([data-engrid-multistep-expand=true]) [data-multistep-step="2"],[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="3"]):not([data-engrid-multistep-expand=true]) [data-multistep-step="3"],[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="4"]):not([data-engrid-multistep-expand=true]) [data-multistep-step="4"],[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="5"]):not([data-engrid-multistep-expand=true]) [data-multistep-step="5"],[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="6"]):not([data-engrid-multistep-expand=true]) [data-multistep-step="6"]{
   display:none !important;
 }
 [data-engrid-theme=wwf][data-engrid-multistep] .multistep-button-container{
@@ -12362,7 +12362,7 @@ body[data-engrid-debug]:before{
   padding:26px 29px 20px;
 }
 @media screen and (max-width:1023px){
-  [data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="1"]) .body-banner,[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="1"]) .body-title,[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="1"]) .body-top{
+  [data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="1"]):not([data-engrid-multistep-expand=true]) .body-banner,[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="1"]):not([data-engrid-multistep-expand=true]) .body-title,[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="1"]):not([data-engrid-multistep-expand=true]) .body-top{
     display:none !important;
   }
 }
@@ -12381,8 +12381,15 @@ body[data-engrid-debug]:before{
     z-index:1;
   }
 }
-[data-engrid-theme=wwf][data-engrid-multistep] .engrid-welcome-back{
+[data-engrid-theme=wwf][data-engrid-multistep] .engrid-welcome-back,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true] .btn-back,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true] .multistep-stepper{
   display:none;
+}
+[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true] .multistep-submit{
+  grid-column-gap:0;
+  grid-template-columns:0 1fr;
+}
+[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="1"] [data-multistep-step="2"],[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="1"] [data-multistep-step="3"],[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="1"] [data-multistep-step="4"],[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="1"] [data-multistep-step="5"],[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="1"] [data-multistep-step="6"],[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="2"] [data-multistep-step="1"] .multistep-button-container,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="2"] [data-multistep-step="3"],[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="2"] [data-multistep-step="4"],[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="2"] [data-multistep-step="5"],[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="2"] [data-multistep-step="6"],[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="3"] [data-multistep-step="1"] .multistep-button-container,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="3"] [data-multistep-step="2"] .multistep-button-container,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="3"] [data-multistep-step="4"],[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="3"] [data-multistep-step="5"],[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="3"] [data-multistep-step="6"],[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="4"] [data-multistep-step="1"] .multistep-button-container,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="4"] [data-multistep-step="2"] .multistep-button-container,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="4"] [data-multistep-step="3"] .multistep-button-container,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="4"] [data-multistep-step="5"],[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="4"] [data-multistep-step="6"],[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="5"] [data-multistep-step="1"] .multistep-button-container,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="5"] [data-multistep-step="2"] .multistep-button-container,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="5"] [data-multistep-step="3"] .multistep-button-container,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="5"] [data-multistep-step="4"] .multistep-button-container,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="5"] [data-multistep-step="6"],[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="6"] [data-multistep-step="1"] .multistep-button-container,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="6"] [data-multistep-step="2"] .multistep-button-container,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="6"] [data-multistep-step="3"] .multistep-button-container,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="6"] [data-multistep-step="4"] .multistep-button-container,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="6"] [data-multistep-step="5"] .multistep-button-container,[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="6"] [data-multistep-step="6"],[data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true][data-engrid-multistep-active-step="6"] [data-multistep-step="7"]{
+  display:none !important;
 }
 body{
   opacity:1;

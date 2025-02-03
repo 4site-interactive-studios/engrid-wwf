@@ -5,6 +5,7 @@ declare global {
   interface Window {
     EngagingNetworks: any;
     confetti: any;
+    EngridMultistepExpandVariant: boolean;
   }
 }
 
@@ -26,6 +27,7 @@ export default class MultistepForm {
     "blue"
   );
   private validators: Array<ENValidator> = [];
+  private contentShouldExpand: boolean = false;
 
   constructor() {
     if (this.shouldRun()) {
@@ -67,6 +69,10 @@ export default class MultistepForm {
   }
 
   private run() {
+    if (window.EngridMultistepExpandVariant) {
+      this.contentShouldExpand = true;
+      ENGrid.setBodyData("multistep-expand", "true");
+    }
     ENGrid.setBodyData("multistep-active-step", "1");
     this.addStepDataAttributes();
     this.addBackButtonToFinalStep();
@@ -153,9 +159,10 @@ export default class MultistepForm {
           ?.closest(".en__component--formblock")
           ?.getAttribute("data-multistep-step") ?? "1";
       ENGrid.setBodyData("multistep-active-step", invalidStep);
-      window.scrollTo(0, 0);
       if (field) {
         field.scrollIntoView({ behavior: "smooth" });
+      } else {
+        window.scrollTo(0, 0);
       }
       this.logger.log(
         `Found error on step ${invalidStep}. Going to that step.`
@@ -170,6 +177,24 @@ export default class MultistepForm {
   }
 
   private scrollViewport() {
+    // If the multistep form is in a content expand variant, scroll to top of the active step
+    if (this.contentShouldExpand) {
+      const scrollToEl = [
+        ...document.querySelectorAll("[data-multistep-step]"),
+      ].find((el) => {
+        return (
+          el.getAttribute("data-multistep-step") ===
+          ENGrid.getBodyData("multistep-active-step")
+        );
+      });
+      if (!scrollToEl) return;
+      window.scrollTo({
+        top: scrollToEl.getBoundingClientRect().top + window.pageYOffset,
+        behavior: "smooth",
+      });
+      return;
+    }
+
     /*
       If a .section-header is present and outside the viewport, we should scroll to the section header
       If a .section-header is present and in the viewport, then we should not scroll
