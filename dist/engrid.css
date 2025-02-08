@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Saturday, February 8, 2025 @ 24:17:21 ET
+ *  Date: Saturday, February 8, 2025 @ 24:28:16 ET
  *  By: fernando
  *  ENGrid styles: v0.20.6
  *  ENGrid scripts: v0.20.6
@@ -9746,7 +9746,7 @@ body[data-engrid-debug]:before{
 }
 [data-engrid-theme=wwf][data-engrid-payment-type=venmo] #en__digitalWallet__paypalTouch__container{
   position:relative;
-  top:-100px;
+  top:-90px;
 }
 [data-engrid-theme=wwf][data-engrid-payment-type=paypaltouch-only] .hideif-paypaltouch-selected{
   display:none;
