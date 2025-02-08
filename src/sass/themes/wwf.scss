@@ -2471,3 +2471,36 @@ button[data-balloon] {
     }
   }
 }
+&[data-engrid-payment-type="venmo"] {
+  .hideif-paypaltouch-selected {
+    display: none;
+  }
+  .showif-paypaltouch-selected {
+    display: block !important;
+  }
+  #en__digitalWallet__paypalTouch {
+    max-height: 65px;
+    overflow: hidden;
+  }
+
+  #en__digitalWallet__paypalTouch__container {
+    position: relative;
+    top: -100px;
+  }
+}
+&[data-engrid-payment-type="paypaltouch-only"] {
+  .hideif-paypaltouch-selected {
+    display: none;
+  }
+  .showif-paypaltouch-selected {
+    display: block !important;
+  }
+  #en__digitalWallet__paypalTouch {
+    max-height: 65px;
+    overflow: hidden;
+  }
+  #en__digitalWallet__paypalTouch__container {
+    position: relative;
+    top: -25px;
+  }
+}
