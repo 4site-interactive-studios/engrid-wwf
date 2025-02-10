@@ -437,6 +437,10 @@
       grid-column-gap: 0;
     }
 
+    .multistep-button-container button svg {
+      display: none;
+    }
+
     // Show current step + all previous steps
     @for $i from 1 through 6 {
       &[data-engrid-multistep-active-step="#{$i}"] {
