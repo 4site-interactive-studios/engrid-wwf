@@ -70,7 +70,7 @@
     }
   }
 
-  &[data-engrid-layout="centerleft1col"] {
+  &[data-engrid-layout="centerleft1col"]:not([data-header-footer-layout="none"]) {
     // Hide the content header and footer when using this layout
     .content-header #header {
       display: none !important;
@@ -278,7 +278,7 @@
   }
 
   @for $i from 1 through 6 {
-    &:not([data-engrid-multistep-active-step="#{$i}"]) {
+    &:not([data-engrid-multistep-active-step="#{$i}"]):not([data-engrid-multistep-expand="true"]) {
       [data-multistep-step="#{$i}"] {
         display: none !important;
       }
@@ -387,7 +387,7 @@
   }
 
   @media screen and (max-width: 1023px) {
-    &:not([data-engrid-multistep-active-step="1"]) {
+    &:not([data-engrid-multistep-active-step="1"]):not([data-engrid-multistep-expand="true"]) {
       .body-title,
       .body-banner,
       .body-top {
@@ -418,5 +418,56 @@
   // Hide this message part of the Welcome Back Message because it's redundant: https://cln.sh/Ny44Xmbw
   .engrid-welcome-back {
     display: none;
+  }
+
+
+  //Modifications for "expand" variant
+  &[data-engrid-multistep-expand="true"] {
+    // Hide steppers
+    .multistep-stepper {
+      display: none;
+    }
+
+    .btn-back {
+      display: none;
+    }
+
+    .multistep-submit {
+      grid-template-columns: 0 1fr;
+      grid-column-gap: 0;
+    }
+
+    .multistep-button-container button svg {
+      display: none;
+    }
+
+    // Show current step + all previous steps
+    @for $i from 1 through 6 {
+      &[data-engrid-multistep-active-step="#{$i}"] {
+        @for $j from ($i + 1) through 6 {
+          [data-multistep-step="#{$j}"] {
+            display: none !important;
+          }
+        }
+
+        // Hide buttons for all previous steps
+        @if $i > 1 {
+          @for $j from 1 through ($i - 1) {
+            [data-multistep-step="#{$j}"] .multistep-button-container {
+              display: none !important;
+            }
+          }
+        }
+      }
+    }
+
+    .body-title {
+      background-color: transparent;
+      padding: 0 0 28px;
+
+      @media screen and (max-width: 600px) {
+        padding: 0 20px 28px;
+      }
+    }
   }
 }
