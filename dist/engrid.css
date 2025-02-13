@@ -19,10 +19,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, February 13, 2025 @ 12:39:04 ET
- *  By: michael
- *  ENGrid styles: v0.20.0
- *  ENGrid scripts: v0.20.4
+ *  Date: Thursday, February 13, 2025 @ 17:13:14 ET
+ *  By: fernando
+ *  ENGrid styles: v0.20.6
+ *  ENGrid scripts: v0.20.8
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -5455,14 +5455,23 @@ body:not(#en__pagebuilder):not([data-engrid-debug]):not([data-engrid-merge-tags-
 
 .engrid-mobile-cta-container{
   bottom:1rem;
+  color:#fff;
   left:2rem;
   position:fixed;
+  transition:bottom .4s ease-out;
   width:calc(100% - 4rem);
   z-index:9999;
 }
 .engrid-mobile-cta-container .primary{
-  display:inline-block;
+  align-items:center;
+  display:flex;
+  justify-content:center;
   margin:0;
+}
+.engrid-mobile-cta-container .primary svg{
+  height:24px;
+  margin-left:10px;
+  width:24px;
 }
 
 @media screen and (min-width:768px){
@@ -5470,6 +5479,10 @@ body:not(#en__pagebuilder):not([data-engrid-debug]):not([data-engrid-merge-tags-
     display:none !important;
   }
 }
+.engrid-mobile-cta-container.hide-cta{
+  bottom:-100px;
+}
+
 [data-engrid-theme]{
   --exit-intent__overlay_background-color:#00000080;
   --exit-intent__overlay_padding:0 20px;
@@ -9074,13 +9087,6 @@ body[data-engrid-debug]:before{
   min-width:max-content;
   padding:1ch;
 }
-[data-engrid-theme=wwf] .engrid-mobile-cta-container .primary:after{
-  content:">";
-  display:inline-block;
-  font-family:none;
-  margin-left:.75rem;
-  transform:scale(1.6, .7) rotate(90deg);
-}
 @media screen and (max-width:1024px){
   [data-engrid-theme=wwf] .en__component--socialshareblock:before{
     content:"SHARE";
@@ -9727,6 +9733,34 @@ body[data-engrid-debug]:before{
     right:720px;
     width:calc(100% - 720px);
   }
+}
+[data-engrid-theme=wwf][data-engrid-payment-type=venmo] .hideif-paypaltouch-selected{
+  display:none;
+}
+[data-engrid-theme=wwf][data-engrid-payment-type=venmo] .showif-paypaltouch-selected{
+  display:block !important;
+}
+[data-engrid-theme=wwf][data-engrid-payment-type=venmo] #en__digitalWallet__paypalTouch{
+  max-height:70px;
+  overflow:hidden;
+}
+[data-engrid-theme=wwf][data-engrid-payment-type=venmo] #en__digitalWallet__paypalTouch__container{
+  position:relative;
+  top:-90px;
+}
+[data-engrid-theme=wwf][data-engrid-payment-type=paypaltouch-only] .hideif-paypaltouch-selected{
+  display:none;
+}
+[data-engrid-theme=wwf][data-engrid-payment-type=paypaltouch-only] .showif-paypaltouch-selected{
+  display:block !important;
+}
+[data-engrid-theme=wwf][data-engrid-payment-type=paypaltouch-only] #en__digitalWallet__paypalTouch{
+  max-height:70px;
+  overflow:hidden;
+}
+[data-engrid-theme=wwf][data-engrid-payment-type=paypaltouch-only] #en__digitalWallet__paypalTouch__container{
+  position:relative;
+  top:-20px;
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=multistep]{
   --fields_spacing-inline:5px;

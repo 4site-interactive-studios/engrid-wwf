@@ -1590,14 +1590,6 @@
     --submit__button_background-color: #e98300;
     min-width: max-content;
     padding: 1ch;
-
-    &:after {
-      content: ">";
-      margin-left: 0.75rem;
-      display: inline-block;
-      transform: scale(1.6, 0.7) rotate(90deg);
-      font-family: none;
-    }
   }
 
   .en__component--socialshareblock::before {
@@ -2477,5 +2469,38 @@ button[data-balloon] {
         background-position: center !important;
       }
     }
+  }
+}
+&[data-engrid-payment-type="venmo"] {
+  .hideif-paypaltouch-selected {
+    display: none;
+  }
+  .showif-paypaltouch-selected {
+    display: block !important;
+  }
+  #en__digitalWallet__paypalTouch {
+    max-height: 70px;
+    overflow: hidden;
+  }
+
+  #en__digitalWallet__paypalTouch__container {
+    position: relative;
+    top: -90px;
+  }
+}
+&[data-engrid-payment-type="paypaltouch-only"] {
+  .hideif-paypaltouch-selected {
+    display: none;
+  }
+  .showif-paypaltouch-selected {
+    display: block !important;
+  }
+  #en__digitalWallet__paypalTouch {
+    max-height: 70px;
+    overflow: hidden;
+  }
+  #en__digitalWallet__paypalTouch__container {
+    position: relative;
+    top: -20px;
   }
 }

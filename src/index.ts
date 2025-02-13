@@ -63,10 +63,11 @@ const options: Options = {
     "centerright1col",
   ],
   Debug: App.getUrlParameter("debug") == "true" ? true : false,
-  MobileCTA: {
-    label: "Add Your Name",
-    pages: ["ADVOCACY", "EMAILTOTARGET", "TWEETPAGE"],
-  },
+  MobileCTA: [
+    { pageType: "ADVOCACY", label: "Add Your Name" },
+    { pageType: "EMAILTOTARGET", label: "Add Your Name" },
+    { pageType: "TWEETPAGE", label: "Add Your Name" },
+  ],
   PostalCodeValidator: true,
   WelcomeBack: {
     welcomeBackMessage: {
