@@ -70,7 +70,7 @@
     }
   }
 
-  &[data-engrid-layout="centerleft1col"] {
+  &[data-engrid-layout="centerleft1col"]:not([data-header-footer-layout="none"]) {
     // Hide the content header and footer when using this layout
     .content-header #header {
       display: none !important;
@@ -458,6 +458,15 @@
             }
           }
         }
+      }
+    }
+
+    .body-title {
+      background-color: transparent;
+      padding: 0 0 28px;
+
+      @media screen and (max-width: 600px) {
+        padding: 0 20px 28px;
       }
     }
   }
