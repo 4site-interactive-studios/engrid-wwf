@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, January 10, 2025 @ 19:34:28 ET
- *  By: fernando
+ *  Date: Thursday, February 13, 2025 @ 12:39:04 ET
+ *  By: michael
  *  ENGrid styles: v0.20.0
  *  ENGrid scripts: v0.20.4
  *
@@ -24931,6 +24931,8 @@ class MultistepForm {
 
     _defineProperty(this, "validators", []);
 
+    _defineProperty(this, "contentShouldExpand", false);
+
     if (this.shouldRun()) {
       this.logger.log("MultistepForm running");
 
@@ -24953,6 +24955,11 @@ class MultistepForm {
   }
 
   run() {
+    if (window.EngridMultistepExpandVariant) {
+      this.contentShouldExpand = true;
+      engrid_ENGrid.setBodyData("multistep-expand", "true");
+    }
+
     engrid_ENGrid.setBodyData("multistep-active-step", "1");
     this.addStepDataAttributes();
     this.addBackButtonToFinalStep();
@@ -25020,12 +25027,13 @@ class MultistepForm {
       const field = document.querySelector(".en__field--validationFailed");
       const invalidStep = field?.closest(".en__component--formblock")?.getAttribute("data-multistep-step") ?? "1";
       engrid_ENGrid.setBodyData("multistep-active-step", invalidStep);
-      window.scrollTo(0, 0);
 
       if (field) {
         field.scrollIntoView({
           behavior: "smooth"
         });
+      } else {
+        window.scrollTo(0, 0);
       }
 
       this.logger.log(`Found error on step ${invalidStep}. Going to that step.`);
@@ -25039,11 +25047,25 @@ class MultistepForm {
   }
 
   scrollViewport() {
+    // If the multistep form is in a content expand variant, scroll to top of the active step
+    if (this.contentShouldExpand) {
+      const scrollToEl = [...document.querySelectorAll("[data-multistep-step]")].find(el => {
+        return el.getAttribute("data-multistep-step") === engrid_ENGrid.getBodyData("multistep-active-step");
+      });
+      if (!scrollToEl) return;
+      window.scrollTo({
+        top: scrollToEl.getBoundingClientRect().top + window.pageYOffset,
+        behavior: "smooth"
+      });
+      return;
+    }
     /*
       If a .section-header is present and outside the viewport, we should scroll to the section header
       If a .section-header is present and in the viewport, then we should not scroll
       If no .section-header is present we should scroll to the top of the page
      */
+
+
     const sectionHeaders = document.querySelectorAll(".section-header");
     const currentSectionHeader = [...sectionHeaders].find(el => {
       const headerStep = el.closest("[data-multistep-step]")?.getAttribute("data-multistep-step");
