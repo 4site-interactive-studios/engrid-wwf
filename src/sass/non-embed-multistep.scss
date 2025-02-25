@@ -432,6 +432,10 @@
       display: none;
     }
 
+    .en__submit button .live-variable-frequency:after {
+      content: none;
+    }
+
     .multistep-submit {
       grid-template-columns: 0 1fr;
       grid-column-gap: 0;
