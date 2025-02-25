@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, February 24, 2025 @ 11:21:12 ET
+ *  Date: Tuesday, February 25, 2025 @ 07:29:14 ET
  *  By: michael
  *  ENGrid styles: v0.20.6
  *  ENGrid scripts: v0.20.8
@@ -25414,8 +25414,8 @@ const options = {
       display: true,
       title: "Welcome back, {firstName}!",
       editText: "Not you?",
-      anchor: ".body-main",
-      placement: "afterbegin"
+      anchor: ".fast-personal-details",
+      placement: "beforebegin"
     },
     personalDetailsSummary: {
       display: true,

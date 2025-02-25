@@ -74,8 +74,8 @@ const options: Options = {
       display: true,
       title: "Welcome back, {firstName}!",
       editText: "Not you?",
-      anchor: ".body-main",
-      placement: "afterbegin",
+      anchor: ".fast-personal-details",
+      placement: "beforebegin",
     },
     personalDetailsSummary: {
       display: true,

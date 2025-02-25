@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, February 24, 2025 @ 11:21:12 ET
+ *  Date: Tuesday, February 25, 2025 @ 07:29:14 ET
  *  By: michael
  *  ENGrid styles: v0.20.6
  *  ENGrid scripts: v0.20.8
@@ -9642,8 +9642,6 @@ body[data-engrid-debug]:before{
   display:none;
 }
 [data-engrid-theme=wwf][data-engrid-page-type=donation] .engrid-welcome-back,[data-engrid-theme=wwf][data-engrid-page-type=premiumgift] .engrid-welcome-back{
-  margin-bottom:27px;
-  margin-top:-27px;
   padding:1rem 0;
 }
 [data-engrid-theme=wwf] .engrid-welcome-back p{
