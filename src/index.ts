@@ -22,6 +22,7 @@ import { AnnualLimit } from "./scripts/annual-limit";
 import { OnLoadModal } from "./scripts/on-load-modal";
 import MultistepForm from "./scripts/multistep-form";
 import { AddDAF } from "./scripts/add-daf";
+import { Bridger } from "./scripts/Bridger";
 
 const options: Options = {
   AutoYear: true,
@@ -210,6 +211,7 @@ const options: Options = {
       // Hide the unsubscribe all radio button
       unsubscribeAllRadio.closest(".en__field")?.classList.add("hide");
     }
+    new Bridger();
   },
   onResize: () => console.log("Starter Theme Window Resized"),
 

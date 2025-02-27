@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, February 25, 2025 @ 07:29:14 ET
+ *  Date: Thursday, February 27, 2025 @ 12:28:05 ET
  *  By: michael
  *  ENGrid styles: v0.20.6
  *  ENGrid scripts: v0.20.8
@@ -25352,6 +25352,69 @@ class AddDAF {
   }
 
 }
+;// CONCATENATED MODULE: ./src/scripts/Bridger.ts
+
+class Bridger {
+  constructor() {
+    _defineProperty(this, "endpoint", "https://dev-wwf-bridger-api.azurewebsites.net/api/createsearch");
+
+    _defineProperty(this, "key", "u-Woy4e-BXWlcLBDlH20CR-y-iKknrltLZJtXV9yg-SuAzFu72hDaw==");
+
+    if (!this.shouldRun()) return;
+    this.createBridgerSearchRecord();
+  }
+
+  shouldRun() {
+    return window.pageJson.giftProcess && window.pageJson.amount >= 10000 && window.pageJson.currency === "USD";
+  }
+
+  createBridgerSearchRecord() {
+    this.sendApiRequest().then(data => {//console.log(data);
+    });
+  }
+
+  async sendApiRequest() {
+    let data = null;
+
+    try {
+      const body = JSON.stringify({
+        firstName: this.getUserData("firstName"),
+        lastName: this.getUserData("lastName"),
+        address1: `${this.getUserData("address1")} ${this.getUserData("address2")}`,
+        city: this.getUserData("city"),
+        country: this.getUserData("country"),
+        postalCode: this.getUserData("zipCode")
+      });
+      const response = await fetch(this.endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-functions-key": this.key
+        },
+        body: body
+      });
+
+      if (response.ok) {
+        data = await response.json();
+      } else {
+        console.log("API request failed");
+      }
+    } catch (error) {
+      console.log("API request failed");
+    }
+
+    return data;
+  }
+
+  getUserData(property) {
+    if (!window.userData || !window.userData[property] || window.userData[property].startsWith("{")) {
+      return "";
+    }
+
+    return window.userData[property];
+  }
+
+}
 ;// CONCATENATED MODULE: ./src/index.ts
  // Uses ENGrid via NPM
 // import {
@@ -25361,6 +25424,7 @@ class AddDAF {
 //   DonationAmount,
 //   EnForm,
 // } from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
+
 
 
 
@@ -25531,6 +25595,8 @@ const options = {
 
       unsubscribeAllRadio.closest(".en__field")?.classList.add("hide");
     }
+
+    new Bridger();
   },
   onResize: () => console.log("Starter Theme Window Resized"),
   onSubmit: () => {
