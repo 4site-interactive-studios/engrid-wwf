@@ -132,6 +132,26 @@ export default class MultistepForm {
     });
   }
 
+  private inIframe() {
+    try {
+      return window.self !== window.top;
+    } catch (e) {
+      return true;
+    }
+  }
+
+  private scrollTo(where = 0) {
+    if (this.inIframe()) {
+      setTimeout(() => {
+        window.parent.postMessage({ scrollTo: where }, "*");
+      }, 200);
+      this.logger.log("IS in an iFrame, scrolling to top");
+    } else {
+      window.scrollTo(0, where);
+      this.logger.log("NOT in an iFrame, scrolling to top");
+    }
+  }
+
   private activateStep(targetStep: string, bypassValidation: boolean = false) {
     if (!targetStep) return;
     const activeStep = ENGrid.getBodyData("multistep-active-step") ?? "1";
@@ -160,9 +180,17 @@ export default class MultistepForm {
           ?.getAttribute("data-multistep-step") ?? "1";
       ENGrid.setBodyData("multistep-active-step", invalidStep);
       if (field) {
-        field.scrollIntoView({ behavior: "smooth" });
-      } else {
-        window.scrollTo(0, 0);
+        const scrollToError = field ? field.getBoundingClientRect().top : 0;
+
+        // Parent pages listens for this message and scrolls to the correct position
+        if (this.inIframe()) {
+          this.scrollTo(scrollToError);
+          this.logger.log(
+            `iFrame Event 'scrollTo' - Position of top of first error ${scrollTo} px`
+          ); // check the message is being sent correctly
+        } else {
+          field.scrollIntoView({ behavior: "smooth" });
+        }
       }
       this.logger.log(
         `Found error on step ${invalidStep}. Going to that step.`
@@ -173,6 +201,10 @@ export default class MultistepForm {
     // If validation passes, activate the step
     this.logger.log(`Validation passed. Activating step ${targetStep}`);
     ENGrid.setBodyData("multistep-active-step", targetStep);
+    if (this.inIframe()) {
+      this.scrollTo();
+      return;
+    }
     this.scrollViewport();
   }
 
@@ -223,8 +255,8 @@ export default class MultistepForm {
     if (!currentSectionHeader || currentSectionHeader.offsetHeight === 0) {
       if (currentStepper && currentStepper.offsetHeight > 0) {
         this.logger.log(`No section header found. Scrolling to stepper.`);
-        window.scrollTo(
-          0,
+        //HERE
+        this.scrollTo(
           currentStepper.getBoundingClientRect().top + window.pageYOffset
         );
         return;
@@ -232,19 +264,23 @@ export default class MultistepForm {
       this.logger.log(
         `No section header or stepper found. Scrolling to top of page.`
       );
-      window.scrollTo(0, 0);
+
+      this.scrollTo();
       return;
     }
 
     if (ENGrid.isInViewport(currentSectionHeader)) {
+      if (this.inIframe()) {
+        this.scrollTo();
+        return;
+      }
       this.logger.log(`Section header is in viewport. Not scrolling.`);
       return;
     }
 
     const offset = parseInt(getComputedStyle(currentSectionHeader).marginTop);
     this.logger.log(`Scrolling to section header. ${offset} offset.`);
-    window.scrollTo(
-      0,
+    this.scrollTo(
       currentSectionHeader.getBoundingClientRect().top +
         window.pageYOffset -
         offset
