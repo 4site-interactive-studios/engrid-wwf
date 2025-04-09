@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, April 9, 2025 @ 09:46:38 ET
+ *  Date: Wednesday, April 9, 2025 @ 11:39:22 ET
  *  By: daryl
  *  ENGrid styles: v0.20.9
  *  ENGrid scripts: v0.20.8
@@ -28691,6 +28691,10 @@ class premium_gift_PremiumGift {
     this.searchElements();
     this.addEventListeners();
     this.checkPremiumGift();
+    setTimeout(() => {
+      this.altsAndArias();
+      this.maxDonationAria();
+    }, 1000);
   }
 
   shoudRun() {
@@ -28801,6 +28805,65 @@ class premium_gift_PremiumGift {
 
       if (premiumTitle) {
         premiumTitle.innerHTML = title;
+      }
+    });
+  }
+
+  altsAndArias() {
+    const premiumTitle = document.querySelectorAll(".en__pg__detail h2.en__pg__name");
+    const multistepBackButton = document.querySelectorAll('.multistep-button-container button.btn-back');
+    premiumTitle.forEach(item => {
+      if (item) {
+        const titleText = item.innerHTML;
+        const parent = item.parentElement;
+        const prevSibling = parent === null || parent === void 0 ? void 0 : parent.previousElementSibling;
+        const radioInputSibling = prevSibling === null || prevSibling === void 0 ? void 0 : prevSibling.previousElementSibling;
+
+        if (prevSibling) {
+          const imageDiv = prevSibling.querySelector('.en__pg__images');
+
+          if (imageDiv) {
+            const img = imageDiv.querySelector('img');
+
+            if (img) {
+              img.setAttribute('alt', titleText);
+            }
+          }
+        }
+
+        if (radioInputSibling) {
+          const radioInput = radioInputSibling.querySelector('input[type="radio"]');
+
+          if (radioInput) {
+            radioInput.setAttribute('aria-label', titleText);
+          }
+        }
+      }
+
+      multistepBackButton.forEach(item => {
+        item.setAttribute('aria-label', 'Back');
+      });
+    });
+  } // This is for the Maximize My Donation aria-label - the tree structure is different than above
+
+
+  maxDonationAria() {
+    const maxDonationTitle = Array.from(document.querySelectorAll(".en__pg__detail")).filter(el => !el.querySelector("h2"));
+    maxDonationTitle.forEach(item => {
+      var _a;
+
+      if (item) {
+        const titleText = ((_a = item.querySelector('.en__pg__description')) === null || _a === void 0 ? void 0 : _a.innerHTML) || '';
+        const prevSibling = item.previousElementSibling;
+        const radioInputSibling = prevSibling === null || prevSibling === void 0 ? void 0 : prevSibling.previousElementSibling;
+
+        if (radioInputSibling) {
+          const radioInput = radioInputSibling.querySelector('input[type="radio"]');
+
+          if (radioInput) {
+            radioInput.setAttribute('aria-label', titleText);
+          }
+        }
       }
     });
   }
