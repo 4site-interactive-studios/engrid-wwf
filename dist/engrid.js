@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, April 9, 2025 @ 21:36:42 ET
+ *  Date: Thursday, April 10, 2025 @ 15:49:01 ET
  *  By: fernando
  *  ENGrid styles: v0.21.0
  *  ENGrid scripts: v0.21.0
@@ -22946,6 +22946,15 @@ const customScript = function (App, DonationFrequency) {
 
       if (isVenmo) {
         // Venmo is Enabled
+        // If you are on iPhone, only enable Venmo if using Safari
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isSafari = navigator.userAgent.includes("Safari") && !navigator.userAgent.includes("CriOS") && !navigator.userAgent.includes("FxiOS");
+
+        if (isIOS && !isSafari) {
+          App.log("Venmo is not enabled on non-Safari iOS");
+          return;
+        }
+
         App.setBodyData("venmo-enabled", "true");
         App.log("Venmo is enabled");
       }

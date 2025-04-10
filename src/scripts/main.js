@@ -25,6 +25,17 @@ export const customScript = function (App, DonationFrequency) {
         content.data.args[0][0] === VENMO_IDENTIFIER;
       if (isVenmo) {
         // Venmo is Enabled
+        // If you are on iPhone, only enable Venmo if using Safari
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isSafari =
+          navigator.userAgent.includes("Safari") &&
+          !navigator.userAgent.includes("CriOS") &&
+          !navigator.userAgent.includes("FxiOS");
+
+        if (isIOS && !isSafari) {
+          App.log("Venmo is not enabled on non-Safari iOS");
+          return;
+        }
         App.setBodyData("venmo-enabled", "true");
         App.log("Venmo is enabled");
       }
