@@ -2502,3 +2502,9 @@ button[data-balloon] {
     top: -20px;
   }
 }
+.en__field--giveBySelect.venmo {
+  display: none;
+}
+&[data-engrid-venmo-enabled="true"] .en__field--giveBySelect.venmo {
+  display: block;
+}
