@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, April 9, 2025 @ 11:39:22 ET
+ *  Date: Friday, April 11, 2025 @ 11:20:41 ET
  *  By: daryl
  *  ENGrid styles: v0.20.9
  *  ENGrid scripts: v0.20.8
@@ -28826,7 +28826,10 @@ class premium_gift_PremiumGift {
             const img = imageDiv.querySelector('img');
 
             if (img) {
+              console.log('setting image alt, width, height');
               img.setAttribute('alt', titleText);
+              img.style.width = '125px';
+              img.style.height = '100px';
             }
           }
         }
@@ -30774,6 +30777,7 @@ class embedded_ecard_EmbeddedEcard {
     iframe.setAttribute("width", "100%");
     iframe.setAttribute("scrolling", "no");
     iframe.setAttribute("frameborder", "0");
+    iframe.setAttribute("title", "Ecard iframe form");
     iframe.classList.add("engrid-iframe", "engrid-iframe--embedded-ecard");
     iframe.style.display = "none";
     return iframe;

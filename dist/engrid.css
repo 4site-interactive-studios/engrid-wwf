@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, April 9, 2025 @ 11:39:22 ET
+ *  Date: Friday, April 11, 2025 @ 11:20:41 ET
  *  By: daryl
  *  ENGrid styles: v0.20.9
  *  ENGrid scripts: v0.20.8
@@ -11838,9 +11838,16 @@ body[data-engrid-debug]:before{
   float:none;
   justify-content:space-around;
   margin:0 0 15px;
+  position:relative;
+  top:15px;
   width:100%;
 }
 
+@media only screen and (max-width:769px){
+  #footer .footer-nav-social{
+    top:33px;
+  }
+}
 #footer .footer-nav-social svg{
   height:40px;
   width:40px;
