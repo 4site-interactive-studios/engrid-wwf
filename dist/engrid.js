@@ -20884,6 +20884,7 @@ class a11y_A11y {
     this.addRequired();
     this.addLabel();
     this.addGroupRole();
+    this.updateFrequencyLabel();
   }
 
   addGroupRole() {
@@ -20924,6 +20925,20 @@ class a11y_A11y {
 
       if (firstOption && firstOption.value === "" && !((_b = (_a = firstOption.textContent) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === null || _b === void 0 ? void 0 : _b.includes("select")) && !((_d = (_c = firstOption.textContent) === null || _c === void 0 ? void 0 : _c.toLowerCase()) === null || _d === void 0 ? void 0 : _d.includes("choose"))) {
         select.setAttribute("aria-label", firstOption.textContent || "");
+      }
+    });
+  } // Update the label for the frequency field based on the selected radio button
+
+
+  updateFrequencyLabel() {
+    const frequencyLabels = document.querySelectorAll('div.en__field__item input[id^="en__field_transaction_recurrfreq"]');
+    const frequencyMainLabel = document.querySelector('label[for="en__field_transaction_recurrfreq"]');
+    frequencyLabels.forEach(item => {
+      if (item) {
+        item.addEventListener('click', () => {
+          let frequencyId = item.id;
+          frequencyMainLabel === null || frequencyMainLabel === void 0 ? void 0 : frequencyMainLabel.setAttribute('for', frequencyId);
+        });
       }
     });
   }
@@ -28682,6 +28697,7 @@ class country_disable_CountryDisable {
 // 2 - Add a class to body to indicate if the "maximize my impact" is selected (data-engrid-premium-gift-maximize="true|false")
 // 3 - Check the premium gift when click on the title or description
 // 4 - Create new {$PREMIUMTITLE} merge tag that's replaced with the premium gift name
+// 5 - Add aria-label to the radio inputs and alt tags to the images
 
 class premium_gift_PremiumGift {
   constructor() {
@@ -28807,7 +28823,8 @@ class premium_gift_PremiumGift {
         premiumTitle.innerHTML = title;
       }
     });
-  }
+  } // Sets alt tags for premium gift images and aria tags for premium gift radio inputs
+
 
   altsAndArias() {
     const premiumTitle = document.querySelectorAll(".en__pg__detail h2.en__pg__name");
@@ -28847,7 +28864,7 @@ class premium_gift_PremiumGift {
         item.setAttribute('aria-label', 'Back');
       });
     });
-  } // This is for the Maximize My Donation aria-label - the tree structure is different than above
+  } // This is for the Maximize My Donation aria-label - the tree structure for it is slightly different.
 
 
   maxDonationAria() {
@@ -30777,7 +30794,7 @@ class embedded_ecard_EmbeddedEcard {
     iframe.setAttribute("width", "100%");
     iframe.setAttribute("scrolling", "no");
     iframe.setAttribute("frameborder", "0");
-    iframe.setAttribute("title", "Ecard iframe form");
+    iframe.setAttribute("title", "Ecard iframe");
     iframe.classList.add("engrid-iframe", "engrid-iframe--embedded-ecard");
     iframe.style.display = "none";
     return iframe;
