@@ -159,6 +159,19 @@ export const customScript = function (App, DonationFrequency) {
         paypalOneTouch.click();
       }
     }
+    window.setTimeout(() => {
+      // Add a hidden engrid data attribute to every hidden giveBySelect radio parent
+      const hiddenGiveBySelect = document.querySelectorAll(
+        ".give-by-select-wrapper .en__field--giveBySelect"
+      );
+      hiddenGiveBySelect.forEach((el) => {
+        if (!App.isVisible(el)) {
+          el.setAttribute("data-engrid-hidden", "true");
+        } else {
+          el.removeAttribute("data-engrid-hidden");
+        }
+      });
+    }, 100);
   });
 
   const addMobilePhoneNotice = () => {

@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, April 10, 2025 @ 15:49:01 ET
+ *  Date: Monday, April 14, 2025 @ 17:31:49 ET
  *  By: fernando
  *  ENGrid styles: v0.21.0
  *  ENGrid scripts: v0.21.0
@@ -23051,6 +23051,18 @@ const customScript = function (App, DonationFrequency) {
         paypalOneTouch.click();
       }
     }
+
+    window.setTimeout(() => {
+      // Add a hidden engrid data attribute to every hidden giveBySelect radio parent
+      const hiddenGiveBySelect = document.querySelectorAll(".give-by-select-wrapper .en__field--giveBySelect");
+      hiddenGiveBySelect.forEach(el => {
+        if (!App.isVisible(el)) {
+          el.setAttribute("data-engrid-hidden", "true");
+        } else {
+          el.removeAttribute("data-engrid-hidden");
+        }
+      });
+    }, 100);
   });
 
   const addMobilePhoneNotice = () => {

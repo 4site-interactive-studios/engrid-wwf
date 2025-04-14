@@ -486,20 +486,10 @@
       --give-by-select__button_count: 1;
     }
   }
-  &[data-engrid-transaction-recurring="n"] {
-    .give-by-select.en__field__item:not(.hide):not(.recurring-frequency-n-hide):nth-child(even).ach {
-      flex-basis: 100%;
-    }
-  }
-  &[data-engrid-transaction-recurring="y"] {
-    .give-by-select.en__field__item:not(.hide):not(.recurring-frequency-y-hide):nth-child(even).ach {
-      flex-basis: 100%;
-    }
-  }
-  &[data-engrid-payment-type-option-apple-pay="false"][data-engrid-payment-type-option-google-pay="false"][data-engrid-transaction-recurring="n"] {
-    .give-by-select.en__field__item:not(.hide):nth-child(even).ach {
-      flex-basis: 50%;
-    }
+  .give-by-select.en__field__item:nth-child(odd
+      of
+      :not([data-engrid-hidden="true"])):last-child {
+    flex-basis: 100%;
   }
 
   .give-by-select .en__field__element--radio {
