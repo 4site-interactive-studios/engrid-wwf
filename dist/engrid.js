@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, April 11, 2025 @ 11:20:41 ET
+ *  Date: Monday, April 14, 2025 @ 10:57:47 ET
  *  By: daryl
  *  ENGrid styles: v0.20.9
  *  ENGrid scripts: v0.20.8
@@ -24154,16 +24154,16 @@ class skip_link_SkipToMainContentLink {
     const firstH1 = document.querySelector("h1");
 
     if (firstTitleInEngridBody && firstTitleInEngridBody.parentElement) {
-      firstTitleInEngridBody.parentElement.insertAdjacentHTML("beforebegin", '<span id="skip-link"></span>');
+      firstTitleInEngridBody.parentElement.id = "skip-link";
       this.insertSkipLinkSpan();
     } else if (firstH1InEngridBody && firstH1InEngridBody.parentElement) {
-      firstH1InEngridBody.parentElement.insertAdjacentHTML("beforebegin", '<span id="skip-link"></span>');
+      firstH1InEngridBody.parentElement.id = "skip-link";
       this.insertSkipLinkSpan();
     } else if (firstTitle && firstTitle.parentElement) {
-      firstTitle.parentElement.insertAdjacentHTML("beforebegin", '<span id="skip-link"></span>');
+      firstTitle.parentElement.id = "skip-link";
       this.insertSkipLinkSpan();
     } else if (firstH1 && firstH1.parentElement) {
-      firstH1.parentElement.insertAdjacentHTML("beforebegin", '<span id="skip-link"></span>');
+      firstH1.parentElement.id = "skip-link";
       this.insertSkipLinkSpan();
     } else {
       if (engrid_ENGrid.debug) console.log("This page contains no <title> or <h1> and a 'Skip to main content' link was not added");
@@ -25166,6 +25166,7 @@ class remember_me_RememberMe {
       iframe.style.cssText = "position:absolute;width:1px;height:1px;left:-9999px;";
       iframe.src = this.remoteUrl;
       iframe.setAttribute("sandbox", "allow-same-origin allow-scripts");
+      iframe.setAttribute("title", "Remember Me iframe");
       this.iframe = iframe;
       document.body.appendChild(this.iframe);
       this.iframe.addEventListener("load", () => iframeLoaded(), false);
@@ -26445,6 +26446,10 @@ class required_if_visible_RequiredIfVisible {
     if (!this.shouldRun()) return;
 
     this._form.onValidate.subscribe(this.validate.bind(this));
+
+    this.requiredIfVisibleElements.forEach(element => {
+      element.setAttribute('aria-required', 'true'); //this.logger.log(`${element.tagName}.${element.className} aria-required set`);
+    });
   }
 
   shouldRun() {
@@ -31214,7 +31219,8 @@ class OptInLadder {
       iframe.allowFullscreen = true;
       iframe.allow = "payment";
       iframe.classList.add("opt-in-ladder-iframe");
-      iframe.classList.add("engrid-iframe"); // If the page already has an iFrame with the same class, we don't need to add another one
+      iframe.classList.add("engrid-iframe");
+      iframe.setAttribute("title", "Optin Ladder iframe"); // If the page already has an iFrame with the same class, we don't need to add another one
 
       const existingIframe = document.querySelector(".opt-in-ladder-iframe");
 
@@ -31512,7 +31518,8 @@ class PostDonationEmbed {
     iframe.setAttribute("frameborder", "0");
     iframe.setAttribute("allowfullscreen", "");
     iframe.setAttribute("allowpaymentrequest", "true");
-    iframe.setAttribute("allow", "payment"); // Replace <engrid-post-donation> with the iframe
+    iframe.setAttribute("allow", "payment");
+    iframe.setAttribute("title", "Post Donation iframe"); // Replace <engrid-post-donation> with the iframe
 
     postDonationTag.replaceWith(iframe);
   }
