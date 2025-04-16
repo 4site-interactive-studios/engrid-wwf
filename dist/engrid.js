@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, April 14, 2025 @ 17:31:49 ET
+ *  Date: Wednesday, April 16, 2025 @ 12:24:12 ET
  *  By: fernando
- *  ENGrid styles: v0.21.0
- *  ENGrid scripts: v0.21.0
+ *  ENGrid styles: v0.21.3
+ *  ENGrid scripts: v0.21.4
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -11863,6 +11863,7 @@ class engrid_ENGrid {
     static getPageType() {
         if ("pageJson" in window && "pageType" in window.pageJson) {
             switch (window.pageJson.pageType) {
+                case "p2pdonation":
                 case "donation":
                 case "premiumgift":
                     return "DONATION";
@@ -11882,6 +11883,9 @@ class engrid_ENGrid {
                     break;
                 case "emailsubscribeform":
                     return "SUBSCRIBEFORM";
+                    break;
+                case "event":
+                    return "EVENT";
                     break;
                 case "supporterhub":
                     return "SUPPORTERHUB";
@@ -21685,7 +21689,6 @@ class VGS {
                 autoComplete: "cc-exp",
                 validations: ["required", "validCardExpirationDate"],
                 css: styles,
-                yearLength: 2,
             },
         };
         // Deep merge the default options with the options set in the theme
@@ -22833,7 +22836,7 @@ class PostDonationEmbed {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/version.js
-const AppVersion = "0.21.0";
+const AppVersion = "0.21.4";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
