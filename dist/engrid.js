@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, April 14, 2025 @ 15:50:15 ET
+ *  Date: Thursday, April 17, 2025 @ 10:16:23 ET
  *  By: daryl
  *  ENGrid styles: v0.20.9
  *  ENGrid scripts: v0.20.8
@@ -22860,6 +22860,12 @@ class show_hide_radio_checkboxes_ShowHideRadioCheckboxes {
         this.toggleValue(el, "hide");
         el.style.display = "none";
         this.logger.log("Hiding", el);
+        const input = el.querySelector("input");
+
+        if (input instanceof HTMLInputElement) {
+          input.setAttribute("aria-required", "false");
+          this.logger.log("aria-required set to FALSE", input);
+        }
       }
     });
   } // Show Single Element Div
@@ -22873,6 +22879,12 @@ class show_hide_radio_checkboxes_ShowHideRadioCheckboxes {
         this.toggleValue(el, "show");
         el.style.display = "";
         this.logger.log("Showing", el);
+        const input = el.querySelector("input");
+
+        if (input instanceof HTMLInputElement) {
+          input.setAttribute("aria-required", "true");
+          this.logger.log("aria-required set to TRUE", input);
+        }
       }
     });
 
@@ -26476,10 +26488,6 @@ class required_if_visible_RequiredIfVisible {
     if (!this.shouldRun()) return;
 
     this._form.onValidate.subscribe(this.validate.bind(this));
-
-    this.requiredIfVisibleElements.forEach(element => {
-      element.setAttribute('aria-required', 'true'); //this.logger.log(`${element.tagName}.${element.className} aria-required set`);
-    });
   }
 
   shouldRun() {
