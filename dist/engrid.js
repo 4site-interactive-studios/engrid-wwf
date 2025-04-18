@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, April 16, 2025 @ 12:24:12 ET
+ *  Date: Friday, April 18, 2025 @ 14:31:41 ET
  *  By: fernando
  *  ENGrid styles: v0.21.3
  *  ENGrid scripts: v0.21.4
@@ -22988,6 +22988,19 @@ const customScript = function (App, DonationFrequency) {
         break;
     }
   });
+
+  const addDataAttrToHiddenPaymentMethods = () => {
+    // Add a hidden engrid data attribute to every hidden giveBySelect radio parent
+    const hiddenGiveBySelect = document.querySelectorAll(".give-by-select-wrapper .en__field--giveBySelect");
+    hiddenGiveBySelect.forEach(el => {
+      if (!App.isVisible(el)) {
+        el.setAttribute("data-engrid-hidden", "true");
+      } else {
+        el.removeAttribute("data-engrid-hidden");
+      }
+    });
+  };
+
   const isSpanish = document.querySelector("label[for='en__field_supporter_emailAddress']") && document.querySelector("label[for='en__field_supporter_emailAddress']").textContent === "Correo electrónico";
   let inlineMonthlyUpsell = document.querySelectorAll(".move-after-transaction-recurrfreq")[0];
   let recurrFrequencyField = document.querySelectorAll(".en__field--recurrfreq")[0];
@@ -23056,17 +23069,23 @@ const customScript = function (App, DonationFrequency) {
     }
 
     window.setTimeout(() => {
-      // Add a hidden engrid data attribute to every hidden giveBySelect radio parent
-      const hiddenGiveBySelect = document.querySelectorAll(".give-by-select-wrapper .en__field--giveBySelect");
-      hiddenGiveBySelect.forEach(el => {
-        if (!App.isVisible(el)) {
-          el.setAttribute("data-engrid-hidden", "true");
-        } else {
-          el.removeAttribute("data-engrid-hidden");
-        }
-      });
+      addDataAttrToHiddenPaymentMethods();
     }, 100);
+  }); // Re-run the addDataAttrToHiddenPaymentMethods function when body attribute changes
+
+  const observerConfig = {
+    attributes: true,
+    childList: false,
+    subtree: false
+  };
+  const obs = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      if (mutation.type === "attributes") {
+        addDataAttrToHiddenPaymentMethods();
+      }
+    });
   });
+  obs.observe(document.body, observerConfig);
 
   const addMobilePhoneNotice = () => {
     if (!document.querySelector(".en__field--phoneNumber2 .en__field__element")) {

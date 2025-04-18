@@ -66,6 +66,20 @@ export const customScript = function (App, DonationFrequency) {
     }
   });
 
+  const addDataAttrToHiddenPaymentMethods = () => {
+    // Add a hidden engrid data attribute to every hidden giveBySelect radio parent
+    const hiddenGiveBySelect = document.querySelectorAll(
+      ".give-by-select-wrapper .en__field--giveBySelect"
+    );
+    hiddenGiveBySelect.forEach((el) => {
+      if (!App.isVisible(el)) {
+        el.setAttribute("data-engrid-hidden", "true");
+      } else {
+        el.removeAttribute("data-engrid-hidden");
+      }
+    });
+  };
+
   const isSpanish =
     document.querySelector("label[for='en__field_supporter_emailAddress']") &&
     document.querySelector("label[for='en__field_supporter_emailAddress']")
@@ -160,19 +174,24 @@ export const customScript = function (App, DonationFrequency) {
       }
     }
     window.setTimeout(() => {
-      // Add a hidden engrid data attribute to every hidden giveBySelect radio parent
-      const hiddenGiveBySelect = document.querySelectorAll(
-        ".give-by-select-wrapper .en__field--giveBySelect"
-      );
-      hiddenGiveBySelect.forEach((el) => {
-        if (!App.isVisible(el)) {
-          el.setAttribute("data-engrid-hidden", "true");
-        } else {
-          el.removeAttribute("data-engrid-hidden");
-        }
-      });
+      addDataAttrToHiddenPaymentMethods();
     }, 100);
   });
+
+  // Re-run the addDataAttrToHiddenPaymentMethods function when body attribute changes
+  const observerConfig = {
+    attributes: true,
+    childList: false,
+    subtree: false,
+  };
+  const obs = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.type === "attributes") {
+        addDataAttrToHiddenPaymentMethods();
+      }
+    });
+  });
+  obs.observe(document.body, observerConfig);
 
   const addMobilePhoneNotice = () => {
     if (
