@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, April 18, 2025 @ 14:31:41 ET
+ *  Date: Friday, April 18, 2025 @ 15:25:16 ET
  *  By: fernando
  *  ENGrid styles: v0.21.3
- *  ENGrid scripts: v0.21.4
+ *  ENGrid scripts: v0.21.5
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -19946,6 +19946,7 @@ DebugPanel.debugSessionStorageKey = "engrid_debug_panel";
 class DebugHiddenFields {
     constructor() {
         this.logger = new logger_EngridLogger("Debug hidden fields", "#f0f0f0", "#ff0000", "🫣");
+        this.ignoreFields = ["transaction.paycurrency"];
         // Query all hidden input elements within the specified selectors
         const fields = document.querySelectorAll(".en__component--row [type='hidden'][class*='en_'], .engrid-added-input[type='hidden']");
         // Check if there are any hidden fields
@@ -19958,6 +19959,11 @@ class DebugHiddenFields {
                 .join(", ")}`);
             // Iterate through each hidden input element
             fields.forEach((el) => {
+                // Check if the field name is in the ignore list
+                if (this.ignoreFields.includes(el.name)) {
+                    this.logger.log(`Ignoring field: ${el.name} because it is in the ignore list`);
+                    return;
+                }
                 // Change the input type to 'text' and add the required classes
                 el.type = "text";
                 el.classList.add("en__field__input", "en__field__input--text");
@@ -21757,9 +21763,9 @@ class VGS {
             this.paymentTypeField.value.toLowerCase() === "visa" ||
             this.paymentTypeField.value.toLowerCase() === "vi") {
             const cardContainer = document.querySelector(".en__field--vgs.en__field--ccnumber");
-            const cardEmpty = cardContainer.querySelector(".vgs-collect-container__empty");
+            const cardEmpty = cardContainer === null || cardContainer === void 0 ? void 0 : cardContainer.querySelector(".vgs-collect-container__empty");
             const cvvContainer = document.querySelector(".en__field--vgs.en__field--ccvv");
-            const cvvEmpty = cvvContainer.querySelector(".vgs-collect-container__empty");
+            const cvvEmpty = cvvContainer === null || cvvContainer === void 0 ? void 0 : cvvContainer.querySelector(".vgs-collect-container__empty");
             if (cardContainer && cardEmpty) {
                 window.setTimeout(() => {
                     engrid_ENGrid.setError(cardContainer, "Please enter a valid card number");
@@ -22836,7 +22842,7 @@ class PostDonationEmbed {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/version.js
-const AppVersion = "0.21.4";
+const AppVersion = "0.21.5";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
@@ -25297,6 +25303,30 @@ class MultistepForm {
     });
   }
 
+  inIframe() {
+    try {
+      return window.self !== window.top;
+    } catch (e) {
+      return true;
+    }
+  }
+
+  scrollTo() {
+    let where = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+
+    if (this.inIframe()) {
+      setTimeout(() => {
+        window.parent.postMessage({
+          scrollTo: where
+        }, "*");
+      }, 200);
+      this.logger.log("IS in an iFrame, scrolling to top");
+    } else {
+      window.scrollTo(0, where);
+      this.logger.log("NOT in an iFrame, scrolling to top");
+    }
+  }
+
   activateStep(targetStep) {
     let bypassValidation = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
     if (!targetStep) return;
@@ -25317,11 +25347,16 @@ class MultistepForm {
       engrid_ENGrid.setBodyData("multistep-active-step", invalidStep);
 
       if (field) {
-        field.scrollIntoView({
-          behavior: "smooth"
-        });
-      } else {
-        window.scrollTo(0, 0);
+        const scrollToError = field ? field.getBoundingClientRect().top : 0; // Parent pages listens for this message and scrolls to the correct position
+
+        if (this.inIframe()) {
+          this.scrollTo(scrollToError);
+          this.logger.log(`iFrame Event 'scrollTo' - Position of top of first error ${scrollTo} px`); // check the message is being sent correctly
+        } else {
+          field.scrollIntoView({
+            behavior: "smooth"
+          });
+        }
       }
 
       this.logger.log(`Found error on step ${invalidStep}. Going to that step.`);
@@ -25331,6 +25366,12 @@ class MultistepForm {
 
     this.logger.log(`Validation passed. Activating step ${targetStep}`);
     engrid_ENGrid.setBodyData("multistep-active-step", targetStep);
+
+    if (this.inIframe()) {
+      this.scrollTo();
+      return;
+    }
+
     this.scrollViewport();
   }
 
@@ -25367,24 +25408,30 @@ class MultistepForm {
 
     if (!currentSectionHeader || currentSectionHeader.offsetHeight === 0) {
       if (currentStepper && currentStepper.offsetHeight > 0) {
-        this.logger.log(`No section header found. Scrolling to stepper.`);
-        window.scrollTo(0, currentStepper.getBoundingClientRect().top + window.pageYOffset);
+        this.logger.log(`No section header found. Scrolling to stepper.`); //HERE
+
+        this.scrollTo(currentStepper.getBoundingClientRect().top + window.pageYOffset);
         return;
       }
 
       this.logger.log(`No section header or stepper found. Scrolling to top of page.`);
-      window.scrollTo(0, 0);
+      this.scrollTo();
       return;
     }
 
     if (engrid_ENGrid.isInViewport(currentSectionHeader)) {
+      if (this.inIframe()) {
+        this.scrollTo();
+        return;
+      }
+
       this.logger.log(`Section header is in viewport. Not scrolling.`);
       return;
     }
 
     const offset = parseInt(getComputedStyle(currentSectionHeader).marginTop);
     this.logger.log(`Scrolling to section header. ${offset} offset.`);
-    window.scrollTo(0, currentSectionHeader.getBoundingClientRect().top + window.pageYOffset - offset);
+    this.scrollTo(currentSectionHeader.getBoundingClientRect().top + window.pageYOffset - offset);
   }
 
   addBackButtonToFinalStep() {
