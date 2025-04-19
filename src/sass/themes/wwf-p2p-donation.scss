@@ -1,0 +1,41 @@
+& {
+  --button_color_hover: #fff;
+  --donation-amount__button_background-color_hover: #b02222;
+  --donation-amount__button_color_hover: #fff;
+  /*
+    --button_color: #b02222;
+    --button_border-color: #b02222;
+    --button_background-color_hover: rgba(176, 34, 34, 0.7);
+    --button_background-color_checked: rgba(176, 34, 34, 0.7);
+    --button_border-color_hover: rgba(176, 34, 34, 0.7);
+    --button_border-color_checked: rgba(176, 34, 34, 0.7);
+    */
+  .radio-to-buttons_donationAmt
+    .en__field--donationAmt.en__field--radio
+    .en__field__item
+    input[type="radio"]
+    + label:hover {
+    --donation-amount__button_color_hover: #fff;
+  }
+  .radio-to-buttons_donationAmt
+    .en__field--donationAmt.en__field--radio
+    input[type="radio"]
+    + label {
+    font-size: var(--donation-amount__button_font-size) !important;
+  }
+  .en__field--giveBySelect.card {
+    border: 0;
+  }
+  .en__component--copyblock h2:first-child {
+    margin-top: 20px;
+  }
+  .en__component--copyblock p:last-child {
+    margin: 0;
+  }
+  .en__component--copyblock p.label {
+    margin: 20px 0;
+  }
+  .grey-box {
+    margin-bottom: 10px;
+  }
+}

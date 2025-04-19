@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, April 18, 2025 @ 15:25:16 ET
+ *  Date: Friday, April 18, 2025 @ 22:49:50 ET
  *  By: fernando
  *  ENGrid styles: v0.21.3
- *  ENGrid scripts: v0.21.5
+ *  ENGrid scripts: v0.21.6
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -11863,6 +11863,7 @@ class engrid_ENGrid {
     static getPageType() {
         if ("pageJson" in window && "pageType" in window.pageJson) {
             switch (window.pageJson.pageType) {
+                case "p2pcheckout":
                 case "p2pdonation":
                 case "donation":
                 case "premiumgift":
@@ -22842,7 +22843,7 @@ class PostDonationEmbed {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/version.js
-const AppVersion = "0.21.5";
+const AppVersion = "0.21.6";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
