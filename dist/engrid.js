@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, May 6, 2025 @ 24:23:57 ET
+ *  Date: Wednesday, May 7, 2025 @ 12:07:41 ET
  *  By: fernando
  *  ENGrid styles: v0.22.0
- *  ENGrid scripts: v0.22.1
+ *  ENGrid scripts: v0.22.2
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -22135,9 +22135,13 @@ class WelcomeBack {
             engrid_ENGrid.setBodyData("hide-fast-personal-details", false);
             return;
         }
-        const regionFieldValue = engrid_ENGrid.getFieldValue("supporter.region");
+        const regionField = engrid_ENGrid.getField("supporter.region");
+        const regionFieldValue = regionField ? regionField.value : "";
+        const regionFieldType = regionField === null || regionField === void 0 ? void 0 : regionField.tagName.toLowerCase();
         const regionFieldLabel = document.querySelector(".en__field--region label");
-        if (regionFieldLabel && regionFieldValue === "") {
+        if (regionFieldType === "select" &&
+            regionFieldLabel &&
+            regionFieldValue === "") {
             engrid_ENGrid.setError(".en__field--region", `${regionFieldLabel.innerText} is required`);
             engrid_ENGrid.setBodyData("hide-fast-personal-details", false);
             this._form.validate = false;
@@ -23051,7 +23055,7 @@ class PostDonationEmbed {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/version.js
-const AppVersion = "0.22.1";
+const AppVersion = "0.22.2";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
