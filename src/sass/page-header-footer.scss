@@ -1445,6 +1445,8 @@ body,
   width: 100%;
   float: none;
   margin: 0 0 15px;
+  position: relative;
+  top: 15px;
 }
 
 #footer .footer-nav-social svg {
@@ -1738,7 +1740,7 @@ body,
       margin-top: 10px;
 
       .minimal-header-logo {
-        display: block!important;
+        display: block !important;
       }
     }
   }
