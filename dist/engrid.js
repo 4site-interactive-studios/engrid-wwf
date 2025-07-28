@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, July 28, 2025 @ 08:01:37 ET
+ *  Date: Monday, July 28, 2025 @ 08:05:13 ET
  *  By: michael
  *  ENGrid styles: v0.22.4
  *  ENGrid scripts: v0.22.7
@@ -26073,9 +26073,9 @@ class AddDAF {
 
 class Bridger {
   constructor() {
-    _defineProperty(this, "endpoint", "https://dev-wwf-bridger-api.azurewebsites.net/api/createsearch");
+    _defineProperty(this, "endpoint", "https://wwfusprdenbridgercheckeus1.azurewebsites.net/api/createsearch");
 
-    _defineProperty(this, "key", "u-Woy4e-BXWlcLBDlH20CR-y-iKknrltLZJtXV9yg-SuAzFu72hDaw==");
+    _defineProperty(this, "key", "-CDxXc3SdzG6a_LLJGKA_p3qJMnZnnsH3DLDGeK97nwXAzFuFmfh5g==");
 
     if (!this.shouldRun()) return;
     this.createBridgerSearchRecord();

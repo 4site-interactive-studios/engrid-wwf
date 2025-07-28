@@ -11,9 +11,9 @@ declare global {
 
 export class Bridger {
   private endpoint: string =
-    "https://dev-wwf-bridger-api.azurewebsites.net/api/createsearch";
+    "https://wwfusprdenbridgercheckeus1.azurewebsites.net/api/createsearch";
   private key: string =
-    "u-Woy4e-BXWlcLBDlH20CR-y-iKknrltLZJtXV9yg-SuAzFu72hDaw==";
+    "-CDxXc3SdzG6a_LLJGKA_p3qJMnZnnsH3DLDGeK97nwXAzFuFmfh5g==";
 
   constructor() {
     if (!this.shouldRun()) return;
