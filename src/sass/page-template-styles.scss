@@ -6,4 +6,8 @@
   &:not([data-engrid-subtheme]) {
     @import "./wwf-styles-not-shared";
   }
+  &[data-engrid-page-type="p2pdonation"],
+  &[data-engrid-page-type="p2pcheckout"] {
+    @import "./themes/wwf-p2p-donation";
+  }
 }

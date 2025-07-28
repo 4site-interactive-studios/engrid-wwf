@@ -1,6 +1,85 @@
 export const customScript = function (App, DonationFrequency) {
   console.log("ENGrid client scripts are executing");
 
+  // Listen to the message PayPal sends to the parent window when Venmo is enabled
+  const VENMO_IDENTIFIER = "venmo";
+
+  // Print to the console ALL messages from iFrames
+  window.addEventListener("message", function (event) {
+    // Check the origin of the message
+    if (event.origin === "https://www.paypal.com") {
+      const data = JSON.parse(event.data);
+      // Get the content from the first item of the data object
+      const firstKey = Object.keys(data)[0];
+      const content = data[firstKey][0];
+      const hasData = "data" in content;
+      const hasName = hasData && "name" in content.data;
+      const isRemember = hasName && content.data.name === "remember";
+      const hasArgs = isRemember && "args" in content.data;
+      const isVenmo =
+        hasArgs &&
+        Array.isArray(content.data.args) &&
+        content.data.args.length > 0 &&
+        Array.isArray(content.data.args[0]) &&
+        content.data.args[0].length > 0 &&
+        content.data.args[0][0] === VENMO_IDENTIFIER;
+      if (isVenmo) {
+        // Venmo is Enabled
+        // If you are on iPhone, only enable Venmo if using Safari
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isSafari =
+          navigator.userAgent.includes("Safari") &&
+          !navigator.userAgent.includes("CriOS") &&
+          !navigator.userAgent.includes("FxiOS");
+
+        if (isIOS && !isSafari) {
+          App.log("Venmo is not enabled on non-Safari iOS");
+          return;
+        }
+        App.setBodyData("venmo-enabled", "true");
+        App.log("Venmo is enabled");
+      }
+    }
+  });
+
+  // Add Images to the transaction.giveBySelect labels
+  const paymentMethods = document.querySelectorAll(
+    "[name='transaction.giveBySelect'] + label"
+  );
+  paymentMethods.forEach((label) => {
+    switch (label.getAttribute("for")) {
+      case "give-by-select-card":
+        label.innerHTML = `<img class="credit-card-logos" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-payment-type_credit-cards.png" alt="Credit Card Logos" />`;
+        break;
+      case "give-by-select-apple-google":
+        label.innerHTML = `<img class="apple-pay-google-pay" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-payment-type_apple-pay-google-pay.png" alt="Apple Pay and Google Pay Logos" />`;
+        break;
+      case "give-by-select-venmo":
+        label.innerHTML = `<img class="venmo" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/venmo.png" alt="Venmo Logo" />`;
+        break;
+      case "give-by-select-paypal":
+        label.innerHTML = `<img class="paypal" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-payment-type_paypal.png" alt="Paypal Logo" />`;
+        break;
+      case "give-by-select-paypaltouch":
+        label.innerHTML = `<img class="paypaltouch" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-payment-type_paypal.png" alt="Paypal Logo" />`;
+        break;
+    }
+  });
+
+  const addDataAttrToHiddenPaymentMethods = () => {
+    // Add a hidden engrid data attribute to every hidden giveBySelect radio parent
+    const hiddenGiveBySelect = document.querySelectorAll(
+      ".give-by-select-wrapper .en__field--giveBySelect"
+    );
+    hiddenGiveBySelect.forEach((el) => {
+      if (!App.isVisible(el)) {
+        el.setAttribute("data-engrid-hidden", "true");
+      } else {
+        el.removeAttribute("data-engrid-hidden");
+      }
+    });
+  };
+
   const isSpanish =
     document.querySelector("label[for='en__field_supporter_emailAddress']") &&
     document.querySelector("label[for='en__field_supporter_emailAddress']")
@@ -94,7 +173,25 @@ export const customScript = function (App, DonationFrequency) {
         paypalOneTouch.click();
       }
     }
+    window.setTimeout(() => {
+      addDataAttrToHiddenPaymentMethods();
+    }, 100);
   });
+
+  // Re-run the addDataAttrToHiddenPaymentMethods function when body attribute changes
+  const observerConfig = {
+    attributes: true,
+    childList: false,
+    subtree: false,
+  };
+  const obs = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.type === "attributes") {
+        addDataAttrToHiddenPaymentMethods();
+      }
+    });
+  });
+  obs.observe(document.body, observerConfig);
 
   const addMobilePhoneNotice = () => {
     if (
