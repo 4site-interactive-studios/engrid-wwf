@@ -1,6 +1,85 @@
 export const customScript = function (App, DonationFrequency) {
   console.log("ENGrid client scripts are executing");
 
+  // Listen to the message PayPal sends to the parent window when Venmo is enabled
+  const VENMO_IDENTIFIER = "venmo";
+
+  // Print to the console ALL messages from iFrames
+  window.addEventListener("message", function (event) {
+    // Check the origin of the message
+    if (event.origin === "https://www.paypal.com") {
+      const data = JSON.parse(event.data);
+      // Get the content from the first item of the data object
+      const firstKey = Object.keys(data)[0];
+      const content = data[firstKey][0];
+      const hasData = "data" in content;
+      const hasName = hasData && "name" in content.data;
+      const isRemember = hasName && content.data.name === "remember";
+      const hasArgs = isRemember && "args" in content.data;
+      const isVenmo =
+        hasArgs &&
+        Array.isArray(content.data.args) &&
+        content.data.args.length > 0 &&
+        Array.isArray(content.data.args[0]) &&
+        content.data.args[0].length > 0 &&
+        content.data.args[0][0] === VENMO_IDENTIFIER;
+      if (isVenmo) {
+        // Venmo is Enabled
+        // If you are on iPhone, only enable Venmo if using Safari
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isSafari =
+          navigator.userAgent.includes("Safari") &&
+          !navigator.userAgent.includes("CriOS") &&
+          !navigator.userAgent.includes("FxiOS");
+
+        if (isIOS && !isSafari) {
+          App.log("Venmo is not enabled on non-Safari iOS");
+          return;
+        }
+        App.setBodyData("venmo-enabled", "true");
+        App.log("Venmo is enabled");
+      }
+    }
+  });
+
+  // Add Images to the transaction.giveBySelect labels
+  const paymentMethods = document.querySelectorAll(
+    "[name='transaction.giveBySelect'] + label"
+  );
+  paymentMethods.forEach((label) => {
+    switch (label.getAttribute("for")) {
+      case "give-by-select-card":
+        label.innerHTML = `<img class="credit-card-logos" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-payment-type_credit-cards.png" alt="Credit Card Logos" />`;
+        break;
+      case "give-by-select-apple-google":
+        label.innerHTML = `<img class="apple-pay-google-pay" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-payment-type_apple-pay-google-pay.png" alt="Apple Pay and Google Pay Logos" />`;
+        break;
+      case "give-by-select-venmo":
+        label.innerHTML = `<img class="venmo" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/venmo.png" alt="Venmo Logo" />`;
+        break;
+      case "give-by-select-paypal":
+        label.innerHTML = `<img class="paypal" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-payment-type_paypal.png" alt="Paypal Logo" />`;
+        break;
+      case "give-by-select-paypaltouch":
+        label.innerHTML = `<img class="paypaltouch" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-payment-type_paypal.png" alt="Paypal Logo" />`;
+        break;
+    }
+  });
+
+  const addDataAttrToHiddenPaymentMethods = () => {
+    // Add a hidden engrid data attribute to every hidden giveBySelect radio parent
+    const hiddenGiveBySelect = document.querySelectorAll(
+      ".give-by-select-wrapper .en__field--giveBySelect"
+    );
+    hiddenGiveBySelect.forEach((el) => {
+      if (!App.isVisible(el)) {
+        el.setAttribute("data-engrid-hidden", "true");
+      } else {
+        el.removeAttribute("data-engrid-hidden");
+      }
+    });
+  };
+
   const isSpanish =
     document.querySelector("label[for='en__field_supporter_emailAddress']") &&
     document.querySelector("label[for='en__field_supporter_emailAddress']")
@@ -94,7 +173,25 @@ export const customScript = function (App, DonationFrequency) {
         paypalOneTouch.click();
       }
     }
+    window.setTimeout(() => {
+      addDataAttrToHiddenPaymentMethods();
+    }, 100);
   });
+
+  // Re-run the addDataAttrToHiddenPaymentMethods function when body attribute changes
+  const observerConfig = {
+    attributes: true,
+    childList: false,
+    subtree: false,
+  };
+  const obs = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.type === "attributes") {
+        addDataAttrToHiddenPaymentMethods();
+      }
+    });
+  });
+  obs.observe(document.body, observerConfig);
 
   const addMobilePhoneNotice = () => {
     if (
@@ -241,35 +338,79 @@ export const customScript = function (App, DonationFrequency) {
       ".en__component--premiumgiftblock"
     );
     if (premiumBlock) {
+      //listen for the change event of name "en__pg" using event delegation
+      let selectedPremiumId = null;
+      let selectedVariantId = null;
+      ["change", "click"].forEach((event) => {
+        premiumBlock.addEventListener(event, (e) => {
+          setTimeout(() => {
+            const selectedGift = document.querySelector(
+              '[name="en__pg"]:checked'
+            );
+            if (selectedGift) {
+              selectedPremiumId = selectedGift.value;
+              selectedVariantId = App.getFieldValue(
+                "transaction.selprodvariantid"
+              );
+            }
+          }, 250);
+        });
+      });
+
       // Mutation observer to check if the "Maximized Their Gift" radio button is present. If it is, hide it.
       const observer = new MutationObserver((mutationsList) => {
-        // Loop through the mutations that have occurred
+        //loop over the mutations and if we're adding a radio with the "checked" attribute, remove that attribute so nothing gets re-selected
+        //when the premiums list is re-rendered
         for (const mutation of mutationsList) {
-          // Check if a node has been added to the form
           if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
-            // Loop through the added nodes
             mutation.addedNodes.forEach((node) => {
-              if (typeof node.querySelector === "function") {
-                if (
-                  node.querySelector("h2") &&
-                  node.querySelector("h2").innerText === "Maximized Their Gift"
-                ) {
-                  const maxElement = node.closest(".en__pg");
-                  if (maxElement) {
-                    maxElement.classList.add("hide");
-                    const maxRadio = maxElement.querySelector(
-                      "input[type='radio'][name='en__pg']"
-                    );
-                    if (maxRadio) {
-                      window.maxTheirGift = getProdVarId(maxRadio.value);
-                    }
-                  }
-                }
-                if (node.querySelector('input[type="radio"][value="0"]')) {
-                  setTimeout(maxMyGift, 100);
-                }
+              if (typeof node.querySelector !== "function") return;
+              const preSelectedRadio = node.querySelector("input[checked]");
+              if (preSelectedRadio) {
+                preSelectedRadio.removeAttribute("checked");
               }
             });
+          }
+        }
+
+        if (mutationsList.some((mutation) => mutation.type === "childList")) {
+          // Each time premiums list is re-rendered, hide the "Maximized Their Gift" section
+          const maximizeTheirGiftHeader = [
+            ...document.querySelectorAll(".en__pg__name"),
+          ].find((el) => el.innerText === "Maximized Their Gift");
+
+          if (maximizeTheirGiftHeader) {
+            const maxElement = maximizeTheirGiftHeader.closest(".en__pg");
+            if (maxElement) {
+              maxElement.classList.add("hide");
+              const maxRadio = maxElement.querySelector(
+                "input[type='radio'][name='en__pg']"
+              );
+              if (maxRadio) {
+                window.maxTheirGift = getProdVarId(maxRadio.value);
+              }
+            }
+          }
+
+          // Re-select the previously selected gift when gift list is re-rendered
+          // If gift no longer exists, choose maximize my gift
+          if (selectedPremiumId && selectedVariantId) {
+            const selectedGift = document.querySelector(
+              `input[type="radio"][name="en__pg"][value="${selectedPremiumId}"]`
+            );
+            if (selectedGift) {
+              selectedGift.click();
+              window.setTimeout(() => {
+                App.setFieldValue(
+                  "transaction.selprodvariantid",
+                  selectedVariantId
+                );
+              }, 100);
+            } else {
+              maxMyGift();
+            }
+          } else {
+            maxMyGift();
           }
         }
       });
@@ -417,8 +558,8 @@ export const customScript = function (App, DonationFrequency) {
 
   if (ecardAddRecipeintButton) {
     ecardAddRecipeintButton.textContent = isSpanish
-      ? "Agrega este contacto"
-      : "Add this contact";
+      ? "Agrega destinatario"
+      : "Add recipient";
   }
 
   // On eCard pages, add a label to the recipients list
@@ -581,14 +722,6 @@ export const customScript = function (App, DonationFrequency) {
     if (!smsOptIn && phoneNumberField && smsDisclosure) {
       phoneNumberField.classList.add("hide");
       smsDisclosure.classList.add("hide");
-    }
-
-    // If the SMS opt-in and the EMail opt-in do not appear on the page hide the "be a part of our community" copy block
-    let emailOptIn = document.querySelector(".en__field--608540");
-    let communityBlock = document.querySelector(".be-a-part-of-our-community");
-
-    if (!smsOptIn && !emailOptIn && communityBlock) {
-      communityBlock.classList.add("hide");
     }
   }
 
@@ -798,6 +931,7 @@ export const customScript = function (App, DonationFrequency) {
     const other3Field = document.querySelector(
       'input[name="transaction.othamt3"]'
     );
+    const vgsField = document.querySelector(".en__field--vgs");
     if (paymentType && !other3Field) {
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
       const isSafari = /^((?!chrome|android).)*safari/i.test(
@@ -827,7 +961,7 @@ export const customScript = function (App, DonationFrequency) {
         "foursite-engrid-added-input"
       );
       inputField.setAttribute("name", "transaction.othamt3");
-      inputField.setAttribute("value", "");
+      inputField.setAttribute("value", vgsField ? "card" : ""); // Set the default value to card (VGS won't change the payment type)
       if (App.debug) {
         inputField.style.width = "100%";
         inputField.setAttribute(
@@ -865,7 +999,10 @@ export const customScript = function (App, DonationFrequency) {
           // Set applepay if using IOS or Safari, otherwise set googlepay
           other3Field.value = isIOS || isSafari ? "applepay" : "googlepay";
         } else {
-          other3Field.value = paymentType.value;
+          other3Field.value =
+            vgsField && paymentType.value === "visa"
+              ? "card"
+              : paymentType.value;
         }
       });
     }
@@ -876,5 +1013,19 @@ export const customScript = function (App, DonationFrequency) {
   const amountNudge = document.querySelector(".amount-nudge:not(.arrow-up)");
   if (amountNudge && recurrFrequencyField) {
     recurrFrequencyField.insertAdjacentElement("beforeend", amountNudge);
+  }
+
+  // Add logo for no header style
+  if (window.wwfHeaderStyle && window.wwfHeaderStyle === "None") {
+    const bodyTitle = document.querySelector(".body-title > .en__component");
+    bodyTitle?.insertAdjacentHTML(
+      "afterbegin",
+      `<a class="minimal-header-logo" href="https://www.worldwildlife.org/" target="_blank"><img class="no-header-wwf-logo" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo-standalone.png?3" alt="WWF Logo"></a>`
+    );
+    const contentHeader = document.querySelector(".content-header");
+    contentHeader?.insertAdjacentHTML(
+      "afterbegin",
+      `<a class="minimal-header-logo" href="https://www.worldwildlife.org/" target="_blank"><img class="no-header-wwf-logo" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo-no-tab.png?3" alt="WWF Logo"></a>`
+    );
   }
 };
