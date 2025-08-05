@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, August 5, 2025 @ 08:53:16 ET
+ *  Date: Tuesday, August 5, 2025 @ 09:57:08 ET
  *  By: michael
  *  ENGrid styles: v0.22.4
  *  ENGrid scripts: v0.22.9
@@ -9783,6 +9783,9 @@ body[data-engrid-debug]:before{
 }
 [data-engrid-theme=wwf][data-engrid-venmo-enabled=true] .en__field--giveBySelect.venmo{
   display:block;
+}
+[data-engrid-theme=wwf] .en__hubTxnGiving__transaction--remote{
+  border:2px solid red;
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=multistep]{
   --fields_spacing-inline:5px;

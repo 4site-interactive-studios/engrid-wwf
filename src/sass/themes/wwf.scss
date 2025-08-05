@@ -2498,3 +2498,7 @@ button[data-balloon] {
 &[data-engrid-venmo-enabled="true"] .en__field--giveBySelect.venmo {
   display: block;
 }
+
+.en__hubTxnGiving__transaction--remote {
+  border: 2px solid red;
+}

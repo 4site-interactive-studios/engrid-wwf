@@ -73,6 +73,8 @@ export default class GiftHistory {
     const giftHistoryToRender =
       this.mergeRemoteGiftHistoryEntries(enGiftHistory);
 
+    console.log(this.remoteGiftHistory, giftHistoryToRender);
+
     this.addGiftHistoryToDOM(giftHistoryToRender);
 
     transactionsList?.setAttribute("data-engrid-transactions-loaded", "");
@@ -276,13 +278,9 @@ export default class GiftHistory {
     }
 
     const giftDate = new Date(gift.createdOn);
-    const giftString =
-      giftDate.getMonth() +
-      1 +
-      "/" +
-      giftDate.getDate() +
-      "/" +
-      giftDate.getFullYear();
+    const giftString = `${
+      giftDate.getMonth() + 1
+    }/${giftDate.getDate()}/${giftDate.getFullYear()}`;
 
     const paymentString =
       paymentMethod === "bank"

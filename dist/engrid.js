@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, August 5, 2025 @ 08:53:16 ET
+ *  Date: Tuesday, August 5, 2025 @ 09:57:08 ET
  *  By: michael
  *  ENGrid styles: v0.22.4
  *  ENGrid scripts: v0.22.9
@@ -26103,7 +26103,7 @@ const mockGiftHistory = {
     recurringFrequency: null,
     recurringDay: null,
     pageTitle: "REFERENCE - Donation Page (Test Gateway)",
-    createdOn: 1700866800000,
+    createdOn: 1754307276000,
     pageName: "DEMO PAGE - Donation Page (Test Gateway) - Limited Header",
     paymentType: "TEST: visa",
     pageStatus: "live",
@@ -26131,7 +26131,7 @@ const mockGiftHistory = {
     recurringFrequency: null,
     recurringDay: null,
     pageTitle: "REFERENCE - Donation Page (Test Gateway)",
-    createdOn: 1700483816000,
+    createdOn: 1751628876000,
     pageName: "DEMO PAGE - Donation Page (Test Gateway) - Limited Header",
     paymentType: "TEST: ach",
     pageStatus: "live",
@@ -26159,7 +26159,7 @@ const mockGiftHistory = {
     recurringFrequency: "MONTHLY",
     recurringDay: "8",
     pageTitle: "REFERENCE - Donation Page (Test Gateway)",
-    createdOn: 1699446032000,
+    createdOn: 1749382476000,
     pageName: "DEMO PAGE - Donation Page (Test Gateway) - Limited Header",
     paymentType: "TEST: visa",
     pageStatus: "live",
@@ -26187,36 +26187,7 @@ const mockGiftHistory = {
     recurringFrequency: null,
     recurringDay: null,
     pageTitle: "REFERENCE - Donation Page (Test Gateway)",
-    createdOn: 1699311600000,
-    pageName: "DEMO PAGE - Donation Page (Test Gateway) - Limited Header",
-    paymentType: "TEST: visa",
-    pageStatus: "live",
-    pageType: "nd",
-    currency: "USD",
-    id: 13853700,
-    expiry: "12/2027",
-    transactionError: null,
-    amount: "50.00",
-    transactionStatus: "success",
-    campaignId: 117098,
-    ccLastFour: "4242",
-    campaignPageId: 52063,
-    recurringStatus: null,
-    inMemoryHonoreeName: null,
-    transactionId: "pm_1OAAjhGZo2KOB80RUirE75dy__cus_Oy6xpuEpd5GeDo__pi_3OAAjkGZo2KOB80R0ox2EYx8",
-    parentTransactionId: null,
-    transactionType: "CREDIT_SINGLE",
-    taxDeductible: "N",
-    recurringPayment: "N",
-    gateway: "Stripe Gateway",
-    child: false
-  }, //2022 gift
-  {
-    pageSubtype: null,
-    recurringFrequency: null,
-    recurringDay: null,
-    pageTitle: "REFERENCE - Donation Page (Test Gateway)",
-    createdOn: 1670169706000,
+    createdOn: 1752406476000,
     pageName: "DEMO PAGE - Donation Page (Test Gateway) - Limited Header",
     paymentType: "TEST: visa",
     pageStatus: "live",
@@ -26245,7 +26216,36 @@ const mockGiftHistory = {
     recurringFrequency: null,
     recurringDay: null,
     pageTitle: "REFERENCE - Donation Page (Test Gateway)",
-    createdOn: 1733328106000,
+    createdOn: 1731501276000,
+    pageName: "DEMO PAGE - Donation Page (Test Gateway) - Limited Header",
+    paymentType: "TEST: visa",
+    pageStatus: "live",
+    pageType: "nd",
+    currency: "USD",
+    id: 13853700,
+    expiry: "12/2027",
+    transactionError: null,
+    amount: "50.00",
+    transactionStatus: "success",
+    campaignId: 117098,
+    ccLastFour: "4242",
+    campaignPageId: 52063,
+    recurringStatus: null,
+    inMemoryHonoreeName: null,
+    transactionId: "pm_1OAAjhGZo2KOB80RUirE75dy__cus_Oy6xpuEpd5GeDo__pi_3OAAjkGZo2KOB80R0ox2EYx8",
+    parentTransactionId: null,
+    transactionType: "CREDIT_SINGLE",
+    taxDeductible: "N",
+    recurringPayment: "N",
+    gateway: "Stripe Gateway",
+    child: false
+  }, //2023 gift
+  {
+    pageSubtype: null,
+    recurringFrequency: null,
+    recurringDay: null,
+    pageTitle: "REFERENCE - Donation Page (Test Gateway)",
+    createdOn: 1696592076000,
     pageName: "DEMO PAGE - Donation Page (Test Gateway) - Limited Header",
     paymentType: "TEST: visa",
     pageStatus: "live",
@@ -26334,6 +26334,7 @@ class GiftHistory {
     transactionsList?.removeAttribute("data-engrid-transactions-loaded");
     const enGiftHistory = this.getENGiftHistoryOnPage();
     const giftHistoryToRender = this.mergeRemoteGiftHistoryEntries(enGiftHistory);
+    console.log(this.remoteGiftHistory, giftHistoryToRender);
     this.addGiftHistoryToDOM(giftHistoryToRender);
     transactionsList?.setAttribute("data-engrid-transactions-loaded", "");
   }
@@ -26477,7 +26478,7 @@ class GiftHistory {
     }
 
     const giftDate = new Date(gift.createdOn);
-    const giftString = giftDate.getMonth() + 1 + "/" + giftDate.getDate() + "/" + giftDate.getFullYear();
+    const giftString = `${giftDate.getMonth() + 1}/${giftDate.getDate()}/${giftDate.getFullYear()}`;
     const paymentString = paymentMethod === "bank" ? "Bank payment" : `Made with card ending ${gift.ccLastFour}, expiring ${gift.expiry}`;
     giftEl.innerHTML = `
       <div class="en__hubTxnGiving__transaction__header">
