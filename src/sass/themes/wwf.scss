@@ -664,10 +664,6 @@
       // border-bottom: none;
     }
 
-    .enWidget__copy--above {
-      display: none;
-    }
-
     .enWidget__copy--below {
       margin-bottom: 10px;
 
@@ -709,8 +705,8 @@
     .enWidget__progress {
       background-color: #6cc0284d !important;
       border: 3px solid #6cc0284d !important;
-      height: 19px !important;
-      min-height: 19px;
+      height: 30px !important;
+      min-height: 30px;
       border-radius: 9999px;
 
       .enWidget__fill {

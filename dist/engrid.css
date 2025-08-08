@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, August 5, 2025 @ 00:03:50 ET
+ *  Date: Friday, August 8, 2025 @ 16:02:05 ET
  *  By: fernando
  *  ENGrid styles: v0.22.4
  *  ENGrid scripts: v0.22.9
@@ -8448,9 +8448,6 @@ body[data-engrid-debug]:before{
     width:calc(100% + 60px);
   }
 }
-[data-engrid-theme=wwf] .en__component--widgetblock .enWidget--progressBar .enWidget__copy--above{
-  display:none;
-}
 [data-engrid-theme=wwf] .en__component--widgetblock .enWidget--progressBar .enWidget__copy--below{
   margin-bottom:10px;
 }
@@ -8490,8 +8487,8 @@ body[data-engrid-debug]:before{
   background-color:#6cc0284d !important;
   border:3px solid #6cc0284d !important;
   border-radius:9999px;
-  height:19px !important;
-  min-height:19px;
+  height:30px !important;
+  min-height:30px;
 }
 [data-engrid-theme=wwf] .en__component--widgetblock .enWidget--progressBar .enWidget__progress .enWidget__fill{
   background-color:#fff !important;
