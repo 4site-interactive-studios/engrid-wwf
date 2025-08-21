@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, August 21, 2025 @ 00:24:31 ET
+ *  Date: Thursday, August 21, 2025 @ 12:30:56 ET
  *  By: cawe
  *  ENGrid styles: v0.22.4
  *  ENGrid scripts: v0.22.9
@@ -23864,7 +23864,7 @@ const customScript = function (App, DonationFrequency) {
   window.addEventListener("load", () => {
     const enWidgetFillWidth = document.querySelector(".enWidget__fill") ? document.querySelector(".enWidget__fill").style.width : null;
 
-    if (enWidgetFillWidth == "79%") {
+    if (enWidgetFillWidth == "100%") {
       const enWidgetDisplay = document.querySelector(".enWidget__display");
 
       if (enWidgetDisplay) {

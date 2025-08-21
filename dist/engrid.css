@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, August 21, 2025 @ 00:24:31 ET
+ *  Date: Thursday, August 21, 2025 @ 12:30:56 ET
  *  By: cawe
  *  ENGrid styles: v0.22.4
  *  ENGrid scripts: v0.22.9
@@ -8544,21 +8544,21 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf] .en__component--widgetblock .enWidget--progressBar .enWidget__display .enWidget__bar .enWidget__progress .enWidget__fill .enWidget__fill__count{
   display:none;
 }
-[data-engrid-theme=wwf] .en__component--widgetblock .enWidget--progressBar{
+[data-engrid-theme=wwf][data-engrid-page-type=advocacypetition] .en__component--widgetblock .enWidget--progressBar{
   background-color:#e5621a;
 }
-[data-engrid-theme=wwf] .en__component--widgetblock .enWidget--progressBar .enWidget__display:before{
+[data-engrid-theme=wwf][data-engrid-page-type=advocacypetition] .en__component--widgetblock .enWidget--progressBar .enWidget__display:before{
   border:3px solid #b54000 !important;
 }
-[data-engrid-theme=wwf] .en__component--widgetblock .enWidget--progressBar .enWidget__display:after{
+[data-engrid-theme=wwf][data-engrid-page-type=advocacypetition] .en__component--widgetblock .enWidget--progressBar .enWidget__display:after{
   background:#b54000 !important;
   border:3px solid #b54000 !important;
 }
-[data-engrid-theme=wwf] .en__component--widgetblock .enWidget--progressBar .enWidget__display .enWidget__bar .enWidget__progress{
+[data-engrid-theme=wwf][data-engrid-page-type=advocacypetition] .en__component--widgetblock .enWidget--progressBar .enWidget__display .enWidget__bar .enWidget__progress{
   background-color:#b54000 !important;
   border-color:#b54000 !important;
 }
-[data-engrid-theme=wwf] .en__component--widgetblock .enWidget--progressBar .enWidget__display .enWidget__bar .enWidget__progress:before{
+[data-engrid-theme=wwf][data-engrid-page-type=advocacypetition] .en__component--widgetblock .enWidget--progressBar .enWidget__display .enWidget__bar .enWidget__progress:before{
   background:linear-gradient(90deg, #0000, #0000 9%, #e5621a 0, #e5621a 10%, #0000 0, #0000 19%, #e5621a 0, #e5621a 20%, #0000 0, #0000 29%, #e5621a 0, #e5621a 30%, #0000 0, #0000 39%, #e5621a 0, #e5621a 40%, #0000 0, #0000 49%, #e5621a 0, #e5621a 50%, #0000 0, #0000 59%, #e5621a 0, #e5621a 60%, #0000 0, #0000 69%, #e5621a 0, #e5621a 70%, #0000 0, #0000 79%, #e5621a 0, #e5621a 80%, #0000 0, #0000 89%, #e5621a 0, #e5621a 90%, #0000 0, #0000 99%);
 }
 [data-engrid-theme=wwf] .en__component--copyblock{
