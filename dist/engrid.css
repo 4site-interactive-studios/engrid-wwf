@@ -19,10 +19,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, August 13, 2025 @ 18:21:05 ET
- *  By: fernando
- *  ENGrid styles: v0.22.11
- *  ENGrid scripts: v0.22.14
+ *  Date: Wednesday, August 27, 2025 @ 13:29:49 ET
+ *  By: michael
+ *  ENGrid styles: v0.22.4
+ *  ENGrid scripts: v0.22.9
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -4519,42 +4519,6 @@ figure.media-with-attribution figattribution.attribution-topleft{
   right:auto;
   text-align:left;
   top:auto;
-}
-
-body:not(#en__pagebuilder) .page-backgroundImage.attribution-topleft figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-topleft:before{
-  background-position:0 0;
-}
-
-body:not(#en__pagebuilder) .page-backgroundImage.attribution-topright figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-topright:before{
-  background-position:100% 0;
-}
-
-body:not(#en__pagebuilder) .page-backgroundImage.attribution-bottomright figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-bottomright:before{
-  background-position:100% 100%;
-}
-
-body:not(#en__pagebuilder) .page-backgroundImage.attribution-bottomleft figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-bottomleft:before{
-  background-position:0 100%;
-}
-
-body:not(#en__pagebuilder) .page-backgroundImage.attribution-top figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-top:before,body:not(#en__pagebuilder) .page-backgroundImage.attribution-topcenter figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-topcenter:before{
-  background-position:top;
-}
-
-body:not(#en__pagebuilder) .page-backgroundImage.attribution-bottom figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-bottom:before,body:not(#en__pagebuilder) .page-backgroundImage.attribution-bottomcenter figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-bottomcenter:before{
-  background-position:bottom;
-}
-
-body:not(#en__pagebuilder) .page-backgroundImage.attribution-left figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-left:before,body:not(#en__pagebuilder) .page-backgroundImage.attribution-leftcenter figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-leftcenter:before{
-  background-position:0;
-}
-
-body:not(#en__pagebuilder) .page-backgroundImage.attribution-right figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-right:before,body:not(#en__pagebuilder) .page-backgroundImage.attribution-rightcenter figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-rightcenter:before{
-  background-position:100%;
-}
-
-body:not(#en__pagebuilder) .page-backgroundImage.attribution-center figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-center:before{
-  background-position:50%;
 }
 
 img,video{
@@ -10643,6 +10607,62 @@ body[data-engrid-debug]:before{
 }
 [data-engrid-theme=wwf][data-engrid-page-type=p2pcheckout] .grey-box,[data-engrid-theme=wwf][data-engrid-page-type=p2pdonation] .grey-box{
   margin-bottom:10px;
+}
+[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col]:not(#en__pagebuilder):not([data-engrid-debug]) .quiz-error,[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col]:not(#en__pagebuilder):not([data-engrid-debug]):not([data-engrid-quiz-answer=correct]) .showif-correct,[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col]:not(#en__pagebuilder):not([data-engrid-debug]):not([data-engrid-quiz-answer=incorrect]) .showif-incorrect,[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col]:not(#en__pagebuilder):not([data-engrid-debug]):not([data-engrid-quiz-answer]) .showif-answered,[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col]:not(#en__pagebuilder):not([data-engrid-debug])[data-engrid-quiz-answer=correct] .hideif-correct,[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col]:not(#en__pagebuilder):not([data-engrid-debug])[data-engrid-quiz-answer=incorrect] .hideif-incorrect,[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col]:not(#en__pagebuilder):not([data-engrid-debug])[data-engrid-quiz-answer] .hideif-answered,[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col]:not([data-engrid-quiz-answer]):has(.en__component--svblock) .en__submit,[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col][data-engrid-quiz-answer] .button-quiz-answer{
+  display:none;
+}
+[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col] input[disabled],[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col] input[disabled]+label,[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col] select[disabled]{
+  cursor:not-allowed;
+  opacity:.7;
+}
+[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col]{
+  --engrid__body_margin:0;
+}
+[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col]#en__pagebuilder .body-title,[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col]#en__pagebuilder .body-top,[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col]#en__pagebuilder .content-footer,[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col]#en__pagebuilder .content-header,[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col]#en__pagebuilder .page-backgroundImage{
+  display:none !important;
+}
+[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col] form>.en__component--advrow{
+  grid-template-columns:[pc-start lpc-start] minmax(0, 1fr) [lpc-end cc-start lcc-start] minmax(0, 0) [lcc-end bc-start lbc-start] minmax(0, 1fr) [lbc-end rbc-start] minmax(0, 1fr) [rbc-end bc-end rcc-start] minmax(0, 0) [rcc-end cc-end rpc-start] minmax(0, 1fr) [rpc-end pc-end];
+  grid-template-rows:[page-start page-alert-start] min-content [page-alert-end content-header-start] min-content [content-header-end body-headerOutside-start] min-content [body-headerOutside-end body-header-start] min-content [body-header-end body-title-start] min-content [body-title-end body-banner-start] min-content [body-banner-end body-bannerOverlay-start] min-content [body-bannerOverlay-end body-top-start] min-content [body-top-end body-side-start] min-content [body-side-end body-main-start] 1fr [body-main-end body-bottom-start] min-content [body-bottom-end body-footer-start] min-content [body-footer-end body-footerOutside-start] min-content [body-footerOutside-end content-footerSpacer-start] max-content [content-footerSpacer-end content-preFooter-start] min-content [content-preFooter-end content-footer-start] min-content [content-footer-end page-backgroundImage-start] min-content [page-backgroundImage-end page-backgroundImageOverlay-start] min-content [page-backgroundImageOverlay-end page-end page-customCode-start] min-content [page-customCode-end];
+}
+[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col] .content-header{
+  margin-bottom:0;
+}
+[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col] .content-footer{
+  margin-top:0;
+}
+[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col] .body-banner{
+  grid-column:lpc-start /  lbc-end;
+}
+[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col] .body-bottom,[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col] .body-main{
+  grid-column:rbc-start /  rpc-end;
+}
+[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col] .body-main{
+  border-left:none;
+  border-right:none;
+  border-top:none;
+  grid-row:body-main;
+}
+[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col] .body-banner{
+  background-position:50%;
+  background-repeat:no-repeat;
+  background-size:cover;
+  grid-row:body-main;
+}
+[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col]:not(#en__pagebuilder) .body-banner .en__component--imageblock{
+  display:none;
+}
+@media screen and (max-width:1024px){
+  [data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col] .body-banner{
+    grid-column:pc;
+    grid-row:body-banner;
+  }
+  [data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col] .body-banner:has(img){
+    height:300px;
+  }
+  [data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col] .body-main{
+    grid-column:pc;
+  }
 }
 #footer,#footer a,#footer abbr,#footer acronym,#footer address,#footer applet,#footer b,#footer big,#footer blockquote,#footer caption,#footer center,#footer cite,#footer code,#footer dd,#footer del,#footer dfn,#footer div,#footer dl,#footer dt,#footer em,#footer fieldset,#footer form,#footer h1,#footer h2,#footer h3,#footer h4,#footer h5,#footer h6,#footer i,#footer iframe,#footer img,#footer ins,#footer kbd,#footer label,#footer legend,#footer li,#footer object,#footer ol,#footer p,#footer pre,#footer q,#footer s,#footer samp,#footer small,#footer span,#footer strike,#footer strong,#footer sub,#footer sup,#footer table,#footer tbody,#footer td,#footer tfoot,#footer th,#footer thead,#footer tr,#footer tt,#footer u,#footer ul,#footer var,#header,#header a,#header abbr,#header acronym,#header address,#header applet,#header b,#header big,#header blockquote,#header caption,#header center,#header cite,#header code,#header dd,#header del,#header dfn,#header div,#header dl,#header dt,#header em,#header fieldset,#header form,#header h1,#header h2,#header h3,#header h4,#header h5,#header h6,#header i,#header iframe,#header img,#header ins,#header kbd,#header label,#header legend,#header li,#header object,#header ol,#header p,#header pre,#header q,#header s,#header samp,#header small,#header span,#header strike,#header strong,#header sub,#header sup,#header table,#header tbody,#header td,#header tfoot,#header th,#header thead,#header tr,#header tt,#header u,#header ul,#header var,body,html{
   border:0;
