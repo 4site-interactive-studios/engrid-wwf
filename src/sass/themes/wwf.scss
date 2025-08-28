@@ -39,6 +39,7 @@
   --engrid__body-top_padding: 0px;
 
   --engrid__page_background-color: #f3f7ed;
+  --engrid__body-main_background-color: #fefcf9;
   --engrid__body-title_background-color: transparent;
   --engrid__body-banner_background-color: transparent;
   --engrid__body-top_background-color: transparent;
@@ -50,24 +51,51 @@
 
   // TYPOGRAPHY DEFAULT
   --default_font-family: "Open Sans", sans-serif;
-  --default_color: ##1f2937;
-  --default_font-size: 20px;
+  --default_color: #1f2937;
+  --default_font-size: 16px;
   // --default_font-weight: initial;
-  --default_line-height: 32px;
+  --default_line-height: 1.5;
 
   // TYPOGRAPHY H1
   // --h1_font-family: var(--default_font-family);
   // --h1_color: initial;
-  --h1_font-size: 46px;
+  --h1_font-size: 80px;
   --h1_font-weight: 700;
-  --h1_line-height: 55.2px;
+  --h1_line-height: 1.1;
 
   // TYPOGRAPHY H2
   // --h2_font-family: var(--default_font-family);
   // --h2_color: initial;
-  --h2_font-size: 20px;
+  --h2_font-size: 54px;
   --h2_font-weight: 700;
-  --h2_line-height: 32px;
+  --h2_line-height: 1.15;
+
+  // TYPOGRAPHY H3
+  // --h3_font-family: var(--default_font-family);
+  // --h3_color: initial;
+  --h3_font-size: 44px;
+  --h3_font-weight: 600; // SemiBold
+  --h3_line-height: 1.15;
+
+  // TYPOGRAPHY H4
+  // --h4_font-family: var(--default_font-family);
+  // --h4_color: initial;
+  --h4_font-size: 30px;
+  --h4_font-weight: 700; // Bold
+  --h4_line-height: 1.4;
+
+  // TYPOGRAPHY H5
+  // --h5_font-family: var(--default_font-family);
+  // --h5_color: initial;
+  --h5_font-size: 24px;
+  --h5_font-weight: 700; // Bold
+  --h5_line-height: 1.4;
+
+  // TYPOGRAPHY P
+  --p_font-family: var(--default_font-family);
+  --p_font-size: 18px;
+  --p_font-weight: 400;
+  --p_line-height: 1.6;
 
   // TYPOGRAPHY P
   // --p_font-family: var(--default_font-family);
@@ -88,16 +116,16 @@
 
   // TYPOGRAPHY INPUT
   // --input_font-family: var(--default_font-family);
-  // --input_color: #000000;
+  --input_color: #0f0f0f;
   // --input_font-size: var(--root_font-size);
   // --input_font-weight: initial;
   // --input_line-height: initial;
-  --input_background-color: #ffffff;
+  --input_background-color: #fcfcfc;
   // --input_border-width: 1px;
-  --input_border-color: #808080;
-  --input_border-radius: 2px;
+  --input_border-color: rgba(15, 15, 15, 0.1);
+  --input_border-radius: 4px;
   // --input_placeholder-color: var(--color_light-gray);
-  // --input_box-shadow: inset 0 2px 2px -1px rgba(74, 74, 104, 0.1);
+  --input_box-shadow: none;
   --input_padding: 1.3ch 1.2ch;
 
   // TYPOGRAPHY INPUT:FOCUS
@@ -113,17 +141,17 @@
   // TYPOGRAPHY BUTTON
   // --button_font-family: var(--default_font-family);
   --button_color: #006ea3;
-  --button_font-size: 24px;
-  --button_font-weight: 700;
-  --button_line-height: 36px;
+  --button_font-size: 18px;
+  --button_font-weight: 600;
+  --button_line-height: 1;
   --button_background-color: #ffffff;
-  // --button_border-width: 1px;
+  --button_border-width: 2px;
   --button_border-color: #006ea3;
-  --button_border-radius: 2px;
+  --button_border-radius: 32px;
 
   // TYPOGRAPHY BUTTON:HOVER
   --button_color_hover: #ffffff;
-  --button_background-color_hover: #016da3;
+  --button_background-color_hover: #1f648c;
   --button_border-color_hover: #006ea3;
 
   // TYPOGRAPHY BUTTON:SELECTED
@@ -131,9 +159,14 @@
   --button_background-color_checked: #006ea3;
   --button_border-color_checked: #006ea3;
 
-  --recurring-frequency__button_font-size: 24px;
-  --recurring-frequency__button_font-weight: 700;
-  --recurring-frequency__button_line-height: 36px;
+  --recurring-frequency__button_font-size: 18px;
+  --recurring-frequency__button_font-weight: 600;
+  --recurring-frequency__button_line-height: 1;
+  --recurring-frequency__button_padding: 15px 0;
+
+  --recurring-frequency__button_background-color_checked: #eef4fa;
+  --recurring-frequency__button_background-color_hover: #eef4fa;
+  --recurring-frequency__button_color_hover: #1f648c;
 
   --submit__button_color: #ffffff;
   --submit__button_border-color: #e5621a;
@@ -146,22 +179,24 @@
   --submit__button_color_checked: #ffffff;
   --submit__button_background-color_checked: #000000;
   --submit__button_border-color_checked: #000000;
+  --submit__button_padding-top: 15px;
+  --submit__button_padding-bottom: 15px;
 
   // DONATION PAGE
   // --give-monthly-donation-amount-appended-label: "/mo";
   // --give-annual-donation-amount-appended-label: "/yr";
   --give-quarterly-donation-amount-appended-label: "/qtr";
   --recurring-frequency__button_count: 2;
-  --recurring-frequency__button_color_checked: #ffffff;
+  --recurring-frequency__button_color_checked: #1f648c;
   --donation-amount__button_count: 3;
   --give-by-select__button_count: 2;
 
-  --label_font-size: 16px;
-  --label_line-height: 24px;
-  --label_font-weight: 700;
-  --label_color: #222222;
+  --label_font-size: 14px;
+  --label_line-height: 1;
+  --label_font-weight: 400;
+  --label_color: #4b4b4b;
 
-  --input_placeholder-color: #989b97;
+  --input_placeholder-color: #727272;
 
   --radio_height: 30px;
   --radio_width: 30px;
@@ -181,7 +216,7 @@
   --radio_box-shadow_selected: inset 0 0 0 4px #ffffff;
 
   --donation-amount__button_color_checked: #ffffff;
-  --donation-amount__button_background-color_checked: #016da3;
+  --donation-amount__button_background-color_checked: #1f648c;
 
   --checkbox_content_checked: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='21px' height='15px' viewBox='0 0 20 15' version='1.1'%3E%3Cg id='surface1'%3E%3Cpath style=' stroke:none;fill-rule:nonzero;fill:rgb(100%25,100%25,100%25);fill-opacity:1;' d='M 12.75 6.117188 L 6.835938 12.234375 L 1.335938 6.546875 L 0 7.929688 L 3.417969 11.464844 L 6.835938 15.003906 L 13.417969 8.191406 L 20 1.382812 L 18.664062 0 Z M 12.75 6.117188 '/%3E%3C/g%3E%3C/svg%3E");
   --checkbox_border-width: 2px;
@@ -211,7 +246,7 @@
   --inline-upsell-box_strong_line-height: 28px;
 
   // VGS
-  --en-vgs-height: 64px;
+  --en-vgs-height: 48px;
 
   --maximize_my_donation_image: url(https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/2401_Premiums_NoPremTiger_1050.jpg-250x250.jpg?v=1682005678000);
 
@@ -235,11 +270,67 @@
     display: none !important;
   }
 
-  // Base styling
-  font-family: "Open Sans", sans-serif;
-  color: #1f2937;
-  font-size: 20px;
-  line-height: 32px;
+  // Base styling remains driven by ENgrid variables (no direct element styles)
+
+  /* Typography extras not covered by ENgrid variables */
+  h1,
+  .h1 {
+    /* Open Sans Condensed Bold via width axis */
+    font-stretch: 80%;
+    letter-spacing: -0.03em;
+  }
+
+  h2,
+  .h2 {
+    /* Open Sans Condensed Bold via width axis */
+    font-stretch: 80%;
+    letter-spacing: -0.02em;
+  }
+
+  h3,
+  .h3 {
+    /* Open Sans Condensed SemiBold via width axis */
+    font-stretch: 80%;
+    letter-spacing: -0.01em;
+  }
+
+  h4,
+  .h4 {
+    letter-spacing: 0;
+  }
+
+  h5,
+  .h5 {
+    letter-spacing: 0;
+  }
+
+  p {
+    letter-spacing: 0;
+  }
+
+  // Mobile overrides (adjust variables at the breakpoint used by ENgrid)
+  @media screen and (max-width: 1023.98px) {
+    --h1_font-size: 52px;
+    --h1_line-height: 1.1;
+
+    --h2_font-size: 36px;
+    --h2_line-height: 1.1;
+
+    /* H2 mobile letter-spacing spec */
+    h2,
+    .h2 {
+      letter-spacing: -0.03em;
+    }
+
+    --h3_font-size: 30px;
+    --h3_line-height: 1.15;
+
+    --h4_font-size: 21px;
+    --h4_line-height: 1.4;
+
+    --h5_font-size: 18px;
+    --h5_line-height: 1.4;
+  }
 
   .body-main {
     --p_font-size: 17px;
@@ -498,8 +589,8 @@
 
   .give-by-select input[type="radio"] + label {
     padding: 12px 22px;
-    height: 65px;
-    max-height: 65px;
+    height: 50px;
+    max-height: 50px;
   }
 
   .give-by-select .en__field__label {
@@ -1220,9 +1311,9 @@
 
   .radio-to-buttons_donationAmt .en__field--donationAmt {
     .en__field__element--radio {
-      --fields_spacing-inline: 0.9rem;
-      --fields_spacing-block: 1.2rem;
-      --donation-amount__button_padding: 1ch calc(1.2ch - 38px);
+      --fields_spacing-inline: 0.5rem;
+      --fields_spacing-block: 1rem;
+      --donation-amount__button_padding: 15px calc(1.2ch - 38px);
     }
 
     input[type="radio"] + label {
@@ -1963,7 +2054,7 @@
 
 @media screen and (max-width: 600px) {
   & {
-    --default_font-size: 15px;
+    --default_font-size: 16px;
     --input_font-size: 16px;
     --default_line-height: 24px;
     --h1_font-size: 24px;
