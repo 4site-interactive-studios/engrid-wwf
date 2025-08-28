@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, August 27, 2025 @ 13:29:49 ET
+ *  Date: Thursday, August 28, 2025 @ 08:03:01 ET
  *  By: michael
  *  ENGrid styles: v0.22.4
  *  ENGrid scripts: v0.22.9
@@ -26101,9 +26101,9 @@ class Quiz {
     _defineProperty(this, "sessionItemKey", `quiz-results-${engrid_ENGrid.getPageID()}`);
 
     if (!this.shouldRun()) return;
+    this.checkForFormSkip();
     this.setBgImage();
     this.addEventListeners();
-    this.checkForFormSkip();
   }
 
   shouldRun() {
@@ -26130,7 +26130,10 @@ class Quiz {
         if (checkAnswerBtn) return;
         this.checkAnswer();
       });
-    });
+    }); // Skip button
+
+    const skipBtn = document.querySelector(".button-next-page");
+    skipBtn?.addEventListener("click", () => this.redirectToNextPage());
   }
 
   checkAnswer() {

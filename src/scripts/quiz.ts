@@ -11,9 +11,9 @@ export class Quiz {
 
   constructor() {
     if (!this.shouldRun()) return;
+    this.checkForFormSkip();
     this.setBgImage();
     this.addEventListeners();
-    this.checkForFormSkip();
   }
 
   shouldRun() {
@@ -51,6 +51,10 @@ export class Quiz {
         this.checkAnswer();
       });
     });
+
+    // Skip button
+    const skipBtn = document.querySelector<HTMLElement>(".button-next-page");
+    skipBtn?.addEventListener("click", () => this.redirectToNextPage());
   }
 
   private checkAnswer() {

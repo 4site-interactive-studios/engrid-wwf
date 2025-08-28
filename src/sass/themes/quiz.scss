@@ -16,16 +16,16 @@
   .quiz-error {
     display: none;
   }
-}
 
-// Hide check my answer button after question is answered
-&[data-engrid-quiz-answer] .button-quiz-answer {
-  display: none;
-}
+  // Hide check my answer button after question is answered
+  &[data-engrid-quiz-answer] .button-quiz-answer {
+    display: none;
+  }
 
-// Show submit button after question is answered
-&:not([data-engrid-quiz-answer]):has(.en__component--svblock) .en__submit {
-  display: none;
+  // Show submit button after question is answered
+  &:not([data-engrid-quiz-answer]):has(.en__component--svblock) .en__submit {
+    display: none;
+  }
 }
 
 input[disabled],
