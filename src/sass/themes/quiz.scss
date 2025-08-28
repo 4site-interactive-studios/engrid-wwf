@@ -26,6 +26,14 @@
   &:not([data-engrid-quiz-answer]):has(.en__component--svblock) .en__submit {
     display: none;
   }
+
+  // Conditional content for scoring
+  &:not([data-engrid-quiz-score="75-100"]) .showif-score75-100,
+  &:not([data-engrid-quiz-score="50-75"]) .showif-score50-75,
+  &:not([data-engrid-quiz-score="25-50"]) .showif-score25-50,
+  &:not([data-engrid-quiz-score="0-25"]) .showif-score0-25 {
+    display: none;
+  }
 }
 
 input[disabled],
@@ -38,6 +46,8 @@ select[disabled] {
 
 & {
   --engrid__body_margin: 0;
+  --engrid__body-main_padding: 60px 15%;
+  --engrid__body-main_background-color: #f8f8f8;
 }
 
 &#en__pagebuilder {
@@ -100,13 +110,6 @@ form > .en__component--advrow {
   grid-column: rbc-start / rpc-end;
 }
 
-.body-main {
-  grid-row: body-main;
-  border-top: none;
-  border-left: none;
-  border-right: none;
-}
-
 .body-banner {
   grid-row: body-main;
   background-repeat: no-repeat;
@@ -120,7 +123,101 @@ form > .en__component--advrow {
   }
 }
 
+.body-main {
+  grid-row: body-main;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.en__field--radio.en__field--survey {
+  --radio_box-shadow_selected: none;
+  --radio_box-shadow_hover: none;
+  --radio_border-radius: 0;
+  --radio_font-size: 18px;
+  --radio_background-color_hover: #ffffff;
+
+  input[type="radio"]:checked + label:before,
+  input[type="checkbox"]:checked + label:before {
+    background: #1a1a1a
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='10.822' height='8.414' viewBox='0 0 10.822 8.414'><path d='M6,8,0,2,2.438,0' transform='translate(1.407 7.414) rotate(-90)' fill='none' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-miterlimit='10' stroke-width='2'/></svg>")
+    center no-repeat;
+  }
+
+  h3,
+  > label {
+    align-items: flex-start;
+    margin: 0;
+    display: flex;
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.375;
+    text-align: left;
+
+    @media screen and (max-width: 1024px) {
+      font-size: 20px;
+    }
+  }
+
+  .en__field__item {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .en__field__element--radio {
+    width: 100%;
+    margin-top: 20px;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .en__field__label--item {
+    align-items: center;
+    background-color: #fff;
+    border: 2px solid #000;
+    display: flex;
+    padding: 1rem 1.25rem;
+    text-align: left;
+    outline: none;
+  }
+
+  .quiz-incorrect-answer {
+    .en__field__label--item {
+      color: red;
+      background-color: #f8e0e0;
+      border: 2px solid #9e1919;
+      opacity: 1;
+    }
+
+    .en__field__label--item:before {
+      background: #9e1919 url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='8.957' height='8.837' viewBox='0 0 8.957 8.837'><path d='M6,6,0,0' transform='translate(1.543 7.423) rotate(-90)' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-miterlimit='10' stroke-width='2'/><path d='M6,6,0,0' transform='translate(1.414 1.414)' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-miterlimit='10' stroke-width='2'/></svg>") center no-repeat !important;
+      border-color: #9e1919 !important;
+    }
+  }
+
+  .quiz-correct-answer {
+    .en__field__label--item {
+      color: green;
+      background-color: #d4f0d5;
+      border: 2px solid green;
+      font-weight: bold;
+      opacity: 1;
+    }
+
+    .en__field__label--item:before {
+      background: green url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='10.822' height='8.414' viewBox='0 0 10.822 8.414'><path d='M6,8,0,2,2.438,0' transform='translate(1.407 7.414) rotate(-90)' fill='none' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-miterlimit='10' stroke-width='2'/></svg>") center no-repeat !important;
+      border-color: green !important;
+    }
+  }
+}
+
 @media screen and (max-width: 1024px) {
+  & {
+    --engrid__body-main_padding: 40px 20px;
+  }
+
   .body-banner {
     grid-column: pc;
     grid-row: body-banner;

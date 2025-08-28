@@ -12,6 +12,7 @@ export class Quiz {
   constructor() {
     if (!this.shouldRun()) return;
     this.checkForFormSkip();
+    this.handleQuizResults();
     this.setBgImage();
     this.addEventListeners();
   }
@@ -61,6 +62,9 @@ export class Quiz {
     const selectedAnswer = document.querySelector<HTMLInputElement>(
       ".en__component--svblock input:checked"
     );
+    const correctAnswer = document.querySelector<HTMLInputElement>(
+      '.en__component--svblock input[value="1"]'
+    );
 
     if (!selectedAnswer) {
       this.toggleError(true);
@@ -76,13 +80,18 @@ export class Quiz {
         el.setAttribute("disabled", "true");
       });
 
-    const isCorrect = selectedAnswer.value === "1";
+    const isCorrect = selectedAnswer === correctAnswer;
     ENGrid.setBodyData("quiz-answer", isCorrect ? "correct" : "incorrect");
     const results = JSON.parse(
       sessionStorage.getItem(this.sessionItemKey) || "{}"
     );
     results[ENGrid.getPageNumber()] = isCorrect ? 1 : 0;
     sessionStorage.setItem(this.sessionItemKey, JSON.stringify(results));
+
+    correctAnswer?.parentElement?.classList.add("quiz-correct-answer");
+    if (!isCorrect) {
+      selectedAnswer.parentElement?.classList.add("quiz-incorrect-answer");
+    }
   }
 
   private toggleError(show: boolean) {
@@ -113,5 +122,54 @@ export class Quiz {
     window.location.href = window.location.href
       .split("?")[0]
       .replace(/\/\d\/?$/, nextPage);
+  }
+
+  private handleQuizResults() {
+    const isResultsPage = document.querySelector(".quiz-results");
+    if (!isResultsPage) return;
+    const results = JSON.parse(
+      sessionStorage.getItem(this.sessionItemKey) || "{}"
+    );
+    const totalQuestions = Object.keys(results).length;
+    const score =
+      (Object.values(results).reduce(
+        (a, b) => Number(a) + Number(b),
+        0
+      ) as number) || 0;
+    const scorePercent = totalQuestions
+      ? Math.round((score / totalQuestions) * 100)
+      : 0;
+    let scoreRange;
+    if (scorePercent >= 75) {
+      scoreRange = "75-100";
+    } else if (scorePercent >= 50) {
+      scoreRange = "50-75";
+    } else if (scorePercent >= 25) {
+      scoreRange = "25-50";
+    } else {
+      scoreRange = "0-25";
+    }
+    if ((window as any).quizResultsPage) {
+      try {
+        const resultsUrl = new URL((window as any).quizResultsPage);
+        resultsUrl.searchParams.set("hasQuizResults", "true");
+        resultsUrl.searchParams.set("quizTime", String(Date.now()));
+        resultsUrl.searchParams.set("totalQuestions", String(totalQuestions));
+        resultsUrl.searchParams.set("totalCorrect", String(score));
+        window.location.href = resultsUrl.toString();
+        return;
+      } catch (e) {
+        this.logger.log("Error parsing quizResultsPage URL", e);
+      }
+    }
+    ENGrid.setBodyData("quiz-score", scoreRange);
+    const enBlocks = document.querySelectorAll<HTMLElement>(
+      ".en__component--copyblock, .en__component--codeblock"
+    );
+    enBlocks.forEach((block) => {
+      block.innerHTML = block.innerHTML
+        .replace("{{score}}", String(score))
+        .replace("{{total}}", String(totalQuestions));
+    });
   }
 }

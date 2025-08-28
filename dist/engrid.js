@@ -48759,6 +48759,46 @@ class Bridger {
     return window.userData[property];
   }
 
+  handleQuizResults() {
+    const isResultsPage = document.querySelector(".quiz-results");
+    if (!isResultsPage) return;
+    const results = JSON.parse(sessionStorage.getItem(this.sessionItemKey) || "{}");
+    const totalQuestions = Object.keys(results).length;
+    const score = Object.values(results).reduce((a, b) => Number(a) + Number(b), 0) || 0;
+    const scorePercent = totalQuestions ? Math.round(score / totalQuestions * 100) : 0;
+    let scoreRange;
+
+    if (scorePercent >= 75) {
+      scoreRange = "75-100";
+    } else if (scorePercent >= 50) {
+      scoreRange = "50-75";
+    } else if (scorePercent >= 25) {
+      scoreRange = "25-50";
+    } else {
+      scoreRange = "0-25";
+    }
+
+    if (window.quizResultsPage) {
+      try {
+        const resultsUrl = new URL(window.quizResultsPage);
+        resultsUrl.searchParams.set("hasQuizResults", "true");
+        resultsUrl.searchParams.set("quizTime", String(Date.now()));
+        resultsUrl.searchParams.set("totalQuestions", String(totalQuestions));
+        resultsUrl.searchParams.set("totalCorrect", String(score));
+        window.location.href = resultsUrl.toString();
+        return;
+      } catch (e) {
+        this.logger.log("Error parsing quizResultsPage URL", e);
+      }
+    }
+
+    engrid_ENGrid.setBodyData("quiz-score", scoreRange);
+    const enBlocks = document.querySelectorAll(".en__component--copyblock, .en__component--codeblock");
+    enBlocks.forEach(block => {
+      block.innerHTML = block.innerHTML.replace("{{score}}", String(score)).replace("{{total}}", String(totalQuestions));
+    });
+  }
+
 }
 ;// CONCATENATED MODULE: ./src/index.ts
 // import {
