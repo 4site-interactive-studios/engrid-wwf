@@ -23,12 +23,21 @@ export class Quiz {
 
   private setBgImage() {
     const imageUrl = document
-      .querySelector<HTMLElement>(".body-banner img")
+      .querySelector<HTMLElement>(
+        ".body-banner .en__component--imageblock  img"
+      )
+      ?.getAttribute("src");
+    const mobileImageUrl = document
+      .querySelector<HTMLElement>(
+        ".body-banner .en__component--imageblock:last-child img"
+      )
       ?.getAttribute("src");
     if (imageUrl) {
-      document.querySelector<HTMLElement>(
-        ".body-banner"
-      )!.style.backgroundImage = `url(${imageUrl})`;
+      document.body.style.setProperty("--quiz-bg-image", `url(${imageUrl})`);
+      document.body.style.setProperty(
+        "--quiz-mobile-bg-image",
+        `url(${mobileImageUrl})`
+      );
     }
   }
 
@@ -88,9 +97,13 @@ export class Quiz {
     results[ENGrid.getPageNumber()] = isCorrect ? 1 : 0;
     sessionStorage.setItem(this.sessionItemKey, JSON.stringify(results));
 
-    correctAnswer?.parentElement?.classList.add("quiz-correct-answer");
+    correctAnswer
+      ?.closest(".en__field__item")
+      ?.classList.add("quiz-correct-answer");
     if (!isCorrect) {
-      selectedAnswer.parentElement?.classList.add("quiz-incorrect-answer");
+      selectedAnswer
+        .closest(".en__field__item")
+        ?.classList.add("quiz-incorrect-answer");
     }
   }
 

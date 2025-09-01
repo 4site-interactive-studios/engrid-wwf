@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, August 28, 2025 @ 13:02:41 ET
+ *  Date: Monday, September 1, 2025 @ 11:39:45 ET
  *  By: michael
  *  ENGrid styles: v0.22.4
  *  ENGrid scripts: v0.22.9
@@ -26112,10 +26112,12 @@ class Quiz {
   }
 
   setBgImage() {
-    const imageUrl = document.querySelector(".body-banner img")?.getAttribute("src");
+    const imageUrl = document.querySelector(".body-banner .en__component--imageblock  img")?.getAttribute("src");
+    const mobileImageUrl = document.querySelector(".body-banner .en__component--imageblock:last-child img")?.getAttribute("src");
 
     if (imageUrl) {
-      document.querySelector(".body-banner").style.backgroundImage = `url(${imageUrl})`;
+      document.body.style.setProperty("--quiz-bg-image", `url(${imageUrl})`);
+      document.body.style.setProperty("--quiz-mobile-bg-image", `url(${mobileImageUrl})`);
     }
   }
 
@@ -26155,10 +26157,10 @@ class Quiz {
     const results = JSON.parse(sessionStorage.getItem(this.sessionItemKey) || "{}");
     results[engrid_ENGrid.getPageNumber()] = isCorrect ? 1 : 0;
     sessionStorage.setItem(this.sessionItemKey, JSON.stringify(results));
-    correctAnswer?.parentElement?.classList.add("quiz-correct-answer");
+    correctAnswer?.closest(".en__field__item")?.classList.add("quiz-correct-answer");
 
     if (!isCorrect) {
-      selectedAnswer.parentElement?.classList.add("quiz-incorrect-answer");
+      selectedAnswer.closest(".en__field__item")?.classList.add("quiz-incorrect-answer");
     }
   }
 
