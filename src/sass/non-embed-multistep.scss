@@ -188,9 +188,9 @@
 
   @media screen and (max-width: 1200px) {
     &[data-engrid-page-background="image"][data-engrid-layout="centerleft1col"]
-    .page-backgroundImage:before,
+      .page-backgroundImage:before,
     &[data-engrid-page-background="image"][data-engrid-layout="leftleft1col"]
-    .page-backgroundImage:before {
+      .page-backgroundImage:before {
       background-image: none !important;
     }
   }
@@ -387,7 +387,7 @@
   }
 
   @media screen and (max-width: 1023px) {
-    &:not([data-engrid-multistep-active-step="1"]):not([data-engrid-multistep-expand="true"]) {
+    &:not([data-engrid-last-page]):not([data-engrid-multistep-active-step="1"]):not([data-engrid-multistep-expand="true"]) {
       .body-title,
       .body-banner,
       .body-top {
@@ -419,7 +419,6 @@
   .engrid-welcome-back {
     display: none;
   }
-
 
   //Modifications for "expand" variant
   &[data-engrid-multistep-expand="true"] {
