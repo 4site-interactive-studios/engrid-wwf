@@ -19,10 +19,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, August 21, 2025 @ 12:30:56 ET
- *  By: cawe
- *  ENGrid styles: v0.22.4
- *  ENGrid scripts: v0.22.9
+ *  Date: Thursday, September 4, 2025 @ 00:27:03 ET
+ *  By: fernando
+ *  ENGrid styles: v0.22.11
+ *  ENGrid scripts: v0.22.17
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -2854,8 +2854,7 @@ body:not(#en__pagebuilder) .click-to-expand:not(.expanded){
   overflow:hidden;
 }
 body:not(#en__pagebuilder) .click-to-expand:not(.expanded) .click-to-expand-text-wrapper{
-  -webkit-mask-image:linear-gradient(to bottom, #000 50%, #fff0 calc(100% - var(--click-to-expand__cta-image_height)));
-          mask-image:linear-gradient(to bottom, #000 50%, #fff0 calc(100% - var(--click-to-expand__cta-image_height)));
+  mask-image:linear-gradient(to bottom, #000 50%, #fff0 calc(100% - var(--click-to-expand__cta-image_height)));
   max-height:calc(var(--click-to-expand__copy-area_height) - var(--click-to-expand__cta-image_height) - 35px);
 }
 body:not(#en__pagebuilder) .click-to-expand:not(.expanded) .click-to-expand-cta{
@@ -4520,6 +4519,42 @@ figure.media-with-attribution figattribution.attribution-topleft{
   right:auto;
   text-align:left;
   top:auto;
+}
+
+body:not(#en__pagebuilder) .page-backgroundImage.attribution-topleft figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-topleft:before{
+  background-position:0 0;
+}
+
+body:not(#en__pagebuilder) .page-backgroundImage.attribution-topright figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-topright:before{
+  background-position:100% 0;
+}
+
+body:not(#en__pagebuilder) .page-backgroundImage.attribution-bottomright figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-bottomright:before{
+  background-position:100% 100%;
+}
+
+body:not(#en__pagebuilder) .page-backgroundImage.attribution-bottomleft figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-bottomleft:before{
+  background-position:0 100%;
+}
+
+body:not(#en__pagebuilder) .page-backgroundImage.attribution-top figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-top:before,body:not(#en__pagebuilder) .page-backgroundImage.attribution-topcenter figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-topcenter:before{
+  background-position:top;
+}
+
+body:not(#en__pagebuilder) .page-backgroundImage.attribution-bottom figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-bottom:before,body:not(#en__pagebuilder) .page-backgroundImage.attribution-bottomcenter figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-bottomcenter:before{
+  background-position:bottom;
+}
+
+body:not(#en__pagebuilder) .page-backgroundImage.attribution-left figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-left:before,body:not(#en__pagebuilder) .page-backgroundImage.attribution-leftcenter figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-leftcenter:before{
+  background-position:0;
+}
+
+body:not(#en__pagebuilder) .page-backgroundImage.attribution-right figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-right:before,body:not(#en__pagebuilder) .page-backgroundImage.attribution-rightcenter figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-rightcenter:before{
+  background-position:100%;
+}
+
+body:not(#en__pagebuilder) .page-backgroundImage.attribution-center figure.media-with-attribution,body:not(#en__pagebuilder) .page-backgroundImage.attribution-center:before{
+  background-position:50%;
 }
 
 img,video{
@@ -8245,8 +8280,7 @@ body[data-engrid-debug]:before{
   -webkit-box-orient:vertical;
   display:-webkit-box;
   margin-bottom:2.5rem;
-  -webkit-mask-image:none;
-          mask-image:none;
+  mask-image:none;
   overflow:hidden;
 }
 @supports (-webkit-hyphens:none){
@@ -8737,8 +8771,7 @@ body[data-engrid-debug]:before{
   width:2rem;
 }
 [data-engrid-theme=wwf] .ecardrecipient__name{
-  -webkit-mask-image:linear-gradient(90deg, #000 75%, #fff0 calc(100% - 1rem));
-          mask-image:linear-gradient(90deg, #000 75%, #fff0 calc(100% - 1rem));
+  mask-image:linear-gradient(90deg, #000 75%, #fff0 calc(100% - 1rem));
   outline:none;
   padding-right:1rem;
 }
@@ -12502,7 +12535,7 @@ body[data-engrid-debug]:before{
   padding:26px 29px 20px;
 }
 @media screen and (max-width:1023px){
-  [data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="1"]):not([data-engrid-multistep-expand=true]) .body-banner,[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="1"]):not([data-engrid-multistep-expand=true]) .body-title,[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-multistep-active-step="1"]):not([data-engrid-multistep-expand=true]) .body-top{
+  [data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-last-page]):not([data-engrid-multistep-active-step="1"]):not([data-engrid-multistep-expand=true]) .body-banner,[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-last-page]):not([data-engrid-multistep-active-step="1"]):not([data-engrid-multistep-expand=true]) .body-title,[data-engrid-theme=wwf][data-engrid-multistep]:not([data-engrid-last-page]):not([data-engrid-multistep-active-step="1"]):not([data-engrid-multistep-expand=true]) .body-top{
     display:none !important;
   }
 }
