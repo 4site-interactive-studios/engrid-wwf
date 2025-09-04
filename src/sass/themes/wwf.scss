@@ -702,18 +702,112 @@
       text-align: right;
     }
 
-    .enWidget__progress {
-      background-color: #6cc0284d !important;
-      border: 3px solid #6cc0284d !important;
-      height: 30px !important;
-      min-height: 30px;
-      border-radius: 9999px;
+    .enWidget__display {
+      margin-top: -25px;
+      margin-bottom: -25px;
 
-      .enWidget__fill {
-        background-color: #ffffff !important;
+      &::before {
+        border: 3px solid #4b8e2f !important;
+        clip-path: polygon(0 0, 88% 0, 89% 100%, 0 100%);
+      }
 
-        .enWidget__fill__count {
-          display: none;
+      &::after {
+        background: #3c7832 !important;
+        border: 3px solid #4b8e2f !important;
+        clip-path: polygon(12% 0, 100% 0, 100% 100%, 11% 100%);
+        transition: background-color 1s ease 2s;
+      }
+
+      &::before,
+      &::after {
+        content: "";
+        top: 50%;
+        width: 50px !important;
+        height: 50px !important;
+        transform: translateY(-50%);
+        border-radius: 50%;
+        z-index: 1;
+        background: #fff;
+        margin-top: 50px;
+      }
+
+      &.enWidget__display_full:after {
+        background-color: #fff !important;
+      }
+
+      .enWidget__bar {
+        margin-left: -25px;
+        margin-right: -25px;
+
+        .enWidget__progress {
+          background-color: #3c7832 !important;
+          border: 3px solid #4b8e2f !important;
+          height: 30px !important;
+          min-height: 30px;
+          position: relative;
+          padding-left: 15px;
+          padding-right: 15px;
+          border-radius: 0 !important;
+
+          &::before {
+            content: "";
+            height: 50%;
+            position: absolute;
+            top: 0;
+            left: 15px;
+            right: 15px;
+            bottom: 0;
+            z-index: 1;
+            background: linear-gradient(
+              90deg,
+              transparent 0%,
+              transparent 9%,
+              #4b8e2f 9%,
+              #4b8e2f 10%,
+              transparent 10%,
+              transparent 19%,
+              #4b8e2f 19%,
+              #4b8e2f 20%,
+              transparent 20%,
+              transparent 29%,
+              #4b8e2f 29%,
+              #4b8e2f 30%,
+              transparent 30%,
+              transparent 39%,
+              #4b8e2f 39%,
+              #4b8e2f 40%,
+              transparent 40%,
+              transparent 49%,
+              #4b8e2f 49%,
+              #4b8e2f 50%,
+              transparent 50%,
+              transparent 59%,
+              #4b8e2f 59%,
+              #4b8e2f 60%,
+              transparent 60%,
+              transparent 69%,
+              #4b8e2f 69%,
+              #4b8e2f 70%,
+              transparent 70%,
+              transparent 79%,
+              #4b8e2f 79%,
+              #4b8e2f 80%,
+              transparent 80%,
+              transparent 89%,
+              #4b8e2f 89%,
+              #4b8e2f 90%,
+              transparent 90%,
+              transparent 99%
+            );
+          }
+
+          .enWidget__fill {
+            background-color: #ffffff !important;
+
+            .enWidget__fill__count {
+              display: none;
+            }
+          }
         }
       }
     }
@@ -724,9 +818,66 @@
     .enWidget--progressBar {
     background-color: #e5621a;
 
-    .enWidget__progress {
-      background-color: #b54000 !important;
-      border-color: #b54000 !important;
+    .enWidget__display {
+      &::before {
+        border: 3px solid #b54000 !important;
+      }
+
+      &::after {
+        background: #b54000 !important;
+        border: 3px solid #b54000 !important;
+      }
+
+      .enWidget__bar {
+        .enWidget__progress {
+          background-color: #b54000 !important;
+          border-color: #b54000 !important;
+
+          &::before {
+            background: linear-gradient(
+              90deg,
+              transparent 0%,
+              transparent 9%,
+              #e5621a 9%,
+              #e5621a 10%,
+              transparent 10%,
+              transparent 19%,
+              #e5621a 19%,
+              #e5621a 20%,
+              transparent 20%,
+              transparent 29%,
+              #e5621a 29%,
+              #e5621a 30%,
+              transparent 30%,
+              transparent 39%,
+              #e5621a 39%,
+              #e5621a 40%,
+              transparent 40%,
+              transparent 49%,
+              #e5621a 49%,
+              #e5621a 50%,
+              transparent 50%,
+              transparent 59%,
+              #e5621a 59%,
+              #e5621a 60%,
+              transparent 60%,
+              transparent 69%,
+              #e5621a 69%,
+              #e5621a 70%,
+              transparent 70%,
+              transparent 79%,
+              #e5621a 79%,
+              #e5621a 80%,
+              transparent 80%,
+              transparent 89%,
+              #e5621a 89%,
+              #e5621a 90%,
+              transparent 90%,
+              transparent 99%
+            );
+          }
+        }
+      }
     }
   }
 

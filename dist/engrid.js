@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, September 3, 2025 @ 23:20:22 ET
+ *  Date: Thursday, September 4, 2025 @ 00:27:03 ET
  *  By: fernando
  *  ENGrid styles: v0.22.11
  *  ENGrid scripts: v0.22.17
@@ -24070,6 +24070,18 @@ const customScript = function (App, DonationFrequency) {
   if (supportersBar) {
     supportersBar.innerText = fillCount;
   }
+
+  window.addEventListener("load", () => {
+    const enWidgetFillWidth = document.querySelector(".enWidget__fill") ? document.querySelector(".enWidget__fill").style.width : null;
+
+    if (enWidgetFillWidth == "100%") {
+      const enWidgetDisplay = document.querySelector(".enWidget__display");
+
+      if (enWidgetDisplay) {
+        enWidgetDisplay.classList.add("enWidget__display_full");
+      }
+    }
+  });
 
   function LauncherWidthWatcher() {
     // Select the #launcher and .engrid-mobile-cta-container elements
