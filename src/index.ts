@@ -86,6 +86,13 @@ const options: Options = {
     },
   },
   onLoad: () => {
+    // Send a GTM event is the Page Type is SUBSCRIBEFORM
+    if (App.getPageType() === "SUBSCRIBEFORM") {
+      (window as any).dataLayer.push({
+        event: "EN_PAGEJSON_PAGETYPE-emailsubscribeform",
+        pageType: App.getPageType(),
+      });
+    }
     // If we're on a Thank You page, let's try to add pageJson.other3 as data-engrid-payment-type body attribute
     if (
       App.getPageNumber() === App.getPageCount() &&

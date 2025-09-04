@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, September 3, 2025 @ 17:43:22 ET
+ *  Date: Wednesday, September 3, 2025 @ 23:20:22 ET
  *  By: fernando
  *  ENGrid styles: v0.22.11
- *  ENGrid scripts: v0.22.14
+ *  ENGrid scripts: v0.22.17
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -11171,6 +11171,7 @@ const OptionsDefaults = {
     MaxAmount: 100000,
     MinAmountMessage: "Amount must be at least $1",
     MaxAmountMessage: "Amount must be less than $100,000",
+    UseAmountValidatorFromEN: false,
     SkipToMainContentLink: true,
     SrcDefer: true,
     NeverBounceAPI: null,
@@ -17350,15 +17351,18 @@ class MinMaxAmount {
         var _a, _b;
         this._form = en_form_EnForm.getInstance();
         this._amount = DonationAmount.getInstance();
+        this._frequency = DonationFrequency.getInstance();
         this.minAmount = (_a = engrid_ENGrid.getOption("MinAmount")) !== null && _a !== void 0 ? _a : 1;
         this.maxAmount = (_b = engrid_ENGrid.getOption("MaxAmount")) !== null && _b !== void 0 ? _b : 100000;
         this.minAmountMessage = engrid_ENGrid.getOption("MinAmountMessage");
         this.maxAmountMessage = engrid_ENGrid.getOption("MaxAmountMessage");
+        this.enAmountValidator = null;
         this.logger = new logger_EngridLogger("MinMaxAmount", "white", "purple", "🔢");
         if (!this.shouldRun()) {
             // If we're not on a Donation Page, get out
             return;
         }
+        this.setValidationConfigFromEN();
         this._amount.onAmountChange.subscribe((s) => window.setTimeout(this.liveValidate.bind(this), 1000) // Wait 1 second for the amount to be updated
         );
         this._form.onValidate.subscribe(this.enOnValidate.bind(this));
@@ -17411,6 +17415,58 @@ class MinMaxAmount {
         }
         else {
             engrid_ENGrid.removeError(".en__field--withOther");
+        }
+    }
+    setValidationConfigFromEN() {
+        if (!engrid_ENGrid.getOption("UseAmountValidatorFromEN") ||
+            !window.EngagingNetworks.validators) {
+            this.logger.log("Not setting validation config from EN.");
+            return;
+        }
+        // Find the amount validator for the donation amount field
+        // It should be of type "AMNT" or "FAMNT" and have
+        // a componentId that matches the donation amount field.
+        this.enAmountValidator = window.EngagingNetworks.validators.find((validator) => {
+            var _a;
+            return ((validator.type === "FAMNT" || validator.type === "AMNT") &&
+                ((_a = document
+                    .querySelector(".en__field--" + validator.componentId)) === null || _a === void 0 ? void 0 : _a.classList.contains("en__field--donationAmt")));
+        });
+        if (!this.enAmountValidator || !this.enAmountValidator.format) {
+            return;
+        }
+        this.logger.log(`Detected an amount validator for donation amount on the page:`, this.enAmountValidator);
+        // Static amount validator
+        if (this.enAmountValidator.type === "AMNT") {
+            this.minAmount = Number(this.enAmountValidator.format.split("~")[0]);
+            this.maxAmount = Number(this.enAmountValidator.format.split("~")[1]);
+            this.minAmountMessage = this.enAmountValidator.errorMessage;
+            this.maxAmountMessage = this.enAmountValidator.errorMessage;
+            this.logger.log(`Setting new values - Min Amount: ${this.minAmount}, Max Amount: ${this.maxAmount}, Error Message: ${this.minAmountMessage}`);
+        }
+        // Frequency-based amount validator
+        if (this.enAmountValidator.type === "FAMNT") {
+            this._frequency.onFrequencyChange.subscribe((freq) => {
+                if (!this.enAmountValidator || !this.enAmountValidator.format)
+                    return;
+                // In the validator, "onetime" is written as "SINGLE"
+                // Validator format for FAMNT is like SINGLE:10~100000|MONTHLY:5~100000|QUARTERLY:25~100000|ANNUAL:25~100000
+                const frequency = freq === "onetime" ? "SINGLE" : freq.toUpperCase();
+                const validationRange = this.enAmountValidator.format
+                    .split("|")
+                    .find((range) => range.startsWith(frequency));
+                if (!validationRange) {
+                    this.logger.log(`No validation range found for frequency: ${frequency}`);
+                    return;
+                }
+                const amounts = validationRange.split(":")[1].split("~");
+                this.minAmount = Number(amounts[0]);
+                this.maxAmount = Number(amounts[1]);
+                this.minAmountMessage = this.enAmountValidator.errorMessage;
+                this.maxAmountMessage = this.enAmountValidator.errorMessage;
+                this.logger.log(`Frequency changed to ${frequency}, updating min and max amounts`, validationRange);
+                this.logger.log(`Setting new values - Min Amount: ${this.minAmount}, Max Amount: ${this.maxAmount}, Error Message: ${this.minAmountMessage}`);
+            });
         }
     }
 }
@@ -17484,27 +17540,15 @@ class Ticker {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/data-layer.js
-// The DataLayer class is a singleton class that is responsible for managing the data layer events.
-// It listens to the EnForm onSubmit event and the RememberMe onLoad event.
-// It also listens to the blur, change, and submit events of the form fields.
-// It adds the following events to the data layer:
-// - EN_PAGE_VIEW
-// - EN_SUCCESSFUL_DONATION
-// - EN_PAGEJSON_{property}
-// - EN_SUBMISSION_SUCCESS_{pageType}
-// - EN_URLPARAM_{key}-{value}
-// - EN_RECURRING_FREQUENCIES
-// - EN_FASTFORMFILL_PERSONALINFO_SUCCESS
-// - EN_FASTFORMFILL_PERSONALINFO_PARTIALSUCCESS
-// - EN_FASTFORMFILL_PERSONALINFO_FAILURE
-// - EN_FASTFORMFILL_ADDRESS_SUCCESS
-// - EN_FASTFORMFILL_ADDRESS_PARTIALSUCCESS
-// - EN_FASTFORMFILL_ADDRESS_FAILURE
-// - EN_FASTFORMFILL_ALL_SUCCESS
-// - EN_FASTFORMFILL_ALL_FAILURE
-// - EN_SUBMISSION_WITH_EMAIL_OPTIN
-// - EN_SUBMISSION_WITHOUT_EMAIL_OPTIN
-// - EN_FORM_VALUE_UPDATED
+// DataLayer: singleton helper for pushing structured analytics events/vars to window.dataLayer.
+// On load it emits one aggregated event `pageJsonVariablesReady` with:
+//   EN_PAGEJSON_* (normalized pageJson), EN_URLPARAM_*, EN_RECURRING_FREQUENCIES (donation pages),
+//   and EN_SUBMISSION_SUCCESS_{PAGETYPE} when on the final page.
+// User actions emit: EN_FORM_VALUE_UPDATED (field changes) and submission opt‑in/out events.
+// Queued end‑of‑gift events/variables (via addEndOfGiftProcessEvent / addEndOfGiftProcessVariable)
+// are replayed after a successful gift process load.
+// Sensitive payment/bank fields are excluded; selected PII fields are Base64 “hashed” (btoa — not cryptographic).
+// Replace with a real hash (e.g., SHA‑256) if required.
 
 class DataLayer {
     constructor() {
@@ -17563,108 +17607,53 @@ class DataLayer {
     }
     transformJSON(value) {
         if (typeof value === "string") {
-            return value.toUpperCase().split(" ").join("-").replace(":-", "-");
+            return value
+                .toUpperCase()
+                .trim()
+                .replace(/\s+/g, "-")
+                .replace(/:-/g, "-");
         }
-        else if (typeof value === "boolean") {
-            value = value ? "TRUE" : "FALSE";
-            return value;
+        if (typeof value === "boolean") {
+            return value ? "TRUE" : "FALSE";
+        }
+        if (typeof value === "number") {
+            return value; // Preserve numeric type for analytics platforms that infer number vs string
         }
         return "";
     }
     onLoad() {
-        // Collect all data layer events and variables to push at once
+        // Collect all data layer variables to push at once
         const dataLayerData = {};
-        const dataLayerEvents = [];
         if (engrid_ENGrid.getGiftProcess()) {
             this.logger.log("EN_SUCCESSFUL_DONATION");
-            dataLayerEvents.push("EN_SUCCESSFUL_DONATION");
             this.addEndOfGiftProcessEventsToDataLayer();
-        }
-        else {
-            this.logger.log("EN_PAGE_VIEW");
-            dataLayerEvents.push("EN_PAGE_VIEW");
         }
         if (window.pageJson) {
             const pageJson = window.pageJson;
             for (const property in pageJson) {
-                if (!Number.isNaN(pageJson[property])) {
-                    dataLayerEvents.push(`EN_PAGEJSON_${property.toUpperCase()}-${pageJson[property]}`);
-                    dataLayerData[`EN_PAGEJSON_${property.toUpperCase()}`] =
-                        pageJson[property];
-                }
-                else {
-                    dataLayerEvents.push(`EN_PAGEJSON_${property.toUpperCase()}-${this.transformJSON(pageJson[property])}`);
-                    dataLayerData[`EN_PAGEJSON_${property.toUpperCase()}`] =
-                        this.transformJSON(pageJson[property]);
-                }
-                dataLayerEvents.push("EN_PAGEJSON_" + property.toUpperCase());
-                dataLayerData.eventValue = pageJson[property];
+                const key = `EN_PAGEJSON_${property.toUpperCase()}`;
+                const value = pageJson[property];
+                dataLayerData[key] = this.transformJSON(value);
             }
             if (engrid_ENGrid.getPageCount() === engrid_ENGrid.getPageNumber()) {
-                dataLayerEvents.push("EN_SUBMISSION_SUCCESS_" + pageJson.pageType.toUpperCase());
                 dataLayerData[`EN_SUBMISSION_SUCCESS_${pageJson.pageType.toUpperCase()}`] = "TRUE";
             }
         }
         const urlParams = new URLSearchParams(window.location.search);
         urlParams.forEach((value, key) => {
-            dataLayerEvents.push(`EN_URLPARAM_${key.toUpperCase()}-${this.transformJSON(value)}`);
             dataLayerData[`EN_URLPARAM_${key.toUpperCase()}`] =
                 this.transformJSON(value);
         });
         if (engrid_ENGrid.getPageType() === "DONATION") {
             const recurrFreqEls = document.querySelectorAll('[name="transaction.recurrfreq"]');
             const recurrValues = [...recurrFreqEls].map((el) => el.value);
-            dataLayerEvents.push("EN_RECURRING_FREQUENCIES");
-            dataLayerData[`'EN_RECURRING_FREQEUENCIES'`] = recurrValues;
-        }
-        let fastFormFill = false;
-        // Fast Form Fill - Personal Details
-        const fastPersonalDetailsFormBlock = document.querySelector(".en__component--formblock.fast-personal-details");
-        if (fastPersonalDetailsFormBlock) {
-            const allPersonalMandatoryInputsAreFilled = FastFormFill.allMandatoryInputsAreFilled(fastPersonalDetailsFormBlock);
-            const somePersonalMandatoryInputsAreFilled = FastFormFill.someMandatoryInputsAreFilled(fastPersonalDetailsFormBlock);
-            if (allPersonalMandatoryInputsAreFilled) {
-                dataLayerEvents.push("EN_FASTFORMFILL_PERSONALINFO_SUCCESS");
-                fastFormFill = true;
-            }
-            else if (somePersonalMandatoryInputsAreFilled) {
-                dataLayerEvents.push("EN_FASTFORMFILL_PERSONALINFO_PARTIALSUCCESS");
-            }
-            else {
-                dataLayerEvents.push("EN_FASTFORMFILL_PERSONALINFO_FAILURE");
-            }
-        }
-        // Fast Form Fill - Address Details
-        const fastAddressDetailsFormBlock = document.querySelector(".en__component--formblock.fast-address-details");
-        if (fastAddressDetailsFormBlock) {
-            const allAddressMandatoryInputsAreFilled = FastFormFill.allMandatoryInputsAreFilled(fastAddressDetailsFormBlock);
-            const someAddressMandatoryInputsAreFilled = FastFormFill.someMandatoryInputsAreFilled(fastAddressDetailsFormBlock);
-            if (allAddressMandatoryInputsAreFilled) {
-                dataLayerEvents.push("EN_FASTFORMFILL_ADDRESS_SUCCESS");
-                fastFormFill = fastFormFill ? true : false; // Only set to true if it was true before
-            }
-            else if (someAddressMandatoryInputsAreFilled) {
-                dataLayerEvents.push("EN_FASTFORMFILL_ADDRESS_PARTIALSUCCESS");
-            }
-            else {
-                dataLayerEvents.push("EN_FASTFORMFILL_ADDRESS_FAILURE");
-            }
-        }
-        if (fastFormFill) {
-            dataLayerEvents.push("EN_FASTFORMFILL_ALL_SUCCESS");
-        }
-        else {
-            dataLayerEvents.push("EN_FASTFORMFILL_ALL_FAILURE");
+            dataLayerData[`EN_RECURRING_FREQUENCIES`] = recurrValues;
         }
         // Push all collected variables at once
         if (Object.keys(dataLayerData).length > 0) {
             dataLayerData.event = "pageJsonVariablesReady";
             this.dataLayer.push(dataLayerData);
         }
-        // Push all collected events individually (GTM requirement)
-        dataLayerEvents.forEach((event) => {
-            this.dataLayer.push({ event });
-        });
         this.attachEventListeners();
     }
     onSubmit() {
@@ -17752,7 +17741,7 @@ class DataLayer {
     }
     addEndOfGiftProcessVariable(variableName, variableValue = "") {
         this.storeEndOfGiftProcessData({
-            [`'${variableName.toUpperCase()}'`]: variableValue,
+            [variableName.toUpperCase()]: variableValue,
         });
     }
     storeEndOfGiftProcessData(data) {
@@ -19639,6 +19628,7 @@ class EventTickets {
  *       "Other": "other",
  *     },
  *     default: 30,
+ *     stickyDefault: false, // Optional. When true, every swap forces the default amount to be (re)selected
  *   },
  *   "monthly": {
  *     amounts: {
@@ -19649,6 +19639,7 @@ class EventTickets {
  *       "Other": "other",
  *     },
  *     default: 15,
+ *     stickyDefault: true, // Example forcing default on each frequency swap
  *   },
  * };
  */
@@ -19704,6 +19695,7 @@ class SwapAmounts {
             const config = {
                 amounts: amountsObj,
                 default: defaultAmount,
+                // stickyDefault omitted so it defaults to false behavior
             };
             window.EngridAmounts = {
                 onetime: config,
@@ -19719,7 +19711,9 @@ class SwapAmounts {
         const config = configs[freq];
         if (!config)
             return;
-        const ignoreCurrentValue = this.ignoreCurrentValue();
+        const stickyDefault = !!config.stickyDefault;
+        // If stickyDefault, always ignore current value so selected flag in list enforces default
+        const ignoreCurrentValue = stickyDefault ? true : this.ignoreCurrentValue();
         window.EngagingNetworks.require._defined.enjs.swapList("donationAmt", this.toEnAmountList(config), { ignoreCurrentValue });
         this._amount.load();
         this.logger.log("Amounts Swapped To", config, { ignoreCurrentValue });
@@ -23387,6 +23381,7 @@ class FrequencyUpsellModal extends Modal {
  * See FrequencyUpsellOptions for more details.
  */
 
+
 class FrequencyUpsell {
     constructor() {
         this.logger = new logger_EngridLogger("FrequencyUpsell", "lightgray", "darkblue", "🏦");
@@ -23401,11 +23396,54 @@ class FrequencyUpsell {
             this.logger.log("FrequencyUpsell not running");
             return;
         }
-        this.options = Object.assign(Object.assign({}, FrequencyUpsellOptionsDefaults), window.EngridFrequencyUpsell);
+        this.options = this.selectOptions(window.EngridFrequencyUpsell);
         this.logger.log("FrequencyUpsell initialized", this.options);
         this.upsellModal = new FrequencyUpsellModal(this.options);
         this.createFrequencyField();
         this.addEventListeners();
+    }
+    /**
+     * Select the proper options (single config or A/B variant) and return a concrete FrequencyUpsellOptions object.
+     * If an A/B test config is provided (abTest: true, options: [...]) a random variant is chosen and stored
+     * in a 1-day cookie so subsequent visits get the same variant.
+     */
+    selectOptions(config) {
+        // Simple (non AB) case
+        if (!config.abTest) {
+            return Object.assign(Object.assign({}, FrequencyUpsellOptionsDefaults), config);
+        }
+        const abConfig = config;
+        const cookieName = abConfig.cookieName || "engrid_frequency_upsell_variant";
+        const existing = get(cookieName);
+        let index;
+        if (existing !== undefined) {
+            const parsed = parseInt(existing, 10);
+            if (!isNaN(parsed) && parsed >= 0 && parsed < abConfig.options.length) {
+                index = parsed;
+            }
+            else {
+                index = this.randomIndex(abConfig.options.length);
+            }
+        }
+        else {
+            index = this.randomIndex(abConfig.options.length);
+        }
+        // Persist for configured duration
+        const duration = abConfig.cookieDurationDays || 1;
+        set(cookieName, index.toString(), { expires: duration });
+        const chosen = abConfig.options[index];
+        // Push variant info to dataLayer if available
+        if (window.dataLayer) {
+            window.dataLayer.push({
+                event: "frequency_upsell_ab_variant",
+                frequencyUpsellVariantIndex: index,
+                frequencyUpsellVariantTitle: chosen.title,
+            });
+        }
+        return Object.assign(Object.assign({}, FrequencyUpsellOptionsDefaults), chosen);
+    }
+    randomIndex(length) {
+        return Math.floor(Math.random() * length);
     }
     /**
      * Check if the FrequencyUpsell should run:
@@ -23499,7 +23537,7 @@ class FrequencyUpsell {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/version.js
-const AppVersion = "0.22.14";
+const AppVersion = "0.22.17";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
@@ -26372,7 +26410,15 @@ const options = {
     }
   },
   onLoad: () => {
-    // If we're on a Thank You page, let's try to add pageJson.other3 as data-engrid-payment-type body attribute
+    // Send a GTM event is the Page Type is SUBSCRIBEFORM
+    if (App.getPageType() === "SUBSCRIBEFORM") {
+      window.dataLayer.push({
+        event: "EN_PAGEJSON_PAGETYPE-emailsubscribeform",
+        pageType: App.getPageType()
+      });
+    } // If we're on a Thank You page, let's try to add pageJson.other3 as data-engrid-payment-type body attribute
+
+
     if (App.getPageNumber() === App.getPageCount() && "pageJson" in window && "other3" in window.pageJson) {
       document.body.setAttribute("data-engrid-payment-type", window.pageJson.other3);
     }
