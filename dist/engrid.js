@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, July 28, 2025 @ 08:05:13 ET
+ *  Date: Monday, September 8, 2025 @ 05:55:22 ET
  *  By: michael
  *  ENGrid styles: v0.22.4
- *  ENGrid scripts: v0.22.7
+ *  ENGrid scripts: v0.22.9
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -15989,6 +15989,14 @@ class NeverBounce {
         this.logger = new logger_EngridLogger("NeverBounce", "#039bc4", "#dfdfdf", "📧");
         this.shouldRun = true;
         this.nbLoaded = false;
+        this.bypassEmails = [
+            "noaddress.ea",
+        ];
+        const searchParams = new URLSearchParams(window.location.search);
+        if (searchParams.has("bypassemailvalidation")) {
+            this.logger.log("Bypass Email Validation Enabled - not running NeverBounce");
+            return;
+        }
         this.emailField = document.getElementById("en__field_supporter_emailAddress");
         window._NBSettings = {
             apiKey: this.apiKey,
@@ -16129,6 +16137,10 @@ class NeverBounce {
             this.logger.log("E-mail Field Not Found");
             return;
         }
+        if (this.isBypassEmail()) {
+            this.logger.log("Bypass email detected. Skipping status update.");
+            return;
+        }
         // Search page for the NB Wrapper div and set as variable
         const nb_email_field_wrapper = (document.getElementById("nb-wrapper"));
         // Search page for the NB Feedback div and set as variable
@@ -16197,6 +16209,12 @@ class NeverBounce {
         (_a = el.parentNode) === null || _a === void 0 ? void 0 : _a.insertBefore(wrapper, el);
         wrapper.appendChild(el);
     }
+    isBypassEmail() {
+        if (!this.emailField || !this.emailField.value)
+            return false;
+        const email = this.emailField.value.toLowerCase();
+        return this.bypassEmails.some((bypassEmail) => email.includes(bypassEmail.toLowerCase()));
+    }
     validate() {
         var _a;
         if (!this.form.validate)
@@ -16204,6 +16222,10 @@ class NeverBounce {
         const nbResult = engrid_ENGrid.getFieldValue("nb-result");
         if (!this.emailField || !this.shouldRun || !this.nbLoaded || !nbResult) {
             this.logger.log("validate(): Should Not Run. Returning true.");
+            return;
+        }
+        if (this.isBypassEmail()) {
+            this.logger.log("Bypass email detected. Skipping validation.");
             return;
         }
         if (this.nbStatus) {
@@ -23270,7 +23292,7 @@ class FrequencyUpsell {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/version.js
-const AppVersion = "0.22.7";
+const AppVersion = "0.22.9";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
@@ -23803,6 +23825,18 @@ const customScript = function (App, DonationFrequency) {
   if (supportersBar) {
     supportersBar.innerText = fillCount;
   }
+
+  window.addEventListener("load", () => {
+    const enWidgetFillWidth = document.querySelector(".enWidget__fill") ? document.querySelector(".enWidget__fill").style.width : null;
+
+    if (enWidgetFillWidth == "100%") {
+      const enWidgetDisplay = document.querySelector(".enWidget__display");
+
+      if (enWidgetDisplay) {
+        enWidgetDisplay.classList.add("enWidget__display_full");
+      }
+    }
+  });
 
   function LauncherWidthWatcher() {
     // Select the #launcher and .engrid-mobile-cta-container elements
@@ -26207,7 +26241,15 @@ const options = {
     }
   },
   onLoad: () => {
-    // If we're on a Thank You page, let's try to add pageJson.other3 as data-engrid-payment-type body attribute
+    // Send a GTM event is the Page Type is SUBSCRIBEFORM
+    if (App.getPageType() === "SUBSCRIBEFORM") {
+      window.dataLayer.push({
+        event: "EN_PAGEJSON_PAGETYPE-emailsubscribeform",
+        pageType: App.getPageType()
+      });
+    } // If we're on a Thank You page, let's try to add pageJson.other3 as data-engrid-payment-type body attribute
+
+
     if (App.getPageNumber() === App.getPageCount() && "pageJson" in window && "other3" in window.pageJson) {
       document.body.setAttribute("data-engrid-payment-type", window.pageJson.other3);
     }
