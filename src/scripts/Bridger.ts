@@ -6,6 +6,7 @@ declare global {
       amount: number;
       currency: string;
     };
+    BridgerAmountThreshold: number;
   }
 }
 
@@ -14,6 +15,8 @@ export class Bridger {
     "https://wwfusprdenbridgercheckeus1.azurewebsites.net/api/createsearch";
   private key: string =
     "-CDxXc3SdzG6a_LLJGKA_p3qJMnZnnsH3DLDGeK97nwXAzFuFmfh5g==";
+  private bridgerAmountThreshold: number =
+    window.BridgerAmountThreshold || 10000;
 
   constructor() {
     if (!this.shouldRun()) return;
@@ -23,7 +26,7 @@ export class Bridger {
   private shouldRun(): boolean {
     return (
       window.pageJson.giftProcess &&
-      window.pageJson.amount >= 10000 &&
+      window.pageJson.amount >= this.bridgerAmountThreshold &&
       window.pageJson.currency === "USD"
     );
   }

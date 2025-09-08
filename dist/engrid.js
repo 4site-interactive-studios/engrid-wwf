@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, September 8, 2025 @ 05:55:22 ET
+ *  Date: Monday, September 8, 2025 @ 05:59:12 ET
  *  By: michael
  *  ENGrid styles: v0.22.4
  *  ENGrid scripts: v0.22.9
@@ -26111,12 +26111,14 @@ class Bridger {
 
     _defineProperty(this, "key", "-CDxXc3SdzG6a_LLJGKA_p3qJMnZnnsH3DLDGeK97nwXAzFuFmfh5g==");
 
+    _defineProperty(this, "bridgerAmountThreshold", window.BridgerAmountThreshold || 10000);
+
     if (!this.shouldRun()) return;
     this.createBridgerSearchRecord();
   }
 
   shouldRun() {
-    return window.pageJson.giftProcess && window.pageJson.amount >= 10000 && window.pageJson.currency === "USD";
+    return window.pageJson.giftProcess && window.pageJson.amount >= this.bridgerAmountThreshold && window.pageJson.currency === "USD";
   }
 
   createBridgerSearchRecord() {
