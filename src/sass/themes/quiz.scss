@@ -114,7 +114,7 @@ form > .en__component--advrow {
 .body-banner {
   grid-row: body-main;
   background-repeat: no-repeat;
-  background-position: center top;
+  background-position: center;
   background-size: cover;
   background-image: var(--quiz-bg-image);
 }
@@ -168,14 +168,10 @@ form > .en__component--advrow {
 
   .en__field__element {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
     margin: 10px 0 0;
     align-items: initial;
-
-    @media screen and (max-width: 600px) {
-      grid-template-columns: repeat(2, 1fr);
-    }
   }
 
   .en__field__item {
@@ -328,6 +324,7 @@ form > .en__component--advrow {
   }
 
   .body-banner {
+    display: none;
     grid-column: pc;
     grid-row: body-banner;
     &:has(img) {
