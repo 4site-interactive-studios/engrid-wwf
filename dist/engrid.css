@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, September 4, 2025 @ 12:04:41 ET
+ *  Date: Wednesday, September 10, 2025 @ 11:03:50 ET
  *  By: michael
  *  ENGrid styles: v0.22.4
  *  ENGrid scripts: v0.22.9
@@ -10641,7 +10641,7 @@ body[data-engrid-debug]:before{
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col] .body-banner{
   background-image:var(--quiz-bg-image);
-  background-position:top;
+  background-position:50%;
   background-repeat:no-repeat;
   background-size:cover;
   grid-row:body-main;
@@ -10687,13 +10687,8 @@ body[data-engrid-debug]:before{
   align-items:normal;
   display:grid;
   gap:10px;
-  grid-template-columns:repeat(3, 1fr);
+  grid-template-columns:repeat(2, 1fr);
   margin:10px 0 0;
-}
-@media screen and (max-width:600px){
-  [data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col] .en__field--imgselect .en__field__element{
-    grid-template-columns:repeat(2, 1fr);
-  }
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col] .en__field--imgselect .en__field__item{
   border:2px solid #000;
@@ -10815,6 +10810,7 @@ body[data-engrid-debug]:before{
   }
   [data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col] .body-banner{
     background-image:var(--quiz-mobile-bg-image);
+    display:none;
     grid-column:pc;
     grid-row:body-banner;
   }
