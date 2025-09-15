@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, September 10, 2025 @ 11:03:50 ET
+ *  Date: Monday, September 15, 2025 @ 13:00:14 ET
  *  By: michael
  *  ENGrid styles: v0.22.4
  *  ENGrid scripts: v0.22.9
@@ -26162,6 +26162,8 @@ class Quiz {
     if (!isCorrect) {
       selectedAnswer.closest(".en__field__item")?.classList.add("quiz-incorrect-answer");
     }
+
+    this.scrollToFeedback();
   }
 
   toggleError(show) {
@@ -26230,6 +26232,26 @@ class Quiz {
     const enBlocks = document.querySelectorAll(".en__component--copyblock, .en__component--codeblock");
     enBlocks.forEach(block => {
       block.innerHTML = block.innerHTML.replace("{{score}}", String(score)).replace("{{total}}", String(totalQuestions));
+    });
+  }
+
+  scrollToFeedback() {
+    const submitBtn = document.querySelector(".en__submit");
+    if (!submitBtn) return;
+    const submitRect = submitBtn.getBoundingClientRect();
+
+    if (submitRect.top >= 0 && submitRect.bottom <= window.innerHeight) {
+      return;
+    }
+
+    const svBlockNext = document.querySelector(".en__component--svblock"); // scroll to midway between the bottom of the svBlock and the top of the submit button
+
+    const svBlockRect = svBlockNext?.getBoundingClientRect();
+    if (!svBlockRect) return;
+    const scrollTo = svBlockRect.bottom + (submitRect.top - svBlockRect.bottom) / 3 - window.innerHeight / 2;
+    window.scrollTo({
+      top: scrollTo,
+      behavior: "smooth"
     });
   }
 

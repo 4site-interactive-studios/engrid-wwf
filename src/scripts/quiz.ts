@@ -105,6 +105,8 @@ export class Quiz {
         .closest(".en__field__item")
         ?.classList.add("quiz-incorrect-answer");
     }
+
+    this.scrollToFeedback();
   }
 
   private toggleError(show: boolean) {
@@ -183,6 +185,30 @@ export class Quiz {
       block.innerHTML = block.innerHTML
         .replace("{{score}}", String(score))
         .replace("{{total}}", String(totalQuestions));
+    });
+  }
+
+  private scrollToFeedback() {
+    const submitBtn = document.querySelector<HTMLElement>(".en__submit");
+    if (!submitBtn) return;
+    const submitRect = submitBtn.getBoundingClientRect();
+    if (submitRect.top >= 0 && submitRect.bottom <= window.innerHeight) {
+      return;
+    }
+    const svBlockNext = document.querySelector<HTMLElement>(
+      ".en__component--svblock"
+    );
+
+    // scroll to midway between the bottom of the svBlock and the top of the submit button
+    const svBlockRect = svBlockNext?.getBoundingClientRect();
+    if (!svBlockRect) return;
+    const scrollTo =
+      svBlockRect.bottom +
+      (submitRect.top - svBlockRect.bottom) / 3 -
+      window.innerHeight / 2;
+    window.scrollTo({
+      top: scrollTo,
+      behavior: "smooth",
     });
   }
 }
