@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, September 4, 2025 @ 00:27:03 ET
+ *  Date: Friday, October 3, 2025 @ 02:26:35 ET
  *  By: fernando
- *  ENGrid styles: v0.22.11
- *  ENGrid scripts: v0.22.17
+ *  ENGrid styles: v0.22.18
+ *  ENGrid scripts: v0.22.19
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -11178,6 +11178,7 @@ const OptionsDefaults = {
     NeverBounceDateField: null,
     NeverBounceStatusField: null,
     NeverBounceDateFormat: "MM/DD/YYYY",
+    NeverBounceTimeout: 10000,
     FreshAddress: false,
     ProgressBar: false,
     AutoYear: false,
@@ -11192,6 +11193,7 @@ const OptionsDefaults = {
     ENValidators: false,
     MobileCTA: false,
     CustomCurrency: false,
+    CustomPremium: false,
     VGS: false,
     PostalCodeValidator: false,
     CountryRedirect: false,
@@ -12795,6 +12797,8 @@ class App extends engrid_ENGrid {
         new CountryDisable();
         // Premium Gift Features
         new PremiumGift();
+        // Custom Premium filtering (frequency/amount-based visibility)
+        new CustomPremium();
         // Supporter Hub Features
         new SupporterHub();
         // Digital Wallets Features
@@ -16209,6 +16213,8 @@ class NeverBounce {
         this.bypassEmails = [
             "noaddress.ea",
         ];
+        this.neverBounceTimeout = engrid_ENGrid.getOption("NeverBounceTimeout") || 10000;
+        this.neverBounceTimeoutFunc = null;
         const searchParams = new URLSearchParams(window.location.search);
         if (searchParams.has("bypassemailvalidation")) {
             this.logger.log("Bypass Email Validation Enabled - not running NeverBounce");
@@ -16224,6 +16230,8 @@ class NeverBounce {
             softRejectMessage: "Invalid email",
             acceptedMessage: "Email validated!",
             feedback: false,
+            // Set NB timeout 1 second than our timeout. Ensures NB response will always be before our timeout if there is not a server error.
+            timeout: Math.floor((this.neverBounceTimeout - 1000) / 1000),
         };
         engrid_ENGrid.loadJS("https://cdn.neverbounce.com/widget/dist/NeverBounce.js");
         if (this.emailField) {
@@ -16286,9 +16294,27 @@ class NeverBounce {
             const field = document.querySelector('[data-nb-id="' + event.detail.id + '"]');
             field.addEventListener("nb:loading", function (e) {
                 engrid_ENGrid.disableSubmit("Validating Your Email");
+                NBClass.setEmailStatus("loading");
+                NBClass.clearTimeout();
+                NBClass.neverBounceTimeoutFunc = setTimeout(() => {
+                    NBClass.setEmailStatus("unknown");
+                    if (NBClass.nbDate) {
+                        NBClass.nbDate.value = engrid_ENGrid.formatDate(new Date(), NBClass.dateFormat);
+                    }
+                    if (NBClass.nbStatus) {
+                        NBClass.nbStatus.value = "unknown";
+                    }
+                    engrid_ENGrid.enableSubmit();
+                    window._nb.fields.unregisterListener(NBClass.emailField);
+                    NBClass.nbLoaded = false;
+                    NBClass.logger.log("NeverBounce Timeout Reached. Bypassing validation, setting unknown status and removing NB.");
+                }, NBClass.neverBounceTimeout);
             });
             // Never Bounce: Do work when input changes or when API responds with an error
             field.addEventListener("nb:clear", function (e) {
+                if (!NBClass.nbLoaded)
+                    return;
+                NBClass.clearTimeout();
                 NBClass.setEmailStatus("clear");
                 engrid_ENGrid.enableSubmit();
                 if (NBClass.nbDate)
@@ -16298,6 +16324,9 @@ class NeverBounce {
             });
             // Never Bounce: Do work when results have an input that does not look like an email (i.e. missing @ or no .com/.net/etc...)
             field.addEventListener("nb:soft-result", function (e) {
+                if (!NBClass.nbLoaded)
+                    return;
+                NBClass.clearTimeout();
                 NBClass.setEmailStatus("soft-result");
                 if (NBClass.nbDate)
                     NBClass.nbDate.value = "";
@@ -16307,6 +16336,9 @@ class NeverBounce {
             });
             // Never Bounce: When results have been received
             field.addEventListener("nb:result", function (e) {
+                if (!NBClass.nbLoaded)
+                    return;
+                NBClass.clearTimeout();
                 if (e.detail.result.is(window._nb.settings.getAcceptedStatusCodes())) {
                     NBClass.setEmailStatus("valid");
                     if (NBClass.nbDate)
@@ -16453,6 +16485,16 @@ class NeverBounce {
             (_a = this.emailField) === null || _a === void 0 ? void 0 : _a.focus();
             this.logger.log("NB-Result:", engrid_ENGrid.getFieldValue("nb-result"));
             this.form.validate = false;
+        }
+    }
+    /**
+     * Clears the backup timeout function if it exists.
+     * @private
+     */
+    clearTimeout() {
+        if (this.neverBounceTimeoutFunc) {
+            clearTimeout(this.neverBounceTimeoutFunc);
+            this.neverBounceTimeoutFunc = null;
         }
     }
 }
@@ -20585,6 +20627,272 @@ class PremiumGift {
     }
 }
 
+;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/custom-premium.js
+// ENgrid component: CustomPremium
+// Filters premium gifts based on window.EngridPageOptions.CustomPremium configuration
+// Rules:
+// - Config shape: window.EngridPageOptions.CustomPremium[frequency][productId] = minimumAmount
+// - On frequency or amount change, wait 500ms (allow EN to re-render), then:
+//   - Show only gifts whose minimumAmount <= current amount; hide others
+//   - If none visible, hide entire .en__component--premiumgiftblock
+//   - If current selection becomes invalid, select default; if default not visible, select "No Premium" and clear transaction.selprodvariantid
+// - Run once 500ms after page load
+// - Add EnForm onSubmit hook to clear transaction.selprodvariantid when no visible premium items
+
+class CustomPremium {
+    constructor() {
+        this.logger = new logger_EngridLogger("CustomPremium", "teal", "white", "🧩");
+        this._amount = DonationAmount.getInstance();
+        this._frequency = DonationFrequency.getInstance();
+        this._enForm = en_form_EnForm.getInstance();
+        this.stylesInjected = false;
+        this.pendingFrequencyChange = false;
+        if (!this.shouldRun())
+            return;
+        this.injectStyles();
+        // Initial run: execute once after 500ms
+        window.setTimeout(() => this.run(), 500);
+        // On changes, schedule processing and fade out immediately
+        this._amount.onAmountChange.subscribe(() => this.scheduleRun());
+        this._frequency.onFrequencyChange.subscribe(() => {
+            this.pendingFrequencyChange = true;
+            this.scheduleRun();
+        });
+        // Clear hidden variant field on submit if there are no visible premium items
+        this._enForm.onSubmit.subscribe(() => {
+            if (!this.hasVisiblePremiumItems()) {
+                this.clearVariantField();
+            }
+        });
+    }
+    shouldRun() {
+        const isPremiumPage = "pageJson" in window &&
+            "pageType" in window.pageJson &&
+            window.pageJson.pageType === "premiumgift";
+        const hasConfig = !!engrid_ENGrid.getOption("CustomPremium");
+        return isPremiumPage && hasConfig;
+    }
+    get config() {
+        const cfg = engrid_ENGrid.getOption("CustomPremium");
+        return cfg || null;
+    }
+    get premiumContainer() {
+        return document.querySelector(".en__component--premiumgiftblock");
+    }
+    get giftItems() {
+        return Array.from(document.querySelectorAll(".en__pg"));
+    }
+    getFrequencyConfig(frequency) {
+        const customPremiumConfig = this.config;
+        if (!customPremiumConfig)
+            return null;
+        const frequencyConfig = customPremiumConfig[frequency];
+        if (frequencyConfig && typeof frequencyConfig === "object")
+            return frequencyConfig;
+        return null;
+    }
+    getProductsMap(frequency) {
+        const frequencyConfig = this.getFrequencyConfig(frequency);
+        const productsMap = {};
+        if (!frequencyConfig)
+            return productsMap;
+        // If explicit products object exists, use it
+        if (frequencyConfig.products &&
+            typeof frequencyConfig.products === "object") {
+            Object.entries(frequencyConfig.products).forEach(([productId, min]) => {
+                const id = String(productId);
+                const minAmount = Number(min);
+                if (!isNaN(minAmount))
+                    productsMap[id] = minAmount;
+            });
+            return productsMap;
+        }
+        // Otherwise, treat own numeric-value keys as products, ignore 'default'
+        Object.entries(frequencyConfig).forEach(([key, value]) => {
+            if (key === "default")
+                return;
+            const minAmount = Number(value);
+            if (!isNaN(minAmount))
+                productsMap[String(key)] = minAmount;
+        });
+        return productsMap;
+    }
+    getConfiguredDefaultPid(frequency) {
+        const frequencyConfig = this.getFrequencyConfig(frequency);
+        if (!frequencyConfig)
+            return null;
+        const defaultValue = frequencyConfig.default;
+        if (defaultValue === undefined || defaultValue === null)
+            return "0"; // not set => No Premium by spec
+        const id = String(defaultValue);
+        return id;
+    }
+    injectStyles() {
+        if (this.stylesInjected)
+            return;
+        const id = "engrid-custom-premium-style";
+        if (document.getElementById(id)) {
+            this.stylesInjected = true;
+            return;
+        }
+        const style = document.createElement("style");
+        style.id = id;
+        style.innerHTML = `
+      .en__component--premiumgiftblock { transition: opacity 200ms ease-in-out; }
+      .en__component--premiumgiftblock.engrid-premium-processing { opacity: 0; pointer-events: none; }
+      .en__component--premiumgiftblock.engrid-premium-hidden { display: none !important; }
+      .en__component--premiumgiftblock.engrid-premium-ready { opacity: 1; }
+    `;
+        document.head.appendChild(style);
+        this.stylesInjected = true;
+    }
+    startProcessingVisual() {
+        const container = this.premiumContainer;
+        if (container) {
+            container.classList.add("engrid-premium-processing");
+            container.classList.remove("engrid-premium-ready");
+        }
+    }
+    endProcessingVisual(hasVisible) {
+        const container = this.premiumContainer;
+        if (!container)
+            return;
+        container.classList.remove("engrid-premium-processing");
+        if (hasVisible) {
+            container.classList.remove("engrid-premium-hidden");
+            container.classList.add("engrid-premium-ready");
+        }
+        else {
+            container.classList.add("engrid-premium-hidden");
+            container.classList.remove("engrid-premium-ready");
+        }
+    }
+    scheduleRun() {
+        // Immediately fade out while we wait for EN to re-render
+        this.startProcessingVisual();
+        if (this.debounceTimer)
+            window.clearTimeout(this.debounceTimer);
+        this.debounceTimer = window.setTimeout(() => this.run(), 500);
+    }
+    getCurrentFreq() {
+        return (this._frequency.frequency || "onetime").toLowerCase();
+    }
+    getCurrentAmount() {
+        return this._amount.amount || 0;
+    }
+    getAllowedProductIds(freq, amount) {
+        const cfg = this.config;
+        const allowed = new Set();
+        if (!cfg)
+            return allowed;
+        const products = this.getProductsMap(freq);
+        Object.keys(products).forEach((pid) => {
+            const min = Number(products[pid]);
+            if (!isNaN(min) && amount >= min)
+                allowed.add(String(pid));
+        });
+        return allowed;
+    }
+    getProductId(item) {
+        const input = item.querySelector('input[name="en__pg"]');
+        return input ? input.value : null;
+    }
+    showItem(item, show) {
+        item.style.display = show ? "" : "none";
+    }
+    selectByProductId(productId) {
+        const radio = document.querySelector('input[name="en__pg"][value="' + productId + '"]');
+        if (radio) {
+            radio.checked = true;
+            radio.dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
+            // Update EN's selected class if necessary
+            const prev = document.querySelector(".en__pg--selected");
+            const pg = radio.closest(".en__pg");
+            if (prev && prev !== pg)
+                prev.classList.remove("en__pg--selected");
+            if (pg)
+                pg.classList.add("en__pg--selected");
+        }
+    }
+    clearVariantField() {
+        engrid_ENGrid.setFieldValue("transaction.selprodvariantid", "");
+    }
+    hasVisiblePremiumItems() {
+        // Exclude the "No Premium" (value 0) from count
+        return this.giftItems.some((item) => {
+            const pid = this.getProductId(item);
+            const visible = engrid_ENGrid.isVisible(item);
+            return visible && pid !== "0";
+        });
+    }
+    run() {
+        const container = this.premiumContainer;
+        if (!container)
+            return this.logger.log("No premium container found.");
+        const frequency = this.getCurrentFreq();
+        const amount = this.getCurrentAmount();
+        const allowedProductIds = this.getAllowedProductIds(frequency, amount);
+        // Iterate items and toggle visibility
+        let anyVisible = false;
+        const items = this.giftItems;
+        const noPremiumItems = [];
+        items.forEach((item) => {
+            const productId = this.getProductId(item);
+            if (!productId)
+                return;
+            if (productId === "0") {
+                // track no-premium items but don't decide visibility here — it's always available
+                noPremiumItems.push(item);
+                this.showItem(item, true);
+                return;
+            }
+            const visible = allowedProductIds.has(productId);
+            this.showItem(item, visible);
+            if (visible)
+                anyVisible = true;
+        });
+        // If nothing visible (besides no-premium), hide whole container
+        const hasVisibleGifts = anyVisible;
+        this.endProcessingVisual(hasVisibleGifts);
+        // Selection handling
+        const current = document.querySelector('input[name="en__pg"]:checked');
+        const currentProductId = (current === null || current === void 0 ? void 0 : current.value) || null;
+        const defaultProductId = this.getConfiguredDefaultPid(frequency); // may be "0"
+        // If current selection is invalid after filtering, apply default logic
+        const currentIsValid = currentProductId === "0" ||
+            (currentProductId ? allowedProductIds.has(currentProductId) : false);
+        if (!currentIsValid) {
+            if (defaultProductId &&
+                defaultProductId !== "0" &&
+                allowedProductIds.has(defaultProductId)) {
+                this.selectByProductId(defaultProductId);
+            }
+            else {
+                this.selectByProductId("0");
+                this.clearVariantField();
+            }
+        }
+        else {
+            // Current selection is valid; only force No Premium if frequency changed and default is 0/missing
+            if (this.pendingFrequencyChange &&
+                (!defaultProductId || defaultProductId === "0")) {
+                if (currentProductId !== "0") {
+                    this.selectByProductId("0");
+                    this.clearVariantField();
+                }
+            }
+        }
+        // If container hidden (no visible gifts), select No Premium and clear hidden
+        if (!hasVisibleGifts) {
+            this.selectByProductId("0");
+            this.clearVariantField();
+        }
+        this.logger.log(`Processed gifts for freq=${frequency}, amount=${amount}. Visible gifts: ${hasVisibleGifts ? "yes" : "no"}`);
+        // Reset frequency-change flag after processing
+        this.pendingFrequencyChange = false;
+    }
+}
+
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/digital-wallets.js
 
 class DigitalWallets {
@@ -22965,15 +23273,15 @@ class CheckboxLabel {
     }
     run() {
         this.checkBoxesLabels.forEach((checkboxLabel) => {
-            var _a;
-            const labelText = (_a = checkboxLabel.textContent) === null || _a === void 0 ? void 0 : _a.trim();
+            const labelHTML = checkboxLabel.innerHTML.trim();
             const checkboxContainer = checkboxLabel.nextElementSibling;
             const checkboxLabelElement = checkboxContainer.querySelector("label:last-child");
-            if (!checkboxLabelElement || !labelText)
+            if (!checkboxLabelElement || !labelHTML)
                 return;
-            checkboxLabelElement.textContent = labelText;
+            checkboxLabelElement.innerHTML = `<div class="engrid-custom-checkbox-label">${labelHTML}</div>`;
+            // Remove the original label element
             checkboxLabel.remove();
-            this.logger.log(`Set checkbox label to "${labelText}"`);
+            this.logger.log(`Set checkbox label to "${labelHTML}"`);
         });
     }
 }
@@ -23537,10 +23845,11 @@ class FrequencyUpsell {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/version.js
-const AppVersion = "0.22.17";
+const AppVersion = "0.22.19";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
+
 
 
 
@@ -24504,297 +24813,6 @@ const customScript = function (App, DonationFrequency) {
     const contentHeader = document.querySelector(".content-header");
     contentHeader?.insertAdjacentHTML("afterbegin", `<a class="minimal-header-logo" href="https://www.worldwildlife.org/" target="_blank"><img class="no-header-wwf-logo" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo-no-tab.png?3" alt="WWF Logo"></a>`);
   }
-};
-;// CONCATENATED MODULE: ./src/scripts/page-header-footer.js
-const pageHeaderFooter = function (App) {
-  // 4Site Code Start
-  const searchBtn = document.querySelector(".search-btn");
-
-  if (searchBtn) {
-    searchBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      window.location.href = "https://www.worldwildlife.org/search";
-    });
-  } // Converted to Vanilla JS and moved into Page Template
-  // if ("wwfHeader" in window) {
-  //   let wwfHeader = window.wwfHeader;
-  //   const contentHeader = document.querySelector(".content-header");
-  //   if (contentHeader) {
-  //     const shadedLight = document.createElement("div");
-  //     shadedLight.classList.add("shaded-light-pattern");
-  //     if (wwfHeader.toLowerCase().includes("panda")) {
-  //       shadedLight.classList.add("panda-nation");
-  //       wwfHeader = `Panda<span class='h2-orange'>Nation</span>`;
-  //     }
-  //     shadedLight.innerHTML = `
-  //     <div class="section-parts wrapper">
-  //       <div id="panda-nation-banner-header" class="row">
-  //         <div id="panda-nation-title" class="span5">
-  //           <h2>${wwfHeader}</h2>
-  //         </div>
-  //       </div>
-  //     </div>
-  //     `;
-  //     contentHeader.appendChild(shadedLight);
-  //     App.setBodyData("no-content-header", false);
-  //   }
-  // } else if (
-  //   "pageJson" in window &&
-  //   ["tweetpage", "advocacypetition", "emailtotarget"].includes(
-  //     window.pageJson.pageType
-  //   )
-  // ) {
-  //   const contentHeader = document.querySelector(".content-header");
-  //   if (contentHeader) {
-  //     const shadedLight = document.createElement("div");
-  //     shadedLight.classList.add("shaded-light-pattern");
-  //     shadedLight.innerHTML = `
-  //     <div class="section-parts wrapper">
-  //       <div id="panda-nation-banner-header" class="row">
-  //         <div id="panda-nation-title" class="span5">
-  //           <h2>Action Center</h2>
-  //         </div>
-  //       </div>
-  //     </div>
-  //     `;
-  //     contentHeader.appendChild(shadedLight);
-  //     App.setBodyData("no-content-header", false);
-  //   }
-  // }
-  // 4Site Code End
-
-
-  ((window, document) => {
-    var _self = {
-      headerNav: {
-        init: function () {
-          var _this = this;
-
-          _this.setVars();
-
-          _this.bindEvents();
-        },
-        setVars: function () {
-          const _this = _self.headerNav;
-          _this.$header = document.getElementById("header");
-          if (!_this.$header) return;
-          _this.$dropdown = _this.$header.querySelector("div.dropdown");
-          _this.$control = _this.$header.querySelectorAll(".control-expand");
-          _this.$accordionControls = _this.$header.querySelectorAll(".control-accordion");
-          _this.$actionNavControls = [..._this.$accordionControls].filter(el => /^action-nav.*/.test(el.getAttribute("aria-controls")));
-          _this.mobileHeaderMq = window.matchMedia("(max-width: 767px)");
-          _this.searchControls = _this.$header.querySelectorAll(".search-btn");
-        },
-        bindEvents: function () {
-          const _this = _self.headerNav;
-          if (!_this.$header) return;
-
-          _this.$control.forEach(control => {
-            control.addEventListener("click", _this.handleDropdownClick);
-          });
-
-          _this.$accordionControls.forEach(el => {
-            el.addEventListener("click", _this.handleAccordionClick);
-            el.addEventListener("mouseenter", _this.handleAccordionHover);
-            el.addEventListener("mouseleave", _this.handleAccordionHover);
-
-            _this.getPanel(el.getAttribute("aria-controls")).addEventListener("mouseleave", _this.handleDropdownHover);
-          });
-
-          document.addEventListener("click", _this.handleDocumentClick);
-
-          _this.searchControls.forEach(el => {
-            el.addEventListener("click", _this.handleAccordionClick);
-          });
-        },
-        handleDropdownClick: function (e) {
-          const _this = _self.headerNav;
-          const $target = e.currentTarget;
-
-          const $panel = _this.getPanel($target.getAttribute("aria-controls"));
-
-          if (!_this.$control[0].classList.contains("expanded") && _this.$control[0] === document.querySelector("#header .control.control-expand") || !_this.isPanelExpanded($panel) || !document.querySelector(".nav-content .dropdown.dropdown-expanded")) {
-            _this.$dropdown.classList.add("dropdown-expanded");
-
-            _this.$control.forEach(control => {
-              control.classList.add("expanded");
-            });
-          } else {
-            _this.$dropdown.classList.remove("dropdown-expanded");
-
-            _this.$control.forEach(control => {
-              control.classList.remove("expanded");
-            });
-          }
-
-          if (!_this.panelScrollTops) {
-            setTimeout(_this.setPanelScrollTops, 250);
-          }
-
-          document.querySelector("body").classList.toggle("freeze");
-          e.preventDefault();
-        },
-        handleAccordionClick: function (e) {
-          const _this = _self.headerNav;
-          const $target = e.currentTarget;
-
-          const $panel = _this.getPanel($target.getAttribute("aria-controls"));
-
-          if (_this.mobileHeaderMq.matches) {
-            const panelScrollTop = _this.getPanelScrollTop($panel);
-          }
-
-          if (_this.isPanelExpanded($panel)) {
-            _this.closePanel($panel, $target);
-
-            _this.setPanelHeight($panel, 0);
-
-            $target.classList.remove("expanded");
-          } else {
-            _this.closeExpandedPanels();
-
-            _this.expandPanel($panel, $target);
-
-            _this.setPanelHeight($panel, _this.getPanelHeight($panel.querySelectorAll(".nav-item-accordion-inner")));
-
-            $target.classList.add("expanded");
-
-            if (_this.mobileHeaderMq.matches && !$target === _this.$actionNavControls) {
-              _this.scrollToPanel(panelScrollTop);
-            }
-          }
-
-          e.preventDefault();
-        },
-        handleAccordionHover: function (e) {
-          const _this = _self.headerNav;
-          const $target = e.currentTarget;
-
-          const $panel = _this.getPanel($target.getAttribute("aria-controls"));
-
-          const isMouseenterClick = e.type === "mouseenter" && !_this.isPanelExpanded($panel);
-          const isMouseleaveClick = e.type === "mouseleave" && e.relatedTarget !== undefined && e.relatedTarget !== null && $panel.contains(e.relatedTarget) && !e.relatedTarget.classList.contains("nav-item") && !e.relatedTarget.classList.contains("action-link") && e.relatedTarget !== document.querySelectorAll("ul.nav.primary-nav")[0];
-
-          if ((isMouseenterClick || isMouseleaveClick) && _this.shouldHoverWork()) {
-            $target.click();
-          }
-        },
-        handleDropdownHover: function (e) {
-          const _this = _self.headerNav;
-          const $target = e.target;
-          const $control = document.querySelector(`[aria-controls=${$target.getAttribute("id")}]`);
-          const isMouseleaveClick = e.relatedTarget !== undefined && e.relatedTarget !== null && !($control === e.relatedTarget) && !e.relatedTarget.classList.contains("nav-item") && !e.relatedTarget.classList.contains("action-link") && !$control.contains(e.relatedTarget);
-
-          if (isMouseleaveClick && _this.shouldHoverWork()) {
-            $control.click();
-          }
-        },
-        handleDocumentClick: function (e) {
-          if (_self.headerNav.mobileHeaderMq.matches) {
-            // close any open menus (on mobile) with search click
-            const _this = _self.headerNav;
-            const clickFromInsideSearch = e.target.closest(".search")?.length === 1;
-
-            if (clickFromInsideSearch) {
-              _this.closeExpandedPanels();
-            }
-          } else {
-            // close any open menus (on desktop) with off-nav or off-search clicks
-            const _this = _self.headerNav;
-            const clickFromOutsideNavItem = e.target.closest(".nav-items") === null;
-            const clickFromOutsideSearch = e.target.closest(".search") === null;
-
-            if (clickFromOutsideNavItem && clickFromOutsideSearch) {
-              _this.closeExpandedPanels();
-            }
-          }
-        },
-        getPanel: function (id) {
-          return document.getElementById(id);
-        },
-        getPanelHeight: function ($el) {
-          return $el[0].getBoundingClientRect().height;
-        },
-        setPanelHeight: function ($el, height) {
-          const maxHeight = height + "px";
-          $el.style.maxHeight = maxHeight;
-        },
-        setPanelScrollTops: function () {
-          const _this = _self.headerNav;
-          _this.panelScrollTops = [];
-
-          _this.$accordionControls.forEach((el, index) => {
-            const $target = el;
-
-            const $panel = _this.getPanel($target.getAttribute("aria-controls"));
-
-            _this.panelScrollTops[index] = $panel.parentNode.getBoundingClientRect().top + window.scrollY;
-          });
-        },
-        getPanelScrollTop: function ($currentPanel) {
-          const _this = _self.headerNav;
-
-          _this.$accordionControls.forEach((el, index) => {
-            const $target = el;
-
-            const $panel = _this.getPanel($target.getAttribute("aria-controls"));
-
-            if ($panel[0] === $currentPanel[0]) {
-              _this.currentPanelScrollTop = _this.panelScrollTops[index];
-            }
-          });
-
-          return _this.currentPanelScrollTop;
-        },
-        scrollToPanel: function (panelScrollTop) {
-          const _this = _self.headerNav;
-
-          _this.$dropdown.scrollTop(panelScrollTop);
-        },
-        isPanelExpanded: function ($el) {
-          if ($el) {
-            const hiddenAttr = $el.getAttribute("hidden");
-            return hiddenAttr !== "" && hiddenAttr !== true && hiddenAttr === null;
-          } else {
-            return true;
-          }
-        },
-        shouldHoverWork: function () {
-          // only hover for desktop header on non-touch devices
-          // removing modenizr to simplify code
-          return !_self.headerNav.mobileHeaderMq.matches;
-        },
-        expandPanel: function ($el, $trigger) {
-          $trigger.setAttribute("aria-expanded", true);
-          $el.removeAttribute("hidden");
-        },
-        closePanel: function ($el, $trigger) {
-          // use delay to all for css fade-out
-          $trigger.setAttribute("aria-expanded", false);
-          $el.setAttribute("hidden", true);
-        },
-        closeExpandedPanels: function () {
-          const _this = _self.headerNav;
-
-          _this.$accordionControls.forEach(el => {
-            const $target = el;
-
-            const $panel = _this.getPanel($target.getAttribute("aria-controls"));
-
-            if (_this.isPanelExpanded($panel)) {
-              _this.closePanel($panel, $target);
-
-              _this.setPanelHeight($panel, 0);
-
-              $target.classList.toggle("expanded");
-            }
-          });
-        }
-      }
-    };
-
-    _self.headerNav.init();
-  })(window, document);
 };
 // EXTERNAL MODULE: ./node_modules/smoothscroll-polyfill/dist/smoothscroll.js
 var smoothscroll = __webpack_require__(523);
@@ -26359,7 +26377,7 @@ class AddDAF {
 // } from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
 
 
-
+ // import { pageHeaderFooter } from "./scripts/page-header-footer";
 
 
 
@@ -26438,8 +26456,7 @@ const options = {
     new AnnualLimit();
     window.DonationLightboxForm = DonationLightboxForm;
     new DonationLightboxForm(DonationAmount, DonationFrequency, App);
-    customScript(App, DonationFrequency);
-    pageHeaderFooter(App); // Added this line to trigger pageHeaderFooter
+    customScript(App, DonationFrequency); // pageHeaderFooter(App); // Added this line to trigger pageHeaderFooter
 
     new TweetToTarget(App, en_form_EnForm); // Expand all contact sections on EMAILTOTARGET pages
 
