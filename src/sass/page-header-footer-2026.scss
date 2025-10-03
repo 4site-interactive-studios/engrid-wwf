@@ -1,0 +1,84 @@
+#header {
+  background: #fff;
+  border-bottom: 1px solid #f3f3f3;
+  padding: 12px 24px;
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo img {
+    width: 42px;
+    height: 60px;
+    display: block;
+  }
+
+  .cta {
+    display: flex;
+    gap: 16px;
+
+    .btn {
+      min-width: 120px;
+      border-radius: 32px;
+      color: #f3f3f3;
+      text-align: center;
+      font-family: "Open Sans", sans-serif;
+      font-size: 18px;
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: 0.18px;
+      padding: 16px 20px;
+      text-decoration: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease,
+        background 0.2s ease;
+
+      &.gifts {
+        background: #6f190b;
+      }
+
+      &.donate {
+        background: #cb4328;
+      }
+
+      &:hover {
+        transform: translateY(-2px) scale(1.03);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        filter: brightness(1.05);
+      }
+
+      &:active {
+        transform: translateY(0) scale(0.98);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        filter: brightness(0.95);
+      }
+    }
+  }
+
+  @media (max-width: 800px) {
+    .cta {
+      display: none;
+    }
+  }
+}
+
+#footer {
+  background: #fefcf9;
+  padding: 60px 0;
+
+  .container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .footer-logo {
+    img {
+      width: 62px;
+      height: 91px;
+    }
+  }
+}
