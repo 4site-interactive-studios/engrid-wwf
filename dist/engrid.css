@@ -19,8 +19,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, October 3, 2025 @ 13:56:42 ET
- *  By: npgiano
+ *  Date: Wednesday, October 8, 2025 @ 16:11:35 ET
+ *  By: fernando
  *  ENGrid styles: v0.22.18
  *  ENGrid scripts: v0.22.19
  *
@@ -10947,7 +10947,7 @@ body[data-engrid-debug]:before{
   color:#f3f3f3;
   font-family:Open Sans,sans-serif;
   font-size:18px;
-  font-weight:400;
+  font-weight:600;
   letter-spacing:.18px;
   line-height:1;
   min-width:120px;
@@ -10955,7 +10955,7 @@ body[data-engrid-debug]:before{
   text-align:center;
   -webkit-text-decoration:none;
   text-decoration:none;
-  transition:transform .2s ease,box-shadow .2s ease,background .2s ease;
+  transition:background .2s ease;
 }
 #header .cta .btn.gifts{
   background:#6f190b;
@@ -10963,15 +10963,8 @@ body[data-engrid-debug]:before{
 #header .cta .btn.donate{
   background:#cb4328;
 }
-#header .cta .btn:hover{
-  box-shadow:0 4px 10px #00000026;
+#header .cta .btn:active,#header .cta .btn:hover{
   filter:brightness(1.05);
-  transform:translateY(-2px) scale(1.03);
-}
-#header .cta .btn:active{
-  box-shadow:0 2px 6px #0000001a;
-  filter:brightness(.95);
-  transform:translateY(0) scale(.98);
 }
 @media (max-width:800px){
   #header .cta{
