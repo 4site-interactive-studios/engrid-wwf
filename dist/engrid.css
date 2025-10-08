@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, October 8, 2025 @ 16:11:35 ET
+ *  Date: Wednesday, October 8, 2025 @ 16:32:16 ET
  *  By: fernando
  *  ENGrid styles: v0.22.18
  *  ENGrid scripts: v0.22.19
@@ -10931,11 +10931,14 @@ body[data-engrid-debug]:before{
 #header .cta .btn.gifts{
   background:#6f190b;
 }
+#header .cta .btn.gifts:active,#header .cta .btn.gifts:hover{
+  background:#861e0d;
+}
 #header .cta .btn.donate{
   background:#cb4328;
 }
-#header .cta .btn:active,#header .cta .btn:hover{
-  filter:brightness(1.05);
+#header .cta .btn.donate:active,#header .cta .btn.donate:hover{
+  background:#d75035;
 }
 @media (max-width:800px){
   #header .cta{
