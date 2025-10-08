@@ -37,14 +37,18 @@
 
       &.gifts {
         background: #6f190b;
+        &:hover,
+        &:active {
+          background: lighten(#6f190b, 5%);
+        }
       }
 
       &.donate {
         background: #cb4328;
-      }
-
-      &:hover, &:active {
-        filter: brightness(1.05);
+        &:hover,
+        &:active {
+          background: lighten(#cb4328, 5%);
+        }
       }
     }
   }
@@ -68,7 +72,8 @@
     display: grid;
     grid-template-columns: 62px auto 168px;
     gap: 24px 40px;
-    .footer-copy, .footer-links {
+    .footer-copy,
+    .footer-links {
       grid-column: 1 / -1;
       max-width: 1063px;
     }
@@ -115,7 +120,7 @@
     display: flex;
     gap: 16px;
     li > a {
-      color: var(--label_color); 
+      color: var(--label_color);
       font-size: 18px;
       font-weight: 600;
       text-decoration: underline;
@@ -137,12 +142,14 @@
       max-width: unset;
       grid-template-columns: 62px auto;
       gap: 32px;
-      .footer-social, .footer-copy, .footer-links {
+      .footer-social,
+      .footer-copy,
+      .footer-links {
         grid-column: 1 / -1;
         max-width: 100%;
       }
     }
-    
+
     .footer-copy {
       margin-top: 0px;
     }
