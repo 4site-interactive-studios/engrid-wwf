@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, October 9, 2025 @ 16:08:19 ET
+ *  Date: Thursday, October 9, 2025 @ 16:42:05 ET
  *  By: npgiano
  *  ENGrid styles: v0.22.18
  *  ENGrid scripts: v0.22.19
@@ -11221,12 +11221,22 @@ body[data-engrid-debug]:before{
   border-bottom:1px solid #f3f3f3;
   padding:12px 24px;
 }
+@media (min-width:40rem){
+  #header{
+    padding:12px 48px;
+  }
+}
+@media (min-width:64rem){
+  #header{
+    padding:12px 80px;
+  }
+}
 #header .container{
   align-items:center;
   display:flex;
   justify-content:space-between;
   margin:0 auto;
-  max-width:1280px;
+  max-width:1440px;
 }
 #header .logo img{
   display:block;
