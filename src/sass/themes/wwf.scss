@@ -33,15 +33,18 @@
 //    https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/opensans-regular-webfont.woff2
 
 & {
+  text-decoration-skip-ink: none;
+  
   --engrid__body_margin: 0 22px;
-  --engrid__body-main_padding: 26px 29px 20px 29px;
-  --engrid__body-title_padding: 0px 0px 28px 0px;
+  --engrid__body-main_padding: 40px 32px;
+  --engrid__body-title_padding: 0px 0px 32px 0px;
   --engrid__body-top_padding: 0px;
 
-  --engrid__page_background-color: #f3f7ed;
+  --engrid__page_background-color: #FEFCF9;
   --engrid__body-title_background-color: transparent;
   --engrid__body-banner_background-color: transparent;
   --engrid__body-top_background-color: transparent;
+  --engrid__body-main_background-color: #F9F3EB;
 
   --engrid__content-header_background-color: #000000;
   --engrid__content-footer_background-color: #ffffff;
@@ -50,55 +53,63 @@
 
   // TYPOGRAPHY DEFAULT
   --default_font-family: "Open Sans", sans-serif;
-  --default_color: ##1f2937;
-  --default_font-size: 20px;
+  --default_color: #1f2937;
+  --default_font-size: 18px;
   // --default_font-weight: initial;
   --default_line-height: 32px;
 
   // TYPOGRAPHY H1
   // --h1_font-family: var(--default_font-family);
-  // --h1_color: initial;
-  --h1_font-size: 46px;
+  --h1_color: #060606;
+  --h1_font-size: 80px;
   --h1_font-weight: 700;
-  --h1_line-height: 55.2px;
+  --h1_line-height: 110%;
 
   // TYPOGRAPHY H2
   // --h2_font-family: var(--default_font-family);
   // --h2_color: initial;
-  --h2_font-size: 20px;
+  --h2_font-size: 24px;
   --h2_font-weight: 700;
-  --h2_line-height: 32px;
+  --h2_line-height: 140%;
 
   // TYPOGRAPHY P
   // --p_font-family: var(--default_font-family);
   // --p_color: initial;
-  // --p_font-size: var(--root_font-size);
+  --p_font-size: var(--default_font-size);
   // --p_font-weight: initial;
   // --p_line-height: initial;
 
   // TYPOGRAPHY A
   // --a_font-family: var(--default_font-family);
-  --a_color: #006ea5;
-  --a_text-decoration: none;
+  --a_color: var(--color_acadia_400);
+  --a_text-decoration: underline;
+  --a_font-size: var(--default_font-size);
+  --a_font-weight: 600;
 
+  --fields_spacing-block: 1rem;
+
+  --error__color: #CB4328;
+  --error__color_faded: #FFEFE9;
   // TYPOGRAPHY A:FOCUS
   // TYPOGRAPHY A:HOVER
-  // --a_color_hover: var(--a_color);
   --a_text-decoration_hover: underline;
+  --a_color_hover: var(--color_acadia_500);
 
   // TYPOGRAPHY INPUT
   // --input_font-family: var(--default_font-family);
-  // --input_color: #000000;
-  // --input_font-size: var(--root_font-size);
+  --input_color: var(--color_punaluu_500);
+  --input_font-size: 16px;
   // --input_font-weight: initial;
-  // --input_line-height: initial;
-  --input_background-color: #ffffff;
+  --input_line-height: 23px;
+  --input_letter-spacing: 0.16px;
+  --input_background-color: var(--color_punaluu_50);
   // --input_border-width: 1px;
-  --input_border-color: #808080;
-  --input_border-radius: 2px;
-  // --input_placeholder-color: var(--color_light-gray);
+  --input_border-color: var(--color_punaluu_300);
+  --input_border-radius: 4px;
+  --input_placeholder-color: var(--color_punaluu_300);
   // --input_box-shadow: inset 0 2px 2px -1px rgba(74, 74, 104, 0.1);
-  --input_padding: 1.3ch 1.2ch;
+  --input_padding: 11.5px 15px;
+
 
   // TYPOGRAPHY INPUT:FOCUS
   // TYPOGRAPHY INPUT:HOVER
@@ -108,36 +119,44 @@
   // --input_border-bottom-color_hover: var(--input_border-color_hover);
   // --input_box-shadow_hover: --input_box-shadow;
 
-  --color_primary: #e5621a;
+  --color_primary: #CB4328;
+  --color_acadia_400: #1f648c;
+  --color_acadia_500: #0F3D57;
+  --color_punaluu_50: #FCFCFC;
+  --color_punaluu_300: #727272;
+  --color_punaluu_400: #4B4B4B;
+  --color_punaluu_500: #0f0f0f;
+  --color_yellowstone: #FFCC66;
 
   // TYPOGRAPHY BUTTON
   // --button_font-family: var(--default_font-family);
-  --button_color: #006ea3;
-  --button_font-size: 24px;
+  --button_color: var(--color_acadia_400);
+  --button_font-size: 18px;
   --button_font-weight: 700;
-  --button_line-height: 36px;
+  --button_line-height: 100%;
   --button_background-color: #ffffff;
   // --button_border-width: 1px;
-  --button_border-color: #006ea3;
-  --button_border-radius: 2px;
+  --button_border-color: var(--color_acadia_400);
+  --button_border-radius: 32px;
+  --button_border-width: 2px;
 
   // TYPOGRAPHY BUTTON:HOVER
   --button_color_hover: #ffffff;
-  --button_background-color_hover: #016da3;
-  --button_border-color_hover: #006ea3;
+  --button_background-color_hover: var(--color_acadia_400);
+  --button_border-color_hover: var(--color_acadia_400);
 
   // TYPOGRAPHY BUTTON:SELECTED
   --button_color_checked: #ffffff;
-  --button_background-color_checked: #006ea3;
-  --button_border-color_checked: #006ea3;
+  --button_background-color_checked: var(--color_acadia_400);
+  --button_border-color_checked: var(--color_acadia_400);
 
-  --recurring-frequency__button_font-size: 24px;
+  --recurring-frequency__button_font-size: 18px;
   --recurring-frequency__button_font-weight: 700;
-  --recurring-frequency__button_line-height: 36px;
+  // --recurring-frequency__button_line-height: 36px;
 
   --submit__button_color: #ffffff;
-  --submit__button_border-color: #e5621a;
-  --submit__button_background-color: #e5621a;
+  --submit__button_border-color: var(--color_primary);
+  --submit__button_background-color: var(--color_primary);
 
   --submit__button_color_hover: #ffffff;
   --submit__button_background-color_hover: #b54000;
@@ -147,7 +166,12 @@
   --submit__button_background-color_checked: #000000;
   --submit__button_border-color_checked: #000000;
 
+  --submit__button_padding-top: 1rem;
+  --submit__button_padding-bottom: 1rem;
+  --submit__button_font-size: 24px;
+  
   // DONATION PAGE
+  --premium__image_max-width: 134px;
   // --give-monthly-donation-amount-appended-label: "/mo";
   // --give-annual-donation-amount-appended-label: "/yr";
   --give-quarterly-donation-amount-appended-label: "/qtr";
@@ -157,7 +181,8 @@
   --give-by-select__button_count: 2;
 
   --label_font-size: 16px;
-  --label_line-height: 24px;
+  --label_line-height: 146%;
+  --lebel_letter-spacing: 0.16px;
   --label_font-weight: 700;
   --label_color: #222222;
 
@@ -166,28 +191,29 @@
   --radio_height: 30px;
   --radio_width: 30px;
   --radio_border-width: 2px;
-  --radio_color: #006ea3;
+  --radio_color: var(--color_acadia_400);;
   // color: var(--radio_color_selected);
   // background-color: var(--radio_background-color_selected);
   // border-color: var(--radio_border-color_selected);
   // box-shadow: var(--radio_box-shadow_selected);
 
-  //   --radio_background-color_hover: fade-out(grayscale(#006ea3), 0.4);
+  //   --radio_background-color_hover: fade-out(grayscale(var(--color_acadia_400);), 0.4);
   --radio_background-color_hover: #bababa;
   --radio_box-shadow_hover: inset 0 0 0 4px #ffffff;
 
-  --radio_background-color_selected: #006ea3;
-  --radio_border-color_selected: #006ea3;
+  --radio_background-color_selected: var(--color_acadia_400);;
+  --radio_border-color_selected: var(--color_acadia_400);;
   --radio_box-shadow_selected: inset 0 0 0 4px #ffffff;
 
+  --donation-amount__button_font-weight: 600;
   --donation-amount__button_color_checked: #ffffff;
   --donation-amount__button_background-color_checked: #016da3;
 
   --checkbox_content_checked: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='21px' height='15px' viewBox='0 0 20 15' version='1.1'%3E%3Cg id='surface1'%3E%3Cpath style=' stroke:none;fill-rule:nonzero;fill:rgb(100%25,100%25,100%25);fill-opacity:1;' d='M 12.75 6.117188 L 6.835938 12.234375 L 1.335938 6.546875 L 0 7.929688 L 3.417969 11.464844 L 6.835938 15.003906 L 13.417969 8.191406 L 20 1.382812 L 18.664062 0 Z M 12.75 6.117188 '/%3E%3C/g%3E%3C/svg%3E");
   --checkbox_border-width: 2px;
   --checkbox_background-color_hover: #ffffff;
-  --checkbox_border-color_checked: #006ea3;
-  --checkbox_background-color_checked: #006ea3;
+  --checkbox_border-color_checked: var(--color_acadia_400);;
+  --checkbox_background-color_checked: var(--color_acadia_400);;
   --checkbox_color_checked: #ffffff;
 
   --select_padding-right: 3.75ch;
@@ -204,14 +230,14 @@
 
   --inline-upsell-box_margin-left: 8px;
   --inline-upsell-box_margin-right: 8px;
-  --inline-upsell-box_font-size: 15px;
-  --inline-upsell-box_line-height: 24px;
+  --inline-upsell-box_font-size: 16px;
+  --inline-upsell-box_line-height: 150%;
   --inline-upsell-box-svg_margin-left: 53px;
   --inline-upsell-box_strong_font-size: 20px;
   --inline-upsell-box_strong_line-height: 28px;
 
   // VGS
-  --en-vgs-height: 64px;
+  --en-vgs-height: 48px;
 
   --maximize_my_donation_image: url(https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/2401_Premiums_NoPremTiger_1050.jpg-250x250.jpg?v=1682005678000);
 
@@ -242,8 +268,24 @@
   line-height: 32px;
 
   .body-main {
-    --p_font-size: 17px;
-    --p_line-height: 27.2px;
+    --p_font-size: var(--default_font-size);
+    --p_line-height: var(--default_line-height);
+  }
+
+  a {
+    font-size: var(--a_font-size);
+    font-weight: 600;
+    text-decoration: underline;
+  }
+
+  .body-main a {
+    text-decoration-thickness: 2px;
+    text-underline-offset: 8px;
+  }
+
+  .section-header, .en__pgHeader {
+    margin-top: 40px;
+    margin-bottom: 24px;
   }
 
   h1 {
@@ -395,11 +437,16 @@
 
   .content-header {
     color: #ffffff;
-    margin-bottom: 114px;
+    margin-bottom: 40px;
   }
 
   .content-footer {
-    margin-top: 120px;
+    margin-top: 40px;
+  }
+
+  .body-title > .en__component > * {
+    font-variation-settings: "wdth" 75;
+    font-stretch: 75%;
   }
 
   .body-title > .en__component > *:first-child {
@@ -411,7 +458,8 @@
   }
 
   .body-main {
-    border: 1px solid #cccccc;
+    border: 1px solid var(--color_punaluu_500);
+    border-radius: 4px;
   }
 
   // EN's native social sharing icons
@@ -468,6 +516,38 @@
     align-items: self-start;
   }
 
+  .en__field--question {
+    --fields_spacing-block: 24px;
+
+
+    .en__field--radio label, label {
+      --fields_spacing-block: .5rem;
+    }
+
+    .en__field__element--radio {
+      --fields_spacing-block: 0rem;
+      display: grid;
+      gap: .5rem;
+      grid-template-columns: auto auto;
+    }
+  }
+
+  .en__field--make_annual {
+    background-color: var(--color_yellowstone);
+    border: 0;
+    color: var(--color_punaluu_500);
+    border-radius: 4px;
+    margin: 0;
+    padding: 10px 16px;
+  }
+
+  .en__field--feeCover {
+    margin: 0;
+    .en__field__element--checkbox {
+      padding: 8px 16px 0px 16px;
+    }
+  }
+
   /* In Honor or Memorium Inform Radio Select */
   // .en__field--NOT_TAGGED_47 .en__field__element--radio {
   //   flex-direction: column;
@@ -490,10 +570,10 @@
 
   // GIVE BY SELECT STYLES
   .give-by-select {
-    @media screen and (max-width: 600px) {
-      --give-by-select__button_count: 1;
-    }
+    --give-by-select__button_count: 1;
+    --fields_spacing-block: 0.5rem;
   }
+
   .give-by-select.en__field__item:nth-child(odd
       of
       :not([data-engrid-hidden="true"])):last-child {
@@ -505,9 +585,9 @@
   }
 
   .give-by-select input[type="radio"] + label {
-    padding: 12px 22px;
-    height: 65px;
-    max-height: 65px;
+    padding: 11px 32px;
+    height: 48px;
+    max-height: 48px;
   }
 
   .give-by-select .en__field__label {
@@ -517,7 +597,7 @@
   .give-by-select .en__field__label img {
     width: auto;
     height: auto;
-    max-height: 70%;
+    max-height: 83%;
   }
 
   .give-by-select .venmo label > img:last-of-type {
@@ -545,6 +625,19 @@
     margin-top: 20px;
   }
 
+  .be-a-part-of-our-community {
+    :first-child p {
+      margin-top: -4px;
+      margin-bottom: 24px;
+    }
+    :nth-child(2) p {
+      font-size: var(--label_font-size);
+      font-weight: var(--label_font-weight);
+      line-height: var(--label_line-height);
+      margin-bottom: 8px;
+    }
+  }
+
   .countdown {
     margin-block-end: 1em;
   }
@@ -554,6 +647,11 @@
       margin-top: -27px;
       padding-top: 26px;
     }
+  }
+
+  .en__field input:invalid {
+    border-color: var(--error__color);
+    background-color: var(--error__color_faded);
   }
 
   &[data-engrid-page-type="supporterhub"] .en__captcha,
@@ -1163,29 +1261,50 @@
   // }
 
   .donation-summary {
-    --p_font-size: 17px;
-    --p_line-height: 27.2px;
+    --p_font-size: 16px;
+    --p_line-height: 146%;
     --p_font-weight: 700;
-    margin-top: 14px;
+    letter-spacing: 0.16px;
+    margin-top: 8px;
+    border-top: 1px solid var(--color_punaluu_500);
+    border-bottom: 1px solid var(--color_punaluu_500);
 
     p {
+      margin: 0 auto;
+      max-width: 388px;
       padding-top: 22px;
       padding-bottom: 22px;
     }
   }
 
   .alternative-donation-methods {
-    --p_font-size: 17px;
-    --p_line-height: 27.2px;
+    --p_font-size: 14px;
+    --p_line-height: 144%;
 
     p:first-child {
-      margin-top: 31px;
+      margin: 1rem 3rem 2rem 3rem;
+      font-weight: 400;
+      line-height: 144%; /* 20.16px */
+      letter-spacing: 0.245px;
     }
 
     a {
-      text-decoration: none;
-      color: #006da4;
-      font-weight: 700;
+      --a_font-size: 14px;
+      --a_line-height: 144%;
+      color: var(--color_punaluu_500);
+      font-weight: 400;
+      text-underline-offset: 20%;
+    }
+
+    p:nth-child(2) {
+      a, img {
+        width: 101px;
+        height: 101px;
+      }
+    }
+    p:nth-child(2) > a:nth-child(2) img {
+      width: 190px;
+      height: 71.9px;
     }
   }
 
@@ -1200,30 +1319,28 @@
   }
 
   .grey-box {
-    background-color: #f6f5f3;
-    padding: 12px 16px;
-    --p_font-size: 17px;
-    --p_line-height: 27.2px;
-    margin-left: 0;
-    margin-right: 0;
+    background-color: #F3E7D9;
+    color: var(--color_punaluu_400);
+    padding: 1rem;
+    --p_font-size: 16px;
+    --p_line-height: 146%;
+    letter-spacing: 0.16px;
+    margin-top: 24px;
 
     p {
       margin: 0;
     }
 
     a {
+      font-size: var(--p_font-size);
       --p_font-weight: 400;
-      color: #006da4;
-      text-decoration: none;
       font-weight: 700;
+      text-underline-offset: 20%;
     }
   }
 
   /* Used to highlight content in the main body */
-  .white-box {
-    background-color: #ffffff;
-    border: 1px solid #cccccc;
-    padding: 0 3rem 1.75rem 3rem;
+  .body-top > .showif-desktop {
     display: flex;
     flex-direction: column;
     margin-left: 0;
@@ -1251,8 +1368,6 @@
     }
 
     h2 {
-      margin-left: auto;
-      margin-right: auto;
       margin-bottom: 1.5rem;
     }
 
@@ -1271,26 +1386,20 @@
       display: flex;
       align-items: center;
       width: 100%;
-      max-width: 350px;
-      margin-bottom: 1rem;
+      max-width: 445px;
+      margin-bottom: 24px;
 
       p {
-        border-bottom: 1px solid #e9e8da;
         flex-basis: calc(100% - 60px);
-        padding-bottom: 1rem;
-        margin-top: 0.5rem;
-
-        // Creates an offset so the bottom padding and border are ignored for the vertical positioning
         position: relative;
-        top: 0.5rem;
+        margin: 0;
       }
 
       img {
         flex-basis: 60px;
         height: 60px;
-        margin-right: 1rem;
+        margin-right: 20px;
         width: 60px;
-        margin-bottom: 2rem;
       }
     }
   }
@@ -1317,23 +1426,16 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 1rem 1ch;
-    background-color: #f7e6ed;
-    color: #c60060;
+    padding: 0.75rem 1rem;
+    background-color: var(--color_yellowstone);
+    color: var(--color_punaluu_500);
     // margin-bottom: 1.25rem;
-    font-style: italic;
     --p_font-size: var(--inline-upsell-box_font-size);
     --p_line-height: var(--inline-upsell-box_line-height);
-    --p_font-weight: 400;
-    min-height: 88px;
+    --p_font-weight: 700;
+    min-height: 48px;
     border-radius: 4px;
-    margin-top: 1.75rem;
-
-    strong {
-      font-size: var(--inline-upsell-box_strong_font-size);
-      line-height: var(--inline-upsell-box_strong_line-height);
-      font-weight: 700; // Is 700 in figma mockup but not worth loading in a whole new font weight just for that
-    }
+    margin-top: 0.75rem;
 
     > :first-child {
       margin-top: 0rem;
@@ -1369,19 +1471,19 @@
       --media-attribution__margin: 0.25rem 0 0 0;
       --media-attribution__background-color: transparent;
       --media-attribution__padding: 0;
-      --media-attribution__color: #444444;
+      --media-attribution__color: var(--color_punaluu_500);
       --media-attribution__font-weight: 400;
-      --media-attribution__font-style: italic;
-      --media-attribution__font-size: 12px;
+      --media-attribution__font-style: normal;
+      --media-attribution__font-size: 14px;
       --media-attribution__line-height: 110%;
     }
   }
 
   .radio-to-buttons_donationAmt .en__field--donationAmt {
     .en__field__element--radio {
-      --fields_spacing-inline: 0.9rem;
-      --fields_spacing-block: 1.2rem;
-      --donation-amount__button_padding: 1ch calc(1.2ch - 38px);
+      --fields_spacing-inline: .25rem;
+      --fields_spacing-block: .25rem;
+      --donation-amount__button_padding: 14px 0;
     }
 
     input[type="radio"] + label {
@@ -1389,7 +1491,10 @@
     }
 
     .en__field__input--other {
-      --input_padding: var(--donation-amount__button_padding);
+      ::before {
+        color: red;
+      }
+      --input_padding: 12.5px 0;
       font-size: var(--donation-amount__button_font-size);
       font-weight: 700;
       justify-content: center;
@@ -1413,7 +1518,7 @@
         left: 2.25ch;
         line-height: 0;
         position: absolute;
-        top: calc(50% - 5px);
+        top: calc(50% - 2px);
         font-size: var(--donation-amount__button_font-size);
         color: var(--donation-amount__button_color);
         font-family: var(--donation-amount__button_font-family);
@@ -1433,6 +1538,10 @@
     background-color: #cccccc;
   }
 
+  .sms-disclosure {
+    margin-top: -20px;
+  }
+
   .sms-disclosure p,
   .en__field__notice {
     font-weight: 400;
@@ -1440,16 +1549,32 @@
     line-height: 130%;
     color: #444444;
     margin-top: 0;
+    margin-bottom: 0;
   }
 
   .en__field__notice {
     order: 3;
   }
+  
+  .en__field__input {
+    --fields_spacing-block: 0.5rem;
+  }
+
+  #ccv-tooltip {
+    margin-top: 2px;
+    color: var(--color_punaluu_400);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 144%;
+    letter-spacing: 0.245px;
+    text-decoration: underline;
+    text-underline-offset: 1px;
+  }
 
   // Scale up the vanilla radio buttons on Firefox
   @-moz-document url-prefix() {
     .en__pg__select input {
-      transform: scale(1.5);
+      transform: scale(2);
     }
   }
 
@@ -1476,8 +1601,8 @@
   }
 
   .en__pgList {
-    --radio_height: 20px;
-    --radio_width: 20px;
+    --radio_height: 32px;
+    --radio_width: 32px;
     --radio_box-shadow_selected: inset 0 0 0 3px #ffffff;
     --radio_border-width: 1px;
 
@@ -1491,7 +1616,7 @@
         .en__pg__display {
           background-image: var(--maximize_my_donation_image);
           // background-image: url("https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-gift_maximize-my-gift-placeholder.jpg?v=1680364148000");
-          background-size: contain;
+          background-size: cover;
           // min-width: 100%; // Causing this overlay issue on Safari https://cln.sh/mGf3gcGc
           background-position: center;
           background-repeat: no-repeat;
@@ -1504,16 +1629,21 @@
       }
     }
 
-    .en__pg--selected {
-      --premium__item_background-color: #e9f7f6;
+    .en__pg {
+      border: 1px solid transparent;
+      .en__pg__body {
+        grid-template-areas: "en__pg__select en__pg__detail en__pg__display" ". en__pg__detail-mobile .";
+        grid-template-columns: min-content auto var(--premium__image_max-width);
+        gap: 0 max(calc(var(--fields_spacing-inline) * 2), 0.5rem);
+        padding: calc(var(--fields_spacing-block) * 2)
+          calc(var(--fields_spacing-inline) * 2);
+      }
     }
 
-    .en__pg__body {
-      grid-template-areas: "en__pg__select en__pg__detail en__pg__display" ". en__pg__detail-mobile .";
-      grid-template-columns: min-content auto var(--premium__image_max-width);
-      gap: 0 max(calc(var(--fields_spacing-inline) * 2), 0.5rem);
-      padding: calc(var(--fields_spacing-block))
-        calc(var(--fields_spacing-inline) * 2);
+    .en__pg--selected {
+      --premium__item_background-color: var(--engrid__page_background-color);
+      border-color: var(--color_punaluu_500);
+      border-radius: 4px;
     }
 
     // Move premium images on mobile
@@ -1528,17 +1658,17 @@
         }
       }
 
-      // Hide unselected premium images on mobile
-      .en__pg:not(.en__pg--selected) {
-        .en__pg__body {
-          --premium__image_max-width: 0px;
-          grid-template-columns: min-content auto 0px;
-        }
+      // // Hide unselected premium images on mobile
+      // .en__pg:not(.en__pg--selected) {
+      //   .en__pg__body {
+      //     --premium__image_max-width: 0px;
+      //     grid-template-columns: min-content auto 0px;
+      //   }
 
-        .en__pg__display {
-          display: none;
-        }
-      }
+      //   .en__pg__display {
+      //     display: none;
+      //   }
+      // }
     }
 
     .en__pg__detail {
@@ -1609,8 +1739,6 @@
   }
 
   .en__component--premiumgiftblock {
-    --h2_font-size: 20px;
-    --h2_line-height: 30px;
 
     border-left: 0;
     border-right: 0;
@@ -1619,7 +1747,9 @@
 
     // [data-engrid-premium-gift-maximize="true"]
     .en__pgList {
-      --h2_font-weight: 400;
+      --h2_font-weight: 700;
+      --h2_font-size: var(--default_font-size);
+      --h2_line-height: 160%;
     }
 
     .en__pgList[data-non-us-donor][data-nogift] {
@@ -1681,8 +1811,10 @@
 
     .en__pg__description {
       --p_font-size: 14px;
-      --p_line-height: 18.2px;
-      max-width: 238px;
+      --p_line-height: 144%;
+      --p_font-weight: 400;
+      margin-top: 4px;
+      max-width: 314px;
     }
 
     // Styles the Maximize my gift option
@@ -1714,12 +1846,22 @@
     }
   }
 
+  .en__pgHeader {
+    font-size: var(--h2_font-size);
+    line-height: var(--h2_line-height);
+    font-weight: var(--h2_font-weight);
+  }
+
   .en__pgHeader .en__submit button:hover {
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
   }
 
-  .body-top > .en__component--copyblock:not([class*="box"]) > p:first-child {
-    margin-top: 0;
+  .body-top > .en__component--copyblock:not([class*="box"]) > p {
+    &:first-child {
+      margin-top: 0;
+    }
+    margin-block-start: 1rem;
+    margin-block-end: 1rem;
   }
 
   .ecard-next-page-copy {
@@ -1753,14 +1895,14 @@
 
       .en__tweetButton__sent a {
         --button_color: #ffffff;
-        --button_background-color: #006ea3;
+        --button_background-color: var(--color_acadia_400);;
         border: var(--button_border-width) solid var(--button_border-color);
         cursor: default;
 
         &:hover,
         &:active {
           color: #ffffff;
-          background-color: #006ea3;
+          background-color: var(--color_acadia_400);;
         }
       }
     }
@@ -2120,25 +2262,31 @@
   }
 }
 
+// MAIN MOBILE STYLE SECTION
 @media screen and (max-width: 600px) {
   & {
-    --default_font-size: 15px;
+    --default_font-size: 16px;
+    --a_font-size: 18px;
     --input_font-size: 16px;
     --default_line-height: 24px;
-    --h1_font-size: 24px;
-    --h1_line-height: 33.6px;
+    --h1_font-size: 52px;
+    --h2_font-size: 21px;
     --engrid__body_margin: 0px;
 
-    --engrid__page_background-color: #ffffff;
-    --engrid__content-footer_background-color: transparent;
-    --engrid__body-main_padding: 13px 20px;
-    --engrid__body-banner_padding: 0 20px;
-    --engrid__body-title_padding: 0 20px;
-    --engrid__body-top_padding: 0 20px;
-    --media-attribution__padding: 0 20px;
+    --engrid__page_background-color: var(--engrid__body-main_background-color);
 
-    --button_font-size: 20px;
-    --button_line-height: 30px;
+    --engrid__content-footer_background-color: transparent;
+    --engrid__body-main_padding: 13px 24px;
+    --engrid__body-banner_padding: 0 0;
+    --engrid__body-title_padding: 0 24px;
+    --engrid__body-title_margin: 0 0 16px 0;
+    --engrid__body-top_padding: 0 24px;
+
+    --button_font-size: 18px;
+    --submit__button_font-size: 18px;
+    --button_line-height: 140%;
+
+    --donation-amount__button_font-size: 18px;
 
     --recurring-frequency__button_font-size: 16px;
     --recurring-frequency__button_line-height: 24px;
@@ -2146,15 +2294,16 @@
     --click-to-expand__cta-image_width: 96px;
     --click-to-expand__cta-image_height: 13px;
 
-    --p_line-height: 24px;
+    --p_line-height: 160%;
 
-    --label_font-size: 14px;
-    --label_line-height: 18.2px;
-
-    --radio_height: 20px;
-    --radio_width: 20px;
+    --radio_height: 32px;
+    --radio_width: 32px;
     --radio_box-shadow_selected: inset 0 0 0 3px #ffffff;
     --radio_border-width: 1px;
+
+    figure.media-with-attribution figattribution {
+      --media-attribution__padding: 0 24px;
+    }
 
     .en__contacts:not(.en__contacts--hideCheck)
       .en__contactDetails__select:checked
@@ -2176,14 +2325,14 @@
   }
 
   &[data-engrid-layout] .content-header {
-    margin-bottom: 20px;
+    margin-bottom: 0px;
   }
 
   .radio-to-buttons_donationAmt
     .en__field--donationAmt
     .en__field__element--radio {
-    --fields_spacing-inline: 0.62rem;
-    --fields_spacing-block: 0.9rem;
+    --fields_spacing-inline: 0.25rem;
+    --fields_spacing-block: 5.33px;
   }
 
   &[data-engrid-transaction-recurring-frequency]
@@ -2191,7 +2340,7 @@
     .en__field--donationAmt
     div:not(.en__field__item--other)
     .en__field__label--item:after {
-    font-size: 15px;
+    font-size: 15px !important;
   }
 
   .radio-to-buttons_recurrfreq
@@ -2203,15 +2352,30 @@
 
   .give-by-select-wrapper {
     --radio-to-buttons__button_count: 1;
-  }
-
-  .en__component--premiumgiftblock .en__pg__description {
-    max-width: 100%;
+    margin: 8px 0;
   }
 
   .en__component--premiumgiftblock {
-    --h2_font-size: 16px;
-    --h2_line-height: 24px;
+    --fields_spacing-block: 4px;
+    --fields_spacing-inline: 4px;
+    .en__pgList .en__pg .en__pg__body {
+      --h2_font-size: 16px;
+      --h2_line-height: 160%;
+      gap: 0 8px;
+    }
+    .en__pg__detail {
+      margin-bottom: 0px;
+    }
+    h2 + .en__pg__description {
+      display: none;
+    }
+    .en__pg--selected {
+      --premium__item_background-color: #FEFCF9;
+    }
+    .en__pg__image:hover {
+      transform: none;
+      position: static;
+    }
   }
 
   .inline-upsell-box {
@@ -2230,22 +2394,12 @@
     }
   }
 
-  .grey-box p {
-    --p_font-size: 12px;
-    --p_line-height: 19px;
-  }
-
-  .white-box {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
+  .grey-box {
+    --p_font-size: 14px;
   }
 
   // .body-top {
   // }
-
-  .body-title {
-    margin-bottom: 1rem;
-  }
 
   .body-main {
     border: none;
@@ -2273,9 +2427,25 @@
 }
 
 @media screen and (max-width: 400px) {
-  & {
-    --h2_font-size: 16px;
-    --h2_line-height: 24px;
+  .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio>.en__field__element .en__field__item {
+    flex-basis: unset;
+    &:nth-child(2) {
+      flex: 1;
+    }
+  }
+  .alternative-donation-methods > p:nth-child(2) {
+    a, img {
+      width: 77px;
+      height: 77px;
+    }
+  }
+  .alternative-donation-methods > p:nth-child(2) > a:nth-child(2) {
+    width: 146.5px;
+    height: 55.5px;
+    & img {
+      width: 146.5px;
+      height: 55.5px;
+    }
   }
 }
 
@@ -2284,6 +2454,16 @@
 &[data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements][data-engrid-transaction-recurring="n"][data-engrid-payment-type-option-paypal-one-touch="true"]
   .en__field--giveBySelect.paypal.force-paypal-visibility {
   display: inline-block !important;
+}
+
+.giveBySelect-card {
+  margin-bottom: -0.5rem;
+  label {
+    margin-bottom: 4px;
+  }
+  .en__field:not(:first-child) {
+    flex-basis: 50%;
+  }
 }
 
 .en__tweetContact[disabled] {
@@ -2438,8 +2618,8 @@ button[data-balloon] {
     text-shadow: none;
     font-size: 14px;
     line-height: 1.4;
-    background: #f6f5f3;
-    color: #1f2937;
+    background: #F3E7D9;
+    color: var(--color_punaluu_400);
     border-radius: 3px;
     content: attr(data-balloon);
     padding: 0.5em 1em;
@@ -2513,7 +2693,6 @@ button[data-balloon] {
 }
 
 &[data-engrid-layout="leftleft1col"] {
-  --engrid__page_background-color: #ffffff;
   --engrid__body-title_background-color: #ffffff;
   --engrid__body-top_background-color: #ffffff;
   --engrid__body_margin: 0;
@@ -2581,9 +2760,6 @@ button[data-balloon] {
     }
   }
 
-  @media screen and (min-width: 700px) and (max-width: 1023px) {
-    --engrid__page_background-color: #f3f7ed;
-  }
 }
 
 // 1024px is where the show-if-mobile / show-if-desktop classes consider the breakpoint
