@@ -151,7 +151,7 @@
   --button_border-color_checked: var(--color_acadia_400);
 
   --recurring-frequency__button_font-size: 18px;
-  --recurring-frequency__button_font-weight: 700;
+  --recurring-frequency__button_font-weight: 600;
   // --recurring-frequency__button_line-height: 36px;
 
   --submit__button_color: #ffffff;
@@ -201,13 +201,14 @@
   --radio_background-color_hover: #bababa;
   --radio_box-shadow_hover: inset 0 0 0 4px #ffffff;
 
-  --radio_background-color_selected: var(--color_acadia_400);;
-  --radio_border-color_selected: var(--color_acadia_400);;
+  --radio_background-color_selected: var(--color_acadia_400);
+  --radio_border-color_selected: var(--color_acadia_400);
   --radio_box-shadow_selected: inset 0 0 0 4px #ffffff;
 
   --donation-amount__button_font-weight: 600;
   --donation-amount__button_color_checked: #ffffff;
-  --donation-amount__button_background-color_checked: #016da3;
+  --donation-amount__button_background-color_checked: var(--color_acadia_400);
+  --donation-amount__button_border-color_checked: var(--color_acadia_400);
 
   --checkbox_content_checked: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='21px' height='15px' viewBox='0 0 20 15' version='1.1'%3E%3Cg id='surface1'%3E%3Cpath style=' stroke:none;fill-rule:nonzero;fill:rgb(100%25,100%25,100%25);fill-opacity:1;' d='M 12.75 6.117188 L 6.835938 12.234375 L 1.335938 6.546875 L 0 7.929688 L 3.417969 11.464844 L 6.835938 15.003906 L 13.417969 8.191406 L 20 1.382812 L 18.664062 0 Z M 12.75 6.117188 '/%3E%3C/g%3E%3C/svg%3E");
   --checkbox_border-width: 2px;
@@ -302,9 +303,9 @@
     height: auto; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
     content: "."; // Was previously using "\00a0" but sometimes it appeared as a A with a symbol over top of it
     color: transparent;
-    width: 21px;
+    width: 20px;
     // background-image: url("https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-icon_monthly-heart-faded.png?v=1680364166000");
-    background-image: url(data:image/png;base64,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);
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAEoSURBVHgBxZQ9TsMwFMf/z2nTNSsS6scNWJAqpnCDDlRi7A2qnID2BuEEwAaUoZwAJoLEQG5QQBwgK5T4YQchgnDSkFrqT7L07Gf9/PEsA5ah72Bx2O860hkz5IAYXTWUqPS86cjp1vn902Lgew33fSzBo588YjXnrD27O/0lfB3u7kg0blTomZcVYW4h07bC9mUUZGG2s5QeC2UVYYGgcxGF9DLcO1HdEdYnSZetnmBiH3bwHPfNF4X3UgcmT+CrWnYgTtSRcQ1LNAXHwuGPEBZgiWP9XsX27CFmRoA1YFAs09ZEx/oO0bmKQmaeogaZbOnu9+a3WS0on3w+6E+I6Kiu7I/wP1KTzCisIi2SFQrLpGWyUqFJukq2UpiXVpFVRn+uumETfAIO45CXeq10WAAAAABJRU5ErkJggg==);
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
@@ -313,46 +314,40 @@
     border-radius: 0; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
     box-shadow: none; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
     background-color: transparent; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
-    transform: scale(1.2);
   }
 
-  .radio-to-buttons_recurrfreq
-    .en__field--recurrfreq.en__field--radio
-    .en__field__item:hover
-    input[type="radio"][value="MONTHLY"]
-    + label:before,
-  .radio-to-buttons_recurrfreq
-    .en__field--recurrfreq.en__field--radio
-    .en__field__item
-    input[type="radio"][value="MONTHLY"]:checked
-    + label:before,
-  .radio-to-buttons_recurrfreq
-    .en__field--recurrfreq.en__field--radio
-    .en__field__item:hover
-    input[type="radio"][value="ANNUAL"]
-    + label:before,
-  .radio-to-buttons_recurrfreq
-    .en__field--recurrfreq.en__field--radio
-    .en__field__item
-    input[type="radio"][value="ANNUAL"]:checked
-    + label:before {
-    // display: block; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
-    // min-width: 0; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
-    // border: none; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
-    // height: auto; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
-    // border-radius: 0; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
-    // background-image: url("https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-icon_monthly-heart.png?v=1680364166000");
-    background-image: url(data:image/png;base64,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);
+  .en__component--dd360search p {
+    color: var(--label_color);
+    font-size: var(--label_font-size);
+    line-height: var(--label_line-height);
+    letter-spacing: var(--label_letter-spacing);
+    font-weight: var(--label_font-weight);
+    margin-bottom: 0.5rem;
   }
 
   .payment-method {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: space-between;
 
-    img {
-      margin-bottom: calc(1rem * var(--scale-down_20pct));
-      margin-top: calc(2rem * var(--scale-down_20pct));
+    .secure-padlock {
+      margin-bottom: 28px;
+      color: var(--color_punaluu_400);
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: 140%;
+      letter-spacing: 0.245px;
+    }
+    .secure-padlock::before {
+      content: " ";
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      margin-right: 4px;
+      top: 4px;
+      position: relative;
+      background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjEiIHZpZXdCb3g9IjAgMCAyMCAyMSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgY2xpcC1wYXRoPSJ1cmwoI2NsaXAwXzI3OTUxXzE0ODA3NykiPgo8cGF0aCBkPSJNMTUuODMzMyA5LjQxNjk5SDQuMTY2NjdDMy4yNDYxOSA5LjQxNjk5IDIuNSAxMC4xNjMyIDIuNSAxMS4wODM3VjE2LjkxN0MyLjUgMTcuODM3NSAzLjI0NjE5IDE4LjU4MzcgNC4xNjY2NyAxOC41ODM3SDE1LjgzMzNDMTYuNzUzOCAxOC41ODM3IDE3LjUgMTcuODM3NSAxNy41IDE2LjkxN1YxMS4wODM3QzE3LjUgMTAuMTYzMiAxNi43NTM4IDkuNDE2OTkgMTUuODMzMyA5LjQxNjk5WiIgc3Ryb2tlPSIjNEI0QjRCIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8cGF0aCBkPSJNNS44MzM5OCA5LjQxNjk5VjYuMDgzNjZDNS44MzM5OCA0Ljk3ODU5IDYuMjcyOTcgMy45MTg3OCA3LjA1NDM3IDMuMTM3MzhDNy44MzU3NyAyLjM1NTk4IDguODk1NTggMS45MTY5OSAxMC4wMDA3IDEuOTE2OTlDMTEuMTA1NyAxLjkxNjk5IDEyLjE2NTUgMi4zNTU5OCAxMi45NDY5IDMuMTM3MzhDMTMuNzI4MyAzLjkxODc4IDE0LjE2NzMgNC45Nzg1OSAxNC4xNjczIDYuMDgzNjZWOS40MTY5OSIgc3Ryb2tlPSIjNEI0QjRCIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L2c+CjxkZWZzPgo8Y2xpcFBhdGggaWQ9ImNsaXAwXzI3OTUxXzE0ODA3NyI+CjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0id2hpdGUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAgMC4yNSkiLz4KPC9jbGlwUGF0aD4KPC9kZWZzPgo8L3N2Zz4K");
     }
   }
 
@@ -1288,15 +1283,19 @@
       text-underline-offset: 20%;
     }
 
-    p:nth-child(2) {
-      a, img {
-        width: 101px;
-        height: 101px;
+    p:last-child {
+      &::before, &::after {
+        content: "";
       }
-    }
-    p:nth-child(2) > a:nth-child(2) img {
-      width: 190px;
-      height: 71.9px;
+      display: grid;
+      place-items: center;
+      grid-template-columns: 1fr 101px 190px 101px 1fr;
+      height: 101px;
+      gap: 1rem;
+      a, img {
+        width: 100%;
+        height: auto;
+      }
     }
   }
 
@@ -1414,6 +1413,18 @@
 
   /* Used to highlight an upsell message */
   .inline-upsell-box {
+    ::before {
+      background-color: var(--color_yellowstone);
+      content: " ";
+      display: inline-block;
+      position: absolute;
+      top: 0px;
+      right: 20%;
+      height: 10px;
+      width: 10px;
+      border-radius: 2px;
+      transform: rotate(45deg);
+    }
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1427,7 +1438,7 @@
     --p_font-weight: 700;
     min-height: 48px;
     border-radius: 4px;
-    margin-top: 0.75rem;
+    margin-top: 5px;
 
     > :first-child {
       margin-top: 0rem;
@@ -1468,6 +1479,13 @@
       --media-attribution__font-style: normal;
       --media-attribution__font-size: 14px;
       --media-attribution__line-height: 110%;
+    }
+  }
+
+  .en__field--recurrfreq {
+    .en__field__element--radio {
+      --fields_spacing-inline: .25rem;
+      --fields_spacing-block: .25rem;
     }
   }
 
@@ -1527,6 +1545,7 @@
 
   .body-banner img,
   .body-banner video {
+    border-radius: 4px;
     background-color: #cccccc;
   }
 
@@ -1627,7 +1646,7 @@
         grid-template-areas: "en__pg__select en__pg__detail en__pg__display" ". en__pg__detail-mobile .";
         grid-template-columns: min-content auto var(--premium__image_max-width);
         gap: 0 max(calc(var(--fields_spacing-inline) * 2), 0.5rem);
-        padding: calc(var(--fields_spacing-block) * 2)
+        padding: calc(var(--fields_spacing-block))
           calc(var(--fields_spacing-inline) * 2);
       }
     }
@@ -2293,6 +2312,11 @@
     --radio_box-shadow_selected: inset 0 0 0 3px #ffffff;
     --radio_border-width: 1px;
 
+    .body-banner img,
+    .body-banner video {
+      border-radius: 0px;
+    }
+
     figure.media-with-attribution figattribution {
       --media-attribution__padding: 0 24px;
     }
@@ -2348,7 +2372,7 @@
   }
 
   .en__component--premiumgiftblock {
-    --fields_spacing-block: 4px;
+    --fields_spacing-block: 8px;
     --fields_spacing-inline: 4px;
     .en__pgList .en__pg .en__pg__body {
       --h2_font-size: 16px;
@@ -2418,25 +2442,20 @@
   }
 }
 
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 500px) {
   .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio>.en__field__element .en__field__item {
     flex-basis: unset;
     &:nth-child(2) {
       flex: 1;
     }
   }
-  .alternative-donation-methods > p:nth-child(2) {
-    a, img {
-      width: 77px;
-      height: 77px;
+  .alternative-donation-methods {
+    p:first-child {
+      margin: 1rem 0rem 2rem;
     }
-  }
-  .alternative-donation-methods > p:nth-child(2) > a:nth-child(2) {
-    width: 146.5px;
-    height: 55.5px;
-    & img {
-      width: 146.5px;
-      height: 55.5px;
+    p:last-child {
+      gap: 12.34px;
+      grid-template-columns: 1fr 77px 146.5px 77px 1fr;
     }
   }
 }
