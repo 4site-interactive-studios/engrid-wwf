@@ -182,3 +182,82 @@
     }
   }
 }
+.no-header-wwf-logo {
+  height: 100px;
+  width: 80px;
+  max-width: 80px;
+}
+
+.minimal-header-logo {
+  display: none;
+}
+
+.body-title .en__component .minimal-header-logo + h1 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+[data-header-footer-layout="none"] {
+  .content-header {
+    margin-bottom: 50px;
+  }
+
+  form > .en__component--row.en__component--advrow > .content-header > * {
+    display: none;
+  }
+
+  @media screen and (min-width: 600px) {
+    .body-title .en__component {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      &:before {
+        background: #fff
+          url("https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo.png?1")
+          no-repeat;
+        background-size: contain;
+        box-shadow: 0 1px 3px #00000014;
+        height: 100px;
+        margin: 0;
+        width: 100%;
+        z-index: 3;
+        content: "WWF Logo";
+        align-items: center;
+        text-indent: -9999px;
+        max-width: 80px;
+        flex-shrink: 0;
+        display: flex;
+        justify-content: center;
+        background-position: center;
+      }
+    }
+  }
+
+  @media screen and (max-width: 599px) {
+    .content-header {
+      --engrid__content-header_background-color: #ffffff;
+      justify-items: center;
+      margin-top: 10px;
+      &:before {
+        background: #fff
+          url("https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo.png?1")
+          no-repeat;
+        background-size: contain;
+        // box-shadow: 0 1px 3px #00000014;
+        height: 100px;
+        margin: 0;
+        width: 100%;
+        z-index: 3;
+        content: "WWF Logo";
+        align-items: center;
+        text-indent: -9999px;
+        max-width: 80px;
+        flex-shrink: 0;
+        display: flex;
+        justify-content: center;
+        background-position: center;
+        grid-column: pc;
+      }
+    }
+  }
+}
