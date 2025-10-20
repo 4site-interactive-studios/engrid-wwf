@@ -10,7 +10,7 @@
   &[data-engrid-page-type="p2pcheckout"] {
     @import "./themes/wwf-p2p-donation";
   }
-  &[data-engrid-subtheme="quiz"][data-engrid-layout="centercenter2col"] {
+  &[data-engrid-subtheme="quiz"] {
     @import "./themes/quiz";
   }
 }
