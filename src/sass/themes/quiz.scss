@@ -417,6 +417,10 @@ select[disabled] {
   @media screen and (max-width: 600px) {
     --engrid__body-main_padding: 30px 20px;
     --engrid__body_box-shadow: none;
+
+    .content-header {
+      margin-bottom: 0;
+    }
   }
 }
 

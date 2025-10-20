@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, October 20, 2025 @ 10:36:46 ET
+ *  Date: Monday, October 20, 2025 @ 10:49:36 ET
  *  By: michael
  *  ENGrid styles: v0.22.4
  *  ENGrid scripts: v0.22.9
@@ -10861,6 +10861,9 @@ body[data-engrid-debug]:before{
   [data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter1col]{
     --engrid__body-main_padding:30px 20px;
     --engrid__body_box-shadow:none;
+  }
+  [data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter1col] .content-header{
+    margin-bottom:0;
   }
 }
 #footer,#footer a,#footer abbr,#footer acronym,#footer address,#footer applet,#footer b,#footer big,#footer blockquote,#footer caption,#footer center,#footer cite,#footer code,#footer dd,#footer del,#footer dfn,#footer div,#footer dl,#footer dt,#footer em,#footer fieldset,#footer form,#footer h1,#footer h2,#footer h3,#footer h4,#footer h5,#footer h6,#footer i,#footer iframe,#footer img,#footer ins,#footer kbd,#footer label,#footer legend,#footer li,#footer object,#footer ol,#footer p,#footer pre,#footer q,#footer s,#footer samp,#footer small,#footer span,#footer strike,#footer strong,#footer sub,#footer sup,#footer table,#footer tbody,#footer td,#footer tfoot,#footer th,#footer thead,#footer tr,#footer tt,#footer u,#footer ul,#footer var,#header,#header a,#header abbr,#header acronym,#header address,#header applet,#header b,#header big,#header blockquote,#header caption,#header center,#header cite,#header code,#header dd,#header del,#header dfn,#header div,#header dl,#header dt,#header em,#header fieldset,#header form,#header h1,#header h2,#header h3,#header h4,#header h5,#header h6,#header i,#header iframe,#header img,#header ins,#header kbd,#header label,#header legend,#header li,#header object,#header ol,#header p,#header pre,#header q,#header s,#header samp,#header small,#header span,#header strike,#header strong,#header sub,#header sup,#header table,#header tbody,#header td,#header tfoot,#header th,#header thead,#header tr,#header tt,#header u,#header ul,#header var,body,html{
