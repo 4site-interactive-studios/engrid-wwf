@@ -56,7 +56,7 @@
   --default_color: #1f2937;
   --default_font-size: 18px;
   // --default_font-weight: initial;
-  --default_line-height: 32px;
+  --default_line-height: 146%;
 
   // TYPOGRAPHY H1
   // --h1_font-family: var(--default_font-family);
@@ -150,6 +150,7 @@
   --button_background-color_checked: var(--color_acadia_400);
   --button_border-color_checked: var(--color_acadia_400);
 
+  --recurring-frequency__button_padding: 14px 0px;
   --recurring-frequency__button_font-size: 18px;
   --recurring-frequency__button_font-weight: 600;
   // --recurring-frequency__button_line-height: 36px;
@@ -1404,6 +1405,7 @@
   }
 
   .email-subscription-nudge {
+    margin-top: 0;
     margin-bottom: calc(2rem * var(--scale-down_20pct));
 
     p::after {
@@ -1955,6 +1957,12 @@
   //   text-decoration: none;
   // }
 
+  .wrongcompany {
+    a {
+      text-decoration: none;
+    }
+  }
+
   .involved-action {
     margin: 0 auto;
     display: flex;
@@ -2000,6 +2008,10 @@
   .get-involved a:last-child {
     padding-bottom: 0;
     margin-bottom: 0;
+  }
+
+  .involved-action .involved-action__header a {
+    text-decoration-line: none;
   }
 
   .involved-action__image {
@@ -2138,6 +2150,17 @@
     padding: 5px 10px;
     text-transform: uppercase;
     font-size: 14px;
+  }
+
+  h2 a {
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+  }
+
+  h1.small {
+    font-size: 48px;
+    line-height: var(--h2_line-height);
   }
 }
 
@@ -2320,6 +2343,9 @@
     --radio_box-shadow_selected: inset 0 0 0 3px #ffffff;
     --radio_border-width: 1px;
 
+    .body-main a {
+      text-underline-offset: 4px;
+    }
     .body-banner img,
     .body-banner video {
       border-radius: 0px;
@@ -2389,6 +2415,7 @@
     }
     .en__pg__detail {
       margin-bottom: 0px;
+      margin-left: 4px;
     }
     h2 + .en__pg__description {
       display: none;
@@ -2453,6 +2480,9 @@
 @media screen and (max-width: 500px) {
   .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio>.en__field__element .en__field__item {
     flex-basis: unset;
+    &:nth-child(1) {
+      min-width: 126px;
+    }
     &:nth-child(2) {
       flex: 1;
     }
@@ -2466,6 +2496,11 @@
       grid-template-columns: 1fr 77px 146.5px 77px 1fr;
     }
   }
+}
+@media screen and (max-width: 400px) {
+  // .body-main .en__component {
+  //   max-width: calc(100vw - 48px);
+  // }
 }
 
 /* Force the visibility of Paypal Button when PayPal One Touch / Venmo is enabled */
