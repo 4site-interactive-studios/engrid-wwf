@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, October 10, 2025 @ 18:07:49 ET
- *  By: fernando
+ *  Date: Tuesday, October 21, 2025 @ 13:54:22 ET
+ *  By: npgiano
  *  ENGrid styles: v0.22.18
  *  ENGrid scripts: v0.22.20
  *
@@ -30,287 +30,351 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 371:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DispatchError = void 0;
-/**
- * Indicates an error with dispatching.
- *
- * @export
- * @class DispatchError
- * @extends {Error}
- */
-class DispatchError extends Error {
-    /**
-     * Creates an instance of DispatchError.
-     * @param {string} message The message.
-     *
-     * @memberOf DispatchError
-     */
-    constructor(message) {
-        super(message);
-    }
-}
-exports.DispatchError = DispatchError;
-
-
-/***/ }),
-
-/***/ 7015:
+/***/ 71:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DispatcherBase = void 0;
-const __1 = __webpack_require__(782);
+exports.EventDispatcher = void 0;
+const ste_core_1 = __webpack_require__(4604);
 /**
- * Base class for implementation of the dispatcher. It facilitates the subscribe
- * and unsubscribe methods based on generic handlers. The TEventType specifies
- * the type of event that should be exposed. Use the asEvent to expose the
- * dispatcher as event.
+ * Dispatcher implementation for events. Can be used to subscribe, unsubscribe
+ * or dispatch events. Use the ToEvent() method to expose the event.
  *
  * @export
- * @abstract
- * @class DispatcherBase
- * @implements {ISubscribable<TEventHandler>}
- * @template TEventHandler The type of event handler.
+ * @class EventDispatcher
+ * @extends {DispatcherBase<IEventHandler<TSender, TArgs>>}
+ * @implements {IEvent<TSender, TArgs>}
+ * @template TSender The sender type.
+ * @template TArgs The event arguments type.
  */
-class DispatcherBase {
+class EventDispatcher extends ste_core_1.DispatcherBase {
+    /**
+     * Creates an instance of EventDispatcher.
+     *
+     * @memberOf EventDispatcher
+     */
     constructor() {
-        /**
-         * The subscriptions.
-         *
-         * @protected
-         *
-         * @memberOf DispatcherBase
-         */
-        this._subscriptions = new Array();
+        super();
     }
     /**
-     * Returns the number of subscriptions.
+     * Dispatches the event.
      *
-     * @readonly
-     * @type {number}
-     * @memberOf DispatcherBase
-     */
-    get count() {
-        return this._subscriptions.length;
-    }
-    /**
-     * Triggered when subscriptions are changed (added or removed).
+     * @param {TSender} sender The sender.
+     * @param {TArgs} args The arguments.
+     * @returns {IPropagationStatus} The propagation status to interact with the event
      *
-     * @readonly
-     * @type {ISubscribable<SubscriptionChangeEventHandler>}
-     * @memberOf DispatcherBase
+     * @memberOf EventDispatcher
      */
-    get onSubscriptionChange() {
-        if (this._onSubscriptionChange == null) {
-            this._onSubscriptionChange = new __1.SubscriptionChangeEventDispatcher();
+    dispatch(sender, args) {
+        const result = this._dispatch(false, this, arguments);
+        if (result == null) {
+            throw new ste_core_1.DispatchError("Got `null` back from dispatch.");
         }
-        return this._onSubscriptionChange.asEvent();
+        return result;
     }
     /**
-     * Subscribe to the event dispatcher.
+     * Dispatches the event in an async way. Does not support event interaction.
      *
-     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
-     * @returns A function that unsubscribes the event handler from the event.
+     * @param {TSender} sender The sender.
+     * @param {TArgs} args The arguments.
      *
-     * @memberOf DispatcherBase
+     * @memberOf EventDispatcher
      */
-    subscribe(fn) {
-        if (fn) {
-            this._subscriptions.push(this.createSubscription(fn, false));
-            this.triggerSubscriptionChange();
-        }
-        return () => {
-            this.unsubscribe(fn);
-        };
-    }
-    /**
-     * Subscribe to the event dispatcher.
-     *
-     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
-     * @returns A function that unsubscribes the event handler from the event.
-     *
-     * @memberOf DispatcherBase
-     */
-    sub(fn) {
-        return this.subscribe(fn);
-    }
-    /**
-     * Subscribe once to the event with the specified name.
-     *
-     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
-     * @returns A function that unsubscribes the event handler from the event.
-     *
-     * @memberOf DispatcherBase
-     */
-    one(fn) {
-        if (fn) {
-            this._subscriptions.push(this.createSubscription(fn, true));
-            this.triggerSubscriptionChange();
-        }
-        return () => {
-            this.unsubscribe(fn);
-        };
-    }
-    /**
-     * Checks it the event has a subscription for the specified handler.
-     *
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf DispatcherBase
-     */
-    has(fn) {
-        if (!fn)
-            return false;
-        return this._subscriptions.some((sub) => sub.handler == fn);
-    }
-    /**
-     * Unsubscribes the handler from the dispatcher.
-     *
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf DispatcherBase
-     */
-    unsubscribe(fn) {
-        if (!fn)
-            return;
-        let changes = false;
-        for (let i = 0; i < this._subscriptions.length; i++) {
-            if (this._subscriptions[i].handler == fn) {
-                this._subscriptions.splice(i, 1);
-                changes = true;
-                break;
-            }
-        }
-        if (changes) {
-            this.triggerSubscriptionChange();
-        }
-    }
-    /**
-     * Unsubscribes the handler from the dispatcher.
-     *
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf DispatcherBase
-     */
-    unsub(fn) {
-        this.unsubscribe(fn);
-    }
-    /**
-     * Generic dispatch will dispatch the handlers with the given arguments.
-     *
-     * @protected
-     * @param {boolean} executeAsync `True` if the even should be executed async.
-     * @param {*} scope The scope of the event. The scope becomes the `this` for handler.
-     * @param {IArguments} args The arguments for the event.
-     * @returns {(IPropagationStatus | null)} The propagation status, or if an `executeAsync` is used `null`.
-     *
-     * @memberOf DispatcherBase
-     */
-    _dispatch(executeAsync, scope, args) {
-        //execute on a copy because of bug #9
-        for (let sub of [...this._subscriptions]) {
-            let ev = new __1.EventManagement(() => this.unsub(sub.handler));
-            let nargs = Array.prototype.slice.call(args);
-            nargs.push(ev);
-            let s = sub;
-            s.execute(executeAsync, scope, nargs);
-            //cleanup subs that are no longer needed
-            this.cleanup(sub);
-            if (!executeAsync && ev.propagationStopped) {
-                return { propagationStopped: true };
-            }
-        }
-        if (executeAsync) {
-            return null;
-        }
-        return { propagationStopped: false };
-    }
-    /**
-     * Creates a subscription.
-     *
-     * @protected
-     * @param {TEventHandler} handler The handler.
-     * @param {boolean} isOnce True if the handler should run only one.
-     * @returns {ISubscription<TEventHandler>} The subscription.
-     *
-     * @memberOf DispatcherBase
-     */
-    createSubscription(handler, isOnce) {
-        return new __1.Subscription(handler, isOnce);
-    }
-    /**
-     * Cleans up subs that ran and should run only once.
-     *
-     * @protected
-     * @param {ISubscription<TEventHandler>} sub The subscription.
-     *
-     * @memberOf DispatcherBase
-     */
-    cleanup(sub) {
-        let changes = false;
-        if (sub.isOnce && sub.isExecuted) {
-            let i = this._subscriptions.indexOf(sub);
-            if (i > -1) {
-                this._subscriptions.splice(i, 1);
-                changes = true;
-            }
-        }
-        if (changes) {
-            this.triggerSubscriptionChange();
-        }
+    dispatchAsync(sender, args) {
+        this._dispatch(true, this, arguments);
     }
     /**
      * Creates an event from the dispatcher. Will return the dispatcher
      * in a wrapper. This will prevent exposure of any dispatcher methods.
      *
-     * @returns {ISubscribable<TEventHandler>}
+     * @returns {IEvent<TSender, TArgs>} The event.
      *
-     * @memberOf DispatcherBase
+     * @memberOf EventDispatcher
      */
     asEvent() {
-        if (this._wrap == null) {
-            this._wrap = new __1.DispatcherWrapper(this);
-        }
-        return this._wrap;
-    }
-    /**
-     * Clears the subscriptions.
-     *
-     * @memberOf DispatcherBase
-     */
-    clear() {
-        if (this._subscriptions.length != 0) {
-            this._subscriptions.splice(0, this._subscriptions.length);
-            this.triggerSubscriptionChange();
-        }
-    }
-    /**
-     * Triggers the subscription change event.
-     *
-     * @private
-     *
-     * @memberOf DispatcherBase
-     */
-    triggerSubscriptionChange() {
-        if (this._onSubscriptionChange != null) {
-            this._onSubscriptionChange.dispatch(this.count);
-        }
+        return super.asEvent();
     }
 }
-exports.DispatcherBase = DispatcherBase;
+exports.EventDispatcher = EventDispatcher;
 
 
 /***/ }),
 
-/***/ 7327:
+/***/ 131:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PromiseSignalList = void 0;
+const ste_core_1 = __webpack_require__(7852);
+const _1 = __webpack_require__(6042);
+/**
+ * Storage class for multiple signal events that are accessible by name.
+ * Events dispatchers are automatically created.
+ */
+class PromiseSignalList extends ste_core_1.EventListBase {
+    /**
+     * Creates a new SignalList instance.
+     */
+    constructor() {
+        super();
+    }
+    /**
+     * Creates a new dispatcher instance.
+     */
+    createDispatcher() {
+        return new _1.PromiseSignalDispatcher();
+    }
+}
+exports.PromiseSignalList = PromiseSignalList;
+
+
+/***/ }),
+
+/***/ 278:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.HandlingBase = void 0;
+/**
+ * Base class that implements event handling. With a an
+ * event list this base class will expose events that can be
+ * subscribed to. This will give your class generic events.
+ *
+ * @export
+ * @abstract
+ * @class HandlingBase
+ * @template TEventHandler The type of event handler.
+ * @template TDispatcher The type of dispatcher.
+ * @template TList The type of event list.
+ */
+class HandlingBase {
+    /**
+     * Creates an instance of HandlingBase.
+     * @param {TList} events The event list. Used for event management.
+     *
+     * @memberOf HandlingBase
+     */
+    constructor(events) {
+        this.events = events;
+    }
+    /**
+     * Subscribes once to the event with the specified name.
+     * @param {string} name The name of the event.
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf HandlingBase
+     */
+    one(name, fn) {
+        this.events.get(name).one(fn);
+    }
+    /**
+     * Checks it the event has a subscription for the specified handler.
+     * @param {string} name The name of the event.
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf HandlingBase
+     */
+    has(name, fn) {
+        return this.events.get(name).has(fn);
+    }
+    /**
+     * Subscribes to the event with the specified name.
+     * @param {string} name The name of the event.
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf HandlingBase
+     */
+    subscribe(name, fn) {
+        this.events.get(name).subscribe(fn);
+    }
+    /**
+     * Subscribes to the event with the specified name.
+     * @param {string} name The name of the event.
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf HandlingBase
+     */
+    sub(name, fn) {
+        this.subscribe(name, fn);
+    }
+    /**
+     * Unsubscribes from the event with the specified name.
+     * @param {string} name The name of the event.
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf HandlingBase
+     */
+    unsubscribe(name, fn) {
+        this.events.get(name).unsubscribe(fn);
+    }
+    /**
+     * Unsubscribes from the event with the specified name.
+     * @param {string} name The name of the event.
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf HandlingBase
+     */
+    unsub(name, fn) {
+        this.unsubscribe(name, fn);
+    }
+}
+exports.HandlingBase = HandlingBase;
+
+
+/***/ }),
+
+/***/ 338:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EventList = void 0;
+const ste_core_1 = __webpack_require__(4604);
+const EventDispatcher_1 = __webpack_require__(71);
+/**
+ * Storage class for multiple events that are accessible by name.
+ * Events dispatchers are automatically created.
+ */
+class EventList extends ste_core_1.EventListBase {
+    /**
+     * Creates a new EventList instance.
+     */
+    constructor() {
+        super();
+    }
+    /**
+     * Creates a new dispatcher instance.
+     */
+    createDispatcher() {
+        return new EventDispatcher_1.EventDispatcher();
+    }
+}
+exports.EventList = EventList;
+
+
+/***/ }),
+
+/***/ 455:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Subscription = void 0;
+/**
+ * Stores a handler. Manages execution meta data.
+ * @class Subscription
+ * @template TEventHandler
+ */
+class Subscription {
+    /**
+     * Creates an instance of Subscription.
+     *
+     * @param {TEventHandler} handler The handler for the subscription.
+     * @param {boolean} isOnce Indicates if the handler should only be executed once.
+     */
+    constructor(handler, isOnce) {
+        this.handler = handler;
+        this.isOnce = isOnce;
+        /**
+         * Indicates if the subscription has been executed before.
+         */
+        this.isExecuted = false;
+    }
+    /**
+     * Executes the handler.
+     *
+     * @param {boolean} executeAsync True if the even should be executed async.
+     * @param {*} scope The scope the scope of the event.
+     * @param {IArguments} args The arguments for the event.
+     */
+    execute(executeAsync, scope, args) {
+        if (!this.isOnce || !this.isExecuted) {
+            this.isExecuted = true;
+            var fn = this.handler;
+            if (executeAsync) {
+                setTimeout(() => {
+                    fn.apply(scope, args);
+                }, 1);
+            }
+            else {
+                fn.apply(scope, args);
+            }
+        }
+    }
+}
+exports.Subscription = Subscription;
+
+
+/***/ }),
+
+/***/ 606:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+/*!
+ * Strongly Typed Events for TypeScript - Core
+ * https://github.com/KeesCBakker/StronlyTypedEvents/
+ * http://keestalkstech.com
+ *
+ * Copyright Kees C. Bakker / KeesTalksTech
+ * Released under the MIT license
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NonUniformPromiseEventList = exports.PromiseEventList = exports.PromiseEventHandlingBase = exports.PromiseEventDispatcher = void 0;
+const PromiseEventDispatcher_1 = __webpack_require__(2330);
+Object.defineProperty(exports, "PromiseEventDispatcher", ({ enumerable: true, get: function () { return PromiseEventDispatcher_1.PromiseEventDispatcher; } }));
+const PromiseEventHandlingBase_1 = __webpack_require__(3351);
+Object.defineProperty(exports, "PromiseEventHandlingBase", ({ enumerable: true, get: function () { return PromiseEventHandlingBase_1.PromiseEventHandlingBase; } }));
+const PromiseEventList_1 = __webpack_require__(4283);
+Object.defineProperty(exports, "PromiseEventList", ({ enumerable: true, get: function () { return PromiseEventList_1.PromiseEventList; } }));
+const NonUniformPromiseEventList_1 = __webpack_require__(1246);
+Object.defineProperty(exports, "NonUniformPromiseEventList", ({ enumerable: true, get: function () { return NonUniformPromiseEventList_1.NonUniformPromiseEventList; } }));
+
+
+/***/ }),
+
+/***/ 956:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SubscriptionChangeEventDispatcher = void 0;
+const __1 = __webpack_require__(4604);
+/**
+ * Dispatcher for subscription changes.
+ *
+ * @export
+ * @class SubscriptionChangeEventDispatcher
+ * @extends {DispatcherBase<SubscriptionChangeEventHandler>}
+ */
+class SubscriptionChangeEventDispatcher extends __1.DispatcherBase {
+    /**
+     * Dispatches the event.
+     *
+     * @param {number} count The currrent number of subscriptions.
+     *
+     * @memberOf SubscriptionChangeEventDispatcher
+     */
+    dispatch(count) {
+        this._dispatch(false, this, arguments);
+    }
+}
+exports.SubscriptionChangeEventDispatcher = SubscriptionChangeEventDispatcher;
+
+
+/***/ }),
+
+/***/ 1050:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -438,763 +502,15 @@ exports.DispatcherWrapper = DispatcherWrapper;
 
 /***/ }),
 
-/***/ 3704:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EventListBase = void 0;
-/**
- * Base class for event lists classes. Implements the get and remove.
- *
- * @export
- * @abstract
- * @class EventListBaset
- * @template TEventDispatcher The type of event dispatcher.
- */
-class EventListBase {
-    constructor() {
-        this._events = {};
-    }
-    /**
-     * Gets the dispatcher associated with the name.
-     *
-     * @param {string} name The name of the event.
-     * @returns {TEventDispatcher} The disptacher.
-     *
-     * @memberOf EventListBase
-     */
-    get(name) {
-        let event = this._events[name];
-        if (event) {
-            return event;
-        }
-        event = this.createDispatcher();
-        this._events[name] = event;
-        return event;
-    }
-    /**
-     * Removes the dispatcher associated with the name.
-     *
-     * @param {string} name
-     *
-     * @memberOf EventListBase
-     */
-    remove(name) {
-        delete this._events[name];
-    }
-}
-exports.EventListBase = EventListBase;
-
-
-/***/ }),
-
-/***/ 7451:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PromiseDispatcherBase = void 0;
-const __1 = __webpack_require__(782);
-/**
- * Dispatcher base for dispatchers that use promises. Each promise
- * is awaited before the next is dispatched, unless the event is
- * dispatched with the executeAsync flag.
- *
- * @export
- * @abstract
- * @class PromiseDispatcherBase
- * @extends {DispatcherBase<TEventHandler>}
- * @template TEventHandler The type of event handler.
- */
-class PromiseDispatcherBase extends __1.DispatcherBase {
-    /**
-     * The normal dispatch cannot be used in this class.
-     *
-     * @protected
-     * @param {boolean} executeAsync `True` if the even should be executed async.
-     * @param {*} scope The scope of the event. The scope becomes the `this` for handler.
-     * @param {IArguments} args The arguments for the event.
-     * @returns {(IPropagationStatus | null)} The propagation status, or if an `executeAsync` is used `null`.
-     *
-     * @memberOf DispatcherBase
-     */
-    _dispatch(executeAsync, scope, args) {
-        throw new __1.DispatchError("_dispatch not supported. Use _dispatchAsPromise.");
-    }
-    /**
-     * Crates a new subscription.
-     *
-     * @protected
-     * @param {TEventHandler} handler The handler.
-     * @param {boolean} isOnce Indicates if the handler should only run once.
-     * @returns {ISubscription<TEventHandler>} The subscription.
-     *
-     * @memberOf PromiseDispatcherBase
-     */
-    createSubscription(handler, isOnce) {
-        return new __1.PromiseSubscription(handler, isOnce);
-    }
-    /**
-     * Generic dispatch will dispatch the handlers with the given arguments.
-     *
-     * @protected
-     * @param {boolean} executeAsync `True` if the even should be executed async.
-     * @param {*} scope The scope of the event. The scope becomes the `this` for handler.
-     * @param {IArguments} args The arguments for the event.
-     * @returns {(IPropagationStatus | null)} The propagation status, or if an `executeAsync` is used `null`.
-     *
-     * @memberOf DispatcherBase
-     */
-    async _dispatchAsPromise(executeAsync, scope, args) {
-        //execute on a copy because of bug #9
-        for (let sub of [...this._subscriptions]) {
-            let ev = new __1.EventManagement(() => this.unsub(sub.handler));
-            let nargs = Array.prototype.slice.call(args);
-            nargs.push(ev);
-            let ps = sub;
-            await ps.execute(executeAsync, scope, nargs);
-            //cleanup subs that are no longer needed
-            this.cleanup(sub);
-            if (!executeAsync && ev.propagationStopped) {
-                return { propagationStopped: true };
-            }
-        }
-        if (executeAsync) {
-            return null;
-        }
-        return { propagationStopped: false };
-    }
-}
-exports.PromiseDispatcherBase = PromiseDispatcherBase;
-
-
-/***/ }),
-
-/***/ 5519:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SubscriptionChangeEventDispatcher = void 0;
-const __1 = __webpack_require__(782);
-/**
- * Dispatcher for subscription changes.
- *
- * @export
- * @class SubscriptionChangeEventDispatcher
- * @extends {DispatcherBase<SubscriptionChangeEventHandler>}
- */
-class SubscriptionChangeEventDispatcher extends __1.DispatcherBase {
-    /**
-     * Dispatches the event.
-     *
-     * @param {number} count The currrent number of subscriptions.
-     *
-     * @memberOf SubscriptionChangeEventDispatcher
-     */
-    dispatch(count) {
-        this._dispatch(false, this, arguments);
-    }
-}
-exports.SubscriptionChangeEventDispatcher = SubscriptionChangeEventDispatcher;
-
-
-/***/ }),
-
-/***/ 893:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PromiseSubscription = void 0;
-/**
- * Subscription implementation for events with promises.
- *
- * @export
- * @class PromiseSubscription
- * @implements {ISubscription<TEventHandler>}
- * @template TEventHandler The type of event handler.
- */
-class PromiseSubscription {
-    /**
-     * Creates an instance of PromiseSubscription.
-     * @param {TEventHandler} handler The handler for the subscription.
-     * @param {boolean} isOnce Indicates if the handler should only be executed once.
-     *
-     * @memberOf PromiseSubscription
-     */
-    constructor(handler, isOnce) {
-        this.handler = handler;
-        this.isOnce = isOnce;
-        /**
-         * Indicates if the subscription has been executed before.
-         *
-         * @memberOf PromiseSubscription
-         */
-        this.isExecuted = false;
-    }
-    /**
-     * Executes the handler.
-     *
-     * @param {boolean} executeAsync True if the even should be executed async.
-     * @param {*} scope The scope the scope of the event.
-     * @param {IArguments} args The arguments for the event.
-     *
-     * @memberOf PromiseSubscription
-     */
-    async execute(executeAsync, scope, args) {
-        if (!this.isOnce || !this.isExecuted) {
-            this.isExecuted = true;
-            //TODO: do we need to cast to any -- seems yuck
-            var fn = this.handler;
-            if (executeAsync) {
-                setTimeout(() => {
-                    fn.apply(scope, args);
-                }, 1);
-                return;
-            }
-            let result = fn.apply(scope, args);
-            await result;
-        }
-    }
-}
-exports.PromiseSubscription = PromiseSubscription;
-
-
-/***/ }),
-
-/***/ 5171:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Subscription = void 0;
-/**
- * Stores a handler. Manages execution meta data.
- * @class Subscription
- * @template TEventHandler
- */
-class Subscription {
-    /**
-     * Creates an instance of Subscription.
-     *
-     * @param {TEventHandler} handler The handler for the subscription.
-     * @param {boolean} isOnce Indicates if the handler should only be executed once.
-     */
-    constructor(handler, isOnce) {
-        this.handler = handler;
-        this.isOnce = isOnce;
-        /**
-         * Indicates if the subscription has been executed before.
-         */
-        this.isExecuted = false;
-    }
-    /**
-     * Executes the handler.
-     *
-     * @param {boolean} executeAsync True if the even should be executed async.
-     * @param {*} scope The scope the scope of the event.
-     * @param {IArguments} args The arguments for the event.
-     */
-    execute(executeAsync, scope, args) {
-        if (!this.isOnce || !this.isExecuted) {
-            this.isExecuted = true;
-            var fn = this.handler;
-            if (executeAsync) {
-                setTimeout(() => {
-                    fn.apply(scope, args);
-                }, 1);
-            }
-            else {
-                fn.apply(scope, args);
-            }
-        }
-    }
-}
-exports.Subscription = Subscription;
-
-
-/***/ }),
-
-/***/ 6285:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.HandlingBase = void 0;
-/**
- * Base class that implements event handling. With a an
- * event list this base class will expose events that can be
- * subscribed to. This will give your class generic events.
- *
- * @export
- * @abstract
- * @class HandlingBase
- * @template TEventHandler The type of event handler.
- * @template TDispatcher The type of dispatcher.
- * @template TList The type of event list.
- */
-class HandlingBase {
-    /**
-     * Creates an instance of HandlingBase.
-     * @param {TList} events The event list. Used for event management.
-     *
-     * @memberOf HandlingBase
-     */
-    constructor(events) {
-        this.events = events;
-    }
-    /**
-     * Subscribes once to the event with the specified name.
-     * @param {string} name The name of the event.
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf HandlingBase
-     */
-    one(name, fn) {
-        this.events.get(name).one(fn);
-    }
-    /**
-     * Checks it the event has a subscription for the specified handler.
-     * @param {string} name The name of the event.
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf HandlingBase
-     */
-    has(name, fn) {
-        return this.events.get(name).has(fn);
-    }
-    /**
-     * Subscribes to the event with the specified name.
-     * @param {string} name The name of the event.
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf HandlingBase
-     */
-    subscribe(name, fn) {
-        this.events.get(name).subscribe(fn);
-    }
-    /**
-     * Subscribes to the event with the specified name.
-     * @param {string} name The name of the event.
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf HandlingBase
-     */
-    sub(name, fn) {
-        this.subscribe(name, fn);
-    }
-    /**
-     * Unsubscribes from the event with the specified name.
-     * @param {string} name The name of the event.
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf HandlingBase
-     */
-    unsubscribe(name, fn) {
-        this.events.get(name).unsubscribe(fn);
-    }
-    /**
-     * Unsubscribes from the event with the specified name.
-     * @param {string} name The name of the event.
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf HandlingBase
-     */
-    unsub(name, fn) {
-        this.unsubscribe(name, fn);
-    }
-}
-exports.HandlingBase = HandlingBase;
-
-
-/***/ }),
-
-/***/ 782:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-/*!
- * Strongly Typed Events for TypeScript - Core
- * https://github.com/KeesCBakker/StronlyTypedEvents/
- * http://keestalkstech.com
- *
- * Copyright Kees C. Bakker / KeesTalksTech
- * Released under the MIT license
- */
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SubscriptionChangeEventDispatcher = exports.HandlingBase = exports.PromiseDispatcherBase = exports.PromiseSubscription = exports.DispatchError = exports.EventManagement = exports.EventListBase = exports.DispatcherWrapper = exports.DispatcherBase = exports.Subscription = void 0;
-const DispatcherBase_1 = __webpack_require__(7015);
-Object.defineProperty(exports, "DispatcherBase", ({ enumerable: true, get: function () { return DispatcherBase_1.DispatcherBase; } }));
-const DispatchError_1 = __webpack_require__(371);
-Object.defineProperty(exports, "DispatchError", ({ enumerable: true, get: function () { return DispatchError_1.DispatchError; } }));
-const DispatcherWrapper_1 = __webpack_require__(7327);
-Object.defineProperty(exports, "DispatcherWrapper", ({ enumerable: true, get: function () { return DispatcherWrapper_1.DispatcherWrapper; } }));
-const EventListBase_1 = __webpack_require__(3704);
-Object.defineProperty(exports, "EventListBase", ({ enumerable: true, get: function () { return EventListBase_1.EventListBase; } }));
-const EventManagement_1 = __webpack_require__(1672);
-Object.defineProperty(exports, "EventManagement", ({ enumerable: true, get: function () { return EventManagement_1.EventManagement; } }));
-const HandlingBase_1 = __webpack_require__(6285);
-Object.defineProperty(exports, "HandlingBase", ({ enumerable: true, get: function () { return HandlingBase_1.HandlingBase; } }));
-const PromiseDispatcherBase_1 = __webpack_require__(7451);
-Object.defineProperty(exports, "PromiseDispatcherBase", ({ enumerable: true, get: function () { return PromiseDispatcherBase_1.PromiseDispatcherBase; } }));
-const PromiseSubscription_1 = __webpack_require__(893);
-Object.defineProperty(exports, "PromiseSubscription", ({ enumerable: true, get: function () { return PromiseSubscription_1.PromiseSubscription; } }));
-const Subscription_1 = __webpack_require__(5171);
-Object.defineProperty(exports, "Subscription", ({ enumerable: true, get: function () { return Subscription_1.Subscription; } }));
-const SubscriptionChangeEventHandler_1 = __webpack_require__(5519);
-Object.defineProperty(exports, "SubscriptionChangeEventDispatcher", ({ enumerable: true, get: function () { return SubscriptionChangeEventHandler_1.SubscriptionChangeEventDispatcher; } }));
-
-
-/***/ }),
-
-/***/ 1672:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EventManagement = void 0;
-/**
- * Allows the user to interact with the event.
- *
- * @export
- * @class EventManagement
- * @implements {IEventManagement}
- */
-class EventManagement {
-    /**
-     * Creates an instance of EventManagement.
-     * @param {() => void} unsub An unsubscribe handler.
-     *
-     * @memberOf EventManagement
-     */
-    constructor(unsub) {
-        this.unsub = unsub;
-        this.propagationStopped = false;
-    }
-    /**
-     * Stops the propagation of the event.
-     * Cannot be used when async dispatch is done.
-     *
-     * @memberOf EventManagement
-     */
-    stopPropagation() {
-        this.propagationStopped = true;
-    }
-}
-exports.EventManagement = EventManagement;
-
-
-/***/ }),
-
-/***/ 8165:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EventDispatcher = void 0;
-const ste_core_1 = __webpack_require__(782);
-/**
- * Dispatcher implementation for events. Can be used to subscribe, unsubscribe
- * or dispatch events. Use the ToEvent() method to expose the event.
- *
- * @export
- * @class EventDispatcher
- * @extends {DispatcherBase<IEventHandler<TSender, TArgs>>}
- * @implements {IEvent<TSender, TArgs>}
- * @template TSender The sender type.
- * @template TArgs The event arguments type.
- */
-class EventDispatcher extends ste_core_1.DispatcherBase {
-    /**
-     * Creates an instance of EventDispatcher.
-     *
-     * @memberOf EventDispatcher
-     */
-    constructor() {
-        super();
-    }
-    /**
-     * Dispatches the event.
-     *
-     * @param {TSender} sender The sender.
-     * @param {TArgs} args The arguments.
-     * @returns {IPropagationStatus} The propagation status to interact with the event
-     *
-     * @memberOf EventDispatcher
-     */
-    dispatch(sender, args) {
-        const result = this._dispatch(false, this, arguments);
-        if (result == null) {
-            throw new ste_core_1.DispatchError("Got `null` back from dispatch.");
-        }
-        return result;
-    }
-    /**
-     * Dispatches the event in an async way. Does not support event interaction.
-     *
-     * @param {TSender} sender The sender.
-     * @param {TArgs} args The arguments.
-     *
-     * @memberOf EventDispatcher
-     */
-    dispatchAsync(sender, args) {
-        this._dispatch(true, this, arguments);
-    }
-    /**
-     * Creates an event from the dispatcher. Will return the dispatcher
-     * in a wrapper. This will prevent exposure of any dispatcher methods.
-     *
-     * @returns {IEvent<TSender, TArgs>} The event.
-     *
-     * @memberOf EventDispatcher
-     */
-    asEvent() {
-        return super.asEvent();
-    }
-}
-exports.EventDispatcher = EventDispatcher;
-
-
-/***/ }),
-
-/***/ 6846:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EventHandlingBase = void 0;
-const ste_core_1 = __webpack_require__(782);
-const EventList_1 = __webpack_require__(3738);
-/**
- * Extends objects with signal event handling capabilities.
- */
-class EventHandlingBase extends ste_core_1.HandlingBase {
-    constructor() {
-        super(new EventList_1.EventList());
-    }
-}
-exports.EventHandlingBase = EventHandlingBase;
-
-
-/***/ }),
-
-/***/ 3738:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EventList = void 0;
-const ste_core_1 = __webpack_require__(782);
-const EventDispatcher_1 = __webpack_require__(8165);
-/**
- * Storage class for multiple events that are accessible by name.
- * Events dispatchers are automatically created.
- */
-class EventList extends ste_core_1.EventListBase {
-    /**
-     * Creates a new EventList instance.
-     */
-    constructor() {
-        super();
-    }
-    /**
-     * Creates a new dispatcher instance.
-     */
-    createDispatcher() {
-        return new EventDispatcher_1.EventDispatcher();
-    }
-}
-exports.EventList = EventList;
-
-
-/***/ }),
-
-/***/ 198:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.NonUniformEventList = void 0;
-const EventDispatcher_1 = __webpack_require__(8165);
-/**
- * Similar to EventList, but instead of TArgs, a map of event names ang argument types is provided with TArgsMap.
- */
-class NonUniformEventList {
-    constructor() {
-        this._events = {};
-    }
-    /**
-     * Gets the dispatcher associated with the name.
-     * @param name The name of the event.
-     */
-    get(name) {
-        if (this._events[name]) {
-            // @TODO avoid typecasting. Not sure why TS thinks this._events[name] could still be undefined.
-            return this._events[name];
-        }
-        const event = this.createDispatcher();
-        this._events[name] = event;
-        return event;
-    }
-    /**
-     * Removes the dispatcher associated with the name.
-     * @param name The name of the event.
-     */
-    remove(name) {
-        delete this._events[name];
-    }
-    /**
-     * Creates a new dispatcher instance.
-     */
-    createDispatcher() {
-        return new EventDispatcher_1.EventDispatcher();
-    }
-}
-exports.NonUniformEventList = NonUniformEventList;
-
-
-/***/ }),
-
-/***/ 8756:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-/*!
- * Strongly Typed Events for TypeScript - Core
- * https://github.com/KeesCBakker/StronlyTypedEvents/
- * http://keestalkstech.com
- *
- * Copyright Kees C. Bakker / KeesTalksTech
- * Released under the MIT license
- */
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.NonUniformEventList = exports.EventList = exports.EventHandlingBase = exports.EventDispatcher = void 0;
-const EventDispatcher_1 = __webpack_require__(8165);
-Object.defineProperty(exports, "EventDispatcher", ({ enumerable: true, get: function () { return EventDispatcher_1.EventDispatcher; } }));
-const EventHandlingBase_1 = __webpack_require__(6846);
-Object.defineProperty(exports, "EventHandlingBase", ({ enumerable: true, get: function () { return EventHandlingBase_1.EventHandlingBase; } }));
-const EventList_1 = __webpack_require__(3738);
-Object.defineProperty(exports, "EventList", ({ enumerable: true, get: function () { return EventList_1.EventList; } }));
-const NonUniformEventList_1 = __webpack_require__(198);
-Object.defineProperty(exports, "NonUniformEventList", ({ enumerable: true, get: function () { return NonUniformEventList_1.NonUniformEventList; } }));
-
-
-/***/ }),
-
-/***/ 7092:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SignalDispatcher = void 0;
-const ste_core_1 = __webpack_require__(782);
-/**
- * The dispatcher handles the storage of subsciptions and facilitates
- * subscription, unsubscription and dispatching of a signal event.
- *
- * @export
- * @class SignalDispatcher
- * @extends {DispatcherBase<ISignalHandler>}
- * @implements {ISignal}
- */
-class SignalDispatcher extends ste_core_1.DispatcherBase {
-    /**
-     * Dispatches the signal.
-     *
-     * @returns {IPropagationStatus} The status of the signal.
-     *
-     * @memberOf SignalDispatcher
-     */
-    dispatch() {
-        const result = this._dispatch(false, this, arguments);
-        if (result == null) {
-            throw new ste_core_1.DispatchError("Got `null` back from dispatch.");
-        }
-        return result;
-    }
-    /**
-     * Dispatches the signal without waiting for the result.
-     *
-     * @memberOf SignalDispatcher
-     */
-    dispatchAsync() {
-        this._dispatch(true, this, arguments);
-    }
-    /**
-     * Creates an event from the dispatcher. Will return the dispatcher
-     * in a wrapper. This will prevent exposure of any dispatcher methods.
-     *
-     * @returns {ISignal} The signal.
-     *
-     * @memberOf SignalDispatcher
-     */
-    asEvent() {
-        return super.asEvent();
-    }
-}
-exports.SignalDispatcher = SignalDispatcher;
-
-
-/***/ }),
-
-/***/ 4274:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SignalHandlingBase = void 0;
-const ste_core_1 = __webpack_require__(782);
-const _1 = __webpack_require__(7046);
-/**
- * Extends objects with signal event handling capabilities.
- *
- * @export
- * @abstract
- * @class SignalHandlingBase
- * @extends {HandlingBase<ISignalHandler, SignalDispatcher, SignalList>}
- * @implements {ISignalHandling}
- */
-class SignalHandlingBase extends ste_core_1.HandlingBase {
-    /**
-     * Creates an instance of SignalHandlingBase.
-     *
-     * @memberOf SignalHandlingBase
-     */
-    constructor() {
-        super(new _1.SignalList());
-    }
-}
-exports.SignalHandlingBase = SignalHandlingBase;
-
-
-/***/ }),
-
-/***/ 831:
+/***/ 1064:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SignalList = void 0;
-const ste_core_1 = __webpack_require__(782);
-const _1 = __webpack_require__(7046);
+const ste_core_1 = __webpack_require__(4604);
+const _1 = __webpack_require__(5010);
 /**
  * Storage class for multiple signal events that are accessible by name.
  * Events dispatchers are automatically created.
@@ -1229,1802 +545,7 @@ exports.SignalList = SignalList;
 
 /***/ }),
 
-/***/ 7046:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-/*!
- * Strongly Typed Events for TypeScript - Promise Signals
- * https://github.com/KeesCBakker/StronlyTypedEvents/
- * http://keestalkstech.com
- *
- * Copyright Kees C. Bakker / KeesTalksTech
- * Released under the MIT license
- */
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SignalList = exports.SignalHandlingBase = exports.SignalDispatcher = void 0;
-const SignalDispatcher_1 = __webpack_require__(7092);
-Object.defineProperty(exports, "SignalDispatcher", ({ enumerable: true, get: function () { return SignalDispatcher_1.SignalDispatcher; } }));
-const SignalHandlingBase_1 = __webpack_require__(4274);
-Object.defineProperty(exports, "SignalHandlingBase", ({ enumerable: true, get: function () { return SignalHandlingBase_1.SignalHandlingBase; } }));
-const SignalList_1 = __webpack_require__(831);
-Object.defineProperty(exports, "SignalList", ({ enumerable: true, get: function () { return SignalList_1.SignalList; } }));
-
-
-/***/ }),
-
-/***/ 2508:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.NonUniformSimpleEventList = void 0;
-const SimpleEventDispatcher_1 = __webpack_require__(5632);
-/**
- * Similar to EventList, but instead of TArgs, a map of event names ang argument types is provided with TArgsMap.
- */
-class NonUniformSimpleEventList {
-    constructor() {
-        this._events = {};
-    }
-    /**
-     * Gets the dispatcher associated with the name.
-     * @param name The name of the event.
-     */
-    get(name) {
-        if (this._events[name]) {
-            // @TODO avoid typecasting. Not sure why TS thinks this._events[name] could still be undefined.
-            return this._events[name];
-        }
-        const event = this.createDispatcher();
-        this._events[name] = event;
-        return event;
-    }
-    /**
-     * Removes the dispatcher associated with the name.
-     * @param name The name of the event.
-     */
-    remove(name) {
-        delete this._events[name];
-    }
-    /**
-     * Creates a new dispatcher instance.
-     */
-    createDispatcher() {
-        return new SimpleEventDispatcher_1.SimpleEventDispatcher();
-    }
-}
-exports.NonUniformSimpleEventList = NonUniformSimpleEventList;
-
-
-/***/ }),
-
-/***/ 5632:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SimpleEventDispatcher = void 0;
-const ste_core_1 = __webpack_require__(782);
-/**
- * The dispatcher handles the storage of subsciptions and facilitates
- * subscription, unsubscription and dispatching of a simple event
- *
- * @export
- * @class SimpleEventDispatcher
- * @extends {DispatcherBase<ISimpleEventHandler<TArgs>>}
- * @implements {ISimpleEvent<TArgs>}
- * @template TArgs
- */
-class SimpleEventDispatcher extends ste_core_1.DispatcherBase {
-    /**
-     * Creates an instance of SimpleEventDispatcher.
-     *
-     * @memberOf SimpleEventDispatcher
-     */
-    constructor() {
-        super();
-    }
-    /**
-     * Dispatches the event.
-     *
-     * @param {TArgs} args The arguments object.
-     * @returns {IPropagationStatus} The status of the event.
-     *
-     * @memberOf SimpleEventDispatcher
-     */
-    dispatch(args) {
-        const result = this._dispatch(false, this, arguments);
-        if (result == null) {
-            throw new ste_core_1.DispatchError("Got `null` back from dispatch.");
-        }
-        return result;
-    }
-    /**
-     * Dispatches the event without waiting for the result.
-     *
-     * @param {TArgs} args The arguments object.
-     *
-     * @memberOf SimpleEventDispatcher
-     */
-    dispatchAsync(args) {
-        this._dispatch(true, this, arguments);
-    }
-    /**
-     * Creates an event from the dispatcher. Will return the dispatcher
-     * in a wrapper. This will prevent exposure of any dispatcher methods.
-     *
-     * @returns {ISimpleEvent<TArgs>} The event.
-     *
-     * @memberOf SimpleEventDispatcher
-     */
-    asEvent() {
-        return super.asEvent();
-    }
-}
-exports.SimpleEventDispatcher = SimpleEventDispatcher;
-
-
-/***/ }),
-
-/***/ 2781:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SimpleEventHandlingBase = void 0;
-const ste_core_1 = __webpack_require__(782);
-const SimpleEventList_1 = __webpack_require__(5596);
-/**
- * Extends objects with signal event handling capabilities.
- */
-class SimpleEventHandlingBase extends ste_core_1.HandlingBase {
-    constructor() {
-        super(new SimpleEventList_1.SimpleEventList());
-    }
-}
-exports.SimpleEventHandlingBase = SimpleEventHandlingBase;
-
-
-/***/ }),
-
-/***/ 5596:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SimpleEventList = void 0;
-const ste_core_1 = __webpack_require__(782);
-const SimpleEventDispatcher_1 = __webpack_require__(5632);
-/**
- * Storage class for multiple simple events that are accessible by name.
- * Events dispatchers are automatically created.
- */
-class SimpleEventList extends ste_core_1.EventListBase {
-    /**
-     * Creates a new SimpleEventList instance.
-     */
-    constructor() {
-        super();
-    }
-    /**
-     * Creates a new dispatcher instance.
-     */
-    createDispatcher() {
-        return new SimpleEventDispatcher_1.SimpleEventDispatcher();
-    }
-}
-exports.SimpleEventList = SimpleEventList;
-
-
-/***/ }),
-
-/***/ 7959:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.NonUniformSimpleEventList = exports.SimpleEventList = exports.SimpleEventHandlingBase = exports.SimpleEventDispatcher = void 0;
-const SimpleEventDispatcher_1 = __webpack_require__(5632);
-Object.defineProperty(exports, "SimpleEventDispatcher", ({ enumerable: true, get: function () { return SimpleEventDispatcher_1.SimpleEventDispatcher; } }));
-const SimpleEventHandlingBase_1 = __webpack_require__(2781);
-Object.defineProperty(exports, "SimpleEventHandlingBase", ({ enumerable: true, get: function () { return SimpleEventHandlingBase_1.SimpleEventHandlingBase; } }));
-const NonUniformSimpleEventList_1 = __webpack_require__(2508);
-Object.defineProperty(exports, "NonUniformSimpleEventList", ({ enumerable: true, get: function () { return NonUniformSimpleEventList_1.NonUniformSimpleEventList; } }));
-const SimpleEventList_1 = __webpack_require__(5596);
-Object.defineProperty(exports, "SimpleEventList", ({ enumerable: true, get: function () { return SimpleEventList_1.SimpleEventList; } }));
-
-
-/***/ }),
-
-/***/ 291:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-var __webpack_unused_export__;
-
-/*!
- * Strongly Typed Events for TypeScript
- * https://github.com/KeesCBakker/StronlyTypedEvents/
- * http://keestalkstech.com
- *
- * Copyright Kees C. Bakker / KeesTalksTech
- * Released under the MIT license
- */
-__webpack_unused_export__ = ({ value: true });
-__webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = exports.nz = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = exports.FK = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = void 0;
-var ste_core_1 = __webpack_require__(782);
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_core_1.Subscription; } });
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_core_1.DispatcherBase; } });
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_core_1.DispatcherWrapper; } });
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_core_1.EventListBase; } });
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_core_1.EventManagement; } });
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_core_1.DispatchError; } });
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_core_1.PromiseSubscription; } });
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_core_1.PromiseDispatcherBase; } });
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_core_1.HandlingBase; } });
-var ste_events_1 = __webpack_require__(8756);
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_events_1.EventDispatcher; } });
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_events_1.EventHandlingBase; } });
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_events_1.EventList; } });
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_events_1.NonUniformEventList; } });
-var ste_simple_events_1 = __webpack_require__(7959);
-Object.defineProperty(exports, "FK", ({ enumerable: true, get: function () { return ste_simple_events_1.SimpleEventDispatcher; } }));
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_simple_events_1.SimpleEventHandlingBase; } });
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_simple_events_1.SimpleEventList; } });
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_simple_events_1.NonUniformSimpleEventList; } });
-var ste_signals_1 = __webpack_require__(7046);
-Object.defineProperty(exports, "nz", ({ enumerable: true, get: function () { return ste_signals_1.SignalDispatcher; } }));
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_signals_1.SignalHandlingBase; } });
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_signals_1.SignalList; } });
-var ste_promise_events_1 = __webpack_require__(6586);
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_promise_events_1.PromiseEventDispatcher; } });
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_promise_events_1.PromiseEventHandlingBase; } });
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_promise_events_1.PromiseEventList; } });
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_promise_events_1.NonUniformPromiseEventList; } });
-var ste_promise_signals_1 = __webpack_require__(6838);
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_promise_signals_1.PromiseSignalDispatcher; } });
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_promise_signals_1.PromiseSignalHandlingBase; } });
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_promise_signals_1.PromiseSignalList; } });
-var ste_promise_simple_events_1 = __webpack_require__(9176);
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_promise_simple_events_1.PromiseSimpleEventDispatcher; } });
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_promise_simple_events_1.PromiseSimpleEventHandlingBase; } });
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_promise_simple_events_1.PromiseSimpleEventList; } });
-__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_promise_simple_events_1.NonUniformPromiseSimpleEventList; } });
-
-
-/***/ }),
-
-/***/ 5481:
-/***/ (() => {
-
-!function (window, module) {
-  // source content
-  (function main(global, module, isWorker, workerSize) {
-    function noop() {} // create a promise if it exists, otherwise, just
-    // call the function directly
-
-
-    function promise(func) {
-      var ModulePromise = module.exports.Promise;
-      var Prom = ModulePromise !== void 0 ? ModulePromise : global.Promise;
-
-      if (typeof Prom === "function") {
-        return new Prom(func);
-      }
-
-      func(noop, noop);
-      return null;
-    }
-
-    var raf = function () {
-      var TIME = Math.floor(1000 / 60);
-      var frame, cancel;
-      var frames = {};
-      var lastFrameTime = 0;
-
-      if (typeof requestAnimationFrame === "function" && typeof cancelAnimationFrame === "function") {
-        frame = function (cb) {
-          var id = Math.random();
-          frames[id] = requestAnimationFrame(function onFrame(time) {
-            if (lastFrameTime === time || lastFrameTime + TIME - 1 < time) {
-              lastFrameTime = time;
-              delete frames[id];
-              cb();
-            } else {
-              frames[id] = requestAnimationFrame(onFrame);
-            }
-          });
-          return id;
-        };
-
-        cancel = function (id) {
-          if (frames[id]) {
-            cancelAnimationFrame(frames[id]);
-          }
-        };
-      } else {
-        frame = function (cb) {
-          return setTimeout(cb, TIME);
-        };
-
-        cancel = function (timer) {
-          return clearTimeout(timer);
-        };
-      }
-
-      return {
-        frame: frame,
-        cancel: cancel
-      };
-    }();
-
-    var defaults = {
-      particleCount: 50,
-      angle: 90,
-      spread: 45,
-      startVelocity: 45,
-      decay: 0.9,
-      gravity: 1,
-      drift: 0,
-      ticks: 200,
-      x: 0.5,
-      y: 0.5,
-      shapes: ["square", "circle"],
-      zIndex: 100,
-      colors: ["#26ccff", "#a25afd", "#ff5e7e", "#88ff5a", "#fcff42", "#ffa62d", "#ff36ff"],
-      // probably should be true, but back-compat
-      disableForReducedMotion: false,
-      scalar: 1
-    };
-
-    function convert(val, transform) {
-      return transform ? transform(val) : val;
-    }
-
-    function isOk(val) {
-      return !(val === null || val === undefined);
-    }
-
-    function prop(options, name, transform) {
-      return convert(options && isOk(options[name]) ? options[name] : defaults[name], transform);
-    }
-
-    function onlyPositiveInt(number) {
-      return number < 0 ? 0 : Math.floor(number);
-    }
-
-    function randomInt(min, max) {
-      // [min, max)
-      return Math.floor(Math.random() * (max - min)) + min;
-    }
-
-    function toDecimal(str) {
-      return parseInt(str, 16);
-    }
-
-    function colorsToRgb(colors) {
-      return colors.map(hexToRgb);
-    }
-
-    function hexToRgb(str) {
-      var val = String(str).replace(/[^0-9a-f]/gi, "");
-
-      if (val.length < 6) {
-        val = val[0] + val[0] + val[1] + val[1] + val[2] + val[2];
-      }
-
-      return {
-        r: toDecimal(val.substring(0, 2)),
-        g: toDecimal(val.substring(2, 4)),
-        b: toDecimal(val.substring(4, 6))
-      };
-    }
-
-    function getOrigin(options) {
-      var origin = prop(options, "origin", Object);
-      origin.x = prop(origin, "x", Number);
-      origin.y = prop(origin, "y", Number);
-      return origin;
-    }
-
-    function setCanvasWindowSize(canvas) {
-      canvas.width = document.documentElement.clientWidth;
-      canvas.height = document.documentElement.clientHeight;
-    }
-
-    function setCanvasRectSize(canvas) {
-      var rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width;
-      canvas.height = rect.height;
-    }
-
-    function getCanvas(zIndex) {
-      var canvas = document.createElement("canvas");
-      canvas.style.position = "fixed";
-      canvas.style.top = "0px";
-      canvas.style.left = "0px";
-      canvas.style.pointerEvents = "none";
-      canvas.style.zIndex = zIndex;
-      return canvas;
-    }
-
-    function ellipse(context, x, y, radiusX, radiusY, rotation, startAngle, endAngle, antiClockwise) {
-      context.save();
-      context.translate(x, y);
-      context.rotate(rotation);
-      context.scale(radiusX, radiusY);
-      context.arc(0, 0, 1, startAngle, endAngle, antiClockwise);
-      context.restore();
-    }
-
-    function randomPhysics(opts) {
-      var radAngle = opts.angle * (Math.PI / 180);
-      var radSpread = opts.spread * (Math.PI / 180);
-      return {
-        x: opts.x,
-        y: opts.y,
-        wobble: Math.random() * 10,
-        velocity: opts.startVelocity * 0.5 + Math.random() * opts.startVelocity,
-        angle2D: -radAngle + (0.5 * radSpread - Math.random() * radSpread),
-        tiltAngle: Math.random() * Math.PI,
-        color: opts.color,
-        shape: opts.shape,
-        tick: 0,
-        totalTicks: opts.ticks,
-        decay: opts.decay,
-        drift: opts.drift,
-        random: Math.random() + 5,
-        tiltSin: 0,
-        tiltCos: 0,
-        wobbleX: 0,
-        wobbleY: 0,
-        gravity: opts.gravity * 3,
-        ovalScalar: 0.6,
-        scalar: opts.scalar
-      };
-    }
-
-    function updateFetti(context, fetti) {
-      fetti.x += Math.cos(fetti.angle2D) * fetti.velocity + fetti.drift;
-      fetti.y += Math.sin(fetti.angle2D) * fetti.velocity + fetti.gravity;
-      fetti.wobble += 0.1;
-      fetti.velocity *= fetti.decay;
-      fetti.tiltAngle += 0.1;
-      fetti.tiltSin = Math.sin(fetti.tiltAngle);
-      fetti.tiltCos = Math.cos(fetti.tiltAngle);
-      fetti.random = Math.random() + 5;
-      fetti.wobbleX = fetti.x + 10 * fetti.scalar * Math.cos(fetti.wobble);
-      fetti.wobbleY = fetti.y + 10 * fetti.scalar * Math.sin(fetti.wobble);
-      var progress = fetti.tick++ / fetti.totalTicks;
-      var x1 = fetti.x + fetti.random * fetti.tiltCos;
-      var y1 = fetti.y + fetti.random * fetti.tiltSin;
-      var x2 = fetti.wobbleX + fetti.random * fetti.tiltCos;
-      var y2 = fetti.wobbleY + fetti.random * fetti.tiltSin;
-      context.fillStyle = "rgba(" + fetti.color.r + ", " + fetti.color.g + ", " + fetti.color.b + ", " + (1 - progress) + ")";
-      context.beginPath();
-
-      if (fetti.shape === "circle") {
-        context.ellipse ? context.ellipse(fetti.x, fetti.y, Math.abs(x2 - x1) * fetti.ovalScalar, Math.abs(y2 - y1) * fetti.ovalScalar, Math.PI / 10 * fetti.wobble, 0, 2 * Math.PI) : ellipse(context, fetti.x, fetti.y, Math.abs(x2 - x1) * fetti.ovalScalar, Math.abs(y2 - y1) * fetti.ovalScalar, Math.PI / 10 * fetti.wobble, 0, 2 * Math.PI);
-      } else {
-        context.moveTo(Math.floor(fetti.x), Math.floor(fetti.y));
-        context.lineTo(Math.floor(fetti.wobbleX), Math.floor(y1));
-        context.lineTo(Math.floor(x2), Math.floor(y2));
-        context.lineTo(Math.floor(x1), Math.floor(fetti.wobbleY));
-      }
-
-      context.closePath();
-      context.fill();
-      return fetti.tick < fetti.totalTicks;
-    }
-
-    function animate(canvas, fettis, resizer, size, done) {
-      var animatingFettis = fettis.slice();
-      var context = canvas.getContext("2d");
-      var animationFrame;
-      var destroy;
-      var prom = promise(function (resolve) {
-        function onDone() {
-          animationFrame = destroy = null;
-          context.clearRect(0, 0, size.width, size.height);
-          done();
-          resolve();
-        }
-
-        function update() {
-          if (isWorker && !(size.width === workerSize.width && size.height === workerSize.height)) {
-            size.width = canvas.width = workerSize.width;
-            size.height = canvas.height = workerSize.height;
-          }
-
-          if (!size.width && !size.height) {
-            resizer(canvas);
-            size.width = canvas.width;
-            size.height = canvas.height;
-          }
-
-          context.clearRect(0, 0, size.width, size.height);
-          animatingFettis = animatingFettis.filter(function (fetti) {
-            return updateFetti(context, fetti);
-          });
-
-          if (animatingFettis.length) {
-            animationFrame = raf.frame(update);
-          } else {
-            onDone();
-          }
-        }
-
-        animationFrame = raf.frame(update);
-        destroy = onDone;
-      });
-      return {
-        addFettis: function (fettis) {
-          animatingFettis = animatingFettis.concat(fettis);
-          return prom;
-        },
-        canvas: canvas,
-        promise: prom,
-        reset: function () {
-          if (animationFrame) {
-            raf.cancel(animationFrame);
-          }
-
-          if (destroy) {
-            destroy();
-          }
-        }
-      };
-    }
-
-    function confettiCannon(canvas, globalOpts) {
-      var isLibCanvas = !canvas;
-      var allowResize = !!prop(globalOpts || {}, "resize");
-      var globalDisableForReducedMotion = prop(globalOpts, "disableForReducedMotion", Boolean);
-      var worker = null;
-      var resizer = isLibCanvas ? setCanvasWindowSize : setCanvasRectSize;
-      var initialized = canvas && worker ? !!canvas.__confetti_initialized : false;
-      var preferLessMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion)").matches;
-      var animationObj;
-
-      function fireLocal(options, size, done) {
-        var particleCount = prop(options, "particleCount", onlyPositiveInt);
-        var angle = prop(options, "angle", Number);
-        var spread = prop(options, "spread", Number);
-        var startVelocity = prop(options, "startVelocity", Number);
-        var decay = prop(options, "decay", Number);
-        var gravity = prop(options, "gravity", Number);
-        var drift = prop(options, "drift", Number);
-        var colors = prop(options, "colors", colorsToRgb);
-        var ticks = prop(options, "ticks", Number);
-        var shapes = prop(options, "shapes");
-        var scalar = prop(options, "scalar");
-        var origin = getOrigin(options);
-        var temp = particleCount;
-        var fettis = [];
-        var startX = canvas.width * origin.x;
-        var startY = canvas.height * origin.y;
-
-        while (temp--) {
-          fettis.push(randomPhysics({
-            x: startX,
-            y: startY,
-            angle: angle,
-            spread: spread,
-            startVelocity: startVelocity,
-            color: colors[temp % colors.length],
-            shape: shapes[randomInt(0, shapes.length)],
-            ticks: ticks,
-            decay: decay,
-            gravity: gravity,
-            drift: drift,
-            scalar: scalar
-          }));
-        } // if we have a previous canvas already animating,
-        // add to it
-
-
-        if (animationObj) {
-          return animationObj.addFettis(fettis);
-        }
-
-        animationObj = animate(canvas, fettis, resizer, size, done);
-        return animationObj.promise;
-      }
-
-      function fire(options) {
-        var disableForReducedMotion = globalDisableForReducedMotion || prop(options, "disableForReducedMotion", Boolean);
-        var zIndex = prop(options, "zIndex", Number);
-
-        if (disableForReducedMotion && preferLessMotion) {
-          return promise(function (resolve) {
-            resolve();
-          });
-        }
-
-        if (isLibCanvas && animationObj) {
-          // use existing canvas from in-progress animation
-          canvas = animationObj.canvas;
-        } else if (isLibCanvas && !canvas) {
-          // create and initialize a new canvas
-          canvas = getCanvas(zIndex);
-          document.body.appendChild(canvas);
-        }
-
-        if (allowResize && !initialized) {
-          // initialize the size of a user-supplied canvas
-          resizer(canvas);
-        }
-
-        var size = {
-          width: canvas.width,
-          height: canvas.height
-        };
-        initialized = true;
-
-        function onResize() {
-          // don't actually query the size here, since this
-          // can execute frequently and rapidly
-          size.width = size.height = null;
-        }
-
-        function done() {
-          animationObj = null;
-
-          if (allowResize) {
-            global.removeEventListener("resize", onResize);
-          }
-
-          if (isLibCanvas && canvas) {
-            document.body.removeChild(canvas);
-            canvas = null;
-            initialized = false;
-          }
-        }
-
-        if (allowResize) {
-          global.addEventListener("resize", onResize, false);
-        }
-
-        return fireLocal(options, size, done);
-      }
-
-      fire.reset = function () {
-        if (animationObj) {
-          animationObj.reset();
-        }
-      };
-
-      return fire;
-    }
-
-    module.exports = confettiCannon(null, {
-      useWorker: true,
-      resize: true
-    });
-    module.exports.create = confettiCannon;
-  })(function () {
-    if (typeof window !== "undefined") {
-      return window;
-    }
-
-    if (typeof self !== "undefined") {
-      return self;
-    }
-
-    return this || {};
-  }(), module, false); // end source content
-
-
-  window.confetti = module.exports;
-}(window, {});
-
-/***/ }),
-
-/***/ 6377:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-// A library of seedable RNGs implemented in Javascript.
-//
-// Usage:
-//
-// var seedrandom = require('seedrandom');
-// var random = seedrandom(1); // or any seed.
-// var x = random();       // 0 <= x < 1.  Every bit is random.
-// var x = random.quick(); // 0 <= x < 1.  32 bits of randomness.
-
-// alea, a 53-bit multiply-with-carry generator by Johannes Baagøe.
-// Period: ~2^116
-// Reported to pass all BigCrush tests.
-var alea = __webpack_require__(4832);
-
-// xor128, a pure xor-shift generator by George Marsaglia.
-// Period: 2^128-1.
-// Reported to fail: MatrixRank and LinearComp.
-var xor128 = __webpack_require__(8652);
-
-// xorwow, George Marsaglia's 160-bit xor-shift combined plus weyl.
-// Period: 2^192-2^32
-// Reported to fail: CollisionOver, SimpPoker, and LinearComp.
-var xorwow = __webpack_require__(801);
-
-// xorshift7, by François Panneton and Pierre L'ecuyer, takes
-// a different approach: it adds robustness by allowing more shifts
-// than Marsaglia's original three.  It is a 7-shift generator
-// with 256 bits, that passes BigCrush with no systmatic failures.
-// Period 2^256-1.
-// No systematic BigCrush failures reported.
-var xorshift7 = __webpack_require__(2030);
-
-// xor4096, by Richard Brent, is a 4096-bit xor-shift with a
-// very long period that also adds a Weyl generator. It also passes
-// BigCrush with no systematic failures.  Its long period may
-// be useful if you have many generators and need to avoid
-// collisions.
-// Period: 2^4128-2^32.
-// No systematic BigCrush failures reported.
-var xor4096 = __webpack_require__(3618);
-
-// Tyche-i, by Samuel Neves and Filipe Araujo, is a bit-shifting random
-// number generator derived from ChaCha, a modern stream cipher.
-// https://eden.dei.uc.pt/~sneves/pubs/2011-snfa2.pdf
-// Period: ~2^127
-// No systematic BigCrush failures reported.
-var tychei = __webpack_require__(9049);
-
-// The original ARC4-based prng included in this library.
-// Period: ~2^1600
-var sr = __webpack_require__(1971);
-
-sr.alea = alea;
-sr.xor128 = xor128;
-sr.xorwow = xorwow;
-sr.xorshift7 = xorshift7;
-sr.xor4096 = xor4096;
-sr.tychei = tychei;
-
-module.exports = sr;
-
-
-/***/ }),
-
-/***/ 4832:
-/***/ (function(module, exports, __webpack_require__) {
-
-/* module decorator */ module = __webpack_require__.nmd(module);
-var __WEBPACK_AMD_DEFINE_RESULT__;// A port of an algorithm by Johannes Baagøe <baagoe@baagoe.com>, 2010
-// http://baagoe.com/en/RandomMusings/javascript/
-// https://github.com/nquinlan/better-random-numbers-for-javascript-mirror
-// Original work is under MIT license -
-
-// Copyright (C) 2010 by Johannes Baagøe <baagoe@baagoe.org>
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-
-
-
-(function(global, module, define) {
-
-function Alea(seed) {
-  var me = this, mash = Mash();
-
-  me.next = function() {
-    var t = 2091639 * me.s0 + me.c * 2.3283064365386963e-10; // 2^-32
-    me.s0 = me.s1;
-    me.s1 = me.s2;
-    return me.s2 = t - (me.c = t | 0);
-  };
-
-  // Apply the seeding algorithm from Baagoe.
-  me.c = 1;
-  me.s0 = mash(' ');
-  me.s1 = mash(' ');
-  me.s2 = mash(' ');
-  me.s0 -= mash(seed);
-  if (me.s0 < 0) { me.s0 += 1; }
-  me.s1 -= mash(seed);
-  if (me.s1 < 0) { me.s1 += 1; }
-  me.s2 -= mash(seed);
-  if (me.s2 < 0) { me.s2 += 1; }
-  mash = null;
-}
-
-function copy(f, t) {
-  t.c = f.c;
-  t.s0 = f.s0;
-  t.s1 = f.s1;
-  t.s2 = f.s2;
-  return t;
-}
-
-function impl(seed, opts) {
-  var xg = new Alea(seed),
-      state = opts && opts.state,
-      prng = xg.next;
-  prng.int32 = function() { return (xg.next() * 0x100000000) | 0; }
-  prng.double = function() {
-    return prng() + (prng() * 0x200000 | 0) * 1.1102230246251565e-16; // 2^-53
-  };
-  prng.quick = prng;
-  if (state) {
-    if (typeof(state) == 'object') copy(state, xg);
-    prng.state = function() { return copy(xg, {}); }
-  }
-  return prng;
-}
-
-function Mash() {
-  var n = 0xefc8249d;
-
-  var mash = function(data) {
-    data = data.toString();
-    for (var i = 0; i < data.length; i++) {
-      n += data.charCodeAt(i);
-      var h = 0.02519603282416938 * n;
-      n = h >>> 0;
-      h -= n;
-      h *= n;
-      n = h >>> 0;
-      h -= n;
-      n += h * 0x100000000; // 2^32
-    }
-    return (n >>> 0) * 2.3283064365386963e-10; // 2^-32
-  };
-
-  return mash;
-}
-
-
-if (module && module.exports) {
-  module.exports = impl;
-} else if (__webpack_require__.amdD && __webpack_require__.amdO) {
-  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return impl; }).call(exports, __webpack_require__, exports, module),
-		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-} else {
-  this.alea = impl;
-}
-
-})(
-  this,
-   true && module,    // present in node.js
-  __webpack_require__.amdD   // present with an AMD loader
-);
-
-
-
-
-/***/ }),
-
-/***/ 9049:
-/***/ (function(module, exports, __webpack_require__) {
-
-/* module decorator */ module = __webpack_require__.nmd(module);
-var __WEBPACK_AMD_DEFINE_RESULT__;// A Javascript implementaion of the "Tyche-i" prng algorithm by
-// Samuel Neves and Filipe Araujo.
-// See https://eden.dei.uc.pt/~sneves/pubs/2011-snfa2.pdf
-
-(function(global, module, define) {
-
-function XorGen(seed) {
-  var me = this, strseed = '';
-
-  // Set up generator function.
-  me.next = function() {
-    var b = me.b, c = me.c, d = me.d, a = me.a;
-    b = (b << 25) ^ (b >>> 7) ^ c;
-    c = (c - d) | 0;
-    d = (d << 24) ^ (d >>> 8) ^ a;
-    a = (a - b) | 0;
-    me.b = b = (b << 20) ^ (b >>> 12) ^ c;
-    me.c = c = (c - d) | 0;
-    me.d = (d << 16) ^ (c >>> 16) ^ a;
-    return me.a = (a - b) | 0;
-  };
-
-  /* The following is non-inverted tyche, which has better internal
-   * bit diffusion, but which is about 25% slower than tyche-i in JS.
-  me.next = function() {
-    var a = me.a, b = me.b, c = me.c, d = me.d;
-    a = (me.a + me.b | 0) >>> 0;
-    d = me.d ^ a; d = d << 16 ^ d >>> 16;
-    c = me.c + d | 0;
-    b = me.b ^ c; b = b << 12 ^ d >>> 20;
-    me.a = a = a + b | 0;
-    d = d ^ a; me.d = d = d << 8 ^ d >>> 24;
-    me.c = c = c + d | 0;
-    b = b ^ c;
-    return me.b = (b << 7 ^ b >>> 25);
-  }
-  */
-
-  me.a = 0;
-  me.b = 0;
-  me.c = 2654435769 | 0;
-  me.d = 1367130551;
-
-  if (seed === Math.floor(seed)) {
-    // Integer seed.
-    me.a = (seed / 0x100000000) | 0;
-    me.b = seed | 0;
-  } else {
-    // String seed.
-    strseed += seed;
-  }
-
-  // Mix in string seed, then discard an initial batch of 64 values.
-  for (var k = 0; k < strseed.length + 20; k++) {
-    me.b ^= strseed.charCodeAt(k) | 0;
-    me.next();
-  }
-}
-
-function copy(f, t) {
-  t.a = f.a;
-  t.b = f.b;
-  t.c = f.c;
-  t.d = f.d;
-  return t;
-};
-
-function impl(seed, opts) {
-  var xg = new XorGen(seed),
-      state = opts && opts.state,
-      prng = function() { return (xg.next() >>> 0) / 0x100000000; };
-  prng.double = function() {
-    do {
-      var top = xg.next() >>> 11,
-          bot = (xg.next() >>> 0) / 0x100000000,
-          result = (top + bot) / (1 << 21);
-    } while (result === 0);
-    return result;
-  };
-  prng.int32 = xg.next;
-  prng.quick = prng;
-  if (state) {
-    if (typeof(state) == 'object') copy(state, xg);
-    prng.state = function() { return copy(xg, {}); }
-  }
-  return prng;
-}
-
-if (module && module.exports) {
-  module.exports = impl;
-} else if (__webpack_require__.amdD && __webpack_require__.amdO) {
-  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return impl; }).call(exports, __webpack_require__, exports, module),
-		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-} else {
-  this.tychei = impl;
-}
-
-})(
-  this,
-   true && module,    // present in node.js
-  __webpack_require__.amdD   // present with an AMD loader
-);
-
-
-
-
-/***/ }),
-
-/***/ 8652:
-/***/ (function(module, exports, __webpack_require__) {
-
-/* module decorator */ module = __webpack_require__.nmd(module);
-var __WEBPACK_AMD_DEFINE_RESULT__;// A Javascript implementaion of the "xor128" prng algorithm by
-// George Marsaglia.  See http://www.jstatsoft.org/v08/i14/paper
-
-(function(global, module, define) {
-
-function XorGen(seed) {
-  var me = this, strseed = '';
-
-  me.x = 0;
-  me.y = 0;
-  me.z = 0;
-  me.w = 0;
-
-  // Set up generator function.
-  me.next = function() {
-    var t = me.x ^ (me.x << 11);
-    me.x = me.y;
-    me.y = me.z;
-    me.z = me.w;
-    return me.w ^= (me.w >>> 19) ^ t ^ (t >>> 8);
-  };
-
-  if (seed === (seed | 0)) {
-    // Integer seed.
-    me.x = seed;
-  } else {
-    // String seed.
-    strseed += seed;
-  }
-
-  // Mix in string seed, then discard an initial batch of 64 values.
-  for (var k = 0; k < strseed.length + 64; k++) {
-    me.x ^= strseed.charCodeAt(k) | 0;
-    me.next();
-  }
-}
-
-function copy(f, t) {
-  t.x = f.x;
-  t.y = f.y;
-  t.z = f.z;
-  t.w = f.w;
-  return t;
-}
-
-function impl(seed, opts) {
-  var xg = new XorGen(seed),
-      state = opts && opts.state,
-      prng = function() { return (xg.next() >>> 0) / 0x100000000; };
-  prng.double = function() {
-    do {
-      var top = xg.next() >>> 11,
-          bot = (xg.next() >>> 0) / 0x100000000,
-          result = (top + bot) / (1 << 21);
-    } while (result === 0);
-    return result;
-  };
-  prng.int32 = xg.next;
-  prng.quick = prng;
-  if (state) {
-    if (typeof(state) == 'object') copy(state, xg);
-    prng.state = function() { return copy(xg, {}); }
-  }
-  return prng;
-}
-
-if (module && module.exports) {
-  module.exports = impl;
-} else if (__webpack_require__.amdD && __webpack_require__.amdO) {
-  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return impl; }).call(exports, __webpack_require__, exports, module),
-		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-} else {
-  this.xor128 = impl;
-}
-
-})(
-  this,
-   true && module,    // present in node.js
-  __webpack_require__.amdD   // present with an AMD loader
-);
-
-
-
-
-/***/ }),
-
-/***/ 3618:
-/***/ (function(module, exports, __webpack_require__) {
-
-/* module decorator */ module = __webpack_require__.nmd(module);
-var __WEBPACK_AMD_DEFINE_RESULT__;// A Javascript implementaion of Richard Brent's Xorgens xor4096 algorithm.
-//
-// This fast non-cryptographic random number generator is designed for
-// use in Monte-Carlo algorithms. It combines a long-period xorshift
-// generator with a Weyl generator, and it passes all common batteries
-// of stasticial tests for randomness while consuming only a few nanoseconds
-// for each prng generated.  For background on the generator, see Brent's
-// paper: "Some long-period random number generators using shifts and xors."
-// http://arxiv.org/pdf/1004.3115v1.pdf
-//
-// Usage:
-//
-// var xor4096 = require('xor4096');
-// random = xor4096(1);                        // Seed with int32 or string.
-// assert.equal(random(), 0.1520436450538547); // (0, 1) range, 53 bits.
-// assert.equal(random.int32(), 1806534897);   // signed int32, 32 bits.
-//
-// For nonzero numeric keys, this impelementation provides a sequence
-// identical to that by Brent's xorgens 3 implementaion in C.  This
-// implementation also provides for initalizing the generator with
-// string seeds, or for saving and restoring the state of the generator.
-//
-// On Chrome, this prng benchmarks about 2.1 times slower than
-// Javascript's built-in Math.random().
-
-(function(global, module, define) {
-
-function XorGen(seed) {
-  var me = this;
-
-  // Set up generator function.
-  me.next = function() {
-    var w = me.w,
-        X = me.X, i = me.i, t, v;
-    // Update Weyl generator.
-    me.w = w = (w + 0x61c88647) | 0;
-    // Update xor generator.
-    v = X[(i + 34) & 127];
-    t = X[i = ((i + 1) & 127)];
-    v ^= v << 13;
-    t ^= t << 17;
-    v ^= v >>> 15;
-    t ^= t >>> 12;
-    // Update Xor generator array state.
-    v = X[i] = v ^ t;
-    me.i = i;
-    // Result is the combination.
-    return (v + (w ^ (w >>> 16))) | 0;
-  };
-
-  function init(me, seed) {
-    var t, v, i, j, w, X = [], limit = 128;
-    if (seed === (seed | 0)) {
-      // Numeric seeds initialize v, which is used to generates X.
-      v = seed;
-      seed = null;
-    } else {
-      // String seeds are mixed into v and X one character at a time.
-      seed = seed + '\0';
-      v = 0;
-      limit = Math.max(limit, seed.length);
-    }
-    // Initialize circular array and weyl value.
-    for (i = 0, j = -32; j < limit; ++j) {
-      // Put the unicode characters into the array, and shuffle them.
-      if (seed) v ^= seed.charCodeAt((j + 32) % seed.length);
-      // After 32 shuffles, take v as the starting w value.
-      if (j === 0) w = v;
-      v ^= v << 10;
-      v ^= v >>> 15;
-      v ^= v << 4;
-      v ^= v >>> 13;
-      if (j >= 0) {
-        w = (w + 0x61c88647) | 0;     // Weyl.
-        t = (X[j & 127] ^= (v + w));  // Combine xor and weyl to init array.
-        i = (0 == t) ? i + 1 : 0;     // Count zeroes.
-      }
-    }
-    // We have detected all zeroes; make the key nonzero.
-    if (i >= 128) {
-      X[(seed && seed.length || 0) & 127] = -1;
-    }
-    // Run the generator 512 times to further mix the state before using it.
-    // Factoring this as a function slows the main generator, so it is just
-    // unrolled here.  The weyl generator is not advanced while warming up.
-    i = 127;
-    for (j = 4 * 128; j > 0; --j) {
-      v = X[(i + 34) & 127];
-      t = X[i = ((i + 1) & 127)];
-      v ^= v << 13;
-      t ^= t << 17;
-      v ^= v >>> 15;
-      t ^= t >>> 12;
-      X[i] = v ^ t;
-    }
-    // Storing state as object members is faster than using closure variables.
-    me.w = w;
-    me.X = X;
-    me.i = i;
-  }
-
-  init(me, seed);
-}
-
-function copy(f, t) {
-  t.i = f.i;
-  t.w = f.w;
-  t.X = f.X.slice();
-  return t;
-};
-
-function impl(seed, opts) {
-  if (seed == null) seed = +(new Date);
-  var xg = new XorGen(seed),
-      state = opts && opts.state,
-      prng = function() { return (xg.next() >>> 0) / 0x100000000; };
-  prng.double = function() {
-    do {
-      var top = xg.next() >>> 11,
-          bot = (xg.next() >>> 0) / 0x100000000,
-          result = (top + bot) / (1 << 21);
-    } while (result === 0);
-    return result;
-  };
-  prng.int32 = xg.next;
-  prng.quick = prng;
-  if (state) {
-    if (state.X) copy(state, xg);
-    prng.state = function() { return copy(xg, {}); }
-  }
-  return prng;
-}
-
-if (module && module.exports) {
-  module.exports = impl;
-} else if (__webpack_require__.amdD && __webpack_require__.amdO) {
-  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return impl; }).call(exports, __webpack_require__, exports, module),
-		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-} else {
-  this.xor4096 = impl;
-}
-
-})(
-  this,                                     // window object or global
-   true && module,    // present in node.js
-  __webpack_require__.amdD   // present with an AMD loader
-);
-
-
-/***/ }),
-
-/***/ 2030:
-/***/ (function(module, exports, __webpack_require__) {
-
-/* module decorator */ module = __webpack_require__.nmd(module);
-var __WEBPACK_AMD_DEFINE_RESULT__;// A Javascript implementaion of the "xorshift7" algorithm by
-// François Panneton and Pierre L'ecuyer:
-// "On the Xorgshift Random Number Generators"
-// http://saluc.engr.uconn.edu/refs/crypto/rng/panneton05onthexorshift.pdf
-
-(function(global, module, define) {
-
-function XorGen(seed) {
-  var me = this;
-
-  // Set up generator function.
-  me.next = function() {
-    // Update xor generator.
-    var X = me.x, i = me.i, t, v, w;
-    t = X[i]; t ^= (t >>> 7); v = t ^ (t << 24);
-    t = X[(i + 1) & 7]; v ^= t ^ (t >>> 10);
-    t = X[(i + 3) & 7]; v ^= t ^ (t >>> 3);
-    t = X[(i + 4) & 7]; v ^= t ^ (t << 7);
-    t = X[(i + 7) & 7]; t = t ^ (t << 13); v ^= t ^ (t << 9);
-    X[i] = v;
-    me.i = (i + 1) & 7;
-    return v;
-  };
-
-  function init(me, seed) {
-    var j, w, X = [];
-
-    if (seed === (seed | 0)) {
-      // Seed state array using a 32-bit integer.
-      w = X[0] = seed;
-    } else {
-      // Seed state using a string.
-      seed = '' + seed;
-      for (j = 0; j < seed.length; ++j) {
-        X[j & 7] = (X[j & 7] << 15) ^
-            (seed.charCodeAt(j) + X[(j + 1) & 7] << 13);
-      }
-    }
-    // Enforce an array length of 8, not all zeroes.
-    while (X.length < 8) X.push(0);
-    for (j = 0; j < 8 && X[j] === 0; ++j);
-    if (j == 8) w = X[7] = -1; else w = X[j];
-
-    me.x = X;
-    me.i = 0;
-
-    // Discard an initial 256 values.
-    for (j = 256; j > 0; --j) {
-      me.next();
-    }
-  }
-
-  init(me, seed);
-}
-
-function copy(f, t) {
-  t.x = f.x.slice();
-  t.i = f.i;
-  return t;
-}
-
-function impl(seed, opts) {
-  if (seed == null) seed = +(new Date);
-  var xg = new XorGen(seed),
-      state = opts && opts.state,
-      prng = function() { return (xg.next() >>> 0) / 0x100000000; };
-  prng.double = function() {
-    do {
-      var top = xg.next() >>> 11,
-          bot = (xg.next() >>> 0) / 0x100000000,
-          result = (top + bot) / (1 << 21);
-    } while (result === 0);
-    return result;
-  };
-  prng.int32 = xg.next;
-  prng.quick = prng;
-  if (state) {
-    if (state.x) copy(state, xg);
-    prng.state = function() { return copy(xg, {}); }
-  }
-  return prng;
-}
-
-if (module && module.exports) {
-  module.exports = impl;
-} else if (__webpack_require__.amdD && __webpack_require__.amdO) {
-  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return impl; }).call(exports, __webpack_require__, exports, module),
-		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-} else {
-  this.xorshift7 = impl;
-}
-
-})(
-  this,
-   true && module,    // present in node.js
-  __webpack_require__.amdD   // present with an AMD loader
-);
-
-
-
-/***/ }),
-
-/***/ 801:
-/***/ (function(module, exports, __webpack_require__) {
-
-/* module decorator */ module = __webpack_require__.nmd(module);
-var __WEBPACK_AMD_DEFINE_RESULT__;// A Javascript implementaion of the "xorwow" prng algorithm by
-// George Marsaglia.  See http://www.jstatsoft.org/v08/i14/paper
-
-(function(global, module, define) {
-
-function XorGen(seed) {
-  var me = this, strseed = '';
-
-  // Set up generator function.
-  me.next = function() {
-    var t = (me.x ^ (me.x >>> 2));
-    me.x = me.y; me.y = me.z; me.z = me.w; me.w = me.v;
-    return (me.d = (me.d + 362437 | 0)) +
-       (me.v = (me.v ^ (me.v << 4)) ^ (t ^ (t << 1))) | 0;
-  };
-
-  me.x = 0;
-  me.y = 0;
-  me.z = 0;
-  me.w = 0;
-  me.v = 0;
-
-  if (seed === (seed | 0)) {
-    // Integer seed.
-    me.x = seed;
-  } else {
-    // String seed.
-    strseed += seed;
-  }
-
-  // Mix in string seed, then discard an initial batch of 64 values.
-  for (var k = 0; k < strseed.length + 64; k++) {
-    me.x ^= strseed.charCodeAt(k) | 0;
-    if (k == strseed.length) {
-      me.d = me.x << 10 ^ me.x >>> 4;
-    }
-    me.next();
-  }
-}
-
-function copy(f, t) {
-  t.x = f.x;
-  t.y = f.y;
-  t.z = f.z;
-  t.w = f.w;
-  t.v = f.v;
-  t.d = f.d;
-  return t;
-}
-
-function impl(seed, opts) {
-  var xg = new XorGen(seed),
-      state = opts && opts.state,
-      prng = function() { return (xg.next() >>> 0) / 0x100000000; };
-  prng.double = function() {
-    do {
-      var top = xg.next() >>> 11,
-          bot = (xg.next() >>> 0) / 0x100000000,
-          result = (top + bot) / (1 << 21);
-    } while (result === 0);
-    return result;
-  };
-  prng.int32 = xg.next;
-  prng.quick = prng;
-  if (state) {
-    if (typeof(state) == 'object') copy(state, xg);
-    prng.state = function() { return copy(xg, {}); }
-  }
-  return prng;
-}
-
-if (module && module.exports) {
-  module.exports = impl;
-} else if (__webpack_require__.amdD && __webpack_require__.amdO) {
-  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return impl; }).call(exports, __webpack_require__, exports, module),
-		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-} else {
-  this.xorwow = impl;
-}
-
-})(
-  this,
-   true && module,    // present in node.js
-  __webpack_require__.amdD   // present with an AMD loader
-);
-
-
-
-
-/***/ }),
-
-/***/ 1971:
-/***/ ((module, exports, __webpack_require__) => {
-
-var __WEBPACK_AMD_DEFINE_RESULT__;/*
-Copyright 2014 David Bau.
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-*/
-
-(function (pool, math) {
-//
-// The following constants are related to IEEE 754 limits.
-//
-
-// Detect the global object, even if operating in strict mode.
-// http://stackoverflow.com/a/14387057/265298
-var global = (0, eval)('this'),
-    width = 256,        // each RC4 output is 0 <= x < 256
-    chunks = 6,         // at least six RC4 outputs for each double
-    digits = 52,        // there are 52 significant digits in a double
-    rngname = 'random', // rngname: name for Math.random and Math.seedrandom
-    startdenom = math.pow(width, chunks),
-    significance = math.pow(2, digits),
-    overflow = significance * 2,
-    mask = width - 1,
-    nodecrypto;         // node.js crypto module, initialized at the bottom.
-
-//
-// seedrandom()
-// This is the seedrandom function described above.
-//
-function seedrandom(seed, options, callback) {
-  var key = [];
-  options = (options == true) ? { entropy: true } : (options || {});
-
-  // Flatten the seed string or build one from local entropy if needed.
-  var shortseed = mixkey(flatten(
-    options.entropy ? [seed, tostring(pool)] :
-    (seed == null) ? autoseed() : seed, 3), key);
-
-  // Use the seed to initialize an ARC4 generator.
-  var arc4 = new ARC4(key);
-
-  // This function returns a random double in [0, 1) that contains
-  // randomness in every bit of the mantissa of the IEEE 754 value.
-  var prng = function() {
-    var n = arc4.g(chunks),             // Start with a numerator n < 2 ^ 48
-        d = startdenom,                 //   and denominator d = 2 ^ 48.
-        x = 0;                          //   and no 'extra last byte'.
-    while (n < significance) {          // Fill up all significant digits by
-      n = (n + x) * width;              //   shifting numerator and
-      d *= width;                       //   denominator and generating a
-      x = arc4.g(1);                    //   new least-significant-byte.
-    }
-    while (n >= overflow) {             // To avoid rounding up, before adding
-      n /= 2;                           //   last byte, shift everything
-      d /= 2;                           //   right using integer math until
-      x >>>= 1;                         //   we have exactly the desired bits.
-    }
-    return (n + x) / d;                 // Form the number within [0, 1).
-  };
-
-  prng.int32 = function() { return arc4.g(4) | 0; }
-  prng.quick = function() { return arc4.g(4) / 0x100000000; }
-  prng.double = prng;
-
-  // Mix the randomness into accumulated entropy.
-  mixkey(tostring(arc4.S), pool);
-
-  // Calling convention: what to return as a function of prng, seed, is_math.
-  return (options.pass || callback ||
-      function(prng, seed, is_math_call, state) {
-        if (state) {
-          // Load the arc4 state from the given state if it has an S array.
-          if (state.S) { copy(state, arc4); }
-          // Only provide the .state method if requested via options.state.
-          prng.state = function() { return copy(arc4, {}); }
-        }
-
-        // If called as a method of Math (Math.seedrandom()), mutate
-        // Math.random because that is how seedrandom.js has worked since v1.0.
-        if (is_math_call) { math[rngname] = prng; return seed; }
-
-        // Otherwise, it is a newer calling convention, so return the
-        // prng directly.
-        else return prng;
-      })(
-  prng,
-  shortseed,
-  'global' in options ? options.global : (this == math),
-  options.state);
-}
-math['seed' + rngname] = seedrandom;
-
-//
-// ARC4
-//
-// An ARC4 implementation.  The constructor takes a key in the form of
-// an array of at most (width) integers that should be 0 <= x < (width).
-//
-// The g(count) method returns a pseudorandom integer that concatenates
-// the next (count) outputs from ARC4.  Its return value is a number x
-// that is in the range 0 <= x < (width ^ count).
-//
-function ARC4(key) {
-  var t, keylen = key.length,
-      me = this, i = 0, j = me.i = me.j = 0, s = me.S = [];
-
-  // The empty key [] is treated as [0].
-  if (!keylen) { key = [keylen++]; }
-
-  // Set up S using the standard key scheduling algorithm.
-  while (i < width) {
-    s[i] = i++;
-  }
-  for (i = 0; i < width; i++) {
-    s[i] = s[j = mask & (j + key[i % keylen] + (t = s[i]))];
-    s[j] = t;
-  }
-
-  // The "g" method returns the next (count) outputs as one number.
-  (me.g = function(count) {
-    // Using instance members instead of closure state nearly doubles speed.
-    var t, r = 0,
-        i = me.i, j = me.j, s = me.S;
-    while (count--) {
-      t = s[i = mask & (i + 1)];
-      r = r * width + s[mask & ((s[i] = s[j = mask & (j + t)]) + (s[j] = t))];
-    }
-    me.i = i; me.j = j;
-    return r;
-    // For robust unpredictability, the function call below automatically
-    // discards an initial batch of values.  This is called RC4-drop[256].
-    // See http://google.com/search?q=rsa+fluhrer+response&btnI
-  })(width);
-}
-
-//
-// copy()
-// Copies internal state of ARC4 to or from a plain object.
-//
-function copy(f, t) {
-  t.i = f.i;
-  t.j = f.j;
-  t.S = f.S.slice();
-  return t;
-};
-
-//
-// flatten()
-// Converts an object tree to nested arrays of strings.
-//
-function flatten(obj, depth) {
-  var result = [], typ = (typeof obj), prop;
-  if (depth && typ == 'object') {
-    for (prop in obj) {
-      try { result.push(flatten(obj[prop], depth - 1)); } catch (e) {}
-    }
-  }
-  return (result.length ? result : typ == 'string' ? obj : obj + '\0');
-}
-
-//
-// mixkey()
-// Mixes a string seed into a key that is an array of integers, and
-// returns a shortened string seed that is equivalent to the result key.
-//
-function mixkey(seed, key) {
-  var stringseed = seed + '', smear, j = 0;
-  while (j < stringseed.length) {
-    key[mask & j] =
-      mask & ((smear ^= key[mask & j] * 19) + stringseed.charCodeAt(j++));
-  }
-  return tostring(key);
-}
-
-//
-// autoseed()
-// Returns an object for autoseeding, using window.crypto and Node crypto
-// module if available.
-//
-function autoseed() {
-  try {
-    var out;
-    if (nodecrypto && (out = nodecrypto.randomBytes)) {
-      // The use of 'out' to remember randomBytes makes tight minified code.
-      out = out(width);
-    } else {
-      out = new Uint8Array(width);
-      (global.crypto || global.msCrypto).getRandomValues(out);
-    }
-    return tostring(out);
-  } catch (e) {
-    var browser = global.navigator,
-        plugins = browser && browser.plugins;
-    return [+new Date, global, plugins, global.screen, tostring(pool)];
-  }
-}
-
-//
-// tostring()
-// Converts an array of charcodes to a string
-//
-function tostring(a) {
-  return String.fromCharCode.apply(0, a);
-}
-
-//
-// When seedrandom.js is loaded, we immediately mix a few bits
-// from the built-in RNG into the entropy pool.  Because we do
-// not want to interfere with deterministic PRNG state later,
-// seedrandom will not call math.random on its own again after
-// initialization.
-//
-mixkey(math.random(), pool);
-
-//
-// Nodejs and AMD support: export the implementation as a module using
-// either convention.
-//
-if ( true && module.exports) {
-  module.exports = seedrandom;
-  // When in node.js, try using crypto package for autoseeding.
-  try {
-    nodecrypto = __webpack_require__(5042);
-  } catch (ex) {}
-} else if (true) {
-  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return seedrandom; }).call(exports, __webpack_require__, exports, module),
-		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-}
-
-// End anonymous scope, and pass initial values.
-})(
-  [],     // pool: entropy pool starts empty
-  Math    // math: package containing random, pow, and seedrandom
-);
-
-
-/***/ }),
-
-/***/ 7650:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-var seedrandom = __webpack_require__(6377);
-var self = __webpack_require__(1987);
-
-module.exports = self;
-
-
-
-/***/ }),
-
-/***/ 1987:
-/***/ (function(module) {
-
-;(function() {
-	var self = {};
-
-	if(Math.seedrandom) seedrandom = Math.seedrandom;
-
-	var isArray = function($){
-		return Object.prototype.toString.call( $ ) === '[object Array]'
-	}
-
-	var extend = function(obj) {
-		for (var i = 1; i < arguments.length; i++) for (var key in arguments[i]) obj[key] = arguments[i][key];
-		return obj;
-	}
-
-	var seedify = function(seed){
-		if (/(number|string)/i.test(Object.prototype.toString.call(seed).match(/^\[object (.*)\]$/)[1])) return seed;
-		if (isNaN(seed)) return Number(String((this.strSeed = seed)).split('').map(function(x){return x.charCodeAt(0)}).join(''));
-		return seed;
-	}
-
-	var seedRand = function(func,min,max){
-		return Math.floor(func() * (max - min + 1)) + min;
-	}
-
-	self.shuffle = function(arr,seed){
-		if (!isArray(arr)) return null;
-		seed = seedify(seed) || 'none';
-
-		var size = arr.length;
-		var rng = seedrandom(seed);
-		var resp = [];
-		var keys = [];
-
-		for(var i=0;i<size;i++) keys.push(i);
-		for(var i=0;i<size;i++){
-			var r = seedRand(rng,0,keys.length-1);
-			var g = keys[r];
-			keys.splice(r,1);
-			resp.push(arr[g]);
-		}
-		return resp;
-	}
-
-	self.unshuffle = function(arr,seed){
-		if (!isArray(arr)) return null;
-		seed = seedify(seed) || 'none';
-
-		var size = arr.length;
-		var rng = seedrandom(seed);
-		var resp = [];
-		var map = [];
-		var keys = [];
-
-		for(var i=0;i<size;i++) {
-			resp.push(null);
-			keys.push(i);
-		}
-
-		for(var i=0;i<size;i++){
-			var r = seedRand(rng,0,keys.length-1);
-			var g = keys[r];
-			keys.splice(r,1);
-			resp[g]=arr[i];
-		}
-
-		return resp;
-	}
-
-	if(true){
-		module.exports=self;
-	} else {}
-}.call(this));
-
-
-/***/ }),
-
-/***/ 523:
+/***/ 1196:
 /***/ ((module) => {
 
 /* smoothscroll v0.4.4 - 2019 - Dustan Kasten, Jeremias Menichelli - MIT License */
@@ -3454,21 +975,29 @@ module.exports = self;
   if (true) {
     // commonjs
     module.exports = { polyfill: polyfill };
-  } else {}
+  } else // removed by dead control flow
+{}
 
 }());
 
 
 /***/ }),
 
-/***/ 6357:
+/***/ 1234:
+/***/ (() => {
+
+/* (ignored) */
+
+/***/ }),
+
+/***/ 1246:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.NonUniformPromiseEventList = void 0;
-const PromiseEventDispatcher_1 = __webpack_require__(5072);
+const PromiseEventDispatcher_1 = __webpack_require__(2330);
 /**
  * Similar to EventList, but instead of TArgs, a map of event names ang argument types is provided with TArgsMap.
  */
@@ -3508,14 +1037,337 @@ exports.NonUniformPromiseEventList = NonUniformPromiseEventList;
 
 /***/ }),
 
-/***/ 5072:
+/***/ 1289:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EventManagement = void 0;
+/**
+ * Allows the user to interact with the event.
+ *
+ * @export
+ * @class EventManagement
+ * @implements {IEventManagement}
+ */
+class EventManagement {
+    /**
+     * Creates an instance of EventManagement.
+     * @param {() => void} unsub An unsubscribe handler.
+     *
+     * @memberOf EventManagement
+     */
+    constructor(unsub) {
+        this.unsub = unsub;
+        this.propagationStopped = false;
+    }
+    /**
+     * Stops the propagation of the event.
+     * Cannot be used when async dispatch is done.
+     *
+     * @memberOf EventManagement
+     */
+    stopPropagation() {
+        this.propagationStopped = true;
+    }
+}
+exports.EventManagement = EventManagement;
+
+
+/***/ }),
+
+/***/ 1385:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EventManagement = void 0;
+/**
+ * Allows the user to interact with the event.
+ *
+ * @export
+ * @class EventManagement
+ * @implements {IEventManagement}
+ */
+class EventManagement {
+    /**
+     * Creates an instance of EventManagement.
+     * @param {() => void} unsub An unsubscribe handler.
+     *
+     * @memberOf EventManagement
+     */
+    constructor(unsub) {
+        this.unsub = unsub;
+        this.propagationStopped = false;
+    }
+    /**
+     * Stops the propagation of the event.
+     * Cannot be used when async dispatch is done.
+     *
+     * @memberOf EventManagement
+     */
+    stopPropagation() {
+        this.propagationStopped = true;
+    }
+}
+exports.EventManagement = EventManagement;
+
+
+/***/ }),
+
+/***/ 1789:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SubscriptionChangeEventDispatcher = void 0;
+const __1 = __webpack_require__(5575);
+/**
+ * Dispatcher for subscription changes.
+ *
+ * @export
+ * @class SubscriptionChangeEventDispatcher
+ * @extends {DispatcherBase<SubscriptionChangeEventHandler>}
+ */
+class SubscriptionChangeEventDispatcher extends __1.DispatcherBase {
+    /**
+     * Dispatches the event.
+     *
+     * @param {number} count The currrent number of subscriptions.
+     *
+     * @memberOf SubscriptionChangeEventDispatcher
+     */
+    dispatch(count) {
+        this._dispatch(false, this, arguments);
+    }
+}
+exports.SubscriptionChangeEventDispatcher = SubscriptionChangeEventDispatcher;
+
+
+/***/ }),
+
+/***/ 2162:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EventHandlingBase = void 0;
+const ste_core_1 = __webpack_require__(4604);
+const EventList_1 = __webpack_require__(338);
+/**
+ * Extends objects with signal event handling capabilities.
+ */
+class EventHandlingBase extends ste_core_1.HandlingBase {
+    constructor() {
+        super(new EventList_1.EventList());
+    }
+}
+exports.EventHandlingBase = EventHandlingBase;
+
+
+/***/ }),
+
+/***/ 2175:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SimpleEventList = void 0;
+const ste_core_1 = __webpack_require__(4604);
+const SimpleEventDispatcher_1 = __webpack_require__(9606);
+/**
+ * Storage class for multiple simple events that are accessible by name.
+ * Events dispatchers are automatically created.
+ */
+class SimpleEventList extends ste_core_1.EventListBase {
+    /**
+     * Creates a new SimpleEventList instance.
+     */
+    constructor() {
+        super();
+    }
+    /**
+     * Creates a new dispatcher instance.
+     */
+    createDispatcher() {
+        return new SimpleEventDispatcher_1.SimpleEventDispatcher();
+    }
+}
+exports.SimpleEventList = SimpleEventList;
+
+
+/***/ }),
+
+/***/ 2210:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DispatchError = void 0;
+/**
+ * Indicates an error with dispatching.
+ *
+ * @export
+ * @class DispatchError
+ * @extends {Error}
+ */
+class DispatchError extends Error {
+    /**
+     * Creates an instance of DispatchError.
+     * @param {string} message The message.
+     *
+     * @memberOf DispatchError
+     */
+    constructor(message) {
+        super(message);
+    }
+}
+exports.DispatchError = DispatchError;
+
+
+/***/ }),
+
+/***/ 2287:
+/***/ (function(module) {
+
+;(function() {
+	var self = {};
+
+	if(Math.seedrandom) seedrandom = Math.seedrandom;
+
+	var isArray = function($){
+		return Object.prototype.toString.call( $ ) === '[object Array]'
+	}
+
+	var extend = function(obj) {
+		for (var i = 1; i < arguments.length; i++) for (var key in arguments[i]) obj[key] = arguments[i][key];
+		return obj;
+	}
+
+	var seedify = function(seed){
+		if (/(number|string)/i.test(Object.prototype.toString.call(seed).match(/^\[object (.*)\]$/)[1])) return seed;
+		if (isNaN(seed)) return Number(String((this.strSeed = seed)).split('').map(function(x){return x.charCodeAt(0)}).join(''));
+		return seed;
+	}
+
+	var seedRand = function(func,min,max){
+		return Math.floor(func() * (max - min + 1)) + min;
+	}
+
+	self.shuffle = function(arr,seed){
+		if (!isArray(arr)) return null;
+		seed = seedify(seed) || 'none';
+
+		var size = arr.length;
+		var rng = seedrandom(seed);
+		var resp = [];
+		var keys = [];
+
+		for(var i=0;i<size;i++) keys.push(i);
+		for(var i=0;i<size;i++){
+			var r = seedRand(rng,0,keys.length-1);
+			var g = keys[r];
+			keys.splice(r,1);
+			resp.push(arr[g]);
+		}
+		return resp;
+	}
+
+	self.unshuffle = function(arr,seed){
+		if (!isArray(arr)) return null;
+		seed = seedify(seed) || 'none';
+
+		var size = arr.length;
+		var rng = seedrandom(seed);
+		var resp = [];
+		var map = [];
+		var keys = [];
+
+		for(var i=0;i<size;i++) {
+			resp.push(null);
+			keys.push(i);
+		}
+
+		for(var i=0;i<size;i++){
+			var r = seedRand(rng,0,keys.length-1);
+			var g = keys[r];
+			keys.splice(r,1);
+			resp[g]=arr[i];
+		}
+
+		return resp;
+	}
+
+	if(true){
+		module.exports=self;
+	} else // removed by dead control flow
+{}
+}.call(this));
+
+
+/***/ }),
+
+/***/ 2293:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NonUniformEventList = void 0;
+const EventDispatcher_1 = __webpack_require__(71);
+/**
+ * Similar to EventList, but instead of TArgs, a map of event names ang argument types is provided with TArgsMap.
+ */
+class NonUniformEventList {
+    constructor() {
+        this._events = {};
+    }
+    /**
+     * Gets the dispatcher associated with the name.
+     * @param name The name of the event.
+     */
+    get(name) {
+        if (this._events[name]) {
+            // @TODO avoid typecasting. Not sure why TS thinks this._events[name] could still be undefined.
+            return this._events[name];
+        }
+        const event = this.createDispatcher();
+        this._events[name] = event;
+        return event;
+    }
+    /**
+     * Removes the dispatcher associated with the name.
+     * @param name The name of the event.
+     */
+    remove(name) {
+        delete this._events[name];
+    }
+    /**
+     * Creates a new dispatcher instance.
+     */
+    createDispatcher() {
+        return new EventDispatcher_1.EventDispatcher();
+    }
+}
+exports.NonUniformEventList = NonUniformEventList;
+
+
+/***/ }),
+
+/***/ 2330:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PromiseEventDispatcher = void 0;
-const ste_core_1 = __webpack_require__(2874);
+const ste_core_1 = __webpack_require__(9184);
 /**
  * Dispatcher implementation for events. Can be used to subscribe, unsubscribe
  * or dispatch events. Use the ToEvent() method to expose the event.
@@ -3574,15 +1426,762 @@ exports.PromiseEventDispatcher = PromiseEventDispatcher;
 
 /***/ }),
 
-/***/ 7873:
+/***/ 2725:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SignalDispatcher = void 0;
+const ste_core_1 = __webpack_require__(4604);
+/**
+ * The dispatcher handles the storage of subsciptions and facilitates
+ * subscription, unsubscription and dispatching of a signal event.
+ *
+ * @export
+ * @class SignalDispatcher
+ * @extends {DispatcherBase<ISignalHandler>}
+ * @implements {ISignal}
+ */
+class SignalDispatcher extends ste_core_1.DispatcherBase {
+    /**
+     * Dispatches the signal.
+     *
+     * @returns {IPropagationStatus} The status of the signal.
+     *
+     * @memberOf SignalDispatcher
+     */
+    dispatch() {
+        const result = this._dispatch(false, this, arguments);
+        if (result == null) {
+            throw new ste_core_1.DispatchError("Got `null` back from dispatch.");
+        }
+        return result;
+    }
+    /**
+     * Dispatches the signal without waiting for the result.
+     *
+     * @memberOf SignalDispatcher
+     */
+    dispatchAsync() {
+        this._dispatch(true, this, arguments);
+    }
+    /**
+     * Creates an event from the dispatcher. Will return the dispatcher
+     * in a wrapper. This will prevent exposure of any dispatcher methods.
+     *
+     * @returns {ISignal} The signal.
+     *
+     * @memberOf SignalDispatcher
+     */
+    asEvent() {
+        return super.asEvent();
+    }
+}
+exports.SignalDispatcher = SignalDispatcher;
+
+
+/***/ }),
+
+/***/ 2995:
+/***/ (() => {
+
+!function (window, module) {
+  // source content
+  (function main(global, module, isWorker, workerSize) {
+    function noop() {}
+
+    // create a promise if it exists, otherwise, just
+    // call the function directly
+    function promise(func) {
+      var ModulePromise = module.exports.Promise;
+      var Prom = ModulePromise !== void 0 ? ModulePromise : global.Promise;
+      if (typeof Prom === "function") {
+        return new Prom(func);
+      }
+      func(noop, noop);
+      return null;
+    }
+    var raf = function () {
+      var TIME = Math.floor(1000 / 60);
+      var frame, cancel;
+      var frames = {};
+      var lastFrameTime = 0;
+      if (typeof requestAnimationFrame === "function" && typeof cancelAnimationFrame === "function") {
+        frame = function (cb) {
+          var id = Math.random();
+          frames[id] = requestAnimationFrame(function onFrame(time) {
+            if (lastFrameTime === time || lastFrameTime + TIME - 1 < time) {
+              lastFrameTime = time;
+              delete frames[id];
+              cb();
+            } else {
+              frames[id] = requestAnimationFrame(onFrame);
+            }
+          });
+          return id;
+        };
+        cancel = function (id) {
+          if (frames[id]) {
+            cancelAnimationFrame(frames[id]);
+          }
+        };
+      } else {
+        frame = function (cb) {
+          return setTimeout(cb, TIME);
+        };
+        cancel = function (timer) {
+          return clearTimeout(timer);
+        };
+      }
+      return {
+        frame: frame,
+        cancel: cancel
+      };
+    }();
+    var defaults = {
+      particleCount: 50,
+      angle: 90,
+      spread: 45,
+      startVelocity: 45,
+      decay: 0.9,
+      gravity: 1,
+      drift: 0,
+      ticks: 200,
+      x: 0.5,
+      y: 0.5,
+      shapes: ["square", "circle"],
+      zIndex: 100,
+      colors: ["#26ccff", "#a25afd", "#ff5e7e", "#88ff5a", "#fcff42", "#ffa62d", "#ff36ff"],
+      // probably should be true, but back-compat
+      disableForReducedMotion: false,
+      scalar: 1
+    };
+    function convert(val, transform) {
+      return transform ? transform(val) : val;
+    }
+    function isOk(val) {
+      return !(val === null || val === undefined);
+    }
+    function prop(options, name, transform) {
+      return convert(options && isOk(options[name]) ? options[name] : defaults[name], transform);
+    }
+    function onlyPositiveInt(number) {
+      return number < 0 ? 0 : Math.floor(number);
+    }
+    function randomInt(min, max) {
+      // [min, max)
+      return Math.floor(Math.random() * (max - min)) + min;
+    }
+    function toDecimal(str) {
+      return parseInt(str, 16);
+    }
+    function colorsToRgb(colors) {
+      return colors.map(hexToRgb);
+    }
+    function hexToRgb(str) {
+      var val = String(str).replace(/[^0-9a-f]/gi, "");
+      if (val.length < 6) {
+        val = val[0] + val[0] + val[1] + val[1] + val[2] + val[2];
+      }
+      return {
+        r: toDecimal(val.substring(0, 2)),
+        g: toDecimal(val.substring(2, 4)),
+        b: toDecimal(val.substring(4, 6))
+      };
+    }
+    function getOrigin(options) {
+      var origin = prop(options, "origin", Object);
+      origin.x = prop(origin, "x", Number);
+      origin.y = prop(origin, "y", Number);
+      return origin;
+    }
+    function setCanvasWindowSize(canvas) {
+      canvas.width = document.documentElement.clientWidth;
+      canvas.height = document.documentElement.clientHeight;
+    }
+    function setCanvasRectSize(canvas) {
+      var rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+    function getCanvas(zIndex) {
+      var canvas = document.createElement("canvas");
+      canvas.style.position = "fixed";
+      canvas.style.top = "0px";
+      canvas.style.left = "0px";
+      canvas.style.pointerEvents = "none";
+      canvas.style.zIndex = zIndex;
+      return canvas;
+    }
+    function ellipse(context, x, y, radiusX, radiusY, rotation, startAngle, endAngle, antiClockwise) {
+      context.save();
+      context.translate(x, y);
+      context.rotate(rotation);
+      context.scale(radiusX, radiusY);
+      context.arc(0, 0, 1, startAngle, endAngle, antiClockwise);
+      context.restore();
+    }
+    function randomPhysics(opts) {
+      var radAngle = opts.angle * (Math.PI / 180);
+      var radSpread = opts.spread * (Math.PI / 180);
+      return {
+        x: opts.x,
+        y: opts.y,
+        wobble: Math.random() * 10,
+        velocity: opts.startVelocity * 0.5 + Math.random() * opts.startVelocity,
+        angle2D: -radAngle + (0.5 * radSpread - Math.random() * radSpread),
+        tiltAngle: Math.random() * Math.PI,
+        color: opts.color,
+        shape: opts.shape,
+        tick: 0,
+        totalTicks: opts.ticks,
+        decay: opts.decay,
+        drift: opts.drift,
+        random: Math.random() + 5,
+        tiltSin: 0,
+        tiltCos: 0,
+        wobbleX: 0,
+        wobbleY: 0,
+        gravity: opts.gravity * 3,
+        ovalScalar: 0.6,
+        scalar: opts.scalar
+      };
+    }
+    function updateFetti(context, fetti) {
+      fetti.x += Math.cos(fetti.angle2D) * fetti.velocity + fetti.drift;
+      fetti.y += Math.sin(fetti.angle2D) * fetti.velocity + fetti.gravity;
+      fetti.wobble += 0.1;
+      fetti.velocity *= fetti.decay;
+      fetti.tiltAngle += 0.1;
+      fetti.tiltSin = Math.sin(fetti.tiltAngle);
+      fetti.tiltCos = Math.cos(fetti.tiltAngle);
+      fetti.random = Math.random() + 5;
+      fetti.wobbleX = fetti.x + 10 * fetti.scalar * Math.cos(fetti.wobble);
+      fetti.wobbleY = fetti.y + 10 * fetti.scalar * Math.sin(fetti.wobble);
+      var progress = fetti.tick++ / fetti.totalTicks;
+      var x1 = fetti.x + fetti.random * fetti.tiltCos;
+      var y1 = fetti.y + fetti.random * fetti.tiltSin;
+      var x2 = fetti.wobbleX + fetti.random * fetti.tiltCos;
+      var y2 = fetti.wobbleY + fetti.random * fetti.tiltSin;
+      context.fillStyle = "rgba(" + fetti.color.r + ", " + fetti.color.g + ", " + fetti.color.b + ", " + (1 - progress) + ")";
+      context.beginPath();
+      if (fetti.shape === "circle") {
+        context.ellipse ? context.ellipse(fetti.x, fetti.y, Math.abs(x2 - x1) * fetti.ovalScalar, Math.abs(y2 - y1) * fetti.ovalScalar, Math.PI / 10 * fetti.wobble, 0, 2 * Math.PI) : ellipse(context, fetti.x, fetti.y, Math.abs(x2 - x1) * fetti.ovalScalar, Math.abs(y2 - y1) * fetti.ovalScalar, Math.PI / 10 * fetti.wobble, 0, 2 * Math.PI);
+      } else {
+        context.moveTo(Math.floor(fetti.x), Math.floor(fetti.y));
+        context.lineTo(Math.floor(fetti.wobbleX), Math.floor(y1));
+        context.lineTo(Math.floor(x2), Math.floor(y2));
+        context.lineTo(Math.floor(x1), Math.floor(fetti.wobbleY));
+      }
+      context.closePath();
+      context.fill();
+      return fetti.tick < fetti.totalTicks;
+    }
+    function animate(canvas, fettis, resizer, size, done) {
+      var animatingFettis = fettis.slice();
+      var context = canvas.getContext("2d");
+      var animationFrame;
+      var destroy;
+      var prom = promise(function (resolve) {
+        function onDone() {
+          animationFrame = destroy = null;
+          context.clearRect(0, 0, size.width, size.height);
+          done();
+          resolve();
+        }
+        function update() {
+          if (isWorker && !(size.width === workerSize.width && size.height === workerSize.height)) {
+            size.width = canvas.width = workerSize.width;
+            size.height = canvas.height = workerSize.height;
+          }
+          if (!size.width && !size.height) {
+            resizer(canvas);
+            size.width = canvas.width;
+            size.height = canvas.height;
+          }
+          context.clearRect(0, 0, size.width, size.height);
+          animatingFettis = animatingFettis.filter(function (fetti) {
+            return updateFetti(context, fetti);
+          });
+          if (animatingFettis.length) {
+            animationFrame = raf.frame(update);
+          } else {
+            onDone();
+          }
+        }
+        animationFrame = raf.frame(update);
+        destroy = onDone;
+      });
+      return {
+        addFettis: function (fettis) {
+          animatingFettis = animatingFettis.concat(fettis);
+          return prom;
+        },
+        canvas: canvas,
+        promise: prom,
+        reset: function () {
+          if (animationFrame) {
+            raf.cancel(animationFrame);
+          }
+          if (destroy) {
+            destroy();
+          }
+        }
+      };
+    }
+    function confettiCannon(canvas, globalOpts) {
+      var isLibCanvas = !canvas;
+      var allowResize = !!prop(globalOpts || {}, "resize");
+      var globalDisableForReducedMotion = prop(globalOpts, "disableForReducedMotion", Boolean);
+      var worker = null;
+      var resizer = isLibCanvas ? setCanvasWindowSize : setCanvasRectSize;
+      var initialized = canvas && worker ? !!canvas.__confetti_initialized : false;
+      var preferLessMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion)").matches;
+      var animationObj;
+      function fireLocal(options, size, done) {
+        var particleCount = prop(options, "particleCount", onlyPositiveInt);
+        var angle = prop(options, "angle", Number);
+        var spread = prop(options, "spread", Number);
+        var startVelocity = prop(options, "startVelocity", Number);
+        var decay = prop(options, "decay", Number);
+        var gravity = prop(options, "gravity", Number);
+        var drift = prop(options, "drift", Number);
+        var colors = prop(options, "colors", colorsToRgb);
+        var ticks = prop(options, "ticks", Number);
+        var shapes = prop(options, "shapes");
+        var scalar = prop(options, "scalar");
+        var origin = getOrigin(options);
+        var temp = particleCount;
+        var fettis = [];
+        var startX = canvas.width * origin.x;
+        var startY = canvas.height * origin.y;
+        while (temp--) {
+          fettis.push(randomPhysics({
+            x: startX,
+            y: startY,
+            angle: angle,
+            spread: spread,
+            startVelocity: startVelocity,
+            color: colors[temp % colors.length],
+            shape: shapes[randomInt(0, shapes.length)],
+            ticks: ticks,
+            decay: decay,
+            gravity: gravity,
+            drift: drift,
+            scalar: scalar
+          }));
+        }
+
+        // if we have a previous canvas already animating,
+        // add to it
+        if (animationObj) {
+          return animationObj.addFettis(fettis);
+        }
+        animationObj = animate(canvas, fettis, resizer, size, done);
+        return animationObj.promise;
+      }
+      function fire(options) {
+        var disableForReducedMotion = globalDisableForReducedMotion || prop(options, "disableForReducedMotion", Boolean);
+        var zIndex = prop(options, "zIndex", Number);
+        if (disableForReducedMotion && preferLessMotion) {
+          return promise(function (resolve) {
+            resolve();
+          });
+        }
+        if (isLibCanvas && animationObj) {
+          // use existing canvas from in-progress animation
+          canvas = animationObj.canvas;
+        } else if (isLibCanvas && !canvas) {
+          // create and initialize a new canvas
+          canvas = getCanvas(zIndex);
+          document.body.appendChild(canvas);
+        }
+        if (allowResize && !initialized) {
+          // initialize the size of a user-supplied canvas
+          resizer(canvas);
+        }
+        var size = {
+          width: canvas.width,
+          height: canvas.height
+        };
+        initialized = true;
+        function onResize() {
+          // don't actually query the size here, since this
+          // can execute frequently and rapidly
+          size.width = size.height = null;
+        }
+        function done() {
+          animationObj = null;
+          if (allowResize) {
+            global.removeEventListener("resize", onResize);
+          }
+          if (isLibCanvas && canvas) {
+            document.body.removeChild(canvas);
+            canvas = null;
+            initialized = false;
+          }
+        }
+        if (allowResize) {
+          global.addEventListener("resize", onResize, false);
+        }
+        return fireLocal(options, size, done);
+      }
+      fire.reset = function () {
+        if (animationObj) {
+          animationObj.reset();
+        }
+      };
+      return fire;
+    }
+    module.exports = confettiCannon(null, {
+      useWorker: true,
+      resize: true
+    });
+    module.exports.create = confettiCannon;
+  })(function () {
+    if (typeof window !== "undefined") {
+      return window;
+    }
+    if (typeof self !== "undefined") {
+      return self;
+    }
+    return this || {};
+  }(), module, false);
+
+  // end source content
+
+  window.confetti = module.exports;
+}(window, {});
+
+/***/ }),
+
+/***/ 3031:
+/***/ (function(module, exports, __webpack_require__) {
+
+/* module decorator */ module = __webpack_require__.nmd(module);
+var __WEBPACK_AMD_DEFINE_RESULT__;// A Javascript implementaion of the "xorwow" prng algorithm by
+// George Marsaglia.  See http://www.jstatsoft.org/v08/i14/paper
+
+(function(global, module, define) {
+
+function XorGen(seed) {
+  var me = this, strseed = '';
+
+  // Set up generator function.
+  me.next = function() {
+    var t = (me.x ^ (me.x >>> 2));
+    me.x = me.y; me.y = me.z; me.z = me.w; me.w = me.v;
+    return (me.d = (me.d + 362437 | 0)) +
+       (me.v = (me.v ^ (me.v << 4)) ^ (t ^ (t << 1))) | 0;
+  };
+
+  me.x = 0;
+  me.y = 0;
+  me.z = 0;
+  me.w = 0;
+  me.v = 0;
+
+  if (seed === (seed | 0)) {
+    // Integer seed.
+    me.x = seed;
+  } else {
+    // String seed.
+    strseed += seed;
+  }
+
+  // Mix in string seed, then discard an initial batch of 64 values.
+  for (var k = 0; k < strseed.length + 64; k++) {
+    me.x ^= strseed.charCodeAt(k) | 0;
+    if (k == strseed.length) {
+      me.d = me.x << 10 ^ me.x >>> 4;
+    }
+    me.next();
+  }
+}
+
+function copy(f, t) {
+  t.x = f.x;
+  t.y = f.y;
+  t.z = f.z;
+  t.w = f.w;
+  t.v = f.v;
+  t.d = f.d;
+  return t;
+}
+
+function impl(seed, opts) {
+  var xg = new XorGen(seed),
+      state = opts && opts.state,
+      prng = function() { return (xg.next() >>> 0) / 0x100000000; };
+  prng.double = function() {
+    do {
+      var top = xg.next() >>> 11,
+          bot = (xg.next() >>> 0) / 0x100000000,
+          result = (top + bot) / (1 << 21);
+    } while (result === 0);
+    return result;
+  };
+  prng.int32 = xg.next;
+  prng.quick = prng;
+  if (state) {
+    if (typeof(state) == 'object') copy(state, xg);
+    prng.state = function() { return copy(xg, {}); }
+  }
+  return prng;
+}
+
+if (module && module.exports) {
+  module.exports = impl;
+} else if (__webpack_require__.amdD && __webpack_require__.amdO) {
+  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return impl; }).call(exports, __webpack_require__, exports, module),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+} else {
+  this.xorwow = impl;
+}
+
+})(
+  this,
+   true && module,    // present in node.js
+  __webpack_require__.amdD   // present with an AMD loader
+);
+
+
+
+
+/***/ }),
+
+/***/ 3181:
+/***/ (function(module, exports, __webpack_require__) {
+
+/* module decorator */ module = __webpack_require__.nmd(module);
+var __WEBPACK_AMD_DEFINE_RESULT__;// A Javascript implementaion of the "xor128" prng algorithm by
+// George Marsaglia.  See http://www.jstatsoft.org/v08/i14/paper
+
+(function(global, module, define) {
+
+function XorGen(seed) {
+  var me = this, strseed = '';
+
+  me.x = 0;
+  me.y = 0;
+  me.z = 0;
+  me.w = 0;
+
+  // Set up generator function.
+  me.next = function() {
+    var t = me.x ^ (me.x << 11);
+    me.x = me.y;
+    me.y = me.z;
+    me.z = me.w;
+    return me.w ^= (me.w >>> 19) ^ t ^ (t >>> 8);
+  };
+
+  if (seed === (seed | 0)) {
+    // Integer seed.
+    me.x = seed;
+  } else {
+    // String seed.
+    strseed += seed;
+  }
+
+  // Mix in string seed, then discard an initial batch of 64 values.
+  for (var k = 0; k < strseed.length + 64; k++) {
+    me.x ^= strseed.charCodeAt(k) | 0;
+    me.next();
+  }
+}
+
+function copy(f, t) {
+  t.x = f.x;
+  t.y = f.y;
+  t.z = f.z;
+  t.w = f.w;
+  return t;
+}
+
+function impl(seed, opts) {
+  var xg = new XorGen(seed),
+      state = opts && opts.state,
+      prng = function() { return (xg.next() >>> 0) / 0x100000000; };
+  prng.double = function() {
+    do {
+      var top = xg.next() >>> 11,
+          bot = (xg.next() >>> 0) / 0x100000000,
+          result = (top + bot) / (1 << 21);
+    } while (result === 0);
+    return result;
+  };
+  prng.int32 = xg.next;
+  prng.quick = prng;
+  if (state) {
+    if (typeof(state) == 'object') copy(state, xg);
+    prng.state = function() { return copy(xg, {}); }
+  }
+  return prng;
+}
+
+if (module && module.exports) {
+  module.exports = impl;
+} else if (__webpack_require__.amdD && __webpack_require__.amdO) {
+  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return impl; }).call(exports, __webpack_require__, exports, module),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+} else {
+  this.xor128 = impl;
+}
+
+})(
+  this,
+   true && module,    // present in node.js
+  __webpack_require__.amdD   // present with an AMD loader
+);
+
+
+
+
+/***/ }),
+
+/***/ 3184:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var seedrandom = __webpack_require__(7391);
+var self = __webpack_require__(2287);
+
+module.exports = self;
+
+
+
+/***/ }),
+
+/***/ 3199:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+var __webpack_unused_export__;
+
+/*!
+ * Strongly Typed Events for TypeScript
+ * https://github.com/KeesCBakker/StronlyTypedEvents/
+ * http://keestalkstech.com
+ *
+ * Copyright Kees C. Bakker / KeesTalksTech
+ * Released under the MIT license
+ */
+__webpack_unused_export__ = ({ value: true });
+__webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = exports.UD = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = exports.IL = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = __webpack_unused_export__ = void 0;
+var ste_core_1 = __webpack_require__(4604);
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_core_1.Subscription; } });
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_core_1.DispatcherBase; } });
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_core_1.DispatcherWrapper; } });
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_core_1.EventListBase; } });
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_core_1.EventManagement; } });
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_core_1.DispatchError; } });
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_core_1.PromiseSubscription; } });
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_core_1.PromiseDispatcherBase; } });
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_core_1.HandlingBase; } });
+var ste_events_1 = __webpack_require__(4214);
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_events_1.EventDispatcher; } });
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_events_1.EventHandlingBase; } });
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_events_1.EventList; } });
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_events_1.NonUniformEventList; } });
+var ste_simple_events_1 = __webpack_require__(6569);
+Object.defineProperty(exports, "IL", ({ enumerable: true, get: function () { return ste_simple_events_1.SimpleEventDispatcher; } }));
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_simple_events_1.SimpleEventHandlingBase; } });
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_simple_events_1.SimpleEventList; } });
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_simple_events_1.NonUniformSimpleEventList; } });
+var ste_signals_1 = __webpack_require__(5010);
+Object.defineProperty(exports, "UD", ({ enumerable: true, get: function () { return ste_signals_1.SignalDispatcher; } }));
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_signals_1.SignalHandlingBase; } });
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_signals_1.SignalList; } });
+var ste_promise_events_1 = __webpack_require__(606);
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_promise_events_1.PromiseEventDispatcher; } });
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_promise_events_1.PromiseEventHandlingBase; } });
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_promise_events_1.PromiseEventList; } });
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_promise_events_1.NonUniformPromiseEventList; } });
+var ste_promise_signals_1 = __webpack_require__(6042);
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_promise_signals_1.PromiseSignalDispatcher; } });
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_promise_signals_1.PromiseSignalHandlingBase; } });
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_promise_signals_1.PromiseSignalList; } });
+var ste_promise_simple_events_1 = __webpack_require__(4225);
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_promise_simple_events_1.PromiseSimpleEventDispatcher; } });
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_promise_simple_events_1.PromiseSimpleEventHandlingBase; } });
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_promise_simple_events_1.PromiseSimpleEventList; } });
+__webpack_unused_export__ = ({ enumerable: true, get: function () { return ste_promise_simple_events_1.NonUniformPromiseSimpleEventList; } });
+
+
+/***/ }),
+
+/***/ 3309:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DispatchError = void 0;
+/**
+ * Indicates an error with dispatching.
+ *
+ * @export
+ * @class DispatchError
+ * @extends {Error}
+ */
+class DispatchError extends Error {
+    /**
+     * Creates an instance of DispatchError.
+     * @param {string} message The message.
+     *
+     * @memberOf DispatchError
+     */
+    constructor(message) {
+        super(message);
+    }
+}
+exports.DispatchError = DispatchError;
+
+
+/***/ }),
+
+/***/ 3324:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SubscriptionChangeEventDispatcher = void 0;
+const __1 = __webpack_require__(7852);
+/**
+ * Dispatcher for subscription changes.
+ *
+ * @export
+ * @class SubscriptionChangeEventDispatcher
+ * @extends {DispatcherBase<SubscriptionChangeEventHandler>}
+ */
+class SubscriptionChangeEventDispatcher extends __1.DispatcherBase {
+    /**
+     * Dispatches the event.
+     *
+     * @param {number} count The currrent number of subscriptions.
+     *
+     * @memberOf SubscriptionChangeEventDispatcher
+     */
+    dispatch(count) {
+        this._dispatch(false, this, arguments);
+    }
+}
+exports.SubscriptionChangeEventDispatcher = SubscriptionChangeEventDispatcher;
+
+
+/***/ }),
+
+/***/ 3351:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PromiseEventHandlingBase = void 0;
-const ste_core_1 = __webpack_require__(2874);
-const PromiseEventList_1 = __webpack_require__(4414);
+const ste_core_1 = __webpack_require__(9184);
+const PromiseEventList_1 = __webpack_require__(4283);
 /**
  * Extends objects with signal event handling capabilities.
  */
@@ -3596,892 +2195,7 @@ exports.PromiseEventHandlingBase = PromiseEventHandlingBase;
 
 /***/ }),
 
-/***/ 4414:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PromiseEventList = void 0;
-const ste_core_1 = __webpack_require__(2874);
-const PromiseEventDispatcher_1 = __webpack_require__(5072);
-/**
- * Storage class for multiple events that are accessible by name.
- * Events dispatchers are automatically created.
- */
-class PromiseEventList extends ste_core_1.EventListBase {
-    /**
-     * Creates a new EventList instance.
-     */
-    constructor() {
-        super();
-    }
-    /**
-     * Creates a new dispatcher instance.
-     */
-    createDispatcher() {
-        return new PromiseEventDispatcher_1.PromiseEventDispatcher();
-    }
-}
-exports.PromiseEventList = PromiseEventList;
-
-
-/***/ }),
-
-/***/ 6586:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-/*!
- * Strongly Typed Events for TypeScript - Core
- * https://github.com/KeesCBakker/StronlyTypedEvents/
- * http://keestalkstech.com
- *
- * Copyright Kees C. Bakker / KeesTalksTech
- * Released under the MIT license
- */
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.NonUniformPromiseEventList = exports.PromiseEventList = exports.PromiseEventHandlingBase = exports.PromiseEventDispatcher = void 0;
-const PromiseEventDispatcher_1 = __webpack_require__(5072);
-Object.defineProperty(exports, "PromiseEventDispatcher", ({ enumerable: true, get: function () { return PromiseEventDispatcher_1.PromiseEventDispatcher; } }));
-const PromiseEventHandlingBase_1 = __webpack_require__(7873);
-Object.defineProperty(exports, "PromiseEventHandlingBase", ({ enumerable: true, get: function () { return PromiseEventHandlingBase_1.PromiseEventHandlingBase; } }));
-const PromiseEventList_1 = __webpack_require__(4414);
-Object.defineProperty(exports, "PromiseEventList", ({ enumerable: true, get: function () { return PromiseEventList_1.PromiseEventList; } }));
-const NonUniformPromiseEventList_1 = __webpack_require__(6357);
-Object.defineProperty(exports, "NonUniformPromiseEventList", ({ enumerable: true, get: function () { return NonUniformPromiseEventList_1.NonUniformPromiseEventList; } }));
-
-
-/***/ }),
-
-/***/ 4383:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DispatchError = void 0;
-/**
- * Indicates an error with dispatching.
- *
- * @export
- * @class DispatchError
- * @extends {Error}
- */
-class DispatchError extends Error {
-    /**
-     * Creates an instance of DispatchError.
-     * @param {string} message The message.
-     *
-     * @memberOf DispatchError
-     */
-    constructor(message) {
-        super(message);
-    }
-}
-exports.DispatchError = DispatchError;
-
-
-/***/ }),
-
-/***/ 894:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DispatcherBase = void 0;
-const __1 = __webpack_require__(2874);
-/**
- * Base class for implementation of the dispatcher. It facilitates the subscribe
- * and unsubscribe methods based on generic handlers. The TEventType specifies
- * the type of event that should be exposed. Use the asEvent to expose the
- * dispatcher as event.
- *
- * @export
- * @abstract
- * @class DispatcherBase
- * @implements {ISubscribable<TEventHandler>}
- * @template TEventHandler The type of event handler.
- */
-class DispatcherBase {
-    constructor() {
-        /**
-         * The subscriptions.
-         *
-         * @protected
-         *
-         * @memberOf DispatcherBase
-         */
-        this._subscriptions = new Array();
-    }
-    /**
-     * Returns the number of subscriptions.
-     *
-     * @readonly
-     * @type {number}
-     * @memberOf DispatcherBase
-     */
-    get count() {
-        return this._subscriptions.length;
-    }
-    /**
-     * Triggered when subscriptions are changed (added or removed).
-     *
-     * @readonly
-     * @type {ISubscribable<SubscriptionChangeEventHandler>}
-     * @memberOf DispatcherBase
-     */
-    get onSubscriptionChange() {
-        if (this._onSubscriptionChange == null) {
-            this._onSubscriptionChange = new __1.SubscriptionChangeEventDispatcher();
-        }
-        return this._onSubscriptionChange.asEvent();
-    }
-    /**
-     * Subscribe to the event dispatcher.
-     *
-     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
-     * @returns A function that unsubscribes the event handler from the event.
-     *
-     * @memberOf DispatcherBase
-     */
-    subscribe(fn) {
-        if (fn) {
-            this._subscriptions.push(this.createSubscription(fn, false));
-            this.triggerSubscriptionChange();
-        }
-        return () => {
-            this.unsubscribe(fn);
-        };
-    }
-    /**
-     * Subscribe to the event dispatcher.
-     *
-     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
-     * @returns A function that unsubscribes the event handler from the event.
-     *
-     * @memberOf DispatcherBase
-     */
-    sub(fn) {
-        return this.subscribe(fn);
-    }
-    /**
-     * Subscribe once to the event with the specified name.
-     *
-     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
-     * @returns A function that unsubscribes the event handler from the event.
-     *
-     * @memberOf DispatcherBase
-     */
-    one(fn) {
-        if (fn) {
-            this._subscriptions.push(this.createSubscription(fn, true));
-            this.triggerSubscriptionChange();
-        }
-        return () => {
-            this.unsubscribe(fn);
-        };
-    }
-    /**
-     * Checks it the event has a subscription for the specified handler.
-     *
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf DispatcherBase
-     */
-    has(fn) {
-        if (!fn)
-            return false;
-        return this._subscriptions.some((sub) => sub.handler == fn);
-    }
-    /**
-     * Unsubscribes the handler from the dispatcher.
-     *
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf DispatcherBase
-     */
-    unsubscribe(fn) {
-        if (!fn)
-            return;
-        let changes = false;
-        for (let i = 0; i < this._subscriptions.length; i++) {
-            if (this._subscriptions[i].handler == fn) {
-                this._subscriptions.splice(i, 1);
-                changes = true;
-                break;
-            }
-        }
-        if (changes) {
-            this.triggerSubscriptionChange();
-        }
-    }
-    /**
-     * Unsubscribes the handler from the dispatcher.
-     *
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf DispatcherBase
-     */
-    unsub(fn) {
-        this.unsubscribe(fn);
-    }
-    /**
-     * Generic dispatch will dispatch the handlers with the given arguments.
-     *
-     * @protected
-     * @param {boolean} executeAsync `True` if the even should be executed async.
-     * @param {*} scope The scope of the event. The scope becomes the `this` for handler.
-     * @param {IArguments} args The arguments for the event.
-     * @returns {(IPropagationStatus | null)} The propagation status, or if an `executeAsync` is used `null`.
-     *
-     * @memberOf DispatcherBase
-     */
-    _dispatch(executeAsync, scope, args) {
-        //execute on a copy because of bug #9
-        for (let sub of [...this._subscriptions]) {
-            let ev = new __1.EventManagement(() => this.unsub(sub.handler));
-            let nargs = Array.prototype.slice.call(args);
-            nargs.push(ev);
-            let s = sub;
-            s.execute(executeAsync, scope, nargs);
-            //cleanup subs that are no longer needed
-            this.cleanup(sub);
-            if (!executeAsync && ev.propagationStopped) {
-                return { propagationStopped: true };
-            }
-        }
-        if (executeAsync) {
-            return null;
-        }
-        return { propagationStopped: false };
-    }
-    /**
-     * Creates a subscription.
-     *
-     * @protected
-     * @param {TEventHandler} handler The handler.
-     * @param {boolean} isOnce True if the handler should run only one.
-     * @returns {ISubscription<TEventHandler>} The subscription.
-     *
-     * @memberOf DispatcherBase
-     */
-    createSubscription(handler, isOnce) {
-        return new __1.Subscription(handler, isOnce);
-    }
-    /**
-     * Cleans up subs that ran and should run only once.
-     *
-     * @protected
-     * @param {ISubscription<TEventHandler>} sub The subscription.
-     *
-     * @memberOf DispatcherBase
-     */
-    cleanup(sub) {
-        let changes = false;
-        if (sub.isOnce && sub.isExecuted) {
-            let i = this._subscriptions.indexOf(sub);
-            if (i > -1) {
-                this._subscriptions.splice(i, 1);
-                changes = true;
-            }
-        }
-        if (changes) {
-            this.triggerSubscriptionChange();
-        }
-    }
-    /**
-     * Creates an event from the dispatcher. Will return the dispatcher
-     * in a wrapper. This will prevent exposure of any dispatcher methods.
-     *
-     * @returns {ISubscribable<TEventHandler>}
-     *
-     * @memberOf DispatcherBase
-     */
-    asEvent() {
-        if (this._wrap == null) {
-            this._wrap = new __1.DispatcherWrapper(this);
-        }
-        return this._wrap;
-    }
-    /**
-     * Clears the subscriptions.
-     *
-     * @memberOf DispatcherBase
-     */
-    clear() {
-        if (this._subscriptions.length != 0) {
-            this._subscriptions.splice(0, this._subscriptions.length);
-            this.triggerSubscriptionChange();
-        }
-    }
-    /**
-     * Triggers the subscription change event.
-     *
-     * @private
-     *
-     * @memberOf DispatcherBase
-     */
-    triggerSubscriptionChange() {
-        if (this._onSubscriptionChange != null) {
-            this._onSubscriptionChange.dispatch(this.count);
-        }
-    }
-}
-exports.DispatcherBase = DispatcherBase;
-
-
-/***/ }),
-
-/***/ 9757:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DispatcherWrapper = void 0;
-/**
- * Hides the implementation of the event dispatcher. Will expose methods that
- * are relevent to the event.
- *
- * @export
- * @class DispatcherWrapper
- * @implements {ISubscribable<TEventHandler>}
- * @template TEventHandler The type of event handler.
- */
-class DispatcherWrapper {
-    /**
-     * Creates an instance of DispatcherWrapper.
-     * @param {ISubscribable<TEventHandler>} dispatcher
-     *
-     * @memberOf DispatcherWrapper
-     */
-    constructor(dispatcher) {
-        this._subscribe = (fn) => dispatcher.subscribe(fn);
-        this._unsubscribe = (fn) => dispatcher.unsubscribe(fn);
-        this._one = (fn) => dispatcher.one(fn);
-        this._has = (fn) => dispatcher.has(fn);
-        this._clear = () => dispatcher.clear();
-        this._count = () => dispatcher.count;
-        this._onSubscriptionChange = () => dispatcher.onSubscriptionChange;
-    }
-    /**
-     * Triggered when subscriptions are changed (added or removed).
-     *
-     * @readonly
-     * @type {ISubscribable<SubscriptionChangeEventHandler>}
-     * @memberOf DispatcherWrapper
-     */
-    get onSubscriptionChange() {
-        return this._onSubscriptionChange();
-    }
-    /**
-     * Returns the number of subscriptions.
-     *
-     * @readonly
-     * @type {number}
-     * @memberOf DispatcherWrapper
-     */
-    get count() {
-        return this._count();
-    }
-    /**
-     * Subscribe to the event dispatcher.
-     *
-     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
-     * @returns {() => void} A function that unsubscribes the event handler from the event.
-     *
-     * @memberOf DispatcherWrapper
-     */
-    subscribe(fn) {
-        return this._subscribe(fn);
-    }
-    /**
-     * Subscribe to the event dispatcher.
-     *
-     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
-     * @returns {() => void} A function that unsubscribes the event handler from the event.
-     *
-     * @memberOf DispatcherWrapper
-     */
-    sub(fn) {
-        return this.subscribe(fn);
-    }
-    /**
-     * Unsubscribe from the event dispatcher.
-     *
-     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
-     *
-     * @memberOf DispatcherWrapper
-     */
-    unsubscribe(fn) {
-        this._unsubscribe(fn);
-    }
-    /**
-     * Unsubscribe from the event dispatcher.
-     *
-     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
-     *
-     * @memberOf DispatcherWrapper
-     */
-    unsub(fn) {
-        this.unsubscribe(fn);
-    }
-    /**
-     * Subscribe once to the event with the specified name.
-     *
-     * @returns {() => void} A function that unsubscribes the event handler from the event.
-     *
-     * @memberOf DispatcherWrapper
-     */
-    one(fn) {
-        return this._one(fn);
-    }
-    /**
-     * Checks it the event has a subscription for the specified handler.
-     *
-     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
-     *
-     * @memberOf DispatcherWrapper
-     */
-    has(fn) {
-        return this._has(fn);
-    }
-    /**
-     * Clears all the subscriptions.
-     *
-     * @memberOf DispatcherWrapper
-     */
-    clear() {
-        this._clear();
-    }
-}
-exports.DispatcherWrapper = DispatcherWrapper;
-
-
-/***/ }),
-
-/***/ 5930:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EventListBase = void 0;
-/**
- * Base class for event lists classes. Implements the get and remove.
- *
- * @export
- * @abstract
- * @class EventListBaset
- * @template TEventDispatcher The type of event dispatcher.
- */
-class EventListBase {
-    constructor() {
-        this._events = {};
-    }
-    /**
-     * Gets the dispatcher associated with the name.
-     *
-     * @param {string} name The name of the event.
-     * @returns {TEventDispatcher} The disptacher.
-     *
-     * @memberOf EventListBase
-     */
-    get(name) {
-        let event = this._events[name];
-        if (event) {
-            return event;
-        }
-        event = this.createDispatcher();
-        this._events[name] = event;
-        return event;
-    }
-    /**
-     * Removes the dispatcher associated with the name.
-     *
-     * @param {string} name
-     *
-     * @memberOf EventListBase
-     */
-    remove(name) {
-        delete this._events[name];
-    }
-}
-exports.EventListBase = EventListBase;
-
-
-/***/ }),
-
-/***/ 7541:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PromiseDispatcherBase = void 0;
-const __1 = __webpack_require__(2874);
-/**
- * Dispatcher base for dispatchers that use promises. Each promise
- * is awaited before the next is dispatched, unless the event is
- * dispatched with the executeAsync flag.
- *
- * @export
- * @abstract
- * @class PromiseDispatcherBase
- * @extends {DispatcherBase<TEventHandler>}
- * @template TEventHandler The type of event handler.
- */
-class PromiseDispatcherBase extends __1.DispatcherBase {
-    /**
-     * The normal dispatch cannot be used in this class.
-     *
-     * @protected
-     * @param {boolean} executeAsync `True` if the even should be executed async.
-     * @param {*} scope The scope of the event. The scope becomes the `this` for handler.
-     * @param {IArguments} args The arguments for the event.
-     * @returns {(IPropagationStatus | null)} The propagation status, or if an `executeAsync` is used `null`.
-     *
-     * @memberOf DispatcherBase
-     */
-    _dispatch(executeAsync, scope, args) {
-        throw new __1.DispatchError("_dispatch not supported. Use _dispatchAsPromise.");
-    }
-    /**
-     * Crates a new subscription.
-     *
-     * @protected
-     * @param {TEventHandler} handler The handler.
-     * @param {boolean} isOnce Indicates if the handler should only run once.
-     * @returns {ISubscription<TEventHandler>} The subscription.
-     *
-     * @memberOf PromiseDispatcherBase
-     */
-    createSubscription(handler, isOnce) {
-        return new __1.PromiseSubscription(handler, isOnce);
-    }
-    /**
-     * Generic dispatch will dispatch the handlers with the given arguments.
-     *
-     * @protected
-     * @param {boolean} executeAsync `True` if the even should be executed async.
-     * @param {*} scope The scope of the event. The scope becomes the `this` for handler.
-     * @param {IArguments} args The arguments for the event.
-     * @returns {(IPropagationStatus | null)} The propagation status, or if an `executeAsync` is used `null`.
-     *
-     * @memberOf DispatcherBase
-     */
-    async _dispatchAsPromise(executeAsync, scope, args) {
-        //execute on a copy because of bug #9
-        for (let sub of [...this._subscriptions]) {
-            let ev = new __1.EventManagement(() => this.unsub(sub.handler));
-            let nargs = Array.prototype.slice.call(args);
-            nargs.push(ev);
-            let ps = sub;
-            await ps.execute(executeAsync, scope, nargs);
-            //cleanup subs that are no longer needed
-            this.cleanup(sub);
-            if (!executeAsync && ev.propagationStopped) {
-                return { propagationStopped: true };
-            }
-        }
-        if (executeAsync) {
-            return null;
-        }
-        return { propagationStopped: false };
-    }
-}
-exports.PromiseDispatcherBase = PromiseDispatcherBase;
-
-
-/***/ }),
-
-/***/ 2545:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SubscriptionChangeEventDispatcher = void 0;
-const __1 = __webpack_require__(2874);
-/**
- * Dispatcher for subscription changes.
- *
- * @export
- * @class SubscriptionChangeEventDispatcher
- * @extends {DispatcherBase<SubscriptionChangeEventHandler>}
- */
-class SubscriptionChangeEventDispatcher extends __1.DispatcherBase {
-    /**
-     * Dispatches the event.
-     *
-     * @param {number} count The currrent number of subscriptions.
-     *
-     * @memberOf SubscriptionChangeEventDispatcher
-     */
-    dispatch(count) {
-        this._dispatch(false, this, arguments);
-    }
-}
-exports.SubscriptionChangeEventDispatcher = SubscriptionChangeEventDispatcher;
-
-
-/***/ }),
-
-/***/ 8452:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PromiseSubscription = void 0;
-/**
- * Subscription implementation for events with promises.
- *
- * @export
- * @class PromiseSubscription
- * @implements {ISubscription<TEventHandler>}
- * @template TEventHandler The type of event handler.
- */
-class PromiseSubscription {
-    /**
-     * Creates an instance of PromiseSubscription.
-     * @param {TEventHandler} handler The handler for the subscription.
-     * @param {boolean} isOnce Indicates if the handler should only be executed once.
-     *
-     * @memberOf PromiseSubscription
-     */
-    constructor(handler, isOnce) {
-        this.handler = handler;
-        this.isOnce = isOnce;
-        /**
-         * Indicates if the subscription has been executed before.
-         *
-         * @memberOf PromiseSubscription
-         */
-        this.isExecuted = false;
-    }
-    /**
-     * Executes the handler.
-     *
-     * @param {boolean} executeAsync True if the even should be executed async.
-     * @param {*} scope The scope the scope of the event.
-     * @param {IArguments} args The arguments for the event.
-     *
-     * @memberOf PromiseSubscription
-     */
-    async execute(executeAsync, scope, args) {
-        if (!this.isOnce || !this.isExecuted) {
-            this.isExecuted = true;
-            //TODO: do we need to cast to any -- seems yuck
-            var fn = this.handler;
-            if (executeAsync) {
-                setTimeout(() => {
-                    fn.apply(scope, args);
-                }, 1);
-                return;
-            }
-            let result = fn.apply(scope, args);
-            await result;
-        }
-    }
-}
-exports.PromiseSubscription = PromiseSubscription;
-
-
-/***/ }),
-
-/***/ 365:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Subscription = void 0;
-/**
- * Stores a handler. Manages execution meta data.
- * @class Subscription
- * @template TEventHandler
- */
-class Subscription {
-    /**
-     * Creates an instance of Subscription.
-     *
-     * @param {TEventHandler} handler The handler for the subscription.
-     * @param {boolean} isOnce Indicates if the handler should only be executed once.
-     */
-    constructor(handler, isOnce) {
-        this.handler = handler;
-        this.isOnce = isOnce;
-        /**
-         * Indicates if the subscription has been executed before.
-         */
-        this.isExecuted = false;
-    }
-    /**
-     * Executes the handler.
-     *
-     * @param {boolean} executeAsync True if the even should be executed async.
-     * @param {*} scope The scope the scope of the event.
-     * @param {IArguments} args The arguments for the event.
-     */
-    execute(executeAsync, scope, args) {
-        if (!this.isOnce || !this.isExecuted) {
-            this.isExecuted = true;
-            var fn = this.handler;
-            if (executeAsync) {
-                setTimeout(() => {
-                    fn.apply(scope, args);
-                }, 1);
-            }
-            else {
-                fn.apply(scope, args);
-            }
-        }
-    }
-}
-exports.Subscription = Subscription;
-
-
-/***/ }),
-
-/***/ 954:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.HandlingBase = void 0;
-/**
- * Base class that implements event handling. With a an
- * event list this base class will expose events that can be
- * subscribed to. This will give your class generic events.
- *
- * @export
- * @abstract
- * @class HandlingBase
- * @template TEventHandler The type of event handler.
- * @template TDispatcher The type of dispatcher.
- * @template TList The type of event list.
- */
-class HandlingBase {
-    /**
-     * Creates an instance of HandlingBase.
-     * @param {TList} events The event list. Used for event management.
-     *
-     * @memberOf HandlingBase
-     */
-    constructor(events) {
-        this.events = events;
-    }
-    /**
-     * Subscribes once to the event with the specified name.
-     * @param {string} name The name of the event.
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf HandlingBase
-     */
-    one(name, fn) {
-        this.events.get(name).one(fn);
-    }
-    /**
-     * Checks it the event has a subscription for the specified handler.
-     * @param {string} name The name of the event.
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf HandlingBase
-     */
-    has(name, fn) {
-        return this.events.get(name).has(fn);
-    }
-    /**
-     * Subscribes to the event with the specified name.
-     * @param {string} name The name of the event.
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf HandlingBase
-     */
-    subscribe(name, fn) {
-        this.events.get(name).subscribe(fn);
-    }
-    /**
-     * Subscribes to the event with the specified name.
-     * @param {string} name The name of the event.
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf HandlingBase
-     */
-    sub(name, fn) {
-        this.subscribe(name, fn);
-    }
-    /**
-     * Unsubscribes from the event with the specified name.
-     * @param {string} name The name of the event.
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf HandlingBase
-     */
-    unsubscribe(name, fn) {
-        this.events.get(name).unsubscribe(fn);
-    }
-    /**
-     * Unsubscribes from the event with the specified name.
-     * @param {string} name The name of the event.
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf HandlingBase
-     */
-    unsub(name, fn) {
-        this.unsubscribe(name, fn);
-    }
-}
-exports.HandlingBase = HandlingBase;
-
-
-/***/ }),
-
-/***/ 2874:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-/*!
- * Strongly Typed Events for TypeScript - Core
- * https://github.com/KeesCBakker/StronlyTypedEvents/
- * http://keestalkstech.com
- *
- * Copyright Kees C. Bakker / KeesTalksTech
- * Released under the MIT license
- */
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SubscriptionChangeEventDispatcher = exports.HandlingBase = exports.PromiseDispatcherBase = exports.PromiseSubscription = exports.DispatchError = exports.EventManagement = exports.EventListBase = exports.DispatcherWrapper = exports.DispatcherBase = exports.Subscription = void 0;
-const DispatcherBase_1 = __webpack_require__(894);
-Object.defineProperty(exports, "DispatcherBase", ({ enumerable: true, get: function () { return DispatcherBase_1.DispatcherBase; } }));
-const DispatchError_1 = __webpack_require__(4383);
-Object.defineProperty(exports, "DispatchError", ({ enumerable: true, get: function () { return DispatchError_1.DispatchError; } }));
-const DispatcherWrapper_1 = __webpack_require__(9757);
-Object.defineProperty(exports, "DispatcherWrapper", ({ enumerable: true, get: function () { return DispatcherWrapper_1.DispatcherWrapper; } }));
-const EventListBase_1 = __webpack_require__(5930);
-Object.defineProperty(exports, "EventListBase", ({ enumerable: true, get: function () { return EventListBase_1.EventListBase; } }));
-const EventManagement_1 = __webpack_require__(4796);
-Object.defineProperty(exports, "EventManagement", ({ enumerable: true, get: function () { return EventManagement_1.EventManagement; } }));
-const HandlingBase_1 = __webpack_require__(954);
-Object.defineProperty(exports, "HandlingBase", ({ enumerable: true, get: function () { return HandlingBase_1.HandlingBase; } }));
-const PromiseDispatcherBase_1 = __webpack_require__(7541);
-Object.defineProperty(exports, "PromiseDispatcherBase", ({ enumerable: true, get: function () { return PromiseDispatcherBase_1.PromiseDispatcherBase; } }));
-const PromiseSubscription_1 = __webpack_require__(8452);
-Object.defineProperty(exports, "PromiseSubscription", ({ enumerable: true, get: function () { return PromiseSubscription_1.PromiseSubscription; } }));
-const Subscription_1 = __webpack_require__(365);
-Object.defineProperty(exports, "Subscription", ({ enumerable: true, get: function () { return Subscription_1.Subscription; } }));
-const SubscriptionChangeEventHandler_1 = __webpack_require__(2545);
-Object.defineProperty(exports, "SubscriptionChangeEventDispatcher", ({ enumerable: true, get: function () { return SubscriptionChangeEventHandler_1.SubscriptionChangeEventDispatcher; } }));
-
-
-/***/ }),
-
-/***/ 4796:
+/***/ 3504:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -4521,688 +2235,14 @@ exports.EventManagement = EventManagement;
 
 /***/ }),
 
-/***/ 5890:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PromiseSignalDispatcher = void 0;
-const ste_core_1 = __webpack_require__(8486);
-/**
- * The dispatcher handles the storage of subsciptions and facilitates
- * subscription, unsubscription and dispatching of a signal event.
- */
-class PromiseSignalDispatcher extends ste_core_1.PromiseDispatcherBase {
-    /**
-     * Creates a new SignalDispatcher instance.
-     */
-    constructor() {
-        super();
-    }
-    /**
-     * Dispatches the signal.
-     *
-     * @returns {IPropagationStatus} The status of the dispatch.
-     *
-     * @memberOf SignalDispatcher
-     */
-    async dispatch() {
-        const result = await this._dispatchAsPromise(false, this, arguments);
-        if (result == null) {
-            throw new ste_core_1.DispatchError("Got `null` back from dispatch.");
-        }
-        return result;
-    }
-    /**
-     * Dispatches the signal threaded.
-     */
-    dispatchAsync() {
-        this._dispatchAsPromise(true, this, arguments);
-    }
-    /**
-     * Creates an event from the dispatcher. Will return the dispatcher
-     * in a wrapper. This will prevent exposure of any dispatcher methods.
-     */
-    asEvent() {
-        return super.asEvent();
-    }
-}
-exports.PromiseSignalDispatcher = PromiseSignalDispatcher;
-
-
-/***/ }),
-
-/***/ 205:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PromiseSignalHandlingBase = void 0;
-const ste_core_1 = __webpack_require__(8486);
-const PromiseSignalList_1 = __webpack_require__(3146);
-/**
- * Extends objects with signal event handling capabilities.
- */
-class PromiseSignalHandlingBase extends ste_core_1.HandlingBase {
-    constructor() {
-        super(new PromiseSignalList_1.PromiseSignalList());
-    }
-}
-exports.PromiseSignalHandlingBase = PromiseSignalHandlingBase;
-
-
-/***/ }),
-
-/***/ 3146:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PromiseSignalList = void 0;
-const ste_core_1 = __webpack_require__(8486);
-const _1 = __webpack_require__(6838);
-/**
- * Storage class for multiple signal events that are accessible by name.
- * Events dispatchers are automatically created.
- */
-class PromiseSignalList extends ste_core_1.EventListBase {
-    /**
-     * Creates a new SignalList instance.
-     */
-    constructor() {
-        super();
-    }
-    /**
-     * Creates a new dispatcher instance.
-     */
-    createDispatcher() {
-        return new _1.PromiseSignalDispatcher();
-    }
-}
-exports.PromiseSignalList = PromiseSignalList;
-
-
-/***/ }),
-
-/***/ 6838:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-/*!
- * Strongly Typed Events for TypeScript - Promise Signals
- * https://github.com/KeesCBakker/StronlyTypedEvents/
- * http://keestalkstech.com
- *
- * Copyright Kees C. Bakker / KeesTalksTech
- * Released under the MIT license
- */
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PromiseSignalList = exports.PromiseSignalHandlingBase = exports.PromiseSignalDispatcher = void 0;
-const PromiseSignalDispatcher_1 = __webpack_require__(5890);
-Object.defineProperty(exports, "PromiseSignalDispatcher", ({ enumerable: true, get: function () { return PromiseSignalDispatcher_1.PromiseSignalDispatcher; } }));
-const PromiseSignalHandlingBase_1 = __webpack_require__(205);
-Object.defineProperty(exports, "PromiseSignalHandlingBase", ({ enumerable: true, get: function () { return PromiseSignalHandlingBase_1.PromiseSignalHandlingBase; } }));
-const PromiseSignalList_1 = __webpack_require__(3146);
-Object.defineProperty(exports, "PromiseSignalList", ({ enumerable: true, get: function () { return PromiseSignalList_1.PromiseSignalList; } }));
-
-
-/***/ }),
-
-/***/ 6463:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DispatchError = void 0;
-/**
- * Indicates an error with dispatching.
- *
- * @export
- * @class DispatchError
- * @extends {Error}
- */
-class DispatchError extends Error {
-    /**
-     * Creates an instance of DispatchError.
-     * @param {string} message The message.
-     *
-     * @memberOf DispatchError
-     */
-    constructor(message) {
-        super(message);
-    }
-}
-exports.DispatchError = DispatchError;
-
-
-/***/ }),
-
-/***/ 1368:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DispatcherBase = void 0;
-const __1 = __webpack_require__(8486);
-/**
- * Base class for implementation of the dispatcher. It facilitates the subscribe
- * and unsubscribe methods based on generic handlers. The TEventType specifies
- * the type of event that should be exposed. Use the asEvent to expose the
- * dispatcher as event.
- *
- * @export
- * @abstract
- * @class DispatcherBase
- * @implements {ISubscribable<TEventHandler>}
- * @template TEventHandler The type of event handler.
- */
-class DispatcherBase {
-    constructor() {
-        /**
-         * The subscriptions.
-         *
-         * @protected
-         *
-         * @memberOf DispatcherBase
-         */
-        this._subscriptions = new Array();
-    }
-    /**
-     * Returns the number of subscriptions.
-     *
-     * @readonly
-     * @type {number}
-     * @memberOf DispatcherBase
-     */
-    get count() {
-        return this._subscriptions.length;
-    }
-    /**
-     * Triggered when subscriptions are changed (added or removed).
-     *
-     * @readonly
-     * @type {ISubscribable<SubscriptionChangeEventHandler>}
-     * @memberOf DispatcherBase
-     */
-    get onSubscriptionChange() {
-        if (this._onSubscriptionChange == null) {
-            this._onSubscriptionChange = new __1.SubscriptionChangeEventDispatcher();
-        }
-        return this._onSubscriptionChange.asEvent();
-    }
-    /**
-     * Subscribe to the event dispatcher.
-     *
-     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
-     * @returns A function that unsubscribes the event handler from the event.
-     *
-     * @memberOf DispatcherBase
-     */
-    subscribe(fn) {
-        if (fn) {
-            this._subscriptions.push(this.createSubscription(fn, false));
-            this.triggerSubscriptionChange();
-        }
-        return () => {
-            this.unsubscribe(fn);
-        };
-    }
-    /**
-     * Subscribe to the event dispatcher.
-     *
-     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
-     * @returns A function that unsubscribes the event handler from the event.
-     *
-     * @memberOf DispatcherBase
-     */
-    sub(fn) {
-        return this.subscribe(fn);
-    }
-    /**
-     * Subscribe once to the event with the specified name.
-     *
-     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
-     * @returns A function that unsubscribes the event handler from the event.
-     *
-     * @memberOf DispatcherBase
-     */
-    one(fn) {
-        if (fn) {
-            this._subscriptions.push(this.createSubscription(fn, true));
-            this.triggerSubscriptionChange();
-        }
-        return () => {
-            this.unsubscribe(fn);
-        };
-    }
-    /**
-     * Checks it the event has a subscription for the specified handler.
-     *
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf DispatcherBase
-     */
-    has(fn) {
-        if (!fn)
-            return false;
-        return this._subscriptions.some((sub) => sub.handler == fn);
-    }
-    /**
-     * Unsubscribes the handler from the dispatcher.
-     *
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf DispatcherBase
-     */
-    unsubscribe(fn) {
-        if (!fn)
-            return;
-        let changes = false;
-        for (let i = 0; i < this._subscriptions.length; i++) {
-            if (this._subscriptions[i].handler == fn) {
-                this._subscriptions.splice(i, 1);
-                changes = true;
-                break;
-            }
-        }
-        if (changes) {
-            this.triggerSubscriptionChange();
-        }
-    }
-    /**
-     * Unsubscribes the handler from the dispatcher.
-     *
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf DispatcherBase
-     */
-    unsub(fn) {
-        this.unsubscribe(fn);
-    }
-    /**
-     * Generic dispatch will dispatch the handlers with the given arguments.
-     *
-     * @protected
-     * @param {boolean} executeAsync `True` if the even should be executed async.
-     * @param {*} scope The scope of the event. The scope becomes the `this` for handler.
-     * @param {IArguments} args The arguments for the event.
-     * @returns {(IPropagationStatus | null)} The propagation status, or if an `executeAsync` is used `null`.
-     *
-     * @memberOf DispatcherBase
-     */
-    _dispatch(executeAsync, scope, args) {
-        //execute on a copy because of bug #9
-        for (let sub of [...this._subscriptions]) {
-            let ev = new __1.EventManagement(() => this.unsub(sub.handler));
-            let nargs = Array.prototype.slice.call(args);
-            nargs.push(ev);
-            let s = sub;
-            s.execute(executeAsync, scope, nargs);
-            //cleanup subs that are no longer needed
-            this.cleanup(sub);
-            if (!executeAsync && ev.propagationStopped) {
-                return { propagationStopped: true };
-            }
-        }
-        if (executeAsync) {
-            return null;
-        }
-        return { propagationStopped: false };
-    }
-    /**
-     * Creates a subscription.
-     *
-     * @protected
-     * @param {TEventHandler} handler The handler.
-     * @param {boolean} isOnce True if the handler should run only one.
-     * @returns {ISubscription<TEventHandler>} The subscription.
-     *
-     * @memberOf DispatcherBase
-     */
-    createSubscription(handler, isOnce) {
-        return new __1.Subscription(handler, isOnce);
-    }
-    /**
-     * Cleans up subs that ran and should run only once.
-     *
-     * @protected
-     * @param {ISubscription<TEventHandler>} sub The subscription.
-     *
-     * @memberOf DispatcherBase
-     */
-    cleanup(sub) {
-        let changes = false;
-        if (sub.isOnce && sub.isExecuted) {
-            let i = this._subscriptions.indexOf(sub);
-            if (i > -1) {
-                this._subscriptions.splice(i, 1);
-                changes = true;
-            }
-        }
-        if (changes) {
-            this.triggerSubscriptionChange();
-        }
-    }
-    /**
-     * Creates an event from the dispatcher. Will return the dispatcher
-     * in a wrapper. This will prevent exposure of any dispatcher methods.
-     *
-     * @returns {ISubscribable<TEventHandler>}
-     *
-     * @memberOf DispatcherBase
-     */
-    asEvent() {
-        if (this._wrap == null) {
-            this._wrap = new __1.DispatcherWrapper(this);
-        }
-        return this._wrap;
-    }
-    /**
-     * Clears the subscriptions.
-     *
-     * @memberOf DispatcherBase
-     */
-    clear() {
-        if (this._subscriptions.length != 0) {
-            this._subscriptions.splice(0, this._subscriptions.length);
-            this.triggerSubscriptionChange();
-        }
-    }
-    /**
-     * Triggers the subscription change event.
-     *
-     * @private
-     *
-     * @memberOf DispatcherBase
-     */
-    triggerSubscriptionChange() {
-        if (this._onSubscriptionChange != null) {
-            this._onSubscriptionChange.dispatch(this.count);
-        }
-    }
-}
-exports.DispatcherBase = DispatcherBase;
-
-
-/***/ }),
-
-/***/ 6982:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DispatcherWrapper = void 0;
-/**
- * Hides the implementation of the event dispatcher. Will expose methods that
- * are relevent to the event.
- *
- * @export
- * @class DispatcherWrapper
- * @implements {ISubscribable<TEventHandler>}
- * @template TEventHandler The type of event handler.
- */
-class DispatcherWrapper {
-    /**
-     * Creates an instance of DispatcherWrapper.
-     * @param {ISubscribable<TEventHandler>} dispatcher
-     *
-     * @memberOf DispatcherWrapper
-     */
-    constructor(dispatcher) {
-        this._subscribe = (fn) => dispatcher.subscribe(fn);
-        this._unsubscribe = (fn) => dispatcher.unsubscribe(fn);
-        this._one = (fn) => dispatcher.one(fn);
-        this._has = (fn) => dispatcher.has(fn);
-        this._clear = () => dispatcher.clear();
-        this._count = () => dispatcher.count;
-        this._onSubscriptionChange = () => dispatcher.onSubscriptionChange;
-    }
-    /**
-     * Triggered when subscriptions are changed (added or removed).
-     *
-     * @readonly
-     * @type {ISubscribable<SubscriptionChangeEventHandler>}
-     * @memberOf DispatcherWrapper
-     */
-    get onSubscriptionChange() {
-        return this._onSubscriptionChange();
-    }
-    /**
-     * Returns the number of subscriptions.
-     *
-     * @readonly
-     * @type {number}
-     * @memberOf DispatcherWrapper
-     */
-    get count() {
-        return this._count();
-    }
-    /**
-     * Subscribe to the event dispatcher.
-     *
-     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
-     * @returns {() => void} A function that unsubscribes the event handler from the event.
-     *
-     * @memberOf DispatcherWrapper
-     */
-    subscribe(fn) {
-        return this._subscribe(fn);
-    }
-    /**
-     * Subscribe to the event dispatcher.
-     *
-     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
-     * @returns {() => void} A function that unsubscribes the event handler from the event.
-     *
-     * @memberOf DispatcherWrapper
-     */
-    sub(fn) {
-        return this.subscribe(fn);
-    }
-    /**
-     * Unsubscribe from the event dispatcher.
-     *
-     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
-     *
-     * @memberOf DispatcherWrapper
-     */
-    unsubscribe(fn) {
-        this._unsubscribe(fn);
-    }
-    /**
-     * Unsubscribe from the event dispatcher.
-     *
-     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
-     *
-     * @memberOf DispatcherWrapper
-     */
-    unsub(fn) {
-        this.unsubscribe(fn);
-    }
-    /**
-     * Subscribe once to the event with the specified name.
-     *
-     * @returns {() => void} A function that unsubscribes the event handler from the event.
-     *
-     * @memberOf DispatcherWrapper
-     */
-    one(fn) {
-        return this._one(fn);
-    }
-    /**
-     * Checks it the event has a subscription for the specified handler.
-     *
-     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
-     *
-     * @memberOf DispatcherWrapper
-     */
-    has(fn) {
-        return this._has(fn);
-    }
-    /**
-     * Clears all the subscriptions.
-     *
-     * @memberOf DispatcherWrapper
-     */
-    clear() {
-        this._clear();
-    }
-}
-exports.DispatcherWrapper = DispatcherWrapper;
-
-
-/***/ }),
-
-/***/ 2177:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EventListBase = void 0;
-/**
- * Base class for event lists classes. Implements the get and remove.
- *
- * @export
- * @abstract
- * @class EventListBaset
- * @template TEventDispatcher The type of event dispatcher.
- */
-class EventListBase {
-    constructor() {
-        this._events = {};
-    }
-    /**
-     * Gets the dispatcher associated with the name.
-     *
-     * @param {string} name The name of the event.
-     * @returns {TEventDispatcher} The disptacher.
-     *
-     * @memberOf EventListBase
-     */
-    get(name) {
-        let event = this._events[name];
-        if (event) {
-            return event;
-        }
-        event = this.createDispatcher();
-        this._events[name] = event;
-        return event;
-    }
-    /**
-     * Removes the dispatcher associated with the name.
-     *
-     * @param {string} name
-     *
-     * @memberOf EventListBase
-     */
-    remove(name) {
-        delete this._events[name];
-    }
-}
-exports.EventListBase = EventListBase;
-
-
-/***/ }),
-
-/***/ 2300:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PromiseDispatcherBase = void 0;
-const __1 = __webpack_require__(8486);
-/**
- * Dispatcher base for dispatchers that use promises. Each promise
- * is awaited before the next is dispatched, unless the event is
- * dispatched with the executeAsync flag.
- *
- * @export
- * @abstract
- * @class PromiseDispatcherBase
- * @extends {DispatcherBase<TEventHandler>}
- * @template TEventHandler The type of event handler.
- */
-class PromiseDispatcherBase extends __1.DispatcherBase {
-    /**
-     * The normal dispatch cannot be used in this class.
-     *
-     * @protected
-     * @param {boolean} executeAsync `True` if the even should be executed async.
-     * @param {*} scope The scope of the event. The scope becomes the `this` for handler.
-     * @param {IArguments} args The arguments for the event.
-     * @returns {(IPropagationStatus | null)} The propagation status, or if an `executeAsync` is used `null`.
-     *
-     * @memberOf DispatcherBase
-     */
-    _dispatch(executeAsync, scope, args) {
-        throw new __1.DispatchError("_dispatch not supported. Use _dispatchAsPromise.");
-    }
-    /**
-     * Crates a new subscription.
-     *
-     * @protected
-     * @param {TEventHandler} handler The handler.
-     * @param {boolean} isOnce Indicates if the handler should only run once.
-     * @returns {ISubscription<TEventHandler>} The subscription.
-     *
-     * @memberOf PromiseDispatcherBase
-     */
-    createSubscription(handler, isOnce) {
-        return new __1.PromiseSubscription(handler, isOnce);
-    }
-    /**
-     * Generic dispatch will dispatch the handlers with the given arguments.
-     *
-     * @protected
-     * @param {boolean} executeAsync `True` if the even should be executed async.
-     * @param {*} scope The scope of the event. The scope becomes the `this` for handler.
-     * @param {IArguments} args The arguments for the event.
-     * @returns {(IPropagationStatus | null)} The propagation status, or if an `executeAsync` is used `null`.
-     *
-     * @memberOf DispatcherBase
-     */
-    async _dispatchAsPromise(executeAsync, scope, args) {
-        //execute on a copy because of bug #9
-        for (let sub of [...this._subscriptions]) {
-            let ev = new __1.EventManagement(() => this.unsub(sub.handler));
-            let nargs = Array.prototype.slice.call(args);
-            nargs.push(ev);
-            let ps = sub;
-            await ps.execute(executeAsync, scope, nargs);
-            //cleanup subs that are no longer needed
-            this.cleanup(sub);
-            if (!executeAsync && ev.propagationStopped) {
-                return { propagationStopped: true };
-            }
-        }
-        if (executeAsync) {
-            return null;
-        }
-        return { propagationStopped: false };
-    }
-}
-exports.PromiseDispatcherBase = PromiseDispatcherBase;
-
-
-/***/ }),
-
-/***/ 4303:
+/***/ 3512:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SubscriptionChangeEventDispatcher = void 0;
-const __1 = __webpack_require__(8486);
+const __1 = __webpack_require__(9184);
 /**
  * Dispatcher for subscription changes.
  *
@@ -5227,352 +2267,14 @@ exports.SubscriptionChangeEventDispatcher = SubscriptionChangeEventDispatcher;
 
 /***/ }),
 
-/***/ 9703:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PromiseSubscription = void 0;
-/**
- * Subscription implementation for events with promises.
- *
- * @export
- * @class PromiseSubscription
- * @implements {ISubscription<TEventHandler>}
- * @template TEventHandler The type of event handler.
- */
-class PromiseSubscription {
-    /**
-     * Creates an instance of PromiseSubscription.
-     * @param {TEventHandler} handler The handler for the subscription.
-     * @param {boolean} isOnce Indicates if the handler should only be executed once.
-     *
-     * @memberOf PromiseSubscription
-     */
-    constructor(handler, isOnce) {
-        this.handler = handler;
-        this.isOnce = isOnce;
-        /**
-         * Indicates if the subscription has been executed before.
-         *
-         * @memberOf PromiseSubscription
-         */
-        this.isExecuted = false;
-    }
-    /**
-     * Executes the handler.
-     *
-     * @param {boolean} executeAsync True if the even should be executed async.
-     * @param {*} scope The scope the scope of the event.
-     * @param {IArguments} args The arguments for the event.
-     *
-     * @memberOf PromiseSubscription
-     */
-    async execute(executeAsync, scope, args) {
-        if (!this.isOnce || !this.isExecuted) {
-            this.isExecuted = true;
-            //TODO: do we need to cast to any -- seems yuck
-            var fn = this.handler;
-            if (executeAsync) {
-                setTimeout(() => {
-                    fn.apply(scope, args);
-                }, 1);
-                return;
-            }
-            let result = fn.apply(scope, args);
-            await result;
-        }
-    }
-}
-exports.PromiseSubscription = PromiseSubscription;
-
-
-/***/ }),
-
-/***/ 4683:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Subscription = void 0;
-/**
- * Stores a handler. Manages execution meta data.
- * @class Subscription
- * @template TEventHandler
- */
-class Subscription {
-    /**
-     * Creates an instance of Subscription.
-     *
-     * @param {TEventHandler} handler The handler for the subscription.
-     * @param {boolean} isOnce Indicates if the handler should only be executed once.
-     */
-    constructor(handler, isOnce) {
-        this.handler = handler;
-        this.isOnce = isOnce;
-        /**
-         * Indicates if the subscription has been executed before.
-         */
-        this.isExecuted = false;
-    }
-    /**
-     * Executes the handler.
-     *
-     * @param {boolean} executeAsync True if the even should be executed async.
-     * @param {*} scope The scope the scope of the event.
-     * @param {IArguments} args The arguments for the event.
-     */
-    execute(executeAsync, scope, args) {
-        if (!this.isOnce || !this.isExecuted) {
-            this.isExecuted = true;
-            var fn = this.handler;
-            if (executeAsync) {
-                setTimeout(() => {
-                    fn.apply(scope, args);
-                }, 1);
-            }
-            else {
-                fn.apply(scope, args);
-            }
-        }
-    }
-}
-exports.Subscription = Subscription;
-
-
-/***/ }),
-
-/***/ 5673:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.HandlingBase = void 0;
-/**
- * Base class that implements event handling. With a an
- * event list this base class will expose events that can be
- * subscribed to. This will give your class generic events.
- *
- * @export
- * @abstract
- * @class HandlingBase
- * @template TEventHandler The type of event handler.
- * @template TDispatcher The type of dispatcher.
- * @template TList The type of event list.
- */
-class HandlingBase {
-    /**
-     * Creates an instance of HandlingBase.
-     * @param {TList} events The event list. Used for event management.
-     *
-     * @memberOf HandlingBase
-     */
-    constructor(events) {
-        this.events = events;
-    }
-    /**
-     * Subscribes once to the event with the specified name.
-     * @param {string} name The name of the event.
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf HandlingBase
-     */
-    one(name, fn) {
-        this.events.get(name).one(fn);
-    }
-    /**
-     * Checks it the event has a subscription for the specified handler.
-     * @param {string} name The name of the event.
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf HandlingBase
-     */
-    has(name, fn) {
-        return this.events.get(name).has(fn);
-    }
-    /**
-     * Subscribes to the event with the specified name.
-     * @param {string} name The name of the event.
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf HandlingBase
-     */
-    subscribe(name, fn) {
-        this.events.get(name).subscribe(fn);
-    }
-    /**
-     * Subscribes to the event with the specified name.
-     * @param {string} name The name of the event.
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf HandlingBase
-     */
-    sub(name, fn) {
-        this.subscribe(name, fn);
-    }
-    /**
-     * Unsubscribes from the event with the specified name.
-     * @param {string} name The name of the event.
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf HandlingBase
-     */
-    unsubscribe(name, fn) {
-        this.events.get(name).unsubscribe(fn);
-    }
-    /**
-     * Unsubscribes from the event with the specified name.
-     * @param {string} name The name of the event.
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf HandlingBase
-     */
-    unsub(name, fn) {
-        this.unsubscribe(name, fn);
-    }
-}
-exports.HandlingBase = HandlingBase;
-
-
-/***/ }),
-
-/***/ 8486:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-/*!
- * Strongly Typed Events for TypeScript - Core
- * https://github.com/KeesCBakker/StronlyTypedEvents/
- * http://keestalkstech.com
- *
- * Copyright Kees C. Bakker / KeesTalksTech
- * Released under the MIT license
- */
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SubscriptionChangeEventDispatcher = exports.HandlingBase = exports.PromiseDispatcherBase = exports.PromiseSubscription = exports.DispatchError = exports.EventManagement = exports.EventListBase = exports.DispatcherWrapper = exports.DispatcherBase = exports.Subscription = void 0;
-const DispatcherBase_1 = __webpack_require__(1368);
-Object.defineProperty(exports, "DispatcherBase", ({ enumerable: true, get: function () { return DispatcherBase_1.DispatcherBase; } }));
-const DispatchError_1 = __webpack_require__(6463);
-Object.defineProperty(exports, "DispatchError", ({ enumerable: true, get: function () { return DispatchError_1.DispatchError; } }));
-const DispatcherWrapper_1 = __webpack_require__(6982);
-Object.defineProperty(exports, "DispatcherWrapper", ({ enumerable: true, get: function () { return DispatcherWrapper_1.DispatcherWrapper; } }));
-const EventListBase_1 = __webpack_require__(2177);
-Object.defineProperty(exports, "EventListBase", ({ enumerable: true, get: function () { return EventListBase_1.EventListBase; } }));
-const EventManagement_1 = __webpack_require__(8209);
-Object.defineProperty(exports, "EventManagement", ({ enumerable: true, get: function () { return EventManagement_1.EventManagement; } }));
-const HandlingBase_1 = __webpack_require__(5673);
-Object.defineProperty(exports, "HandlingBase", ({ enumerable: true, get: function () { return HandlingBase_1.HandlingBase; } }));
-const PromiseDispatcherBase_1 = __webpack_require__(2300);
-Object.defineProperty(exports, "PromiseDispatcherBase", ({ enumerable: true, get: function () { return PromiseDispatcherBase_1.PromiseDispatcherBase; } }));
-const PromiseSubscription_1 = __webpack_require__(9703);
-Object.defineProperty(exports, "PromiseSubscription", ({ enumerable: true, get: function () { return PromiseSubscription_1.PromiseSubscription; } }));
-const Subscription_1 = __webpack_require__(4683);
-Object.defineProperty(exports, "Subscription", ({ enumerable: true, get: function () { return Subscription_1.Subscription; } }));
-const SubscriptionChangeEventHandler_1 = __webpack_require__(4303);
-Object.defineProperty(exports, "SubscriptionChangeEventDispatcher", ({ enumerable: true, get: function () { return SubscriptionChangeEventHandler_1.SubscriptionChangeEventDispatcher; } }));
-
-
-/***/ }),
-
-/***/ 8209:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EventManagement = void 0;
-/**
- * Allows the user to interact with the event.
- *
- * @export
- * @class EventManagement
- * @implements {IEventManagement}
- */
-class EventManagement {
-    /**
-     * Creates an instance of EventManagement.
-     * @param {() => void} unsub An unsubscribe handler.
-     *
-     * @memberOf EventManagement
-     */
-    constructor(unsub) {
-        this.unsub = unsub;
-        this.propagationStopped = false;
-    }
-    /**
-     * Stops the propagation of the event.
-     * Cannot be used when async dispatch is done.
-     *
-     * @memberOf EventManagement
-     */
-    stopPropagation() {
-        this.propagationStopped = true;
-    }
-}
-exports.EventManagement = EventManagement;
-
-
-/***/ }),
-
-/***/ 4537:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.NonUniformPromiseSimpleEventList = void 0;
-const PromiseSimpleEventDispatcher_1 = __webpack_require__(8921);
-/**
- * Similar to EventList, but instead of TArgs, a map of event names ang argument types is provided with TArgsMap.
- */
-class NonUniformPromiseSimpleEventList {
-    constructor() {
-        this._events = {};
-    }
-    /**
-     * Gets the dispatcher associated with the name.
-     * @param name The name of the event.
-     */
-    get(name) {
-        if (this._events[name]) {
-            // @TODO avoid typecasting. Not sure why TS thinks this._events[name] could still be undefined.
-            return this._events[name];
-        }
-        const event = this.createDispatcher();
-        this._events[name] = event;
-        return event;
-    }
-    /**
-     * Removes the dispatcher associated with the name.
-     * @param name The name of the event.
-     */
-    remove(name) {
-        delete this._events[name];
-    }
-    /**
-     * Creates a new dispatcher instance.
-     */
-    createDispatcher() {
-        return new PromiseSimpleEventDispatcher_1.PromiseSimpleEventDispatcher();
-    }
-}
-exports.NonUniformPromiseSimpleEventList = NonUniformPromiseSimpleEventList;
-
-
-/***/ }),
-
-/***/ 8921:
+/***/ 3677:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PromiseSimpleEventDispatcher = void 0;
-const ste_core_1 = __webpack_require__(3310);
+const ste_core_1 = __webpack_require__(5575);
 /**
  * The dispatcher handles the storage of subsciptions and facilitates
  * subscription, unsubscription and dispatching of a simple event
@@ -5624,88 +2326,173 @@ exports.PromiseSimpleEventDispatcher = PromiseSimpleEventDispatcher;
 
 /***/ }),
 
-/***/ 532:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ 3707:
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PromiseSimpleEventHandlingBase = void 0;
-const ste_core_1 = __webpack_require__(3310);
-const PromiseSimpleEventList_1 = __webpack_require__(7929);
+exports.Subscription = void 0;
 /**
- * Extends objects with signal event handling capabilities.
+ * Stores a handler. Manages execution meta data.
+ * @class Subscription
+ * @template TEventHandler
  */
-class PromiseSimpleEventHandlingBase extends ste_core_1.HandlingBase {
-    constructor() {
-        super(new PromiseSimpleEventList_1.PromiseSimpleEventList());
-    }
-}
-exports.PromiseSimpleEventHandlingBase = PromiseSimpleEventHandlingBase;
-
-
-/***/ }),
-
-/***/ 7929:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PromiseSimpleEventList = void 0;
-const ste_core_1 = __webpack_require__(3310);
-const PromiseSimpleEventDispatcher_1 = __webpack_require__(8921);
-/**
- * Storage class for multiple simple events that are accessible by name.
- * Events dispatchers are automatically created.
- */
-class PromiseSimpleEventList extends ste_core_1.EventListBase {
+class Subscription {
     /**
-     * Creates a new SimpleEventList instance.
+     * Creates an instance of Subscription.
+     *
+     * @param {TEventHandler} handler The handler for the subscription.
+     * @param {boolean} isOnce Indicates if the handler should only be executed once.
      */
-    constructor() {
-        super();
+    constructor(handler, isOnce) {
+        this.handler = handler;
+        this.isOnce = isOnce;
+        /**
+         * Indicates if the subscription has been executed before.
+         */
+        this.isExecuted = false;
     }
     /**
-     * Creates a new dispatcher instance.
+     * Executes the handler.
+     *
+     * @param {boolean} executeAsync True if the even should be executed async.
+     * @param {*} scope The scope the scope of the event.
+     * @param {IArguments} args The arguments for the event.
      */
-    createDispatcher() {
-        return new PromiseSimpleEventDispatcher_1.PromiseSimpleEventDispatcher();
+    execute(executeAsync, scope, args) {
+        if (!this.isOnce || !this.isExecuted) {
+            this.isExecuted = true;
+            var fn = this.handler;
+            if (executeAsync) {
+                setTimeout(() => {
+                    fn.apply(scope, args);
+                }, 1);
+            }
+            else {
+                fn.apply(scope, args);
+            }
+        }
     }
 }
-exports.PromiseSimpleEventList = PromiseSimpleEventList;
+exports.Subscription = Subscription;
 
 
 /***/ }),
 
-/***/ 9176:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/***/ 3717:
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+/* module decorator */ module = __webpack_require__.nmd(module);
+var __WEBPACK_AMD_DEFINE_RESULT__;// A Javascript implementaion of the "Tyche-i" prng algorithm by
+// Samuel Neves and Filipe Araujo.
+// See https://eden.dei.uc.pt/~sneves/pubs/2011-snfa2.pdf
 
-/*!
- * Strongly Typed Events for TypeScript - Core
- * https://github.com/KeesCBakker/StronlyTypedEvents/
- * http://keestalkstech.com
- *
- * Copyright Kees C. Bakker / KeesTalksTech
- * Released under the MIT license
- */
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.NonUniformPromiseSimpleEventList = exports.PromiseSimpleEventList = exports.PromiseSimpleEventHandlingBase = exports.PromiseSimpleEventDispatcher = void 0;
-const NonUniformPromiseSimpleEventList_1 = __webpack_require__(4537);
-Object.defineProperty(exports, "NonUniformPromiseSimpleEventList", ({ enumerable: true, get: function () { return NonUniformPromiseSimpleEventList_1.NonUniformPromiseSimpleEventList; } }));
-const PromiseSimpleEventDispatcher_1 = __webpack_require__(8921);
-Object.defineProperty(exports, "PromiseSimpleEventDispatcher", ({ enumerable: true, get: function () { return PromiseSimpleEventDispatcher_1.PromiseSimpleEventDispatcher; } }));
-const PromiseSimpleEventHandlingBase_1 = __webpack_require__(532);
-Object.defineProperty(exports, "PromiseSimpleEventHandlingBase", ({ enumerable: true, get: function () { return PromiseSimpleEventHandlingBase_1.PromiseSimpleEventHandlingBase; } }));
-const PromiseSimpleEventList_1 = __webpack_require__(7929);
-Object.defineProperty(exports, "PromiseSimpleEventList", ({ enumerable: true, get: function () { return PromiseSimpleEventList_1.PromiseSimpleEventList; } }));
+(function(global, module, define) {
+
+function XorGen(seed) {
+  var me = this, strseed = '';
+
+  // Set up generator function.
+  me.next = function() {
+    var b = me.b, c = me.c, d = me.d, a = me.a;
+    b = (b << 25) ^ (b >>> 7) ^ c;
+    c = (c - d) | 0;
+    d = (d << 24) ^ (d >>> 8) ^ a;
+    a = (a - b) | 0;
+    me.b = b = (b << 20) ^ (b >>> 12) ^ c;
+    me.c = c = (c - d) | 0;
+    me.d = (d << 16) ^ (c >>> 16) ^ a;
+    return me.a = (a - b) | 0;
+  };
+
+  /* The following is non-inverted tyche, which has better internal
+   * bit diffusion, but which is about 25% slower than tyche-i in JS.
+  me.next = function() {
+    var a = me.a, b = me.b, c = me.c, d = me.d;
+    a = (me.a + me.b | 0) >>> 0;
+    d = me.d ^ a; d = d << 16 ^ d >>> 16;
+    c = me.c + d | 0;
+    b = me.b ^ c; b = b << 12 ^ d >>> 20;
+    me.a = a = a + b | 0;
+    d = d ^ a; me.d = d = d << 8 ^ d >>> 24;
+    me.c = c = c + d | 0;
+    b = b ^ c;
+    return me.b = (b << 7 ^ b >>> 25);
+  }
+  */
+
+  me.a = 0;
+  me.b = 0;
+  me.c = 2654435769 | 0;
+  me.d = 1367130551;
+
+  if (seed === Math.floor(seed)) {
+    // Integer seed.
+    me.a = (seed / 0x100000000) | 0;
+    me.b = seed | 0;
+  } else {
+    // String seed.
+    strseed += seed;
+  }
+
+  // Mix in string seed, then discard an initial batch of 64 values.
+  for (var k = 0; k < strseed.length + 20; k++) {
+    me.b ^= strseed.charCodeAt(k) | 0;
+    me.next();
+  }
+}
+
+function copy(f, t) {
+  t.a = f.a;
+  t.b = f.b;
+  t.c = f.c;
+  t.d = f.d;
+  return t;
+};
+
+function impl(seed, opts) {
+  var xg = new XorGen(seed),
+      state = opts && opts.state,
+      prng = function() { return (xg.next() >>> 0) / 0x100000000; };
+  prng.double = function() {
+    do {
+      var top = xg.next() >>> 11,
+          bot = (xg.next() >>> 0) / 0x100000000,
+          result = (top + bot) / (1 << 21);
+    } while (result === 0);
+    return result;
+  };
+  prng.int32 = xg.next;
+  prng.quick = prng;
+  if (state) {
+    if (typeof(state) == 'object') copy(state, xg);
+    prng.state = function() { return copy(xg, {}); }
+  }
+  return prng;
+}
+
+if (module && module.exports) {
+  module.exports = impl;
+} else if (__webpack_require__.amdD && __webpack_require__.amdO) {
+  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return impl; }).call(exports, __webpack_require__, exports, module),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+} else {
+  this.tychei = impl;
+}
+
+})(
+  this,
+   true && module,    // present in node.js
+  __webpack_require__.amdD   // present with an AMD loader
+);
+
+
 
 
 /***/ }),
 
-/***/ 8181:
+/***/ 3729:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -5735,14 +2522,378 @@ exports.DispatchError = DispatchError;
 
 /***/ }),
 
-/***/ 3040:
+/***/ 3787:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PromiseDispatcherBase = void 0;
+const __1 = __webpack_require__(5575);
+/**
+ * Dispatcher base for dispatchers that use promises. Each promise
+ * is awaited before the next is dispatched, unless the event is
+ * dispatched with the executeAsync flag.
+ *
+ * @export
+ * @abstract
+ * @class PromiseDispatcherBase
+ * @extends {DispatcherBase<TEventHandler>}
+ * @template TEventHandler The type of event handler.
+ */
+class PromiseDispatcherBase extends __1.DispatcherBase {
+    /**
+     * The normal dispatch cannot be used in this class.
+     *
+     * @protected
+     * @param {boolean} executeAsync `True` if the even should be executed async.
+     * @param {*} scope The scope of the event. The scope becomes the `this` for handler.
+     * @param {IArguments} args The arguments for the event.
+     * @returns {(IPropagationStatus | null)} The propagation status, or if an `executeAsync` is used `null`.
+     *
+     * @memberOf DispatcherBase
+     */
+    _dispatch(executeAsync, scope, args) {
+        throw new __1.DispatchError("_dispatch not supported. Use _dispatchAsPromise.");
+    }
+    /**
+     * Crates a new subscription.
+     *
+     * @protected
+     * @param {TEventHandler} handler The handler.
+     * @param {boolean} isOnce Indicates if the handler should only run once.
+     * @returns {ISubscription<TEventHandler>} The subscription.
+     *
+     * @memberOf PromiseDispatcherBase
+     */
+    createSubscription(handler, isOnce) {
+        return new __1.PromiseSubscription(handler, isOnce);
+    }
+    /**
+     * Generic dispatch will dispatch the handlers with the given arguments.
+     *
+     * @protected
+     * @param {boolean} executeAsync `True` if the even should be executed async.
+     * @param {*} scope The scope of the event. The scope becomes the `this` for handler.
+     * @param {IArguments} args The arguments for the event.
+     * @returns {(IPropagationStatus | null)} The propagation status, or if an `executeAsync` is used `null`.
+     *
+     * @memberOf DispatcherBase
+     */
+    async _dispatchAsPromise(executeAsync, scope, args) {
+        //execute on a copy because of bug #9
+        for (let sub of [...this._subscriptions]) {
+            let ev = new __1.EventManagement(() => this.unsub(sub.handler));
+            let nargs = Array.prototype.slice.call(args);
+            nargs.push(ev);
+            let ps = sub;
+            await ps.execute(executeAsync, scope, nargs);
+            //cleanup subs that are no longer needed
+            this.cleanup(sub);
+            if (!executeAsync && ev.propagationStopped) {
+                return { propagationStopped: true };
+            }
+        }
+        if (executeAsync) {
+            return null;
+        }
+        return { propagationStopped: false };
+    }
+}
+exports.PromiseDispatcherBase = PromiseDispatcherBase;
+
+
+/***/ }),
+
+/***/ 4004:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EventListBase = void 0;
+/**
+ * Base class for event lists classes. Implements the get and remove.
+ *
+ * @export
+ * @abstract
+ * @class EventListBaset
+ * @template TEventDispatcher The type of event dispatcher.
+ */
+class EventListBase {
+    constructor() {
+        this._events = {};
+    }
+    /**
+     * Gets the dispatcher associated with the name.
+     *
+     * @param {string} name The name of the event.
+     * @returns {TEventDispatcher} The disptacher.
+     *
+     * @memberOf EventListBase
+     */
+    get(name) {
+        let event = this._events[name];
+        if (event) {
+            return event;
+        }
+        event = this.createDispatcher();
+        this._events[name] = event;
+        return event;
+    }
+    /**
+     * Removes the dispatcher associated with the name.
+     *
+     * @param {string} name
+     *
+     * @memberOf EventListBase
+     */
+    remove(name) {
+        delete this._events[name];
+    }
+}
+exports.EventListBase = EventListBase;
+
+
+/***/ }),
+
+/***/ 4211:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EventListBase = void 0;
+/**
+ * Base class for event lists classes. Implements the get and remove.
+ *
+ * @export
+ * @abstract
+ * @class EventListBaset
+ * @template TEventDispatcher The type of event dispatcher.
+ */
+class EventListBase {
+    constructor() {
+        this._events = {};
+    }
+    /**
+     * Gets the dispatcher associated with the name.
+     *
+     * @param {string} name The name of the event.
+     * @returns {TEventDispatcher} The disptacher.
+     *
+     * @memberOf EventListBase
+     */
+    get(name) {
+        let event = this._events[name];
+        if (event) {
+            return event;
+        }
+        event = this.createDispatcher();
+        this._events[name] = event;
+        return event;
+    }
+    /**
+     * Removes the dispatcher associated with the name.
+     *
+     * @param {string} name
+     *
+     * @memberOf EventListBase
+     */
+    remove(name) {
+        delete this._events[name];
+    }
+}
+exports.EventListBase = EventListBase;
+
+
+/***/ }),
+
+/***/ 4214:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+/*!
+ * Strongly Typed Events for TypeScript - Core
+ * https://github.com/KeesCBakker/StronlyTypedEvents/
+ * http://keestalkstech.com
+ *
+ * Copyright Kees C. Bakker / KeesTalksTech
+ * Released under the MIT license
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NonUniformEventList = exports.EventList = exports.EventHandlingBase = exports.EventDispatcher = void 0;
+const EventDispatcher_1 = __webpack_require__(71);
+Object.defineProperty(exports, "EventDispatcher", ({ enumerable: true, get: function () { return EventDispatcher_1.EventDispatcher; } }));
+const EventHandlingBase_1 = __webpack_require__(2162);
+Object.defineProperty(exports, "EventHandlingBase", ({ enumerable: true, get: function () { return EventHandlingBase_1.EventHandlingBase; } }));
+const EventList_1 = __webpack_require__(338);
+Object.defineProperty(exports, "EventList", ({ enumerable: true, get: function () { return EventList_1.EventList; } }));
+const NonUniformEventList_1 = __webpack_require__(2293);
+Object.defineProperty(exports, "NonUniformEventList", ({ enumerable: true, get: function () { return NonUniformEventList_1.NonUniformEventList; } }));
+
+
+/***/ }),
+
+/***/ 4225:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+/*!
+ * Strongly Typed Events for TypeScript - Core
+ * https://github.com/KeesCBakker/StronlyTypedEvents/
+ * http://keestalkstech.com
+ *
+ * Copyright Kees C. Bakker / KeesTalksTech
+ * Released under the MIT license
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NonUniformPromiseSimpleEventList = exports.PromiseSimpleEventList = exports.PromiseSimpleEventHandlingBase = exports.PromiseSimpleEventDispatcher = void 0;
+const NonUniformPromiseSimpleEventList_1 = __webpack_require__(5829);
+Object.defineProperty(exports, "NonUniformPromiseSimpleEventList", ({ enumerable: true, get: function () { return NonUniformPromiseSimpleEventList_1.NonUniformPromiseSimpleEventList; } }));
+const PromiseSimpleEventDispatcher_1 = __webpack_require__(3677);
+Object.defineProperty(exports, "PromiseSimpleEventDispatcher", ({ enumerable: true, get: function () { return PromiseSimpleEventDispatcher_1.PromiseSimpleEventDispatcher; } }));
+const PromiseSimpleEventHandlingBase_1 = __webpack_require__(8648);
+Object.defineProperty(exports, "PromiseSimpleEventHandlingBase", ({ enumerable: true, get: function () { return PromiseSimpleEventHandlingBase_1.PromiseSimpleEventHandlingBase; } }));
+const PromiseSimpleEventList_1 = __webpack_require__(5536);
+Object.defineProperty(exports, "PromiseSimpleEventList", ({ enumerable: true, get: function () { return PromiseSimpleEventList_1.PromiseSimpleEventList; } }));
+
+
+/***/ }),
+
+/***/ 4283:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PromiseEventList = void 0;
+const ste_core_1 = __webpack_require__(9184);
+const PromiseEventDispatcher_1 = __webpack_require__(2330);
+/**
+ * Storage class for multiple events that are accessible by name.
+ * Events dispatchers are automatically created.
+ */
+class PromiseEventList extends ste_core_1.EventListBase {
+    /**
+     * Creates a new EventList instance.
+     */
+    constructor() {
+        super();
+    }
+    /**
+     * Creates a new dispatcher instance.
+     */
+    createDispatcher() {
+        return new PromiseEventDispatcher_1.PromiseEventDispatcher();
+    }
+}
+exports.PromiseEventList = PromiseEventList;
+
+
+/***/ }),
+
+/***/ 4450:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PromiseSignalDispatcher = void 0;
+const ste_core_1 = __webpack_require__(7852);
+/**
+ * The dispatcher handles the storage of subsciptions and facilitates
+ * subscription, unsubscription and dispatching of a signal event.
+ */
+class PromiseSignalDispatcher extends ste_core_1.PromiseDispatcherBase {
+    /**
+     * Creates a new SignalDispatcher instance.
+     */
+    constructor() {
+        super();
+    }
+    /**
+     * Dispatches the signal.
+     *
+     * @returns {IPropagationStatus} The status of the dispatch.
+     *
+     * @memberOf SignalDispatcher
+     */
+    async dispatch() {
+        const result = await this._dispatchAsPromise(false, this, arguments);
+        if (result == null) {
+            throw new ste_core_1.DispatchError("Got `null` back from dispatch.");
+        }
+        return result;
+    }
+    /**
+     * Dispatches the signal threaded.
+     */
+    dispatchAsync() {
+        this._dispatchAsPromise(true, this, arguments);
+    }
+    /**
+     * Creates an event from the dispatcher. Will return the dispatcher
+     * in a wrapper. This will prevent exposure of any dispatcher methods.
+     */
+    asEvent() {
+        return super.asEvent();
+    }
+}
+exports.PromiseSignalDispatcher = PromiseSignalDispatcher;
+
+
+/***/ }),
+
+/***/ 4604:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+/*!
+ * Strongly Typed Events for TypeScript - Core
+ * https://github.com/KeesCBakker/StronlyTypedEvents/
+ * http://keestalkstech.com
+ *
+ * Copyright Kees C. Bakker / KeesTalksTech
+ * Released under the MIT license
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SubscriptionChangeEventDispatcher = exports.HandlingBase = exports.PromiseDispatcherBase = exports.PromiseSubscription = exports.DispatchError = exports.EventManagement = exports.EventListBase = exports.DispatcherWrapper = exports.DispatcherBase = exports.Subscription = void 0;
+const DispatcherBase_1 = __webpack_require__(8441);
+Object.defineProperty(exports, "DispatcherBase", ({ enumerable: true, get: function () { return DispatcherBase_1.DispatcherBase; } }));
+const DispatchError_1 = __webpack_require__(3309);
+Object.defineProperty(exports, "DispatchError", ({ enumerable: true, get: function () { return DispatchError_1.DispatchError; } }));
+const DispatcherWrapper_1 = __webpack_require__(8901);
+Object.defineProperty(exports, "DispatcherWrapper", ({ enumerable: true, get: function () { return DispatcherWrapper_1.DispatcherWrapper; } }));
+const EventListBase_1 = __webpack_require__(4004);
+Object.defineProperty(exports, "EventListBase", ({ enumerable: true, get: function () { return EventListBase_1.EventListBase; } }));
+const EventManagement_1 = __webpack_require__(1289);
+Object.defineProperty(exports, "EventManagement", ({ enumerable: true, get: function () { return EventManagement_1.EventManagement; } }));
+const HandlingBase_1 = __webpack_require__(6442);
+Object.defineProperty(exports, "HandlingBase", ({ enumerable: true, get: function () { return HandlingBase_1.HandlingBase; } }));
+const PromiseDispatcherBase_1 = __webpack_require__(6580);
+Object.defineProperty(exports, "PromiseDispatcherBase", ({ enumerable: true, get: function () { return PromiseDispatcherBase_1.PromiseDispatcherBase; } }));
+const PromiseSubscription_1 = __webpack_require__(6436);
+Object.defineProperty(exports, "PromiseSubscription", ({ enumerable: true, get: function () { return PromiseSubscription_1.PromiseSubscription; } }));
+const Subscription_1 = __webpack_require__(3707);
+Object.defineProperty(exports, "Subscription", ({ enumerable: true, get: function () { return Subscription_1.Subscription; } }));
+const SubscriptionChangeEventHandler_1 = __webpack_require__(956);
+Object.defineProperty(exports, "SubscriptionChangeEventDispatcher", ({ enumerable: true, get: function () { return SubscriptionChangeEventHandler_1.SubscriptionChangeEventDispatcher; } }));
+
+
+/***/ }),
+
+/***/ 4645:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DispatcherBase = void 0;
-const __1 = __webpack_require__(3310);
+const __1 = __webpack_require__(9184);
 /**
  * Base class for implementation of the dispatcher. It facilitates the subscribe
  * and unsubscribe methods based on generic handlers. The TEventType specifies
@@ -5985,7 +3136,1953 @@ exports.DispatcherBase = DispatcherBase;
 
 /***/ }),
 
-/***/ 3122:
+/***/ 4763:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SimpleEventHandlingBase = void 0;
+const ste_core_1 = __webpack_require__(4604);
+const SimpleEventList_1 = __webpack_require__(2175);
+/**
+ * Extends objects with signal event handling capabilities.
+ */
+class SimpleEventHandlingBase extends ste_core_1.HandlingBase {
+    constructor() {
+        super(new SimpleEventList_1.SimpleEventList());
+    }
+}
+exports.SimpleEventHandlingBase = SimpleEventHandlingBase;
+
+
+/***/ }),
+
+/***/ 4801:
+/***/ ((module, exports, __webpack_require__) => {
+
+var __WEBPACK_AMD_DEFINE_RESULT__;/*
+Copyright 2014 David Bau.
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+*/
+
+(function (pool, math) {
+//
+// The following constants are related to IEEE 754 limits.
+//
+
+// Detect the global object, even if operating in strict mode.
+// http://stackoverflow.com/a/14387057/265298
+var global = (0, eval)('this'),
+    width = 256,        // each RC4 output is 0 <= x < 256
+    chunks = 6,         // at least six RC4 outputs for each double
+    digits = 52,        // there are 52 significant digits in a double
+    rngname = 'random', // rngname: name for Math.random and Math.seedrandom
+    startdenom = math.pow(width, chunks),
+    significance = math.pow(2, digits),
+    overflow = significance * 2,
+    mask = width - 1,
+    nodecrypto;         // node.js crypto module, initialized at the bottom.
+
+//
+// seedrandom()
+// This is the seedrandom function described above.
+//
+function seedrandom(seed, options, callback) {
+  var key = [];
+  options = (options == true) ? { entropy: true } : (options || {});
+
+  // Flatten the seed string or build one from local entropy if needed.
+  var shortseed = mixkey(flatten(
+    options.entropy ? [seed, tostring(pool)] :
+    (seed == null) ? autoseed() : seed, 3), key);
+
+  // Use the seed to initialize an ARC4 generator.
+  var arc4 = new ARC4(key);
+
+  // This function returns a random double in [0, 1) that contains
+  // randomness in every bit of the mantissa of the IEEE 754 value.
+  var prng = function() {
+    var n = arc4.g(chunks),             // Start with a numerator n < 2 ^ 48
+        d = startdenom,                 //   and denominator d = 2 ^ 48.
+        x = 0;                          //   and no 'extra last byte'.
+    while (n < significance) {          // Fill up all significant digits by
+      n = (n + x) * width;              //   shifting numerator and
+      d *= width;                       //   denominator and generating a
+      x = arc4.g(1);                    //   new least-significant-byte.
+    }
+    while (n >= overflow) {             // To avoid rounding up, before adding
+      n /= 2;                           //   last byte, shift everything
+      d /= 2;                           //   right using integer math until
+      x >>>= 1;                         //   we have exactly the desired bits.
+    }
+    return (n + x) / d;                 // Form the number within [0, 1).
+  };
+
+  prng.int32 = function() { return arc4.g(4) | 0; }
+  prng.quick = function() { return arc4.g(4) / 0x100000000; }
+  prng.double = prng;
+
+  // Mix the randomness into accumulated entropy.
+  mixkey(tostring(arc4.S), pool);
+
+  // Calling convention: what to return as a function of prng, seed, is_math.
+  return (options.pass || callback ||
+      function(prng, seed, is_math_call, state) {
+        if (state) {
+          // Load the arc4 state from the given state if it has an S array.
+          if (state.S) { copy(state, arc4); }
+          // Only provide the .state method if requested via options.state.
+          prng.state = function() { return copy(arc4, {}); }
+        }
+
+        // If called as a method of Math (Math.seedrandom()), mutate
+        // Math.random because that is how seedrandom.js has worked since v1.0.
+        if (is_math_call) { math[rngname] = prng; return seed; }
+
+        // Otherwise, it is a newer calling convention, so return the
+        // prng directly.
+        else return prng;
+      })(
+  prng,
+  shortseed,
+  'global' in options ? options.global : (this == math),
+  options.state);
+}
+math['seed' + rngname] = seedrandom;
+
+//
+// ARC4
+//
+// An ARC4 implementation.  The constructor takes a key in the form of
+// an array of at most (width) integers that should be 0 <= x < (width).
+//
+// The g(count) method returns a pseudorandom integer that concatenates
+// the next (count) outputs from ARC4.  Its return value is a number x
+// that is in the range 0 <= x < (width ^ count).
+//
+function ARC4(key) {
+  var t, keylen = key.length,
+      me = this, i = 0, j = me.i = me.j = 0, s = me.S = [];
+
+  // The empty key [] is treated as [0].
+  if (!keylen) { key = [keylen++]; }
+
+  // Set up S using the standard key scheduling algorithm.
+  while (i < width) {
+    s[i] = i++;
+  }
+  for (i = 0; i < width; i++) {
+    s[i] = s[j = mask & (j + key[i % keylen] + (t = s[i]))];
+    s[j] = t;
+  }
+
+  // The "g" method returns the next (count) outputs as one number.
+  (me.g = function(count) {
+    // Using instance members instead of closure state nearly doubles speed.
+    var t, r = 0,
+        i = me.i, j = me.j, s = me.S;
+    while (count--) {
+      t = s[i = mask & (i + 1)];
+      r = r * width + s[mask & ((s[i] = s[j = mask & (j + t)]) + (s[j] = t))];
+    }
+    me.i = i; me.j = j;
+    return r;
+    // For robust unpredictability, the function call below automatically
+    // discards an initial batch of values.  This is called RC4-drop[256].
+    // See http://google.com/search?q=rsa+fluhrer+response&btnI
+  })(width);
+}
+
+//
+// copy()
+// Copies internal state of ARC4 to or from a plain object.
+//
+function copy(f, t) {
+  t.i = f.i;
+  t.j = f.j;
+  t.S = f.S.slice();
+  return t;
+};
+
+//
+// flatten()
+// Converts an object tree to nested arrays of strings.
+//
+function flatten(obj, depth) {
+  var result = [], typ = (typeof obj), prop;
+  if (depth && typ == 'object') {
+    for (prop in obj) {
+      try { result.push(flatten(obj[prop], depth - 1)); } catch (e) {}
+    }
+  }
+  return (result.length ? result : typ == 'string' ? obj : obj + '\0');
+}
+
+//
+// mixkey()
+// Mixes a string seed into a key that is an array of integers, and
+// returns a shortened string seed that is equivalent to the result key.
+//
+function mixkey(seed, key) {
+  var stringseed = seed + '', smear, j = 0;
+  while (j < stringseed.length) {
+    key[mask & j] =
+      mask & ((smear ^= key[mask & j] * 19) + stringseed.charCodeAt(j++));
+  }
+  return tostring(key);
+}
+
+//
+// autoseed()
+// Returns an object for autoseeding, using window.crypto and Node crypto
+// module if available.
+//
+function autoseed() {
+  try {
+    var out;
+    if (nodecrypto && (out = nodecrypto.randomBytes)) {
+      // The use of 'out' to remember randomBytes makes tight minified code.
+      out = out(width);
+    } else {
+      out = new Uint8Array(width);
+      (global.crypto || global.msCrypto).getRandomValues(out);
+    }
+    return tostring(out);
+  } catch (e) {
+    var browser = global.navigator,
+        plugins = browser && browser.plugins;
+    return [+new Date, global, plugins, global.screen, tostring(pool)];
+  }
+}
+
+//
+// tostring()
+// Converts an array of charcodes to a string
+//
+function tostring(a) {
+  return String.fromCharCode.apply(0, a);
+}
+
+//
+// When seedrandom.js is loaded, we immediately mix a few bits
+// from the built-in RNG into the entropy pool.  Because we do
+// not want to interfere with deterministic PRNG state later,
+// seedrandom will not call math.random on its own again after
+// initialization.
+//
+mixkey(math.random(), pool);
+
+//
+// Nodejs and AMD support: export the implementation as a module using
+// either convention.
+//
+if ( true && module.exports) {
+  module.exports = seedrandom;
+  // When in node.js, try using crypto package for autoseeding.
+  try {
+    nodecrypto = __webpack_require__(1234);
+  } catch (ex) {}
+} else if (true) {
+  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return seedrandom; }).call(exports, __webpack_require__, exports, module),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+}
+
+// End anonymous scope, and pass initial values.
+})(
+  [],     // pool: entropy pool starts empty
+  Math    // math: package containing random, pow, and seedrandom
+);
+
+
+/***/ }),
+
+/***/ 4995:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PromiseDispatcherBase = void 0;
+const __1 = __webpack_require__(9184);
+/**
+ * Dispatcher base for dispatchers that use promises. Each promise
+ * is awaited before the next is dispatched, unless the event is
+ * dispatched with the executeAsync flag.
+ *
+ * @export
+ * @abstract
+ * @class PromiseDispatcherBase
+ * @extends {DispatcherBase<TEventHandler>}
+ * @template TEventHandler The type of event handler.
+ */
+class PromiseDispatcherBase extends __1.DispatcherBase {
+    /**
+     * The normal dispatch cannot be used in this class.
+     *
+     * @protected
+     * @param {boolean} executeAsync `True` if the even should be executed async.
+     * @param {*} scope The scope of the event. The scope becomes the `this` for handler.
+     * @param {IArguments} args The arguments for the event.
+     * @returns {(IPropagationStatus | null)} The propagation status, or if an `executeAsync` is used `null`.
+     *
+     * @memberOf DispatcherBase
+     */
+    _dispatch(executeAsync, scope, args) {
+        throw new __1.DispatchError("_dispatch not supported. Use _dispatchAsPromise.");
+    }
+    /**
+     * Crates a new subscription.
+     *
+     * @protected
+     * @param {TEventHandler} handler The handler.
+     * @param {boolean} isOnce Indicates if the handler should only run once.
+     * @returns {ISubscription<TEventHandler>} The subscription.
+     *
+     * @memberOf PromiseDispatcherBase
+     */
+    createSubscription(handler, isOnce) {
+        return new __1.PromiseSubscription(handler, isOnce);
+    }
+    /**
+     * Generic dispatch will dispatch the handlers with the given arguments.
+     *
+     * @protected
+     * @param {boolean} executeAsync `True` if the even should be executed async.
+     * @param {*} scope The scope of the event. The scope becomes the `this` for handler.
+     * @param {IArguments} args The arguments for the event.
+     * @returns {(IPropagationStatus | null)} The propagation status, or if an `executeAsync` is used `null`.
+     *
+     * @memberOf DispatcherBase
+     */
+    async _dispatchAsPromise(executeAsync, scope, args) {
+        //execute on a copy because of bug #9
+        for (let sub of [...this._subscriptions]) {
+            let ev = new __1.EventManagement(() => this.unsub(sub.handler));
+            let nargs = Array.prototype.slice.call(args);
+            nargs.push(ev);
+            let ps = sub;
+            await ps.execute(executeAsync, scope, nargs);
+            //cleanup subs that are no longer needed
+            this.cleanup(sub);
+            if (!executeAsync && ev.propagationStopped) {
+                return { propagationStopped: true };
+            }
+        }
+        if (executeAsync) {
+            return null;
+        }
+        return { propagationStopped: false };
+    }
+}
+exports.PromiseDispatcherBase = PromiseDispatcherBase;
+
+
+/***/ }),
+
+/***/ 5010:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+/*!
+ * Strongly Typed Events for TypeScript - Promise Signals
+ * https://github.com/KeesCBakker/StronlyTypedEvents/
+ * http://keestalkstech.com
+ *
+ * Copyright Kees C. Bakker / KeesTalksTech
+ * Released under the MIT license
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SignalList = exports.SignalHandlingBase = exports.SignalDispatcher = void 0;
+const SignalDispatcher_1 = __webpack_require__(2725);
+Object.defineProperty(exports, "SignalDispatcher", ({ enumerable: true, get: function () { return SignalDispatcher_1.SignalDispatcher; } }));
+const SignalHandlingBase_1 = __webpack_require__(7936);
+Object.defineProperty(exports, "SignalHandlingBase", ({ enumerable: true, get: function () { return SignalHandlingBase_1.SignalHandlingBase; } }));
+const SignalList_1 = __webpack_require__(1064);
+Object.defineProperty(exports, "SignalList", ({ enumerable: true, get: function () { return SignalList_1.SignalList; } }));
+
+
+/***/ }),
+
+/***/ 5072:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DispatcherBase = void 0;
+const __1 = __webpack_require__(5575);
+/**
+ * Base class for implementation of the dispatcher. It facilitates the subscribe
+ * and unsubscribe methods based on generic handlers. The TEventType specifies
+ * the type of event that should be exposed. Use the asEvent to expose the
+ * dispatcher as event.
+ *
+ * @export
+ * @abstract
+ * @class DispatcherBase
+ * @implements {ISubscribable<TEventHandler>}
+ * @template TEventHandler The type of event handler.
+ */
+class DispatcherBase {
+    constructor() {
+        /**
+         * The subscriptions.
+         *
+         * @protected
+         *
+         * @memberOf DispatcherBase
+         */
+        this._subscriptions = new Array();
+    }
+    /**
+     * Returns the number of subscriptions.
+     *
+     * @readonly
+     * @type {number}
+     * @memberOf DispatcherBase
+     */
+    get count() {
+        return this._subscriptions.length;
+    }
+    /**
+     * Triggered when subscriptions are changed (added or removed).
+     *
+     * @readonly
+     * @type {ISubscribable<SubscriptionChangeEventHandler>}
+     * @memberOf DispatcherBase
+     */
+    get onSubscriptionChange() {
+        if (this._onSubscriptionChange == null) {
+            this._onSubscriptionChange = new __1.SubscriptionChangeEventDispatcher();
+        }
+        return this._onSubscriptionChange.asEvent();
+    }
+    /**
+     * Subscribe to the event dispatcher.
+     *
+     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
+     * @returns A function that unsubscribes the event handler from the event.
+     *
+     * @memberOf DispatcherBase
+     */
+    subscribe(fn) {
+        if (fn) {
+            this._subscriptions.push(this.createSubscription(fn, false));
+            this.triggerSubscriptionChange();
+        }
+        return () => {
+            this.unsubscribe(fn);
+        };
+    }
+    /**
+     * Subscribe to the event dispatcher.
+     *
+     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
+     * @returns A function that unsubscribes the event handler from the event.
+     *
+     * @memberOf DispatcherBase
+     */
+    sub(fn) {
+        return this.subscribe(fn);
+    }
+    /**
+     * Subscribe once to the event with the specified name.
+     *
+     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
+     * @returns A function that unsubscribes the event handler from the event.
+     *
+     * @memberOf DispatcherBase
+     */
+    one(fn) {
+        if (fn) {
+            this._subscriptions.push(this.createSubscription(fn, true));
+            this.triggerSubscriptionChange();
+        }
+        return () => {
+            this.unsubscribe(fn);
+        };
+    }
+    /**
+     * Checks it the event has a subscription for the specified handler.
+     *
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf DispatcherBase
+     */
+    has(fn) {
+        if (!fn)
+            return false;
+        return this._subscriptions.some((sub) => sub.handler == fn);
+    }
+    /**
+     * Unsubscribes the handler from the dispatcher.
+     *
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf DispatcherBase
+     */
+    unsubscribe(fn) {
+        if (!fn)
+            return;
+        let changes = false;
+        for (let i = 0; i < this._subscriptions.length; i++) {
+            if (this._subscriptions[i].handler == fn) {
+                this._subscriptions.splice(i, 1);
+                changes = true;
+                break;
+            }
+        }
+        if (changes) {
+            this.triggerSubscriptionChange();
+        }
+    }
+    /**
+     * Unsubscribes the handler from the dispatcher.
+     *
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf DispatcherBase
+     */
+    unsub(fn) {
+        this.unsubscribe(fn);
+    }
+    /**
+     * Generic dispatch will dispatch the handlers with the given arguments.
+     *
+     * @protected
+     * @param {boolean} executeAsync `True` if the even should be executed async.
+     * @param {*} scope The scope of the event. The scope becomes the `this` for handler.
+     * @param {IArguments} args The arguments for the event.
+     * @returns {(IPropagationStatus | null)} The propagation status, or if an `executeAsync` is used `null`.
+     *
+     * @memberOf DispatcherBase
+     */
+    _dispatch(executeAsync, scope, args) {
+        //execute on a copy because of bug #9
+        for (let sub of [...this._subscriptions]) {
+            let ev = new __1.EventManagement(() => this.unsub(sub.handler));
+            let nargs = Array.prototype.slice.call(args);
+            nargs.push(ev);
+            let s = sub;
+            s.execute(executeAsync, scope, nargs);
+            //cleanup subs that are no longer needed
+            this.cleanup(sub);
+            if (!executeAsync && ev.propagationStopped) {
+                return { propagationStopped: true };
+            }
+        }
+        if (executeAsync) {
+            return null;
+        }
+        return { propagationStopped: false };
+    }
+    /**
+     * Creates a subscription.
+     *
+     * @protected
+     * @param {TEventHandler} handler The handler.
+     * @param {boolean} isOnce True if the handler should run only one.
+     * @returns {ISubscription<TEventHandler>} The subscription.
+     *
+     * @memberOf DispatcherBase
+     */
+    createSubscription(handler, isOnce) {
+        return new __1.Subscription(handler, isOnce);
+    }
+    /**
+     * Cleans up subs that ran and should run only once.
+     *
+     * @protected
+     * @param {ISubscription<TEventHandler>} sub The subscription.
+     *
+     * @memberOf DispatcherBase
+     */
+    cleanup(sub) {
+        let changes = false;
+        if (sub.isOnce && sub.isExecuted) {
+            let i = this._subscriptions.indexOf(sub);
+            if (i > -1) {
+                this._subscriptions.splice(i, 1);
+                changes = true;
+            }
+        }
+        if (changes) {
+            this.triggerSubscriptionChange();
+        }
+    }
+    /**
+     * Creates an event from the dispatcher. Will return the dispatcher
+     * in a wrapper. This will prevent exposure of any dispatcher methods.
+     *
+     * @returns {ISubscribable<TEventHandler>}
+     *
+     * @memberOf DispatcherBase
+     */
+    asEvent() {
+        if (this._wrap == null) {
+            this._wrap = new __1.DispatcherWrapper(this);
+        }
+        return this._wrap;
+    }
+    /**
+     * Clears the subscriptions.
+     *
+     * @memberOf DispatcherBase
+     */
+    clear() {
+        if (this._subscriptions.length != 0) {
+            this._subscriptions.splice(0, this._subscriptions.length);
+            this.triggerSubscriptionChange();
+        }
+    }
+    /**
+     * Triggers the subscription change event.
+     *
+     * @private
+     *
+     * @memberOf DispatcherBase
+     */
+    triggerSubscriptionChange() {
+        if (this._onSubscriptionChange != null) {
+            this._onSubscriptionChange.dispatch(this.count);
+        }
+    }
+}
+exports.DispatcherBase = DispatcherBase;
+
+
+/***/ }),
+
+/***/ 5485:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PromiseSubscription = void 0;
+/**
+ * Subscription implementation for events with promises.
+ *
+ * @export
+ * @class PromiseSubscription
+ * @implements {ISubscription<TEventHandler>}
+ * @template TEventHandler The type of event handler.
+ */
+class PromiseSubscription {
+    /**
+     * Creates an instance of PromiseSubscription.
+     * @param {TEventHandler} handler The handler for the subscription.
+     * @param {boolean} isOnce Indicates if the handler should only be executed once.
+     *
+     * @memberOf PromiseSubscription
+     */
+    constructor(handler, isOnce) {
+        this.handler = handler;
+        this.isOnce = isOnce;
+        /**
+         * Indicates if the subscription has been executed before.
+         *
+         * @memberOf PromiseSubscription
+         */
+        this.isExecuted = false;
+    }
+    /**
+     * Executes the handler.
+     *
+     * @param {boolean} executeAsync True if the even should be executed async.
+     * @param {*} scope The scope the scope of the event.
+     * @param {IArguments} args The arguments for the event.
+     *
+     * @memberOf PromiseSubscription
+     */
+    async execute(executeAsync, scope, args) {
+        if (!this.isOnce || !this.isExecuted) {
+            this.isExecuted = true;
+            //TODO: do we need to cast to any -- seems yuck
+            var fn = this.handler;
+            if (executeAsync) {
+                setTimeout(() => {
+                    fn.apply(scope, args);
+                }, 1);
+                return;
+            }
+            let result = fn.apply(scope, args);
+            await result;
+        }
+    }
+}
+exports.PromiseSubscription = PromiseSubscription;
+
+
+/***/ }),
+
+/***/ 5536:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PromiseSimpleEventList = void 0;
+const ste_core_1 = __webpack_require__(5575);
+const PromiseSimpleEventDispatcher_1 = __webpack_require__(3677);
+/**
+ * Storage class for multiple simple events that are accessible by name.
+ * Events dispatchers are automatically created.
+ */
+class PromiseSimpleEventList extends ste_core_1.EventListBase {
+    /**
+     * Creates a new SimpleEventList instance.
+     */
+    constructor() {
+        super();
+    }
+    /**
+     * Creates a new dispatcher instance.
+     */
+    createDispatcher() {
+        return new PromiseSimpleEventDispatcher_1.PromiseSimpleEventDispatcher();
+    }
+}
+exports.PromiseSimpleEventList = PromiseSimpleEventList;
+
+
+/***/ }),
+
+/***/ 5537:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.HandlingBase = void 0;
+/**
+ * Base class that implements event handling. With a an
+ * event list this base class will expose events that can be
+ * subscribed to. This will give your class generic events.
+ *
+ * @export
+ * @abstract
+ * @class HandlingBase
+ * @template TEventHandler The type of event handler.
+ * @template TDispatcher The type of dispatcher.
+ * @template TList The type of event list.
+ */
+class HandlingBase {
+    /**
+     * Creates an instance of HandlingBase.
+     * @param {TList} events The event list. Used for event management.
+     *
+     * @memberOf HandlingBase
+     */
+    constructor(events) {
+        this.events = events;
+    }
+    /**
+     * Subscribes once to the event with the specified name.
+     * @param {string} name The name of the event.
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf HandlingBase
+     */
+    one(name, fn) {
+        this.events.get(name).one(fn);
+    }
+    /**
+     * Checks it the event has a subscription for the specified handler.
+     * @param {string} name The name of the event.
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf HandlingBase
+     */
+    has(name, fn) {
+        return this.events.get(name).has(fn);
+    }
+    /**
+     * Subscribes to the event with the specified name.
+     * @param {string} name The name of the event.
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf HandlingBase
+     */
+    subscribe(name, fn) {
+        this.events.get(name).subscribe(fn);
+    }
+    /**
+     * Subscribes to the event with the specified name.
+     * @param {string} name The name of the event.
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf HandlingBase
+     */
+    sub(name, fn) {
+        this.subscribe(name, fn);
+    }
+    /**
+     * Unsubscribes from the event with the specified name.
+     * @param {string} name The name of the event.
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf HandlingBase
+     */
+    unsubscribe(name, fn) {
+        this.events.get(name).unsubscribe(fn);
+    }
+    /**
+     * Unsubscribes from the event with the specified name.
+     * @param {string} name The name of the event.
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf HandlingBase
+     */
+    unsub(name, fn) {
+        this.unsubscribe(name, fn);
+    }
+}
+exports.HandlingBase = HandlingBase;
+
+
+/***/ }),
+
+/***/ 5575:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+/*!
+ * Strongly Typed Events for TypeScript - Core
+ * https://github.com/KeesCBakker/StronlyTypedEvents/
+ * http://keestalkstech.com
+ *
+ * Copyright Kees C. Bakker / KeesTalksTech
+ * Released under the MIT license
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SubscriptionChangeEventDispatcher = exports.HandlingBase = exports.PromiseDispatcherBase = exports.PromiseSubscription = exports.DispatchError = exports.EventManagement = exports.EventListBase = exports.DispatcherWrapper = exports.DispatcherBase = exports.Subscription = void 0;
+const DispatcherBase_1 = __webpack_require__(5072);
+Object.defineProperty(exports, "DispatcherBase", ({ enumerable: true, get: function () { return DispatcherBase_1.DispatcherBase; } }));
+const DispatchError_1 = __webpack_require__(2210);
+Object.defineProperty(exports, "DispatchError", ({ enumerable: true, get: function () { return DispatchError_1.DispatchError; } }));
+const DispatcherWrapper_1 = __webpack_require__(1050);
+Object.defineProperty(exports, "DispatcherWrapper", ({ enumerable: true, get: function () { return DispatcherWrapper_1.DispatcherWrapper; } }));
+const EventListBase_1 = __webpack_require__(4211);
+Object.defineProperty(exports, "EventListBase", ({ enumerable: true, get: function () { return EventListBase_1.EventListBase; } }));
+const EventManagement_1 = __webpack_require__(3504);
+Object.defineProperty(exports, "EventManagement", ({ enumerable: true, get: function () { return EventManagement_1.EventManagement; } }));
+const HandlingBase_1 = __webpack_require__(5537);
+Object.defineProperty(exports, "HandlingBase", ({ enumerable: true, get: function () { return HandlingBase_1.HandlingBase; } }));
+const PromiseDispatcherBase_1 = __webpack_require__(3787);
+Object.defineProperty(exports, "PromiseDispatcherBase", ({ enumerable: true, get: function () { return PromiseDispatcherBase_1.PromiseDispatcherBase; } }));
+const PromiseSubscription_1 = __webpack_require__(5485);
+Object.defineProperty(exports, "PromiseSubscription", ({ enumerable: true, get: function () { return PromiseSubscription_1.PromiseSubscription; } }));
+const Subscription_1 = __webpack_require__(8080);
+Object.defineProperty(exports, "Subscription", ({ enumerable: true, get: function () { return Subscription_1.Subscription; } }));
+const SubscriptionChangeEventHandler_1 = __webpack_require__(1789);
+Object.defineProperty(exports, "SubscriptionChangeEventDispatcher", ({ enumerable: true, get: function () { return SubscriptionChangeEventHandler_1.SubscriptionChangeEventDispatcher; } }));
+
+
+/***/ }),
+
+/***/ 5636:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EventListBase = void 0;
+/**
+ * Base class for event lists classes. Implements the get and remove.
+ *
+ * @export
+ * @abstract
+ * @class EventListBaset
+ * @template TEventDispatcher The type of event dispatcher.
+ */
+class EventListBase {
+    constructor() {
+        this._events = {};
+    }
+    /**
+     * Gets the dispatcher associated with the name.
+     *
+     * @param {string} name The name of the event.
+     * @returns {TEventDispatcher} The disptacher.
+     *
+     * @memberOf EventListBase
+     */
+    get(name) {
+        let event = this._events[name];
+        if (event) {
+            return event;
+        }
+        event = this.createDispatcher();
+        this._events[name] = event;
+        return event;
+    }
+    /**
+     * Removes the dispatcher associated with the name.
+     *
+     * @param {string} name
+     *
+     * @memberOf EventListBase
+     */
+    remove(name) {
+        delete this._events[name];
+    }
+}
+exports.EventListBase = EventListBase;
+
+
+/***/ }),
+
+/***/ 5722:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.HandlingBase = void 0;
+/**
+ * Base class that implements event handling. With a an
+ * event list this base class will expose events that can be
+ * subscribed to. This will give your class generic events.
+ *
+ * @export
+ * @abstract
+ * @class HandlingBase
+ * @template TEventHandler The type of event handler.
+ * @template TDispatcher The type of dispatcher.
+ * @template TList The type of event list.
+ */
+class HandlingBase {
+    /**
+     * Creates an instance of HandlingBase.
+     * @param {TList} events The event list. Used for event management.
+     *
+     * @memberOf HandlingBase
+     */
+    constructor(events) {
+        this.events = events;
+    }
+    /**
+     * Subscribes once to the event with the specified name.
+     * @param {string} name The name of the event.
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf HandlingBase
+     */
+    one(name, fn) {
+        this.events.get(name).one(fn);
+    }
+    /**
+     * Checks it the event has a subscription for the specified handler.
+     * @param {string} name The name of the event.
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf HandlingBase
+     */
+    has(name, fn) {
+        return this.events.get(name).has(fn);
+    }
+    /**
+     * Subscribes to the event with the specified name.
+     * @param {string} name The name of the event.
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf HandlingBase
+     */
+    subscribe(name, fn) {
+        this.events.get(name).subscribe(fn);
+    }
+    /**
+     * Subscribes to the event with the specified name.
+     * @param {string} name The name of the event.
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf HandlingBase
+     */
+    sub(name, fn) {
+        this.subscribe(name, fn);
+    }
+    /**
+     * Unsubscribes from the event with the specified name.
+     * @param {string} name The name of the event.
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf HandlingBase
+     */
+    unsubscribe(name, fn) {
+        this.events.get(name).unsubscribe(fn);
+    }
+    /**
+     * Unsubscribes from the event with the specified name.
+     * @param {string} name The name of the event.
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf HandlingBase
+     */
+    unsub(name, fn) {
+        this.unsubscribe(name, fn);
+    }
+}
+exports.HandlingBase = HandlingBase;
+
+
+/***/ }),
+
+/***/ 5829:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NonUniformPromiseSimpleEventList = void 0;
+const PromiseSimpleEventDispatcher_1 = __webpack_require__(3677);
+/**
+ * Similar to EventList, but instead of TArgs, a map of event names ang argument types is provided with TArgsMap.
+ */
+class NonUniformPromiseSimpleEventList {
+    constructor() {
+        this._events = {};
+    }
+    /**
+     * Gets the dispatcher associated with the name.
+     * @param name The name of the event.
+     */
+    get(name) {
+        if (this._events[name]) {
+            // @TODO avoid typecasting. Not sure why TS thinks this._events[name] could still be undefined.
+            return this._events[name];
+        }
+        const event = this.createDispatcher();
+        this._events[name] = event;
+        return event;
+    }
+    /**
+     * Removes the dispatcher associated with the name.
+     * @param name The name of the event.
+     */
+    remove(name) {
+        delete this._events[name];
+    }
+    /**
+     * Creates a new dispatcher instance.
+     */
+    createDispatcher() {
+        return new PromiseSimpleEventDispatcher_1.PromiseSimpleEventDispatcher();
+    }
+}
+exports.NonUniformPromiseSimpleEventList = NonUniformPromiseSimpleEventList;
+
+
+/***/ }),
+
+/***/ 5871:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PromiseSignalHandlingBase = void 0;
+const ste_core_1 = __webpack_require__(7852);
+const PromiseSignalList_1 = __webpack_require__(131);
+/**
+ * Extends objects with signal event handling capabilities.
+ */
+class PromiseSignalHandlingBase extends ste_core_1.HandlingBase {
+    constructor() {
+        super(new PromiseSignalList_1.PromiseSignalList());
+    }
+}
+exports.PromiseSignalHandlingBase = PromiseSignalHandlingBase;
+
+
+/***/ }),
+
+/***/ 6042:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+/*!
+ * Strongly Typed Events for TypeScript - Promise Signals
+ * https://github.com/KeesCBakker/StronlyTypedEvents/
+ * http://keestalkstech.com
+ *
+ * Copyright Kees C. Bakker / KeesTalksTech
+ * Released under the MIT license
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PromiseSignalList = exports.PromiseSignalHandlingBase = exports.PromiseSignalDispatcher = void 0;
+const PromiseSignalDispatcher_1 = __webpack_require__(4450);
+Object.defineProperty(exports, "PromiseSignalDispatcher", ({ enumerable: true, get: function () { return PromiseSignalDispatcher_1.PromiseSignalDispatcher; } }));
+const PromiseSignalHandlingBase_1 = __webpack_require__(5871);
+Object.defineProperty(exports, "PromiseSignalHandlingBase", ({ enumerable: true, get: function () { return PromiseSignalHandlingBase_1.PromiseSignalHandlingBase; } }));
+const PromiseSignalList_1 = __webpack_require__(131);
+Object.defineProperty(exports, "PromiseSignalList", ({ enumerable: true, get: function () { return PromiseSignalList_1.PromiseSignalList; } }));
+
+
+/***/ }),
+
+/***/ 6372:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PromiseDispatcherBase = void 0;
+const __1 = __webpack_require__(7852);
+/**
+ * Dispatcher base for dispatchers that use promises. Each promise
+ * is awaited before the next is dispatched, unless the event is
+ * dispatched with the executeAsync flag.
+ *
+ * @export
+ * @abstract
+ * @class PromiseDispatcherBase
+ * @extends {DispatcherBase<TEventHandler>}
+ * @template TEventHandler The type of event handler.
+ */
+class PromiseDispatcherBase extends __1.DispatcherBase {
+    /**
+     * The normal dispatch cannot be used in this class.
+     *
+     * @protected
+     * @param {boolean} executeAsync `True` if the even should be executed async.
+     * @param {*} scope The scope of the event. The scope becomes the `this` for handler.
+     * @param {IArguments} args The arguments for the event.
+     * @returns {(IPropagationStatus | null)} The propagation status, or if an `executeAsync` is used `null`.
+     *
+     * @memberOf DispatcherBase
+     */
+    _dispatch(executeAsync, scope, args) {
+        throw new __1.DispatchError("_dispatch not supported. Use _dispatchAsPromise.");
+    }
+    /**
+     * Crates a new subscription.
+     *
+     * @protected
+     * @param {TEventHandler} handler The handler.
+     * @param {boolean} isOnce Indicates if the handler should only run once.
+     * @returns {ISubscription<TEventHandler>} The subscription.
+     *
+     * @memberOf PromiseDispatcherBase
+     */
+    createSubscription(handler, isOnce) {
+        return new __1.PromiseSubscription(handler, isOnce);
+    }
+    /**
+     * Generic dispatch will dispatch the handlers with the given arguments.
+     *
+     * @protected
+     * @param {boolean} executeAsync `True` if the even should be executed async.
+     * @param {*} scope The scope of the event. The scope becomes the `this` for handler.
+     * @param {IArguments} args The arguments for the event.
+     * @returns {(IPropagationStatus | null)} The propagation status, or if an `executeAsync` is used `null`.
+     *
+     * @memberOf DispatcherBase
+     */
+    async _dispatchAsPromise(executeAsync, scope, args) {
+        //execute on a copy because of bug #9
+        for (let sub of [...this._subscriptions]) {
+            let ev = new __1.EventManagement(() => this.unsub(sub.handler));
+            let nargs = Array.prototype.slice.call(args);
+            nargs.push(ev);
+            let ps = sub;
+            await ps.execute(executeAsync, scope, nargs);
+            //cleanup subs that are no longer needed
+            this.cleanup(sub);
+            if (!executeAsync && ev.propagationStopped) {
+                return { propagationStopped: true };
+            }
+        }
+        if (executeAsync) {
+            return null;
+        }
+        return { propagationStopped: false };
+    }
+}
+exports.PromiseDispatcherBase = PromiseDispatcherBase;
+
+
+/***/ }),
+
+/***/ 6413:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.EventManagement = void 0;
+/**
+ * Allows the user to interact with the event.
+ *
+ * @export
+ * @class EventManagement
+ * @implements {IEventManagement}
+ */
+class EventManagement {
+    /**
+     * Creates an instance of EventManagement.
+     * @param {() => void} unsub An unsubscribe handler.
+     *
+     * @memberOf EventManagement
+     */
+    constructor(unsub) {
+        this.unsub = unsub;
+        this.propagationStopped = false;
+    }
+    /**
+     * Stops the propagation of the event.
+     * Cannot be used when async dispatch is done.
+     *
+     * @memberOf EventManagement
+     */
+    stopPropagation() {
+        this.propagationStopped = true;
+    }
+}
+exports.EventManagement = EventManagement;
+
+
+/***/ }),
+
+/***/ 6436:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PromiseSubscription = void 0;
+/**
+ * Subscription implementation for events with promises.
+ *
+ * @export
+ * @class PromiseSubscription
+ * @implements {ISubscription<TEventHandler>}
+ * @template TEventHandler The type of event handler.
+ */
+class PromiseSubscription {
+    /**
+     * Creates an instance of PromiseSubscription.
+     * @param {TEventHandler} handler The handler for the subscription.
+     * @param {boolean} isOnce Indicates if the handler should only be executed once.
+     *
+     * @memberOf PromiseSubscription
+     */
+    constructor(handler, isOnce) {
+        this.handler = handler;
+        this.isOnce = isOnce;
+        /**
+         * Indicates if the subscription has been executed before.
+         *
+         * @memberOf PromiseSubscription
+         */
+        this.isExecuted = false;
+    }
+    /**
+     * Executes the handler.
+     *
+     * @param {boolean} executeAsync True if the even should be executed async.
+     * @param {*} scope The scope the scope of the event.
+     * @param {IArguments} args The arguments for the event.
+     *
+     * @memberOf PromiseSubscription
+     */
+    async execute(executeAsync, scope, args) {
+        if (!this.isOnce || !this.isExecuted) {
+            this.isExecuted = true;
+            //TODO: do we need to cast to any -- seems yuck
+            var fn = this.handler;
+            if (executeAsync) {
+                setTimeout(() => {
+                    fn.apply(scope, args);
+                }, 1);
+                return;
+            }
+            let result = fn.apply(scope, args);
+            await result;
+        }
+    }
+}
+exports.PromiseSubscription = PromiseSubscription;
+
+
+/***/ }),
+
+/***/ 6442:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.HandlingBase = void 0;
+/**
+ * Base class that implements event handling. With a an
+ * event list this base class will expose events that can be
+ * subscribed to. This will give your class generic events.
+ *
+ * @export
+ * @abstract
+ * @class HandlingBase
+ * @template TEventHandler The type of event handler.
+ * @template TDispatcher The type of dispatcher.
+ * @template TList The type of event list.
+ */
+class HandlingBase {
+    /**
+     * Creates an instance of HandlingBase.
+     * @param {TList} events The event list. Used for event management.
+     *
+     * @memberOf HandlingBase
+     */
+    constructor(events) {
+        this.events = events;
+    }
+    /**
+     * Subscribes once to the event with the specified name.
+     * @param {string} name The name of the event.
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf HandlingBase
+     */
+    one(name, fn) {
+        this.events.get(name).one(fn);
+    }
+    /**
+     * Checks it the event has a subscription for the specified handler.
+     * @param {string} name The name of the event.
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf HandlingBase
+     */
+    has(name, fn) {
+        return this.events.get(name).has(fn);
+    }
+    /**
+     * Subscribes to the event with the specified name.
+     * @param {string} name The name of the event.
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf HandlingBase
+     */
+    subscribe(name, fn) {
+        this.events.get(name).subscribe(fn);
+    }
+    /**
+     * Subscribes to the event with the specified name.
+     * @param {string} name The name of the event.
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf HandlingBase
+     */
+    sub(name, fn) {
+        this.subscribe(name, fn);
+    }
+    /**
+     * Unsubscribes from the event with the specified name.
+     * @param {string} name The name of the event.
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf HandlingBase
+     */
+    unsubscribe(name, fn) {
+        this.events.get(name).unsubscribe(fn);
+    }
+    /**
+     * Unsubscribes from the event with the specified name.
+     * @param {string} name The name of the event.
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf HandlingBase
+     */
+    unsub(name, fn) {
+        this.unsubscribe(name, fn);
+    }
+}
+exports.HandlingBase = HandlingBase;
+
+
+/***/ }),
+
+/***/ 6484:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PromiseSubscription = void 0;
+/**
+ * Subscription implementation for events with promises.
+ *
+ * @export
+ * @class PromiseSubscription
+ * @implements {ISubscription<TEventHandler>}
+ * @template TEventHandler The type of event handler.
+ */
+class PromiseSubscription {
+    /**
+     * Creates an instance of PromiseSubscription.
+     * @param {TEventHandler} handler The handler for the subscription.
+     * @param {boolean} isOnce Indicates if the handler should only be executed once.
+     *
+     * @memberOf PromiseSubscription
+     */
+    constructor(handler, isOnce) {
+        this.handler = handler;
+        this.isOnce = isOnce;
+        /**
+         * Indicates if the subscription has been executed before.
+         *
+         * @memberOf PromiseSubscription
+         */
+        this.isExecuted = false;
+    }
+    /**
+     * Executes the handler.
+     *
+     * @param {boolean} executeAsync True if the even should be executed async.
+     * @param {*} scope The scope the scope of the event.
+     * @param {IArguments} args The arguments for the event.
+     *
+     * @memberOf PromiseSubscription
+     */
+    async execute(executeAsync, scope, args) {
+        if (!this.isOnce || !this.isExecuted) {
+            this.isExecuted = true;
+            //TODO: do we need to cast to any -- seems yuck
+            var fn = this.handler;
+            if (executeAsync) {
+                setTimeout(() => {
+                    fn.apply(scope, args);
+                }, 1);
+                return;
+            }
+            let result = fn.apply(scope, args);
+            await result;
+        }
+    }
+}
+exports.PromiseSubscription = PromiseSubscription;
+
+
+/***/ }),
+
+/***/ 6569:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NonUniformSimpleEventList = exports.SimpleEventList = exports.SimpleEventHandlingBase = exports.SimpleEventDispatcher = void 0;
+const SimpleEventDispatcher_1 = __webpack_require__(9606);
+Object.defineProperty(exports, "SimpleEventDispatcher", ({ enumerable: true, get: function () { return SimpleEventDispatcher_1.SimpleEventDispatcher; } }));
+const SimpleEventHandlingBase_1 = __webpack_require__(4763);
+Object.defineProperty(exports, "SimpleEventHandlingBase", ({ enumerable: true, get: function () { return SimpleEventHandlingBase_1.SimpleEventHandlingBase; } }));
+const NonUniformSimpleEventList_1 = __webpack_require__(7376);
+Object.defineProperty(exports, "NonUniformSimpleEventList", ({ enumerable: true, get: function () { return NonUniformSimpleEventList_1.NonUniformSimpleEventList; } }));
+const SimpleEventList_1 = __webpack_require__(2175);
+Object.defineProperty(exports, "SimpleEventList", ({ enumerable: true, get: function () { return SimpleEventList_1.SimpleEventList; } }));
+
+
+/***/ }),
+
+/***/ 6580:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PromiseDispatcherBase = void 0;
+const __1 = __webpack_require__(4604);
+/**
+ * Dispatcher base for dispatchers that use promises. Each promise
+ * is awaited before the next is dispatched, unless the event is
+ * dispatched with the executeAsync flag.
+ *
+ * @export
+ * @abstract
+ * @class PromiseDispatcherBase
+ * @extends {DispatcherBase<TEventHandler>}
+ * @template TEventHandler The type of event handler.
+ */
+class PromiseDispatcherBase extends __1.DispatcherBase {
+    /**
+     * The normal dispatch cannot be used in this class.
+     *
+     * @protected
+     * @param {boolean} executeAsync `True` if the even should be executed async.
+     * @param {*} scope The scope of the event. The scope becomes the `this` for handler.
+     * @param {IArguments} args The arguments for the event.
+     * @returns {(IPropagationStatus | null)} The propagation status, or if an `executeAsync` is used `null`.
+     *
+     * @memberOf DispatcherBase
+     */
+    _dispatch(executeAsync, scope, args) {
+        throw new __1.DispatchError("_dispatch not supported. Use _dispatchAsPromise.");
+    }
+    /**
+     * Crates a new subscription.
+     *
+     * @protected
+     * @param {TEventHandler} handler The handler.
+     * @param {boolean} isOnce Indicates if the handler should only run once.
+     * @returns {ISubscription<TEventHandler>} The subscription.
+     *
+     * @memberOf PromiseDispatcherBase
+     */
+    createSubscription(handler, isOnce) {
+        return new __1.PromiseSubscription(handler, isOnce);
+    }
+    /**
+     * Generic dispatch will dispatch the handlers with the given arguments.
+     *
+     * @protected
+     * @param {boolean} executeAsync `True` if the even should be executed async.
+     * @param {*} scope The scope of the event. The scope becomes the `this` for handler.
+     * @param {IArguments} args The arguments for the event.
+     * @returns {(IPropagationStatus | null)} The propagation status, or if an `executeAsync` is used `null`.
+     *
+     * @memberOf DispatcherBase
+     */
+    async _dispatchAsPromise(executeAsync, scope, args) {
+        //execute on a copy because of bug #9
+        for (let sub of [...this._subscriptions]) {
+            let ev = new __1.EventManagement(() => this.unsub(sub.handler));
+            let nargs = Array.prototype.slice.call(args);
+            nargs.push(ev);
+            let ps = sub;
+            await ps.execute(executeAsync, scope, nargs);
+            //cleanup subs that are no longer needed
+            this.cleanup(sub);
+            if (!executeAsync && ev.propagationStopped) {
+                return { propagationStopped: true };
+            }
+        }
+        if (executeAsync) {
+            return null;
+        }
+        return { propagationStopped: false };
+    }
+}
+exports.PromiseDispatcherBase = PromiseDispatcherBase;
+
+
+/***/ }),
+
+/***/ 6833:
+/***/ (function(module, exports, __webpack_require__) {
+
+/* module decorator */ module = __webpack_require__.nmd(module);
+var __WEBPACK_AMD_DEFINE_RESULT__;// A Javascript implementaion of Richard Brent's Xorgens xor4096 algorithm.
+//
+// This fast non-cryptographic random number generator is designed for
+// use in Monte-Carlo algorithms. It combines a long-period xorshift
+// generator with a Weyl generator, and it passes all common batteries
+// of stasticial tests for randomness while consuming only a few nanoseconds
+// for each prng generated.  For background on the generator, see Brent's
+// paper: "Some long-period random number generators using shifts and xors."
+// http://arxiv.org/pdf/1004.3115v1.pdf
+//
+// Usage:
+//
+// var xor4096 = require('xor4096');
+// random = xor4096(1);                        // Seed with int32 or string.
+// assert.equal(random(), 0.1520436450538547); // (0, 1) range, 53 bits.
+// assert.equal(random.int32(), 1806534897);   // signed int32, 32 bits.
+//
+// For nonzero numeric keys, this impelementation provides a sequence
+// identical to that by Brent's xorgens 3 implementaion in C.  This
+// implementation also provides for initalizing the generator with
+// string seeds, or for saving and restoring the state of the generator.
+//
+// On Chrome, this prng benchmarks about 2.1 times slower than
+// Javascript's built-in Math.random().
+
+(function(global, module, define) {
+
+function XorGen(seed) {
+  var me = this;
+
+  // Set up generator function.
+  me.next = function() {
+    var w = me.w,
+        X = me.X, i = me.i, t, v;
+    // Update Weyl generator.
+    me.w = w = (w + 0x61c88647) | 0;
+    // Update xor generator.
+    v = X[(i + 34) & 127];
+    t = X[i = ((i + 1) & 127)];
+    v ^= v << 13;
+    t ^= t << 17;
+    v ^= v >>> 15;
+    t ^= t >>> 12;
+    // Update Xor generator array state.
+    v = X[i] = v ^ t;
+    me.i = i;
+    // Result is the combination.
+    return (v + (w ^ (w >>> 16))) | 0;
+  };
+
+  function init(me, seed) {
+    var t, v, i, j, w, X = [], limit = 128;
+    if (seed === (seed | 0)) {
+      // Numeric seeds initialize v, which is used to generates X.
+      v = seed;
+      seed = null;
+    } else {
+      // String seeds are mixed into v and X one character at a time.
+      seed = seed + '\0';
+      v = 0;
+      limit = Math.max(limit, seed.length);
+    }
+    // Initialize circular array and weyl value.
+    for (i = 0, j = -32; j < limit; ++j) {
+      // Put the unicode characters into the array, and shuffle them.
+      if (seed) v ^= seed.charCodeAt((j + 32) % seed.length);
+      // After 32 shuffles, take v as the starting w value.
+      if (j === 0) w = v;
+      v ^= v << 10;
+      v ^= v >>> 15;
+      v ^= v << 4;
+      v ^= v >>> 13;
+      if (j >= 0) {
+        w = (w + 0x61c88647) | 0;     // Weyl.
+        t = (X[j & 127] ^= (v + w));  // Combine xor and weyl to init array.
+        i = (0 == t) ? i + 1 : 0;     // Count zeroes.
+      }
+    }
+    // We have detected all zeroes; make the key nonzero.
+    if (i >= 128) {
+      X[(seed && seed.length || 0) & 127] = -1;
+    }
+    // Run the generator 512 times to further mix the state before using it.
+    // Factoring this as a function slows the main generator, so it is just
+    // unrolled here.  The weyl generator is not advanced while warming up.
+    i = 127;
+    for (j = 4 * 128; j > 0; --j) {
+      v = X[(i + 34) & 127];
+      t = X[i = ((i + 1) & 127)];
+      v ^= v << 13;
+      t ^= t << 17;
+      v ^= v >>> 15;
+      t ^= t >>> 12;
+      X[i] = v ^ t;
+    }
+    // Storing state as object members is faster than using closure variables.
+    me.w = w;
+    me.X = X;
+    me.i = i;
+  }
+
+  init(me, seed);
+}
+
+function copy(f, t) {
+  t.i = f.i;
+  t.w = f.w;
+  t.X = f.X.slice();
+  return t;
+};
+
+function impl(seed, opts) {
+  if (seed == null) seed = +(new Date);
+  var xg = new XorGen(seed),
+      state = opts && opts.state,
+      prng = function() { return (xg.next() >>> 0) / 0x100000000; };
+  prng.double = function() {
+    do {
+      var top = xg.next() >>> 11,
+          bot = (xg.next() >>> 0) / 0x100000000,
+          result = (top + bot) / (1 << 21);
+    } while (result === 0);
+    return result;
+  };
+  prng.int32 = xg.next;
+  prng.quick = prng;
+  if (state) {
+    if (state.X) copy(state, xg);
+    prng.state = function() { return copy(xg, {}); }
+  }
+  return prng;
+}
+
+if (module && module.exports) {
+  module.exports = impl;
+} else if (__webpack_require__.amdD && __webpack_require__.amdO) {
+  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return impl; }).call(exports, __webpack_require__, exports, module),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+} else {
+  this.xor4096 = impl;
+}
+
+})(
+  this,                                     // window object or global
+   true && module,    // present in node.js
+  __webpack_require__.amdD   // present with an AMD loader
+);
+
+
+/***/ }),
+
+/***/ 7180:
+/***/ (function(module, exports, __webpack_require__) {
+
+/* module decorator */ module = __webpack_require__.nmd(module);
+var __WEBPACK_AMD_DEFINE_RESULT__;// A port of an algorithm by Johannes Baagøe <baagoe@baagoe.com>, 2010
+// http://baagoe.com/en/RandomMusings/javascript/
+// https://github.com/nquinlan/better-random-numbers-for-javascript-mirror
+// Original work is under MIT license -
+
+// Copyright (C) 2010 by Johannes Baagøe <baagoe@baagoe.org>
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+
+
+(function(global, module, define) {
+
+function Alea(seed) {
+  var me = this, mash = Mash();
+
+  me.next = function() {
+    var t = 2091639 * me.s0 + me.c * 2.3283064365386963e-10; // 2^-32
+    me.s0 = me.s1;
+    me.s1 = me.s2;
+    return me.s2 = t - (me.c = t | 0);
+  };
+
+  // Apply the seeding algorithm from Baagoe.
+  me.c = 1;
+  me.s0 = mash(' ');
+  me.s1 = mash(' ');
+  me.s2 = mash(' ');
+  me.s0 -= mash(seed);
+  if (me.s0 < 0) { me.s0 += 1; }
+  me.s1 -= mash(seed);
+  if (me.s1 < 0) { me.s1 += 1; }
+  me.s2 -= mash(seed);
+  if (me.s2 < 0) { me.s2 += 1; }
+  mash = null;
+}
+
+function copy(f, t) {
+  t.c = f.c;
+  t.s0 = f.s0;
+  t.s1 = f.s1;
+  t.s2 = f.s2;
+  return t;
+}
+
+function impl(seed, opts) {
+  var xg = new Alea(seed),
+      state = opts && opts.state,
+      prng = xg.next;
+  prng.int32 = function() { return (xg.next() * 0x100000000) | 0; }
+  prng.double = function() {
+    return prng() + (prng() * 0x200000 | 0) * 1.1102230246251565e-16; // 2^-53
+  };
+  prng.quick = prng;
+  if (state) {
+    if (typeof(state) == 'object') copy(state, xg);
+    prng.state = function() { return copy(xg, {}); }
+  }
+  return prng;
+}
+
+function Mash() {
+  var n = 0xefc8249d;
+
+  var mash = function(data) {
+    data = data.toString();
+    for (var i = 0; i < data.length; i++) {
+      n += data.charCodeAt(i);
+      var h = 0.02519603282416938 * n;
+      n = h >>> 0;
+      h -= n;
+      h *= n;
+      n = h >>> 0;
+      h -= n;
+      n += h * 0x100000000; // 2^32
+    }
+    return (n >>> 0) * 2.3283064365386963e-10; // 2^-32
+  };
+
+  return mash;
+}
+
+
+if (module && module.exports) {
+  module.exports = impl;
+} else if (__webpack_require__.amdD && __webpack_require__.amdO) {
+  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return impl; }).call(exports, __webpack_require__, exports, module),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+} else {
+  this.alea = impl;
+}
+
+})(
+  this,
+   true && module,    // present in node.js
+  __webpack_require__.amdD   // present with an AMD loader
+);
+
+
+
+
+/***/ }),
+
+/***/ 7376:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.NonUniformSimpleEventList = void 0;
+const SimpleEventDispatcher_1 = __webpack_require__(9606);
+/**
+ * Similar to EventList, but instead of TArgs, a map of event names ang argument types is provided with TArgsMap.
+ */
+class NonUniformSimpleEventList {
+    constructor() {
+        this._events = {};
+    }
+    /**
+     * Gets the dispatcher associated with the name.
+     * @param name The name of the event.
+     */
+    get(name) {
+        if (this._events[name]) {
+            // @TODO avoid typecasting. Not sure why TS thinks this._events[name] could still be undefined.
+            return this._events[name];
+        }
+        const event = this.createDispatcher();
+        this._events[name] = event;
+        return event;
+    }
+    /**
+     * Removes the dispatcher associated with the name.
+     * @param name The name of the event.
+     */
+    remove(name) {
+        delete this._events[name];
+    }
+    /**
+     * Creates a new dispatcher instance.
+     */
+    createDispatcher() {
+        return new SimpleEventDispatcher_1.SimpleEventDispatcher();
+    }
+}
+exports.NonUniformSimpleEventList = NonUniformSimpleEventList;
+
+
+/***/ }),
+
+/***/ 7391:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+// A library of seedable RNGs implemented in Javascript.
+//
+// Usage:
+//
+// var seedrandom = require('seedrandom');
+// var random = seedrandom(1); // or any seed.
+// var x = random();       // 0 <= x < 1.  Every bit is random.
+// var x = random.quick(); // 0 <= x < 1.  32 bits of randomness.
+
+// alea, a 53-bit multiply-with-carry generator by Johannes Baagøe.
+// Period: ~2^116
+// Reported to pass all BigCrush tests.
+var alea = __webpack_require__(7180);
+
+// xor128, a pure xor-shift generator by George Marsaglia.
+// Period: 2^128-1.
+// Reported to fail: MatrixRank and LinearComp.
+var xor128 = __webpack_require__(3181);
+
+// xorwow, George Marsaglia's 160-bit xor-shift combined plus weyl.
+// Period: 2^192-2^32
+// Reported to fail: CollisionOver, SimpPoker, and LinearComp.
+var xorwow = __webpack_require__(3031);
+
+// xorshift7, by François Panneton and Pierre L'ecuyer, takes
+// a different approach: it adds robustness by allowing more shifts
+// than Marsaglia's original three.  It is a 7-shift generator
+// with 256 bits, that passes BigCrush with no systmatic failures.
+// Period 2^256-1.
+// No systematic BigCrush failures reported.
+var xorshift7 = __webpack_require__(9067);
+
+// xor4096, by Richard Brent, is a 4096-bit xor-shift with a
+// very long period that also adds a Weyl generator. It also passes
+// BigCrush with no systematic failures.  Its long period may
+// be useful if you have many generators and need to avoid
+// collisions.
+// Period: 2^4128-2^32.
+// No systematic BigCrush failures reported.
+var xor4096 = __webpack_require__(6833);
+
+// Tyche-i, by Samuel Neves and Filipe Araujo, is a bit-shifting random
+// number generator derived from ChaCha, a modern stream cipher.
+// https://eden.dei.uc.pt/~sneves/pubs/2011-snfa2.pdf
+// Period: ~2^127
+// No systematic BigCrush failures reported.
+var tychei = __webpack_require__(3717);
+
+// The original ARC4-based prng included in this library.
+// Period: ~2^1600
+var sr = __webpack_require__(4801);
+
+sr.alea = alea;
+sr.xor128 = xor128;
+sr.xorwow = xorwow;
+sr.xorshift7 = xorshift7;
+sr.xor4096 = xor4096;
+sr.tychei = tychei;
+
+module.exports = sr;
+
+
+/***/ }),
+
+/***/ 7569:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -6113,7 +5210,7 @@ exports.DispatcherWrapper = DispatcherWrapper;
 
 /***/ }),
 
-/***/ 7955:
+/***/ 7672:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -6165,122 +5262,7 @@ exports.EventListBase = EventListBase;
 
 /***/ }),
 
-/***/ 2490:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PromiseDispatcherBase = void 0;
-const __1 = __webpack_require__(3310);
-/**
- * Dispatcher base for dispatchers that use promises. Each promise
- * is awaited before the next is dispatched, unless the event is
- * dispatched with the executeAsync flag.
- *
- * @export
- * @abstract
- * @class PromiseDispatcherBase
- * @extends {DispatcherBase<TEventHandler>}
- * @template TEventHandler The type of event handler.
- */
-class PromiseDispatcherBase extends __1.DispatcherBase {
-    /**
-     * The normal dispatch cannot be used in this class.
-     *
-     * @protected
-     * @param {boolean} executeAsync `True` if the even should be executed async.
-     * @param {*} scope The scope of the event. The scope becomes the `this` for handler.
-     * @param {IArguments} args The arguments for the event.
-     * @returns {(IPropagationStatus | null)} The propagation status, or if an `executeAsync` is used `null`.
-     *
-     * @memberOf DispatcherBase
-     */
-    _dispatch(executeAsync, scope, args) {
-        throw new __1.DispatchError("_dispatch not supported. Use _dispatchAsPromise.");
-    }
-    /**
-     * Crates a new subscription.
-     *
-     * @protected
-     * @param {TEventHandler} handler The handler.
-     * @param {boolean} isOnce Indicates if the handler should only run once.
-     * @returns {ISubscription<TEventHandler>} The subscription.
-     *
-     * @memberOf PromiseDispatcherBase
-     */
-    createSubscription(handler, isOnce) {
-        return new __1.PromiseSubscription(handler, isOnce);
-    }
-    /**
-     * Generic dispatch will dispatch the handlers with the given arguments.
-     *
-     * @protected
-     * @param {boolean} executeAsync `True` if the even should be executed async.
-     * @param {*} scope The scope of the event. The scope becomes the `this` for handler.
-     * @param {IArguments} args The arguments for the event.
-     * @returns {(IPropagationStatus | null)} The propagation status, or if an `executeAsync` is used `null`.
-     *
-     * @memberOf DispatcherBase
-     */
-    async _dispatchAsPromise(executeAsync, scope, args) {
-        //execute on a copy because of bug #9
-        for (let sub of [...this._subscriptions]) {
-            let ev = new __1.EventManagement(() => this.unsub(sub.handler));
-            let nargs = Array.prototype.slice.call(args);
-            nargs.push(ev);
-            let ps = sub;
-            await ps.execute(executeAsync, scope, nargs);
-            //cleanup subs that are no longer needed
-            this.cleanup(sub);
-            if (!executeAsync && ev.propagationStopped) {
-                return { propagationStopped: true };
-            }
-        }
-        if (executeAsync) {
-            return null;
-        }
-        return { propagationStopped: false };
-    }
-}
-exports.PromiseDispatcherBase = PromiseDispatcherBase;
-
-
-/***/ }),
-
-/***/ 1002:
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SubscriptionChangeEventDispatcher = void 0;
-const __1 = __webpack_require__(3310);
-/**
- * Dispatcher for subscription changes.
- *
- * @export
- * @class SubscriptionChangeEventDispatcher
- * @extends {DispatcherBase<SubscriptionChangeEventHandler>}
- */
-class SubscriptionChangeEventDispatcher extends __1.DispatcherBase {
-    /**
-     * Dispatches the event.
-     *
-     * @param {number} count The currrent number of subscriptions.
-     *
-     * @memberOf SubscriptionChangeEventDispatcher
-     */
-    dispatch(count) {
-        this._dispatch(false, this, arguments);
-    }
-}
-exports.SubscriptionChangeEventDispatcher = SubscriptionChangeEventDispatcher;
-
-
-/***/ }),
-
-/***/ 9347:
+/***/ 7744:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -6343,7 +5325,79 @@ exports.PromiseSubscription = PromiseSubscription;
 
 /***/ }),
 
-/***/ 2229:
+/***/ 7852:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+/*!
+ * Strongly Typed Events for TypeScript - Core
+ * https://github.com/KeesCBakker/StronlyTypedEvents/
+ * http://keestalkstech.com
+ *
+ * Copyright Kees C. Bakker / KeesTalksTech
+ * Released under the MIT license
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SubscriptionChangeEventDispatcher = exports.HandlingBase = exports.PromiseDispatcherBase = exports.PromiseSubscription = exports.DispatchError = exports.EventManagement = exports.EventListBase = exports.DispatcherWrapper = exports.DispatcherBase = exports.Subscription = void 0;
+const DispatcherBase_1 = __webpack_require__(9737);
+Object.defineProperty(exports, "DispatcherBase", ({ enumerable: true, get: function () { return DispatcherBase_1.DispatcherBase; } }));
+const DispatchError_1 = __webpack_require__(8589);
+Object.defineProperty(exports, "DispatchError", ({ enumerable: true, get: function () { return DispatchError_1.DispatchError; } }));
+const DispatcherWrapper_1 = __webpack_require__(8661);
+Object.defineProperty(exports, "DispatcherWrapper", ({ enumerable: true, get: function () { return DispatcherWrapper_1.DispatcherWrapper; } }));
+const EventListBase_1 = __webpack_require__(5636);
+Object.defineProperty(exports, "EventListBase", ({ enumerable: true, get: function () { return EventListBase_1.EventListBase; } }));
+const EventManagement_1 = __webpack_require__(1385);
+Object.defineProperty(exports, "EventManagement", ({ enumerable: true, get: function () { return EventManagement_1.EventManagement; } }));
+const HandlingBase_1 = __webpack_require__(5722);
+Object.defineProperty(exports, "HandlingBase", ({ enumerable: true, get: function () { return HandlingBase_1.HandlingBase; } }));
+const PromiseDispatcherBase_1 = __webpack_require__(6372);
+Object.defineProperty(exports, "PromiseDispatcherBase", ({ enumerable: true, get: function () { return PromiseDispatcherBase_1.PromiseDispatcherBase; } }));
+const PromiseSubscription_1 = __webpack_require__(6484);
+Object.defineProperty(exports, "PromiseSubscription", ({ enumerable: true, get: function () { return PromiseSubscription_1.PromiseSubscription; } }));
+const Subscription_1 = __webpack_require__(8859);
+Object.defineProperty(exports, "Subscription", ({ enumerable: true, get: function () { return Subscription_1.Subscription; } }));
+const SubscriptionChangeEventHandler_1 = __webpack_require__(3324);
+Object.defineProperty(exports, "SubscriptionChangeEventDispatcher", ({ enumerable: true, get: function () { return SubscriptionChangeEventHandler_1.SubscriptionChangeEventDispatcher; } }));
+
+
+/***/ }),
+
+/***/ 7936:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SignalHandlingBase = void 0;
+const ste_core_1 = __webpack_require__(4604);
+const _1 = __webpack_require__(5010);
+/**
+ * Extends objects with signal event handling capabilities.
+ *
+ * @export
+ * @abstract
+ * @class SignalHandlingBase
+ * @extends {HandlingBase<ISignalHandler, SignalDispatcher, SignalList>}
+ * @implements {ISignalHandling}
+ */
+class SignalHandlingBase extends ste_core_1.HandlingBase {
+    /**
+     * Creates an instance of SignalHandlingBase.
+     *
+     * @memberOf SignalHandlingBase
+     */
+    constructor() {
+        super(new _1.SignalList());
+    }
+}
+exports.SignalHandlingBase = SignalHandlingBase;
+
+
+/***/ }),
+
+/***/ 8080:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -6397,102 +5451,725 @@ exports.Subscription = Subscription;
 
 /***/ }),
 
-/***/ 1605:
+/***/ 8441:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DispatcherBase = void 0;
+const __1 = __webpack_require__(4604);
+/**
+ * Base class for implementation of the dispatcher. It facilitates the subscribe
+ * and unsubscribe methods based on generic handlers. The TEventType specifies
+ * the type of event that should be exposed. Use the asEvent to expose the
+ * dispatcher as event.
+ *
+ * @export
+ * @abstract
+ * @class DispatcherBase
+ * @implements {ISubscribable<TEventHandler>}
+ * @template TEventHandler The type of event handler.
+ */
+class DispatcherBase {
+    constructor() {
+        /**
+         * The subscriptions.
+         *
+         * @protected
+         *
+         * @memberOf DispatcherBase
+         */
+        this._subscriptions = new Array();
+    }
+    /**
+     * Returns the number of subscriptions.
+     *
+     * @readonly
+     * @type {number}
+     * @memberOf DispatcherBase
+     */
+    get count() {
+        return this._subscriptions.length;
+    }
+    /**
+     * Triggered when subscriptions are changed (added or removed).
+     *
+     * @readonly
+     * @type {ISubscribable<SubscriptionChangeEventHandler>}
+     * @memberOf DispatcherBase
+     */
+    get onSubscriptionChange() {
+        if (this._onSubscriptionChange == null) {
+            this._onSubscriptionChange = new __1.SubscriptionChangeEventDispatcher();
+        }
+        return this._onSubscriptionChange.asEvent();
+    }
+    /**
+     * Subscribe to the event dispatcher.
+     *
+     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
+     * @returns A function that unsubscribes the event handler from the event.
+     *
+     * @memberOf DispatcherBase
+     */
+    subscribe(fn) {
+        if (fn) {
+            this._subscriptions.push(this.createSubscription(fn, false));
+            this.triggerSubscriptionChange();
+        }
+        return () => {
+            this.unsubscribe(fn);
+        };
+    }
+    /**
+     * Subscribe to the event dispatcher.
+     *
+     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
+     * @returns A function that unsubscribes the event handler from the event.
+     *
+     * @memberOf DispatcherBase
+     */
+    sub(fn) {
+        return this.subscribe(fn);
+    }
+    /**
+     * Subscribe once to the event with the specified name.
+     *
+     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
+     * @returns A function that unsubscribes the event handler from the event.
+     *
+     * @memberOf DispatcherBase
+     */
+    one(fn) {
+        if (fn) {
+            this._subscriptions.push(this.createSubscription(fn, true));
+            this.triggerSubscriptionChange();
+        }
+        return () => {
+            this.unsubscribe(fn);
+        };
+    }
+    /**
+     * Checks it the event has a subscription for the specified handler.
+     *
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf DispatcherBase
+     */
+    has(fn) {
+        if (!fn)
+            return false;
+        return this._subscriptions.some((sub) => sub.handler == fn);
+    }
+    /**
+     * Unsubscribes the handler from the dispatcher.
+     *
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf DispatcherBase
+     */
+    unsubscribe(fn) {
+        if (!fn)
+            return;
+        let changes = false;
+        for (let i = 0; i < this._subscriptions.length; i++) {
+            if (this._subscriptions[i].handler == fn) {
+                this._subscriptions.splice(i, 1);
+                changes = true;
+                break;
+            }
+        }
+        if (changes) {
+            this.triggerSubscriptionChange();
+        }
+    }
+    /**
+     * Unsubscribes the handler from the dispatcher.
+     *
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf DispatcherBase
+     */
+    unsub(fn) {
+        this.unsubscribe(fn);
+    }
+    /**
+     * Generic dispatch will dispatch the handlers with the given arguments.
+     *
+     * @protected
+     * @param {boolean} executeAsync `True` if the even should be executed async.
+     * @param {*} scope The scope of the event. The scope becomes the `this` for handler.
+     * @param {IArguments} args The arguments for the event.
+     * @returns {(IPropagationStatus | null)} The propagation status, or if an `executeAsync` is used `null`.
+     *
+     * @memberOf DispatcherBase
+     */
+    _dispatch(executeAsync, scope, args) {
+        //execute on a copy because of bug #9
+        for (let sub of [...this._subscriptions]) {
+            let ev = new __1.EventManagement(() => this.unsub(sub.handler));
+            let nargs = Array.prototype.slice.call(args);
+            nargs.push(ev);
+            let s = sub;
+            s.execute(executeAsync, scope, nargs);
+            //cleanup subs that are no longer needed
+            this.cleanup(sub);
+            if (!executeAsync && ev.propagationStopped) {
+                return { propagationStopped: true };
+            }
+        }
+        if (executeAsync) {
+            return null;
+        }
+        return { propagationStopped: false };
+    }
+    /**
+     * Creates a subscription.
+     *
+     * @protected
+     * @param {TEventHandler} handler The handler.
+     * @param {boolean} isOnce True if the handler should run only one.
+     * @returns {ISubscription<TEventHandler>} The subscription.
+     *
+     * @memberOf DispatcherBase
+     */
+    createSubscription(handler, isOnce) {
+        return new __1.Subscription(handler, isOnce);
+    }
+    /**
+     * Cleans up subs that ran and should run only once.
+     *
+     * @protected
+     * @param {ISubscription<TEventHandler>} sub The subscription.
+     *
+     * @memberOf DispatcherBase
+     */
+    cleanup(sub) {
+        let changes = false;
+        if (sub.isOnce && sub.isExecuted) {
+            let i = this._subscriptions.indexOf(sub);
+            if (i > -1) {
+                this._subscriptions.splice(i, 1);
+                changes = true;
+            }
+        }
+        if (changes) {
+            this.triggerSubscriptionChange();
+        }
+    }
+    /**
+     * Creates an event from the dispatcher. Will return the dispatcher
+     * in a wrapper. This will prevent exposure of any dispatcher methods.
+     *
+     * @returns {ISubscribable<TEventHandler>}
+     *
+     * @memberOf DispatcherBase
+     */
+    asEvent() {
+        if (this._wrap == null) {
+            this._wrap = new __1.DispatcherWrapper(this);
+        }
+        return this._wrap;
+    }
+    /**
+     * Clears the subscriptions.
+     *
+     * @memberOf DispatcherBase
+     */
+    clear() {
+        if (this._subscriptions.length != 0) {
+            this._subscriptions.splice(0, this._subscriptions.length);
+            this.triggerSubscriptionChange();
+        }
+    }
+    /**
+     * Triggers the subscription change event.
+     *
+     * @private
+     *
+     * @memberOf DispatcherBase
+     */
+    triggerSubscriptionChange() {
+        if (this._onSubscriptionChange != null) {
+            this._onSubscriptionChange.dispatch(this.count);
+        }
+    }
+}
+exports.DispatcherBase = DispatcherBase;
+
+
+/***/ }),
+
+/***/ 8589:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.HandlingBase = void 0;
+exports.DispatchError = void 0;
 /**
- * Base class that implements event handling. With a an
- * event list this base class will expose events that can be
- * subscribed to. This will give your class generic events.
+ * Indicates an error with dispatching.
  *
  * @export
- * @abstract
- * @class HandlingBase
- * @template TEventHandler The type of event handler.
- * @template TDispatcher The type of dispatcher.
- * @template TList The type of event list.
+ * @class DispatchError
+ * @extends {Error}
  */
-class HandlingBase {
+class DispatchError extends Error {
     /**
-     * Creates an instance of HandlingBase.
-     * @param {TList} events The event list. Used for event management.
+     * Creates an instance of DispatchError.
+     * @param {string} message The message.
      *
-     * @memberOf HandlingBase
+     * @memberOf DispatchError
      */
-    constructor(events) {
-        this.events = events;
-    }
-    /**
-     * Subscribes once to the event with the specified name.
-     * @param {string} name The name of the event.
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf HandlingBase
-     */
-    one(name, fn) {
-        this.events.get(name).one(fn);
-    }
-    /**
-     * Checks it the event has a subscription for the specified handler.
-     * @param {string} name The name of the event.
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf HandlingBase
-     */
-    has(name, fn) {
-        return this.events.get(name).has(fn);
-    }
-    /**
-     * Subscribes to the event with the specified name.
-     * @param {string} name The name of the event.
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf HandlingBase
-     */
-    subscribe(name, fn) {
-        this.events.get(name).subscribe(fn);
-    }
-    /**
-     * Subscribes to the event with the specified name.
-     * @param {string} name The name of the event.
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf HandlingBase
-     */
-    sub(name, fn) {
-        this.subscribe(name, fn);
-    }
-    /**
-     * Unsubscribes from the event with the specified name.
-     * @param {string} name The name of the event.
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf HandlingBase
-     */
-    unsubscribe(name, fn) {
-        this.events.get(name).unsubscribe(fn);
-    }
-    /**
-     * Unsubscribes from the event with the specified name.
-     * @param {string} name The name of the event.
-     * @param {TEventHandler} fn The event handler.
-     *
-     * @memberOf HandlingBase
-     */
-    unsub(name, fn) {
-        this.unsubscribe(name, fn);
+    constructor(message) {
+        super(message);
     }
 }
-exports.HandlingBase = HandlingBase;
+exports.DispatchError = DispatchError;
 
 
 /***/ }),
 
-/***/ 3310:
+/***/ 8648:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PromiseSimpleEventHandlingBase = void 0;
+const ste_core_1 = __webpack_require__(5575);
+const PromiseSimpleEventList_1 = __webpack_require__(5536);
+/**
+ * Extends objects with signal event handling capabilities.
+ */
+class PromiseSimpleEventHandlingBase extends ste_core_1.HandlingBase {
+    constructor() {
+        super(new PromiseSimpleEventList_1.PromiseSimpleEventList());
+    }
+}
+exports.PromiseSimpleEventHandlingBase = PromiseSimpleEventHandlingBase;
+
+
+/***/ }),
+
+/***/ 8661:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DispatcherWrapper = void 0;
+/**
+ * Hides the implementation of the event dispatcher. Will expose methods that
+ * are relevent to the event.
+ *
+ * @export
+ * @class DispatcherWrapper
+ * @implements {ISubscribable<TEventHandler>}
+ * @template TEventHandler The type of event handler.
+ */
+class DispatcherWrapper {
+    /**
+     * Creates an instance of DispatcherWrapper.
+     * @param {ISubscribable<TEventHandler>} dispatcher
+     *
+     * @memberOf DispatcherWrapper
+     */
+    constructor(dispatcher) {
+        this._subscribe = (fn) => dispatcher.subscribe(fn);
+        this._unsubscribe = (fn) => dispatcher.unsubscribe(fn);
+        this._one = (fn) => dispatcher.one(fn);
+        this._has = (fn) => dispatcher.has(fn);
+        this._clear = () => dispatcher.clear();
+        this._count = () => dispatcher.count;
+        this._onSubscriptionChange = () => dispatcher.onSubscriptionChange;
+    }
+    /**
+     * Triggered when subscriptions are changed (added or removed).
+     *
+     * @readonly
+     * @type {ISubscribable<SubscriptionChangeEventHandler>}
+     * @memberOf DispatcherWrapper
+     */
+    get onSubscriptionChange() {
+        return this._onSubscriptionChange();
+    }
+    /**
+     * Returns the number of subscriptions.
+     *
+     * @readonly
+     * @type {number}
+     * @memberOf DispatcherWrapper
+     */
+    get count() {
+        return this._count();
+    }
+    /**
+     * Subscribe to the event dispatcher.
+     *
+     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
+     * @returns {() => void} A function that unsubscribes the event handler from the event.
+     *
+     * @memberOf DispatcherWrapper
+     */
+    subscribe(fn) {
+        return this._subscribe(fn);
+    }
+    /**
+     * Subscribe to the event dispatcher.
+     *
+     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
+     * @returns {() => void} A function that unsubscribes the event handler from the event.
+     *
+     * @memberOf DispatcherWrapper
+     */
+    sub(fn) {
+        return this.subscribe(fn);
+    }
+    /**
+     * Unsubscribe from the event dispatcher.
+     *
+     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
+     *
+     * @memberOf DispatcherWrapper
+     */
+    unsubscribe(fn) {
+        this._unsubscribe(fn);
+    }
+    /**
+     * Unsubscribe from the event dispatcher.
+     *
+     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
+     *
+     * @memberOf DispatcherWrapper
+     */
+    unsub(fn) {
+        this.unsubscribe(fn);
+    }
+    /**
+     * Subscribe once to the event with the specified name.
+     *
+     * @returns {() => void} A function that unsubscribes the event handler from the event.
+     *
+     * @memberOf DispatcherWrapper
+     */
+    one(fn) {
+        return this._one(fn);
+    }
+    /**
+     * Checks it the event has a subscription for the specified handler.
+     *
+     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
+     *
+     * @memberOf DispatcherWrapper
+     */
+    has(fn) {
+        return this._has(fn);
+    }
+    /**
+     * Clears all the subscriptions.
+     *
+     * @memberOf DispatcherWrapper
+     */
+    clear() {
+        this._clear();
+    }
+}
+exports.DispatcherWrapper = DispatcherWrapper;
+
+
+/***/ }),
+
+/***/ 8859:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Subscription = void 0;
+/**
+ * Stores a handler. Manages execution meta data.
+ * @class Subscription
+ * @template TEventHandler
+ */
+class Subscription {
+    /**
+     * Creates an instance of Subscription.
+     *
+     * @param {TEventHandler} handler The handler for the subscription.
+     * @param {boolean} isOnce Indicates if the handler should only be executed once.
+     */
+    constructor(handler, isOnce) {
+        this.handler = handler;
+        this.isOnce = isOnce;
+        /**
+         * Indicates if the subscription has been executed before.
+         */
+        this.isExecuted = false;
+    }
+    /**
+     * Executes the handler.
+     *
+     * @param {boolean} executeAsync True if the even should be executed async.
+     * @param {*} scope The scope the scope of the event.
+     * @param {IArguments} args The arguments for the event.
+     */
+    execute(executeAsync, scope, args) {
+        if (!this.isOnce || !this.isExecuted) {
+            this.isExecuted = true;
+            var fn = this.handler;
+            if (executeAsync) {
+                setTimeout(() => {
+                    fn.apply(scope, args);
+                }, 1);
+            }
+            else {
+                fn.apply(scope, args);
+            }
+        }
+    }
+}
+exports.Subscription = Subscription;
+
+
+/***/ }),
+
+/***/ 8901:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DispatcherWrapper = void 0;
+/**
+ * Hides the implementation of the event dispatcher. Will expose methods that
+ * are relevent to the event.
+ *
+ * @export
+ * @class DispatcherWrapper
+ * @implements {ISubscribable<TEventHandler>}
+ * @template TEventHandler The type of event handler.
+ */
+class DispatcherWrapper {
+    /**
+     * Creates an instance of DispatcherWrapper.
+     * @param {ISubscribable<TEventHandler>} dispatcher
+     *
+     * @memberOf DispatcherWrapper
+     */
+    constructor(dispatcher) {
+        this._subscribe = (fn) => dispatcher.subscribe(fn);
+        this._unsubscribe = (fn) => dispatcher.unsubscribe(fn);
+        this._one = (fn) => dispatcher.one(fn);
+        this._has = (fn) => dispatcher.has(fn);
+        this._clear = () => dispatcher.clear();
+        this._count = () => dispatcher.count;
+        this._onSubscriptionChange = () => dispatcher.onSubscriptionChange;
+    }
+    /**
+     * Triggered when subscriptions are changed (added or removed).
+     *
+     * @readonly
+     * @type {ISubscribable<SubscriptionChangeEventHandler>}
+     * @memberOf DispatcherWrapper
+     */
+    get onSubscriptionChange() {
+        return this._onSubscriptionChange();
+    }
+    /**
+     * Returns the number of subscriptions.
+     *
+     * @readonly
+     * @type {number}
+     * @memberOf DispatcherWrapper
+     */
+    get count() {
+        return this._count();
+    }
+    /**
+     * Subscribe to the event dispatcher.
+     *
+     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
+     * @returns {() => void} A function that unsubscribes the event handler from the event.
+     *
+     * @memberOf DispatcherWrapper
+     */
+    subscribe(fn) {
+        return this._subscribe(fn);
+    }
+    /**
+     * Subscribe to the event dispatcher.
+     *
+     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
+     * @returns {() => void} A function that unsubscribes the event handler from the event.
+     *
+     * @memberOf DispatcherWrapper
+     */
+    sub(fn) {
+        return this.subscribe(fn);
+    }
+    /**
+     * Unsubscribe from the event dispatcher.
+     *
+     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
+     *
+     * @memberOf DispatcherWrapper
+     */
+    unsubscribe(fn) {
+        this._unsubscribe(fn);
+    }
+    /**
+     * Unsubscribe from the event dispatcher.
+     *
+     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
+     *
+     * @memberOf DispatcherWrapper
+     */
+    unsub(fn) {
+        this.unsubscribe(fn);
+    }
+    /**
+     * Subscribe once to the event with the specified name.
+     *
+     * @returns {() => void} A function that unsubscribes the event handler from the event.
+     *
+     * @memberOf DispatcherWrapper
+     */
+    one(fn) {
+        return this._one(fn);
+    }
+    /**
+     * Checks it the event has a subscription for the specified handler.
+     *
+     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
+     *
+     * @memberOf DispatcherWrapper
+     */
+    has(fn) {
+        return this._has(fn);
+    }
+    /**
+     * Clears all the subscriptions.
+     *
+     * @memberOf DispatcherWrapper
+     */
+    clear() {
+        this._clear();
+    }
+}
+exports.DispatcherWrapper = DispatcherWrapper;
+
+
+/***/ }),
+
+/***/ 9067:
+/***/ (function(module, exports, __webpack_require__) {
+
+/* module decorator */ module = __webpack_require__.nmd(module);
+var __WEBPACK_AMD_DEFINE_RESULT__;// A Javascript implementaion of the "xorshift7" algorithm by
+// François Panneton and Pierre L'ecuyer:
+// "On the Xorgshift Random Number Generators"
+// http://saluc.engr.uconn.edu/refs/crypto/rng/panneton05onthexorshift.pdf
+
+(function(global, module, define) {
+
+function XorGen(seed) {
+  var me = this;
+
+  // Set up generator function.
+  me.next = function() {
+    // Update xor generator.
+    var X = me.x, i = me.i, t, v, w;
+    t = X[i]; t ^= (t >>> 7); v = t ^ (t << 24);
+    t = X[(i + 1) & 7]; v ^= t ^ (t >>> 10);
+    t = X[(i + 3) & 7]; v ^= t ^ (t >>> 3);
+    t = X[(i + 4) & 7]; v ^= t ^ (t << 7);
+    t = X[(i + 7) & 7]; t = t ^ (t << 13); v ^= t ^ (t << 9);
+    X[i] = v;
+    me.i = (i + 1) & 7;
+    return v;
+  };
+
+  function init(me, seed) {
+    var j, w, X = [];
+
+    if (seed === (seed | 0)) {
+      // Seed state array using a 32-bit integer.
+      w = X[0] = seed;
+    } else {
+      // Seed state using a string.
+      seed = '' + seed;
+      for (j = 0; j < seed.length; ++j) {
+        X[j & 7] = (X[j & 7] << 15) ^
+            (seed.charCodeAt(j) + X[(j + 1) & 7] << 13);
+      }
+    }
+    // Enforce an array length of 8, not all zeroes.
+    while (X.length < 8) X.push(0);
+    for (j = 0; j < 8 && X[j] === 0; ++j);
+    if (j == 8) w = X[7] = -1; else w = X[j];
+
+    me.x = X;
+    me.i = 0;
+
+    // Discard an initial 256 values.
+    for (j = 256; j > 0; --j) {
+      me.next();
+    }
+  }
+
+  init(me, seed);
+}
+
+function copy(f, t) {
+  t.x = f.x.slice();
+  t.i = f.i;
+  return t;
+}
+
+function impl(seed, opts) {
+  if (seed == null) seed = +(new Date);
+  var xg = new XorGen(seed),
+      state = opts && opts.state,
+      prng = function() { return (xg.next() >>> 0) / 0x100000000; };
+  prng.double = function() {
+    do {
+      var top = xg.next() >>> 11,
+          bot = (xg.next() >>> 0) / 0x100000000,
+          result = (top + bot) / (1 << 21);
+    } while (result === 0);
+    return result;
+  };
+  prng.int32 = xg.next;
+  prng.quick = prng;
+  if (state) {
+    if (state.x) copy(state, xg);
+    prng.state = function() { return copy(xg, {}); }
+  }
+  return prng;
+}
+
+if (module && module.exports) {
+  module.exports = impl;
+} else if (__webpack_require__.amdD && __webpack_require__.amdO) {
+  !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() { return impl; }).call(exports, __webpack_require__, exports, module),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+} else {
+  this.xorshift7 = impl;
+}
+
+})(
+  this,
+   true && module,    // present in node.js
+  __webpack_require__.amdD   // present with an AMD loader
+);
+
+
+
+/***/ }),
+
+/***/ 9184:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
@@ -6507,83 +6184,43 @@ exports.HandlingBase = HandlingBase;
  */
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SubscriptionChangeEventDispatcher = exports.HandlingBase = exports.PromiseDispatcherBase = exports.PromiseSubscription = exports.DispatchError = exports.EventManagement = exports.EventListBase = exports.DispatcherWrapper = exports.DispatcherBase = exports.Subscription = void 0;
-const DispatcherBase_1 = __webpack_require__(3040);
+const DispatcherBase_1 = __webpack_require__(4645);
 Object.defineProperty(exports, "DispatcherBase", ({ enumerable: true, get: function () { return DispatcherBase_1.DispatcherBase; } }));
-const DispatchError_1 = __webpack_require__(8181);
+const DispatchError_1 = __webpack_require__(3729);
 Object.defineProperty(exports, "DispatchError", ({ enumerable: true, get: function () { return DispatchError_1.DispatchError; } }));
-const DispatcherWrapper_1 = __webpack_require__(3122);
+const DispatcherWrapper_1 = __webpack_require__(7569);
 Object.defineProperty(exports, "DispatcherWrapper", ({ enumerable: true, get: function () { return DispatcherWrapper_1.DispatcherWrapper; } }));
-const EventListBase_1 = __webpack_require__(7955);
+const EventListBase_1 = __webpack_require__(7672);
 Object.defineProperty(exports, "EventListBase", ({ enumerable: true, get: function () { return EventListBase_1.EventListBase; } }));
-const EventManagement_1 = __webpack_require__(2234);
+const EventManagement_1 = __webpack_require__(6413);
 Object.defineProperty(exports, "EventManagement", ({ enumerable: true, get: function () { return EventManagement_1.EventManagement; } }));
-const HandlingBase_1 = __webpack_require__(1605);
+const HandlingBase_1 = __webpack_require__(278);
 Object.defineProperty(exports, "HandlingBase", ({ enumerable: true, get: function () { return HandlingBase_1.HandlingBase; } }));
-const PromiseDispatcherBase_1 = __webpack_require__(2490);
+const PromiseDispatcherBase_1 = __webpack_require__(4995);
 Object.defineProperty(exports, "PromiseDispatcherBase", ({ enumerable: true, get: function () { return PromiseDispatcherBase_1.PromiseDispatcherBase; } }));
-const PromiseSubscription_1 = __webpack_require__(9347);
+const PromiseSubscription_1 = __webpack_require__(7744);
 Object.defineProperty(exports, "PromiseSubscription", ({ enumerable: true, get: function () { return PromiseSubscription_1.PromiseSubscription; } }));
-const Subscription_1 = __webpack_require__(2229);
+const Subscription_1 = __webpack_require__(455);
 Object.defineProperty(exports, "Subscription", ({ enumerable: true, get: function () { return Subscription_1.Subscription; } }));
-const SubscriptionChangeEventHandler_1 = __webpack_require__(1002);
+const SubscriptionChangeEventHandler_1 = __webpack_require__(3512);
 Object.defineProperty(exports, "SubscriptionChangeEventDispatcher", ({ enumerable: true, get: function () { return SubscriptionChangeEventHandler_1.SubscriptionChangeEventDispatcher; } }));
 
 
 /***/ }),
 
-/***/ 2234:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.EventManagement = void 0;
-/**
- * Allows the user to interact with the event.
- *
- * @export
- * @class EventManagement
- * @implements {IEventManagement}
- */
-class EventManagement {
-    /**
-     * Creates an instance of EventManagement.
-     * @param {() => void} unsub An unsubscribe handler.
-     *
-     * @memberOf EventManagement
-     */
-    constructor(unsub) {
-        this.unsub = unsub;
-        this.propagationStopped = false;
-    }
-    /**
-     * Stops the propagation of the event.
-     * Cannot be used when async dispatch is done.
-     *
-     * @memberOf EventManagement
-     */
-    stopPropagation() {
-        this.propagationStopped = true;
-    }
-}
-exports.EventManagement = EventManagement;
-
-
-/***/ }),
-
-/***/ 3861:
+/***/ 9244:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
-  "ZP": () => (/* binding */ tippy_esm)
+  Ay: () => (/* binding */ tippy_esm)
 });
 
 // UNUSED EXPORTS: animateFill, createSingleton, delegate, followCursor, hideAll, inlinePositioning, roundArrow, sticky
 
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/dom-utils/getWindow.js
+;// ./node_modules/@popperjs/core/lib/dom-utils/getWindow.js
 function getWindow(node) {
   if (node == null) {
     return window;
@@ -6596,7 +6233,7 @@ function getWindow(node) {
 
   return node;
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/dom-utils/instanceOf.js
+;// ./node_modules/@popperjs/core/lib/dom-utils/instanceOf.js
 
 
 function isElement(node) {
@@ -6620,48 +6257,70 @@ function isShadowRoot(node) {
 }
 
 
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/utils/math.js
+;// ./node_modules/@popperjs/core/lib/utils/math.js
 var math_max = Math.max;
 var math_min = Math.min;
 var round = Math.round;
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/dom-utils/getBoundingClientRect.js
+;// ./node_modules/@popperjs/core/lib/utils/userAgent.js
+function getUAString() {
+  var uaData = navigator.userAgentData;
+
+  if (uaData != null && uaData.brands && Array.isArray(uaData.brands)) {
+    return uaData.brands.map(function (item) {
+      return item.brand + "/" + item.version;
+    }).join(' ');
+  }
+
+  return navigator.userAgent;
+}
+;// ./node_modules/@popperjs/core/lib/dom-utils/isLayoutViewport.js
+
+function isLayoutViewport() {
+  return !/^((?!chrome|android).)*safari/i.test(getUAString());
+}
+;// ./node_modules/@popperjs/core/lib/dom-utils/getBoundingClientRect.js
 
 
-function getBoundingClientRect(element, includeScale) {
+
+
+function getBoundingClientRect(element, includeScale, isFixedStrategy) {
   if (includeScale === void 0) {
     includeScale = false;
   }
 
-  var rect = element.getBoundingClientRect();
+  if (isFixedStrategy === void 0) {
+    isFixedStrategy = false;
+  }
+
+  var clientRect = element.getBoundingClientRect();
   var scaleX = 1;
   var scaleY = 1;
 
-  if (isHTMLElement(element) && includeScale) {
-    var offsetHeight = element.offsetHeight;
-    var offsetWidth = element.offsetWidth; // Do not attempt to divide by 0, otherwise we get `Infinity` as scale
-    // Fallback to 1 in case both values are `0`
-
-    if (offsetWidth > 0) {
-      scaleX = round(rect.width) / offsetWidth || 1;
-    }
-
-    if (offsetHeight > 0) {
-      scaleY = round(rect.height) / offsetHeight || 1;
-    }
+  if (includeScale && isHTMLElement(element)) {
+    scaleX = element.offsetWidth > 0 ? round(clientRect.width) / element.offsetWidth || 1 : 1;
+    scaleY = element.offsetHeight > 0 ? round(clientRect.height) / element.offsetHeight || 1 : 1;
   }
 
+  var _ref = isElement(element) ? getWindow(element) : window,
+      visualViewport = _ref.visualViewport;
+
+  var addVisualOffsets = !isLayoutViewport() && isFixedStrategy;
+  var x = (clientRect.left + (addVisualOffsets && visualViewport ? visualViewport.offsetLeft : 0)) / scaleX;
+  var y = (clientRect.top + (addVisualOffsets && visualViewport ? visualViewport.offsetTop : 0)) / scaleY;
+  var width = clientRect.width / scaleX;
+  var height = clientRect.height / scaleY;
   return {
-    width: rect.width / scaleX,
-    height: rect.height / scaleY,
-    top: rect.top / scaleY,
-    right: rect.right / scaleX,
-    bottom: rect.bottom / scaleY,
-    left: rect.left / scaleX,
-    x: rect.left / scaleX,
-    y: rect.top / scaleY
+    width: width,
+    height: height,
+    top: y,
+    right: x + width,
+    bottom: y + height,
+    left: x,
+    x: x,
+    y: y
   };
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/dom-utils/getWindowScroll.js
+;// ./node_modules/@popperjs/core/lib/dom-utils/getWindowScroll.js
 
 function getWindowScroll(node) {
   var win = getWindow(node);
@@ -6672,14 +6331,14 @@ function getWindowScroll(node) {
     scrollTop: scrollTop
   };
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/dom-utils/getHTMLElementScroll.js
+;// ./node_modules/@popperjs/core/lib/dom-utils/getHTMLElementScroll.js
 function getHTMLElementScroll(element) {
   return {
     scrollLeft: element.scrollLeft,
     scrollTop: element.scrollTop
   };
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/dom-utils/getNodeScroll.js
+;// ./node_modules/@popperjs/core/lib/dom-utils/getNodeScroll.js
 
 
 
@@ -6691,18 +6350,18 @@ function getNodeScroll(node) {
     return getHTMLElementScroll(node);
   }
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/dom-utils/getNodeName.js
+;// ./node_modules/@popperjs/core/lib/dom-utils/getNodeName.js
 function getNodeName(element) {
   return element ? (element.nodeName || '').toLowerCase() : null;
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/dom-utils/getDocumentElement.js
+;// ./node_modules/@popperjs/core/lib/dom-utils/getDocumentElement.js
 
 function getDocumentElement(element) {
   // $FlowFixMe[incompatible-return]: assume body is always available
   return ((isElement(element) ? element.ownerDocument : // $FlowFixMe[prop-missing]
   element.document) || window.document).documentElement;
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/dom-utils/getWindowScrollBarX.js
+;// ./node_modules/@popperjs/core/lib/dom-utils/getWindowScrollBarX.js
 
 
 
@@ -6716,12 +6375,12 @@ function getWindowScrollBarX(element) {
   // this (e.g. Edge 2019, IE11, Safari)
   return getBoundingClientRect(getDocumentElement(element)).left + getWindowScroll(element).scrollLeft;
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/dom-utils/getComputedStyle.js
+;// ./node_modules/@popperjs/core/lib/dom-utils/getComputedStyle.js
 
 function getComputedStyle(element) {
   return getWindow(element).getComputedStyle(element);
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/dom-utils/isScrollParent.js
+;// ./node_modules/@popperjs/core/lib/dom-utils/isScrollParent.js
 
 function isScrollParent(element) {
   // Firefox wants us to check `-x` and `-y` variations as well
@@ -6732,7 +6391,7 @@ function isScrollParent(element) {
 
   return /auto|scroll|overlay|hidden/.test(overflow + overflowY + overflowX);
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/dom-utils/getCompositeRect.js
+;// ./node_modules/@popperjs/core/lib/dom-utils/getCompositeRect.js
 
 
 
@@ -6759,7 +6418,7 @@ function getCompositeRect(elementOrVirtualElement, offsetParent, isFixed) {
   var isOffsetParentAnElement = isHTMLElement(offsetParent);
   var offsetParentIsScaled = isHTMLElement(offsetParent) && isElementScaled(offsetParent);
   var documentElement = getDocumentElement(offsetParent);
-  var rect = getBoundingClientRect(elementOrVirtualElement, offsetParentIsScaled);
+  var rect = getBoundingClientRect(elementOrVirtualElement, offsetParentIsScaled, isFixed);
   var scroll = {
     scrollLeft: 0,
     scrollTop: 0
@@ -6791,7 +6450,7 @@ function getCompositeRect(elementOrVirtualElement, offsetParent, isFixed) {
     height: rect.height
   };
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/dom-utils/getLayoutRect.js
+;// ./node_modules/@popperjs/core/lib/dom-utils/getLayoutRect.js
  // Returns the layout rect of an element relative to its offsetParent. Layout
 // means it doesn't take into account transforms.
 
@@ -6817,7 +6476,7 @@ function getLayoutRect(element) {
     height: height
   };
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/dom-utils/getParentNode.js
+;// ./node_modules/@popperjs/core/lib/dom-utils/getParentNode.js
 
 
 
@@ -6837,7 +6496,7 @@ function getParentNode(element) {
 
   );
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/dom-utils/getScrollParent.js
+;// ./node_modules/@popperjs/core/lib/dom-utils/getScrollParent.js
 
 
 
@@ -6854,7 +6513,7 @@ function getScrollParent(node) {
 
   return getScrollParent(getParentNode(node));
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/dom-utils/listScrollParents.js
+;// ./node_modules/@popperjs/core/lib/dom-utils/listScrollParents.js
 
 
 
@@ -6881,12 +6540,13 @@ function listScrollParents(element, list) {
   return isBody ? updatedList : // $FlowFixMe[incompatible-call]: isBody tells us target will be an HTMLElement here
   updatedList.concat(listScrollParents(getParentNode(target)));
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/dom-utils/isTableElement.js
+;// ./node_modules/@popperjs/core/lib/dom-utils/isTableElement.js
 
 function isTableElement(element) {
   return ['table', 'td', 'th'].indexOf(getNodeName(element)) >= 0;
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/dom-utils/getOffsetParent.js
+;// ./node_modules/@popperjs/core/lib/dom-utils/getOffsetParent.js
+
 
 
 
@@ -6906,8 +6566,8 @@ function getTrueOffsetParent(element) {
 
 
 function getContainingBlock(element) {
-  var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') !== -1;
-  var isIE = navigator.userAgent.indexOf('Trident') !== -1;
+  var isFirefox = /firefox/i.test(getUAString());
+  var isIE = /Trident/i.test(getUAString());
 
   if (isIE && isHTMLElement(element)) {
     // In IE 9, 10 and 11 fixed elements containing block is always established by the viewport
@@ -6919,6 +6579,10 @@ function getContainingBlock(element) {
   }
 
   var currentNode = getParentNode(element);
+
+  if (isShadowRoot(currentNode)) {
+    currentNode = currentNode.host;
+  }
 
   while (isHTMLElement(currentNode) && ['html', 'body'].indexOf(getNodeName(currentNode)) < 0) {
     var css = getComputedStyle(currentNode); // This is non-exhaustive but covers the most common CSS properties that
@@ -6951,7 +6615,7 @@ function getOffsetParent(element) {
 
   return offsetParent || getContainingBlock(element) || window;
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/enums.js
+;// ./node_modules/@popperjs/core/lib/enums.js
 var enums_top = 'top';
 var bottom = 'bottom';
 var right = 'right';
@@ -6983,7 +6647,7 @@ var beforeWrite = 'beforeWrite';
 var write = 'write';
 var afterWrite = 'afterWrite';
 var modifierPhases = [beforeRead, read, afterRead, beforeMain, main, afterMain, beforeWrite, write, afterWrite];
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/utils/orderModifiers.js
+;// ./node_modules/@popperjs/core/lib/utils/orderModifiers.js
  // source: https://stackoverflow.com/questions/49875255
 
 function order(modifiers) {
@@ -7028,7 +6692,7 @@ function orderModifiers(modifiers) {
     }));
   }, []);
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/utils/debounce.js
+;// ./node_modules/@popperjs/core/lib/utils/debounce.js
 function debounce(fn) {
   var pending;
   return function () {
@@ -7044,7 +6708,7 @@ function debounce(fn) {
     return pending;
   };
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/utils/mergeByName.js
+;// ./node_modules/@popperjs/core/lib/utils/mergeByName.js
 function mergeByName(modifiers) {
   var merged = modifiers.reduce(function (merged, current) {
     var existing = merged[current.name];
@@ -7059,7 +6723,7 @@ function mergeByName(modifiers) {
     return merged[key];
   });
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/createPopper.js
+;// ./node_modules/@popperjs/core/lib/createPopper.js
 
 
 
@@ -7069,13 +6733,6 @@ function mergeByName(modifiers) {
 
 
 
-
-
-
-
-
-var INVALID_ELEMENT_ERROR = 'Popper: Invalid reference or popper argument provided. They must be either a DOM element or virtual element.';
-var INFINITE_LOOP_ERROR = 'Popper: An infinite loop in the modifiers cycle has been detected! The cycle has been interrupted to prevent a browser crash.';
 var DEFAULT_OPTIONS = {
   placement: 'bottom',
   modifiers: [],
@@ -7137,11 +6794,7 @@ function popperGenerator(generatorOptions) {
 
         state.orderedModifiers = orderedModifiers.filter(function (m) {
           return m.enabled;
-        }); // Validate the provided modifiers so that the consumer will get warned
-        // if one of the modifiers is invalid for any reason
-
-        if (false) { var _getComputedStyle, marginTop, marginRight, marginBottom, marginLeft, flipModifier, modifiers; }
-
+        });
         runModifierEffects();
         return instance.update();
       },
@@ -7161,8 +6814,6 @@ function popperGenerator(generatorOptions) {
         // anymore
 
         if (!areValidElements(reference, popper)) {
-          if (false) {}
-
           return;
         } // Store the reference and popper rects to be read by modifiers
 
@@ -7185,11 +6836,8 @@ function popperGenerator(generatorOptions) {
         state.orderedModifiers.forEach(function (modifier) {
           return state.modifiersData[modifier.name] = Object.assign({}, modifier.data);
         });
-        var __debug_loops__ = 0;
 
         for (var index = 0; index < state.orderedModifiers.length; index++) {
-          if (false) {}
-
           if (state.reset === true) {
             state.reset = false;
             index = -1;
@@ -7227,8 +6875,6 @@ function popperGenerator(generatorOptions) {
     };
 
     if (!areValidElements(reference, popper)) {
-      if (false) {}
-
       return instance;
     }
 
@@ -7243,11 +6889,11 @@ function popperGenerator(generatorOptions) {
     // one.
 
     function runModifierEffects() {
-      state.orderedModifiers.forEach(function (_ref3) {
-        var name = _ref3.name,
-            _ref3$options = _ref3.options,
-            options = _ref3$options === void 0 ? {} : _ref3$options,
-            effect = _ref3.effect;
+      state.orderedModifiers.forEach(function (_ref) {
+        var name = _ref.name,
+            _ref$options = _ref.options,
+            options = _ref$options === void 0 ? {} : _ref$options,
+            effect = _ref.effect;
 
         if (typeof effect === 'function') {
           var cleanupFn = effect({
@@ -7277,7 +6923,7 @@ function popperGenerator(generatorOptions) {
 var createPopper = /*#__PURE__*/(/* unused pure expression or super */ null && (popperGenerator())); // eslint-disable-next-line import/no-unused-modules
 
 
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/modifiers/eventListeners.js
+;// ./node_modules/@popperjs/core/lib/modifiers/eventListeners.js
  // eslint-disable-next-line import/no-unused-modules
 
 var passive = {
@@ -7327,20 +6973,20 @@ function effect(_ref) {
   effect: effect,
   data: {}
 });
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/utils/getBasePlacement.js
+;// ./node_modules/@popperjs/core/lib/utils/getBasePlacement.js
 
 function getBasePlacement(placement) {
   return placement.split('-')[0];
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/utils/getVariation.js
+;// ./node_modules/@popperjs/core/lib/utils/getVariation.js
 function getVariation(placement) {
   return placement.split('-')[1];
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/utils/getMainAxisFromPlacement.js
+;// ./node_modules/@popperjs/core/lib/utils/getMainAxisFromPlacement.js
 function getMainAxisFromPlacement(placement) {
   return ['top', 'bottom'].indexOf(placement) >= 0 ? 'x' : 'y';
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/utils/computeOffsets.js
+;// ./node_modules/@popperjs/core/lib/utils/computeOffsets.js
 
 
 
@@ -7411,7 +7057,7 @@ function computeOffsets(_ref) {
 
   return offsets;
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/modifiers/popperOffsets.js
+;// ./node_modules/@popperjs/core/lib/modifiers/popperOffsets.js
 
 
 function popperOffsets(_ref) {
@@ -7437,7 +7083,7 @@ function popperOffsets(_ref) {
   fn: popperOffsets,
   data: {}
 });
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/modifiers/computeStyles.js
+;// ./node_modules/@popperjs/core/lib/modifiers/computeStyles.js
 
 
 
@@ -7456,10 +7102,9 @@ var unsetSides = {
 // Zooming can change the DPR, but it seems to report a value that will
 // cleanly divide the values into the appropriate subpixels.
 
-function roundOffsetsByDPR(_ref) {
+function roundOffsetsByDPR(_ref, win) {
   var x = _ref.x,
       y = _ref.y;
-  var win = window;
   var dpr = win.devicePixelRatio || 1;
   return {
     x: round(x * dpr) / dpr || 0,
@@ -7520,7 +7165,7 @@ function mapToStyles(_ref2) {
 
     if (placement === enums_top || (placement === left || placement === right) && variation === end) {
       sideY = bottom;
-      var offsetY = isFixed && win.visualViewport ? win.visualViewport.height : // $FlowFixMe[prop-missing]
+      var offsetY = isFixed && offsetParent === win && win.visualViewport ? win.visualViewport.height : // $FlowFixMe[prop-missing]
       offsetParent[heightProp];
       y -= offsetY - popperRect.height;
       y *= gpuAcceleration ? 1 : -1;
@@ -7528,7 +7173,7 @@ function mapToStyles(_ref2) {
 
     if (placement === left || (placement === enums_top || placement === bottom) && variation === end) {
       sideX = right;
-      var offsetX = isFixed && win.visualViewport ? win.visualViewport.width : // $FlowFixMe[prop-missing]
+      var offsetX = isFixed && offsetParent === win && win.visualViewport ? win.visualViewport.width : // $FlowFixMe[prop-missing]
       offsetParent[widthProp];
       x -= offsetX - popperRect.width;
       x *= gpuAcceleration ? 1 : -1;
@@ -7542,7 +7187,7 @@ function mapToStyles(_ref2) {
   var _ref4 = roundOffsets === true ? roundOffsetsByDPR({
     x: x,
     y: y
-  }) : {
+  }, getWindow(popper)) : {
     x: x,
     y: y
   };
@@ -7568,9 +7213,6 @@ function computeStyles(_ref5) {
       adaptive = _options$adaptive === void 0 ? true : _options$adaptive,
       _options$roundOffsets = options.roundOffsets,
       roundOffsets = _options$roundOffsets === void 0 ? true : _options$roundOffsets;
-
-  if (false) { var transitionProperty; }
-
   var commonStyles = {
     placement: getBasePlacement(state.placement),
     variation: getVariation(state.placement),
@@ -7611,7 +7253,7 @@ function computeStyles(_ref5) {
   fn: computeStyles,
   data: {}
 });
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/modifiers/applyStyles.js
+;// ./node_modules/@popperjs/core/lib/modifiers/applyStyles.js
 
  // This modifier takes the styles prepared by the `computeStyles` modifier
 // and applies them to the HTMLElements such as popper and arrow
@@ -7696,7 +7338,7 @@ function applyStyles_effect(_ref2) {
   effect: applyStyles_effect,
   requires: ['computeStyles']
 });
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/modifiers/offset.js
+;// ./node_modules/@popperjs/core/lib/modifiers/offset.js
 
  // eslint-disable-next-line import/no-unused-modules
 
@@ -7751,7 +7393,7 @@ function offset(_ref2) {
   requires: ['popperOffsets'],
   fn: offset
 });
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/utils/getOppositePlacement.js
+;// ./node_modules/@popperjs/core/lib/utils/getOppositePlacement.js
 var hash = {
   left: 'right',
   right: 'left',
@@ -7763,7 +7405,7 @@ function getOppositePlacement(placement) {
     return hash[matched];
   });
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/utils/getOppositeVariationPlacement.js
+;// ./node_modules/@popperjs/core/lib/utils/getOppositeVariationPlacement.js
 var getOppositeVariationPlacement_hash = {
   start: 'end',
   end: 'start'
@@ -7773,35 +7415,26 @@ function getOppositeVariationPlacement(placement) {
     return getOppositeVariationPlacement_hash[matched];
   });
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/dom-utils/getViewportRect.js
+;// ./node_modules/@popperjs/core/lib/dom-utils/getViewportRect.js
 
 
 
-function getViewportRect(element) {
+
+function getViewportRect(element, strategy) {
   var win = getWindow(element);
   var html = getDocumentElement(element);
   var visualViewport = win.visualViewport;
   var width = html.clientWidth;
   var height = html.clientHeight;
   var x = 0;
-  var y = 0; // NB: This isn't supported on iOS <= 12. If the keyboard is open, the popper
-  // can be obscured underneath it.
-  // Also, `html.clientHeight` adds the bottom bar height in Safari iOS, even
-  // if it isn't open, so if this isn't available, the popper will be detected
-  // to overflow the bottom of the screen too early.
+  var y = 0;
 
   if (visualViewport) {
     width = visualViewport.width;
-    height = visualViewport.height; // Uses Layout Viewport (like Chrome; Safari does not currently)
-    // In Chrome, it returns a value very close to 0 (+/-) but contains rounding
-    // errors due to floating point numbers, so we need to check precision.
-    // Safari returns a number <= 0, usually < -1 when pinch-zoomed
-    // Feature detection fails in mobile emulation mode in Chrome.
-    // Math.abs(win.innerWidth / visualViewport.scale - visualViewport.width) <
-    // 0.001
-    // Fallback here: "Not Safari" userAgent
+    height = visualViewport.height;
+    var layoutViewport = isLayoutViewport();
 
-    if (!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
+    if (layoutViewport || !layoutViewport && strategy === 'fixed') {
       x = visualViewport.offsetLeft;
       y = visualViewport.offsetTop;
     }
@@ -7814,7 +7447,7 @@ function getViewportRect(element) {
     y: y
   };
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/dom-utils/getDocumentRect.js
+;// ./node_modules/@popperjs/core/lib/dom-utils/getDocumentRect.js
 
 
 
@@ -7844,7 +7477,7 @@ function getDocumentRect(element) {
     y: y
   };
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/dom-utils/contains.js
+;// ./node_modules/@popperjs/core/lib/dom-utils/contains.js
 
 function contains(parent, child) {
   var rootNode = child.getRootNode && child.getRootNode(); // First, attempt with faster native method
@@ -7868,7 +7501,7 @@ function contains(parent, child) {
 
   return false;
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/utils/rectToClientRect.js
+;// ./node_modules/@popperjs/core/lib/utils/rectToClientRect.js
 function rectToClientRect(rect) {
   return Object.assign({}, rect, {
     left: rect.x,
@@ -7877,7 +7510,7 @@ function rectToClientRect(rect) {
     bottom: rect.y + rect.height
   });
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/dom-utils/getClippingRect.js
+;// ./node_modules/@popperjs/core/lib/dom-utils/getClippingRect.js
 
 
 
@@ -7893,8 +7526,8 @@ function rectToClientRect(rect) {
 
 
 
-function getInnerBoundingClientRect(element) {
-  var rect = getBoundingClientRect(element);
+function getInnerBoundingClientRect(element, strategy) {
+  var rect = getBoundingClientRect(element, false, strategy === 'fixed');
   rect.top = rect.top + element.clientTop;
   rect.left = rect.left + element.clientLeft;
   rect.bottom = rect.top + element.clientHeight;
@@ -7906,8 +7539,8 @@ function getInnerBoundingClientRect(element) {
   return rect;
 }
 
-function getClientRectFromMixedType(element, clippingParent) {
-  return clippingParent === viewport ? rectToClientRect(getViewportRect(element)) : isElement(clippingParent) ? getInnerBoundingClientRect(clippingParent) : rectToClientRect(getDocumentRect(getDocumentElement(element)));
+function getClientRectFromMixedType(element, clippingParent, strategy) {
+  return clippingParent === viewport ? rectToClientRect(getViewportRect(element, strategy)) : isElement(clippingParent) ? getInnerBoundingClientRect(clippingParent, strategy) : rectToClientRect(getDocumentRect(getDocumentElement(element)));
 } // A "clipping parent" is an overflowable container with the characteristic of
 // clipping (or hiding) overflowing elements with a position different from
 // `initial`
@@ -7930,25 +7563,25 @@ function getClippingParents(element) {
 // clipping parents
 
 
-function getClippingRect(element, boundary, rootBoundary) {
+function getClippingRect(element, boundary, rootBoundary, strategy) {
   var mainClippingParents = boundary === 'clippingParents' ? getClippingParents(element) : [].concat(boundary);
   var clippingParents = [].concat(mainClippingParents, [rootBoundary]);
   var firstClippingParent = clippingParents[0];
   var clippingRect = clippingParents.reduce(function (accRect, clippingParent) {
-    var rect = getClientRectFromMixedType(element, clippingParent);
+    var rect = getClientRectFromMixedType(element, clippingParent, strategy);
     accRect.top = math_max(rect.top, accRect.top);
     accRect.right = math_min(rect.right, accRect.right);
     accRect.bottom = math_min(rect.bottom, accRect.bottom);
     accRect.left = math_max(rect.left, accRect.left);
     return accRect;
-  }, getClientRectFromMixedType(element, firstClippingParent));
+  }, getClientRectFromMixedType(element, firstClippingParent, strategy));
   clippingRect.width = clippingRect.right - clippingRect.left;
   clippingRect.height = clippingRect.bottom - clippingRect.top;
   clippingRect.x = clippingRect.left;
   clippingRect.y = clippingRect.top;
   return clippingRect;
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/utils/getFreshSideObject.js
+;// ./node_modules/@popperjs/core/lib/utils/getFreshSideObject.js
 function getFreshSideObject() {
   return {
     top: 0,
@@ -7957,19 +7590,19 @@ function getFreshSideObject() {
     left: 0
   };
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/utils/mergePaddingObject.js
+;// ./node_modules/@popperjs/core/lib/utils/mergePaddingObject.js
 
 function mergePaddingObject(paddingObject) {
   return Object.assign({}, getFreshSideObject(), paddingObject);
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/utils/expandToHashMap.js
+;// ./node_modules/@popperjs/core/lib/utils/expandToHashMap.js
 function expandToHashMap(value, keys) {
   return keys.reduce(function (hashMap, key) {
     hashMap[key] = value;
     return hashMap;
   }, {});
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/utils/detectOverflow.js
+;// ./node_modules/@popperjs/core/lib/utils/detectOverflow.js
 
 
 
@@ -7988,6 +7621,8 @@ function detectOverflow(state, options) {
   var _options = options,
       _options$placement = _options.placement,
       placement = _options$placement === void 0 ? state.placement : _options$placement,
+      _options$strategy = _options.strategy,
+      strategy = _options$strategy === void 0 ? state.strategy : _options$strategy,
       _options$boundary = _options.boundary,
       boundary = _options$boundary === void 0 ? clippingParents : _options$boundary,
       _options$rootBoundary = _options.rootBoundary,
@@ -8002,7 +7637,7 @@ function detectOverflow(state, options) {
   var altContext = elementContext === popper ? reference : popper;
   var popperRect = state.rects.popper;
   var element = state.elements[altBoundary ? altContext : elementContext];
-  var clippingClientRect = getClippingRect(isElement(element) ? element : element.contextElement || getDocumentElement(state.elements.popper), boundary, rootBoundary);
+  var clippingClientRect = getClippingRect(isElement(element) ? element : element.contextElement || getDocumentElement(state.elements.popper), boundary, rootBoundary, strategy);
   var referenceClientRect = getBoundingClientRect(state.elements.reference);
   var popperOffsets = computeOffsets({
     reference: referenceClientRect,
@@ -8033,7 +7668,7 @@ function detectOverflow(state, options) {
 
   return overflowOffsets;
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/utils/computeAutoPlacement.js
+;// ./node_modules/@popperjs/core/lib/utils/computeAutoPlacement.js
 
 
 
@@ -8061,8 +7696,6 @@ function computeAutoPlacement(state, options) {
 
   if (allowedPlacements.length === 0) {
     allowedPlacements = placements;
-
-    if (false) {}
   } // $FlowFixMe[incompatible-type]: Flow seems to have problems with two array unions...
 
 
@@ -8079,7 +7712,7 @@ function computeAutoPlacement(state, options) {
     return overflows[a] - overflows[b];
   });
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/modifiers/flip.js
+;// ./node_modules/@popperjs/core/lib/modifiers/flip.js
 
 
 
@@ -8227,11 +7860,11 @@ function flip(_ref) {
     _skip: false
   }
 });
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/utils/getAltAxis.js
+;// ./node_modules/@popperjs/core/lib/utils/getAltAxis.js
 function getAltAxis(axis) {
   return axis === 'x' ? 'y' : 'x';
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/utils/within.js
+;// ./node_modules/@popperjs/core/lib/utils/within.js
 
 function within(min, value, max) {
   return math_max(min, math_min(value, max));
@@ -8240,7 +7873,7 @@ function withinMaxClamp(min, value, max) {
   var v = within(min, value, max);
   return v > max ? max : v;
 }
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/modifiers/preventOverflow.js
+;// ./node_modules/@popperjs/core/lib/modifiers/preventOverflow.js
 
 
 
@@ -8383,8 +8016,7 @@ function preventOverflow(_ref) {
   fn: preventOverflow,
   requiresIfExists: ['offset']
 });
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/modifiers/arrow.js
-
+;// ./node_modules/@popperjs/core/lib/modifiers/arrow.js
 
 
 
@@ -8458,11 +8090,7 @@ function arrow_effect(_ref2) {
     }
   }
 
-  if (false) {}
-
   if (!contains(state.elements.popper, arrowElement)) {
-    if (false) {}
-
     return;
   }
 
@@ -8479,7 +8107,7 @@ function arrow_effect(_ref2) {
   requires: ['popperOffsets'],
   requiresIfExists: ['preventOverflow']
 });
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/modifiers/hide.js
+;// ./node_modules/@popperjs/core/lib/modifiers/hide.js
 
 
 
@@ -8541,7 +8169,7 @@ function hide(_ref) {
   requiresIfExists: ['preventOverflow'],
   fn: hide
 });
-;// CONCATENATED MODULE: ./node_modules/@popperjs/core/lib/popper.js
+;// ./node_modules/@popperjs/core/lib/popper.js
 
 
 
@@ -8562,7 +8190,7 @@ var popper_createPopper = /*#__PURE__*/popperGenerator({
  // eslint-disable-next-line import/no-unused-modules
 
 
-;// CONCATENATED MODULE: ./node_modules/tippy.js/dist/tippy.esm.js
+;// ./node_modules/tippy.js/dist/tippy.esm.js
 /**!
 * tippy.js v6.3.7
 * (c) 2017-2021 atomiks
@@ -8853,7 +8481,8 @@ function getFormattedMessage(message) {
 
 var visitedMessages;
 
-if (false) {}
+if (false) // removed by dead control flow
+{}
 
 function resetVisitedMessages() {
   visitedMessages = new Set();
@@ -8940,7 +8569,8 @@ var defaultProps = Object.assign({
 var defaultKeys = Object.keys(defaultProps);
 var setDefaultProps = function setDefaultProps(partialProps) {
   /* istanbul ignore else */
-  if (false) {}
+  if (false) // removed by dead control flow
+{}
 
   var keys = Object.keys(partialProps);
   keys.forEach(function (key) {
@@ -9214,7 +8844,8 @@ function createTippy(reference, passedProps) {
   /* istanbul ignore if */
 
   if (!props.render) {
-    if (false) {}
+    if (false) // removed by dead control flow
+{}
 
     return instance;
   } // ===========================================================================
@@ -9763,7 +9394,8 @@ function createTippy(reference, passedProps) {
     createPopperInstance();
     /* istanbul ignore else */
 
-    if (false) {}
+    if (false) // removed by dead control flow
+{}
   }
 
   function getNestedPopperTree() {
@@ -9853,7 +9485,8 @@ function createTippy(reference, passedProps) {
 
   function setProps(partialProps) {
     /* istanbul ignore else */
-    if (false) {}
+    if (false) // removed by dead control flow
+{}
 
     if (instance.state.isDestroyed) {
       return;
@@ -9913,7 +9546,8 @@ function createTippy(reference, passedProps) {
 
   function show() {
     /* istanbul ignore else */
-    if (false) {} // Early bail-out
+    if (false) // removed by dead control flow
+{} // Early bail-out
 
 
     var isAlreadyVisible = instance.state.isVisible;
@@ -10004,7 +9638,8 @@ function createTippy(reference, passedProps) {
 
   function hide() {
     /* istanbul ignore else */
-    if (false) {} // Early bail-out
+    if (false) // removed by dead control flow
+{} // Early bail-out
 
 
     var isAlreadyHidden = !instance.state.isVisible;
@@ -10060,7 +9695,8 @@ function createTippy(reference, passedProps) {
 
   function hideWithInteractivity(event) {
     /* istanbul ignore else */
-    if (false) {}
+    if (false) // removed by dead control flow
+{}
 
     getDocument().addEventListener('mousemove', debouncedOnMouseMove);
     pushIfUnique(mouseMoveListeners, debouncedOnMouseMove);
@@ -10069,7 +9705,8 @@ function createTippy(reference, passedProps) {
 
   function unmount() {
     /* istanbul ignore else */
-    if (false) {}
+    if (false) // removed by dead control flow
+{}
 
     if (instance.state.isVisible) {
       instance.hide();
@@ -10100,7 +9737,8 @@ function createTippy(reference, passedProps) {
 
   function destroy() {
     /* istanbul ignore else */
-    if (false) {}
+    if (false) // removed by dead control flow
+{}
 
     if (instance.state.isDestroyed) {
       return;
@@ -10123,7 +9761,8 @@ function tippy(targets, optionalProps) {
   var plugins = defaultProps.plugins.concat(optionalProps.plugins || []);
   /* istanbul ignore else */
 
-  if (false) {}
+  if (false) // removed by dead control flow
+{}
 
   bindGlobalEventListeners();
   var passedProps = Object.assign({}, optionalProps, {
@@ -10132,7 +9771,8 @@ function tippy(targets, optionalProps) {
   var elements = getArrayOfElements(targets);
   /* istanbul ignore else */
 
-  if (false) { var isMoreThanOneReferenceElement, isSingleContentElement; }
+  if (false) // removed by dead control flow
+{ var isMoreThanOneReferenceElement, isSingleContentElement; }
 
   var instances = elements.reduce(function (acc, reference) {
     var instance = reference && createTippy(reference, passedProps);
@@ -10215,7 +9855,8 @@ var createSingleton = function createSingleton(tippyInstances, optionalProps) {
   }
 
   /* istanbul ignore else */
-  if (false) {}
+  if (false) // removed by dead control flow
+{}
 
   var individualInstances = tippyInstances;
   var references = [];
@@ -10420,7 +10061,8 @@ var BUBBLING_EVENTS_MAP = {
 
 function delegate(targets, props) {
   /* istanbul ignore else */
-  if (false) {}
+  if (false) // removed by dead control flow
+{}
 
   var listeners = [];
   var childTippyInstances = [];
@@ -10560,7 +10202,8 @@ var animateFill = {
 
     // @ts-ignore
     if (!((_instance$props$rende = instance.props.render) != null && _instance$props$rende.$$tippy)) {
-      if (false) {}
+      if (false) // removed by dead control flow
+{}
 
       return {};
     }
@@ -11019,10 +10662,322 @@ tippy.setDefaultProps({
 
 /***/ }),
 
-/***/ 5042:
-/***/ (() => {
+/***/ 9606:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
-/* (ignored) */
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SimpleEventDispatcher = void 0;
+const ste_core_1 = __webpack_require__(4604);
+/**
+ * The dispatcher handles the storage of subsciptions and facilitates
+ * subscription, unsubscription and dispatching of a simple event
+ *
+ * @export
+ * @class SimpleEventDispatcher
+ * @extends {DispatcherBase<ISimpleEventHandler<TArgs>>}
+ * @implements {ISimpleEvent<TArgs>}
+ * @template TArgs
+ */
+class SimpleEventDispatcher extends ste_core_1.DispatcherBase {
+    /**
+     * Creates an instance of SimpleEventDispatcher.
+     *
+     * @memberOf SimpleEventDispatcher
+     */
+    constructor() {
+        super();
+    }
+    /**
+     * Dispatches the event.
+     *
+     * @param {TArgs} args The arguments object.
+     * @returns {IPropagationStatus} The status of the event.
+     *
+     * @memberOf SimpleEventDispatcher
+     */
+    dispatch(args) {
+        const result = this._dispatch(false, this, arguments);
+        if (result == null) {
+            throw new ste_core_1.DispatchError("Got `null` back from dispatch.");
+        }
+        return result;
+    }
+    /**
+     * Dispatches the event without waiting for the result.
+     *
+     * @param {TArgs} args The arguments object.
+     *
+     * @memberOf SimpleEventDispatcher
+     */
+    dispatchAsync(args) {
+        this._dispatch(true, this, arguments);
+    }
+    /**
+     * Creates an event from the dispatcher. Will return the dispatcher
+     * in a wrapper. This will prevent exposure of any dispatcher methods.
+     *
+     * @returns {ISimpleEvent<TArgs>} The event.
+     *
+     * @memberOf SimpleEventDispatcher
+     */
+    asEvent() {
+        return super.asEvent();
+    }
+}
+exports.SimpleEventDispatcher = SimpleEventDispatcher;
+
+
+/***/ }),
+
+/***/ 9737:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DispatcherBase = void 0;
+const __1 = __webpack_require__(7852);
+/**
+ * Base class for implementation of the dispatcher. It facilitates the subscribe
+ * and unsubscribe methods based on generic handlers. The TEventType specifies
+ * the type of event that should be exposed. Use the asEvent to expose the
+ * dispatcher as event.
+ *
+ * @export
+ * @abstract
+ * @class DispatcherBase
+ * @implements {ISubscribable<TEventHandler>}
+ * @template TEventHandler The type of event handler.
+ */
+class DispatcherBase {
+    constructor() {
+        /**
+         * The subscriptions.
+         *
+         * @protected
+         *
+         * @memberOf DispatcherBase
+         */
+        this._subscriptions = new Array();
+    }
+    /**
+     * Returns the number of subscriptions.
+     *
+     * @readonly
+     * @type {number}
+     * @memberOf DispatcherBase
+     */
+    get count() {
+        return this._subscriptions.length;
+    }
+    /**
+     * Triggered when subscriptions are changed (added or removed).
+     *
+     * @readonly
+     * @type {ISubscribable<SubscriptionChangeEventHandler>}
+     * @memberOf DispatcherBase
+     */
+    get onSubscriptionChange() {
+        if (this._onSubscriptionChange == null) {
+            this._onSubscriptionChange = new __1.SubscriptionChangeEventDispatcher();
+        }
+        return this._onSubscriptionChange.asEvent();
+    }
+    /**
+     * Subscribe to the event dispatcher.
+     *
+     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
+     * @returns A function that unsubscribes the event handler from the event.
+     *
+     * @memberOf DispatcherBase
+     */
+    subscribe(fn) {
+        if (fn) {
+            this._subscriptions.push(this.createSubscription(fn, false));
+            this.triggerSubscriptionChange();
+        }
+        return () => {
+            this.unsubscribe(fn);
+        };
+    }
+    /**
+     * Subscribe to the event dispatcher.
+     *
+     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
+     * @returns A function that unsubscribes the event handler from the event.
+     *
+     * @memberOf DispatcherBase
+     */
+    sub(fn) {
+        return this.subscribe(fn);
+    }
+    /**
+     * Subscribe once to the event with the specified name.
+     *
+     * @param {TEventHandler} fn The event handler that is called when the event is dispatched.
+     * @returns A function that unsubscribes the event handler from the event.
+     *
+     * @memberOf DispatcherBase
+     */
+    one(fn) {
+        if (fn) {
+            this._subscriptions.push(this.createSubscription(fn, true));
+            this.triggerSubscriptionChange();
+        }
+        return () => {
+            this.unsubscribe(fn);
+        };
+    }
+    /**
+     * Checks it the event has a subscription for the specified handler.
+     *
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf DispatcherBase
+     */
+    has(fn) {
+        if (!fn)
+            return false;
+        return this._subscriptions.some((sub) => sub.handler == fn);
+    }
+    /**
+     * Unsubscribes the handler from the dispatcher.
+     *
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf DispatcherBase
+     */
+    unsubscribe(fn) {
+        if (!fn)
+            return;
+        let changes = false;
+        for (let i = 0; i < this._subscriptions.length; i++) {
+            if (this._subscriptions[i].handler == fn) {
+                this._subscriptions.splice(i, 1);
+                changes = true;
+                break;
+            }
+        }
+        if (changes) {
+            this.triggerSubscriptionChange();
+        }
+    }
+    /**
+     * Unsubscribes the handler from the dispatcher.
+     *
+     * @param {TEventHandler} fn The event handler.
+     *
+     * @memberOf DispatcherBase
+     */
+    unsub(fn) {
+        this.unsubscribe(fn);
+    }
+    /**
+     * Generic dispatch will dispatch the handlers with the given arguments.
+     *
+     * @protected
+     * @param {boolean} executeAsync `True` if the even should be executed async.
+     * @param {*} scope The scope of the event. The scope becomes the `this` for handler.
+     * @param {IArguments} args The arguments for the event.
+     * @returns {(IPropagationStatus | null)} The propagation status, or if an `executeAsync` is used `null`.
+     *
+     * @memberOf DispatcherBase
+     */
+    _dispatch(executeAsync, scope, args) {
+        //execute on a copy because of bug #9
+        for (let sub of [...this._subscriptions]) {
+            let ev = new __1.EventManagement(() => this.unsub(sub.handler));
+            let nargs = Array.prototype.slice.call(args);
+            nargs.push(ev);
+            let s = sub;
+            s.execute(executeAsync, scope, nargs);
+            //cleanup subs that are no longer needed
+            this.cleanup(sub);
+            if (!executeAsync && ev.propagationStopped) {
+                return { propagationStopped: true };
+            }
+        }
+        if (executeAsync) {
+            return null;
+        }
+        return { propagationStopped: false };
+    }
+    /**
+     * Creates a subscription.
+     *
+     * @protected
+     * @param {TEventHandler} handler The handler.
+     * @param {boolean} isOnce True if the handler should run only one.
+     * @returns {ISubscription<TEventHandler>} The subscription.
+     *
+     * @memberOf DispatcherBase
+     */
+    createSubscription(handler, isOnce) {
+        return new __1.Subscription(handler, isOnce);
+    }
+    /**
+     * Cleans up subs that ran and should run only once.
+     *
+     * @protected
+     * @param {ISubscription<TEventHandler>} sub The subscription.
+     *
+     * @memberOf DispatcherBase
+     */
+    cleanup(sub) {
+        let changes = false;
+        if (sub.isOnce && sub.isExecuted) {
+            let i = this._subscriptions.indexOf(sub);
+            if (i > -1) {
+                this._subscriptions.splice(i, 1);
+                changes = true;
+            }
+        }
+        if (changes) {
+            this.triggerSubscriptionChange();
+        }
+    }
+    /**
+     * Creates an event from the dispatcher. Will return the dispatcher
+     * in a wrapper. This will prevent exposure of any dispatcher methods.
+     *
+     * @returns {ISubscribable<TEventHandler>}
+     *
+     * @memberOf DispatcherBase
+     */
+    asEvent() {
+        if (this._wrap == null) {
+            this._wrap = new __1.DispatcherWrapper(this);
+        }
+        return this._wrap;
+    }
+    /**
+     * Clears the subscriptions.
+     *
+     * @memberOf DispatcherBase
+     */
+    clear() {
+        if (this._subscriptions.length != 0) {
+            this._subscriptions.splice(0, this._subscriptions.length);
+            this.triggerSubscriptionChange();
+        }
+    }
+    /**
+     * Triggers the subscription change event.
+     *
+     * @private
+     *
+     * @memberOf DispatcherBase
+     */
+    triggerSubscriptionChange() {
+        if (this._onSubscriptionChange != null) {
+            this._onSubscriptionChange.dispatch(this.count);
+        }
+    }
+}
+exports.DispatcherBase = DispatcherBase;
+
 
 /***/ })
 
@@ -11108,11 +11063,11 @@ tippy.setDefaultProps({
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+// This entry needs to be wrapped in an IIFE because it needs to be in strict mode.
 (() => {
 "use strict";
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/deprecated.js
+;// ./node_modules/@4site/engrid-scripts/dist/deprecated.js
 // A way to gracefully handle deprecation.
 // Find and replace HTML Elements, Classes, and more after the DOM is loaded but before any other Javascript fires.
 
@@ -11154,7 +11109,7 @@ class Deprecated {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/interfaces/options.js
+;// ./node_modules/@4site/engrid-scripts/dist/interfaces/options.js
 const OptionsDefaults = {
     backgroundImage: "",
     MediaAttribution: true,
@@ -11210,7 +11165,7 @@ const OptionsDefaults = {
     ],
 };
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/interfaces/upsell-options.js
+;// ./node_modules/@4site/engrid-scripts/dist/interfaces/upsell-options.js
 const UpsellOptionsDefaults = {
     image: "https://picsum.photos/480/650",
     imagePosition: "left",
@@ -11246,7 +11201,7 @@ const UpsellOptionsDefaults = {
     upsellCheckbox: false,
 };
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/interfaces/translate-options.js
+;// ./node_modules/@4site/engrid-scripts/dist/interfaces/translate-options.js
 const ptbrTranslation = [
     { field: "supporter.firstName", translation: "Nome" },
     { field: "supporter.lastName", translation: "Sobrenome" },
@@ -11290,7 +11245,7 @@ const TranslateOptionsDefaults = {
     NLD: nlTranslation,
 };
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/interfaces/exit-intent-options.js
+;// ./node_modules/@4site/engrid-scripts/dist/interfaces/exit-intent-options.js
 const ExitIntentOptionsDefaults = {
     enabled: false,
     title: "We are sad that you are leaving",
@@ -11305,7 +11260,7 @@ const ExitIntentOptionsDefaults = {
     },
 };
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/interfaces/frequency-upsell-options.js
+;// ./node_modules/@4site/engrid-scripts/dist/interfaces/frequency-upsell-options.js
 const FrequencyUpsellOptionsDefaults = {
     title: "Before we process your donation...",
     paragraph: "Would you like to make it an annual gift?",
@@ -11320,7 +11275,7 @@ const FrequencyUpsellOptionsDefaults = {
     onDecline: () => { },
 };
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/loader.js
+;// ./node_modules/@4site/engrid-scripts/dist/loader.js
 // Ref: https://app.getguru.com/card/iMgx968T/ENgrid-Loader
 
 class Loader {
@@ -11498,16 +11453,16 @@ class Loader {
 }
 
 // EXTERNAL MODULE: ./node_modules/@4site/engrid-scripts/node_modules/strongly-typed-events/dist/index.js
-var dist = __webpack_require__(291);
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/events/en-form.js
+var dist = __webpack_require__(3199);
+;// ./node_modules/@4site/engrid-scripts/dist/events/en-form.js
 
 
 class en_form_EnForm {
     constructor() {
         this.logger = new logger_EngridLogger("EnForm");
-        this._onSubmit = new dist/* SignalDispatcher */.nz();
-        this._onValidate = new dist/* SignalDispatcher */.nz();
-        this._onError = new dist/* SignalDispatcher */.nz();
+        this._onSubmit = new dist/* SignalDispatcher */.UD();
+        this._onValidate = new dist/* SignalDispatcher */.UD();
+        this._onError = new dist/* SignalDispatcher */.UD();
         this.submit = true;
         this.submitPromise = false;
         this.validate = true;
@@ -11553,12 +11508,12 @@ class en_form_EnForm {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/events/donation-amount.js
+;// ./node_modules/@4site/engrid-scripts/dist/events/donation-amount.js
 
 
 class DonationAmount {
     constructor(radios = "transaction.donationAmt", other = "transaction.donationAmt.other") {
-        this._onAmountChange = new dist/* SimpleEventDispatcher */.FK();
+        this._onAmountChange = new dist/* SimpleEventDispatcher */.IL();
         this._amount = 0;
         this._radios = "";
         this._other = "";
@@ -11688,7 +11643,7 @@ class DonationAmount {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/engrid.js
+;// ./node_modules/@4site/engrid-scripts/dist/engrid.js
 class engrid_ENGrid {
     constructor() {
         if (!engrid_ENGrid.enForm) {
@@ -11888,35 +11843,45 @@ class engrid_ENGrid {
                 case "donation":
                 case "premiumgift":
                     return "DONATION";
-                    break;
+                    // removed by dead control flow
+
                 case "e-card":
                     return "ECARD";
-                    break;
+                    // removed by dead control flow
+
                 case "otherdatacapture":
                 case "survey":
                     return "SURVEY";
-                    break;
+                    // removed by dead control flow
+
                 case "emailtotarget":
                     return "EMAILTOTARGET";
-                    break;
+                    // removed by dead control flow
+
                 case "advocacypetition":
                     return "ADVOCACY";
-                    break;
+                    // removed by dead control flow
+
                 case "emailsubscribeform":
                     return "SUBSCRIBEFORM";
-                    break;
+                    // removed by dead control flow
+
                 case "event":
                     return "EVENT";
-                    break;
+                    // removed by dead control flow
+
                 case "supporterhub":
                     return "SUPPORTERHUB";
-                    break;
+                    // removed by dead control flow
+
                 case "unsubscribe":
                     return "UNSUBSCRIBE";
-                    break;
+                    // removed by dead control flow
+
                 case "tweetpage":
                     return "TWEETPAGE";
-                    break;
+                    // removed by dead control flow
+
                 default:
                     return "UNKNOWN";
             }
@@ -12247,12 +12212,12 @@ class engrid_ENGrid {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/events/donation-frequency.js
+;// ./node_modules/@4site/engrid-scripts/dist/events/donation-frequency.js
 
 
 class DonationFrequency {
     constructor() {
-        this._onFrequencyChange = new dist/* SimpleEventDispatcher */.FK();
+        this._onFrequencyChange = new dist/* SimpleEventDispatcher */.IL();
         this._frequency = "onetime";
         this._recurring = "n";
         this._dispatch = true;
@@ -12364,13 +12329,13 @@ class DonationFrequency {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/events/processing-fees.js
+;// ./node_modules/@4site/engrid-scripts/dist/events/processing-fees.js
 
 
 
 class ProcessingFees {
     constructor() {
-        this._onFeeChange = new dist/* SimpleEventDispatcher */.FK();
+        this._onFeeChange = new dist/* SimpleEventDispatcher */.IL();
         this._amount = DonationAmount.getInstance();
         this._form = en_form_EnForm.getInstance();
         this._fee = 0;
@@ -12458,7 +12423,7 @@ class ProcessingFees {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/events/remember-me-events.js
+;// ./node_modules/@4site/engrid-scripts/dist/events/remember-me-events.js
 /**
  * This class is responsible for managing events related to the "Remember Me" functionality.
  * It uses the Singleton design pattern to ensure only one instance of this class exists.
@@ -12469,8 +12434,8 @@ class ProcessingFees {
 class RememberMeEvents {
     constructor() {
         this.logger = new logger_EngridLogger("RememberMeEvents");
-        this._onLoad = new dist/* SimpleEventDispatcher */.FK();
-        this._onClear = new dist/* SignalDispatcher */.nz();
+        this._onLoad = new dist/* SimpleEventDispatcher */.IL();
+        this._onClear = new dist/* SignalDispatcher */.UD();
         this.hasData = false;
     }
     static getInstance() {
@@ -12496,12 +12461,12 @@ class RememberMeEvents {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/events/country.js
+;// ./node_modules/@4site/engrid-scripts/dist/events/country.js
 
 
 class Country {
     constructor() {
-        this._onCountryChange = new dist/* SimpleEventDispatcher */.FK();
+        this._onCountryChange = new dist/* SimpleEventDispatcher */.IL();
         this._country = "";
         this._field = null;
         // Run only if it is a Page with a Country field
@@ -12540,7 +12505,7 @@ class Country {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/events/index.js
+;// ./node_modules/@4site/engrid-scripts/dist/events/index.js
 
 
 
@@ -12548,7 +12513,7 @@ class Country {
 
 
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/app.js
+;// ./node_modules/@4site/engrid-scripts/dist/app.js
 
 
 class App extends engrid_ENGrid {
@@ -12897,7 +12862,7 @@ class App extends engrid_ENGrid {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/amount-label.js
+;// ./node_modules/@4site/engrid-scripts/dist/amount-label.js
 // This script checks if the donations amounts are numbers and if they are, appends the correct currency symbol
 
 class AmountLabel {
@@ -12929,7 +12894,7 @@ class AmountLabel {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/apple-pay.js
+;// ./node_modules/@4site/engrid-scripts/dist/apple-pay.js
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -13100,7 +13065,7 @@ class ApplePay {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/a11y.js
+;// ./node_modules/@4site/engrid-scripts/dist/a11y.js
 // a11y means accessibility
 // This Component is supposed to be used as a helper for Aria Attributes & Other Accessibility Features
 class A11y {
@@ -13224,7 +13189,7 @@ class A11y {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/capitalize-fields.js
+;// ./node_modules/@4site/engrid-scripts/dist/capitalize-fields.js
 // CapitalizeFields is a class that capitalizes the first letter of the fields passed to it.
 // It subscribes to the onSubmit event of the EnForm class and capitalizes the fields on submit.
 
@@ -13248,7 +13213,7 @@ class CapitalizeFields {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/auto-year.js
+;// ./node_modules/@4site/engrid-scripts/dist/auto-year.js
 // This class changes the Credit Card Expiration Year Field Options to
 // include the current year and the next 19 years.
 class AutoYear {
@@ -13285,7 +13250,7 @@ class AutoYear {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/autocomplete.js
+;// ./node_modules/@4site/engrid-scripts/dist/autocomplete.js
 // This class adds the autocomplete attribute to
 // the most common input elements
 
@@ -13325,7 +13290,7 @@ class Autocomplete {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/ecard.js
+;// ./node_modules/@4site/engrid-scripts/dist/ecard.js
 
 class Ecard {
     constructor() {
@@ -13388,7 +13353,7 @@ class Ecard {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/click-to-expand.js
+;// ./node_modules/@4site/engrid-scripts/dist/click-to-expand.js
 // This class is used to expand content when a user clicks on a div with the class "click-to-expand".
 // The content is shortened by default and will expand when clicked.
 
@@ -13429,7 +13394,7 @@ class ClickToExpand {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/advocacy.js
+;// ./node_modules/@4site/engrid-scripts/dist/advocacy.js
 // Component to handle advocacy features
 // 1 - Adds EN Polyfill to support "label" clicking on Advocacy Recipient "labels"
 
@@ -13465,7 +13430,7 @@ class Advocacy {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/data-attributes.js
+;// ./node_modules/@4site/engrid-scripts/dist/data-attributes.js
 // Component that adds data attributes to the Body
 
 class DataAttributes {
@@ -13653,7 +13618,7 @@ class DataAttributes {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/iframe.js
+;// ./node_modules/@4site/engrid-scripts/dist/iframe.js
 
 
 class iFrame {
@@ -13932,7 +13897,7 @@ class iFrame {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/input-has-value-and-focus.js
+;// ./node_modules/@4site/engrid-scripts/dist/input-has-value-and-focus.js
 // Component that adds has-value and has-focus classes to form inputs
 
 class InputHasValueAndFocus {
@@ -13984,7 +13949,7 @@ class InputHasValueAndFocus {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/input-placeholders.js
+;// ./node_modules/@4site/engrid-scripts/dist/input-placeholders.js
 // Component that adds input placeholders
 // You can override the default placeholders by adding a Placeholders option to the EngridOptions on the client theme.
 // You can also add an EngridPageOptions override to the page, if you want to override the placeholders on a specific page. Example:
@@ -14070,7 +14035,7 @@ class InputPlaceholders {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/media-attribution.js
+;// ./node_modules/@4site/engrid-scripts/dist/media-attribution.js
 /*
   Looks for specially crafted <img> links and will transform its markup to display an attribution overlay on top of the image
   Depends on "_engrid-media-attribution.scss" for styling
@@ -14088,7 +14053,7 @@ class InputPlaceholders {
   <figure class="media-with-attribution"><img src="https://via.placeholder.com/300x300" data-src="https://via.placeholder.com/300x300" data-attribution-source="Jane Doe 1"><figattribution class="attribution-bottomright">Jane Doe 1</figattribution></figure>
 */
 
-const media_attribution_tippy = (__webpack_require__(3861)/* ["default"] */ .ZP);
+const media_attribution_tippy = (__webpack_require__(9244)/* ["default"] */ .Ay);
 class MediaAttribution {
     constructor() {
         // Find all images with attribution but not with the "data-attribution-hide-overlay" attribute
@@ -14138,7 +14103,7 @@ class MediaAttribution {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/live-variables.js
+;// ./node_modules/@4site/engrid-scripts/dist/live-variables.js
 
 
 class LiveVariables {
@@ -14287,7 +14252,7 @@ class LiveVariables {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/upsell-lightbox.js
+;// ./node_modules/@4site/engrid-scripts/dist/upsell-lightbox.js
 
 
 class UpsellLightbox {
@@ -14652,7 +14617,7 @@ class UpsellLightbox {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/upsell-checkbox.js
+;// ./node_modules/@4site/engrid-scripts/dist/upsell-checkbox.js
 // This component will add a checkbox to the donation form that will allow the user to upgrade their donation to a monthly donation.
 
 
@@ -14899,7 +14864,7 @@ class UpsellCheckbox {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/show-hide-radio-checkboxes.js
+;// ./node_modules/@4site/engrid-scripts/dist/show-hide-radio-checkboxes.js
 
 class ShowHideRadioCheckboxes {
     // Create default data attributes on all fields
@@ -15072,7 +15037,7 @@ class ShowHideRadioCheckboxes {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/cookie.js
+;// ./node_modules/@4site/engrid-scripts/dist/cookie.js
 /**
 Example:
 import * as cookie from "./cookie";
@@ -15150,7 +15115,7 @@ function remove(name, attributes) {
     set(name, "", Object.assign(Object.assign({}, attributes), { expires: -1 }));
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/translate-fields.js
+;// ./node_modules/@4site/engrid-scripts/dist/translate-fields.js
 // Component to translate fields based on the country selected
 // It will also adapt the state field to the country selected
 
@@ -15700,7 +15665,7 @@ class TranslateFields {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/auto-country-select.js
+;// ./node_modules/@4site/engrid-scripts/dist/auto-country-select.js
 // This class works when the user has added ".simple_country_select" as a class in page builder for the Country select
 
 
@@ -15767,7 +15732,7 @@ class AutoCountrySelect {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/skip-link.js
+;// ./node_modules/@4site/engrid-scripts/dist/skip-link.js
 // Javascript that adds an accessible "Skip Link" button after the <body> opening that jumps to
 // the first <title> or <h1> field in a "body-" section, or the first <h1> if none are found
 // in those sections
@@ -15805,7 +15770,7 @@ class SkipToMainContentLink {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/src-defer.js
+;// ./node_modules/@4site/engrid-scripts/dist/src-defer.js
 // Build Notes: Add the vanilla Javascript version inline inside the page template right before </body>
 // In the event the vanilla javascript is not inlined we should still process any assets with a data-src still defined on it. Plus we only process background video via this JS file as to not block the page with a large video file downloading.
 // // 4Site's simplified image lazy loader
@@ -15877,7 +15842,7 @@ class SrcDefer {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/set-recurr-freq.js
+;// ./node_modules/@4site/engrid-scripts/dist/set-recurr-freq.js
 
 
 class setRecurrFreq {
@@ -15949,7 +15914,7 @@ class setRecurrFreq {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/page-background.js
+;// ./node_modules/@4site/engrid-scripts/dist/page-background.js
 
 class PageBackground {
     constructor() {
@@ -16193,7 +16158,7 @@ class PageBackground {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/neverbounce.js
+;// ./node_modules/@4site/engrid-scripts/dist/neverbounce.js
 
 
 class NeverBounce {
@@ -16499,7 +16464,7 @@ class NeverBounce {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/freshaddress.js
+;// ./node_modules/@4site/engrid-scripts/dist/freshaddress.js
 // According to the FreshAddress documentation, you need to add the following code to your page:
 // jQuery library.
 // <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
@@ -16705,7 +16670,7 @@ class FreshAddress {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/progress-bar.js
+;// ./node_modules/@4site/engrid-scripts/dist/progress-bar.js
 
 class ProgressBar {
     constructor() {
@@ -16747,10 +16712,10 @@ class ProgressBar {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/remember-me.js
+;// ./node_modules/@4site/engrid-scripts/dist/remember-me.js
 
 
-const remember_me_tippy = (__webpack_require__(3861)/* ["default"] */ .ZP);
+const remember_me_tippy = (__webpack_require__(9244)/* ["default"] */ .Ay);
 class RememberMe {
     constructor(options) {
         this._form = en_form_EnForm.getInstance();
@@ -17108,7 +17073,7 @@ class RememberMe {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/show-if-amount.js
+;// ./node_modules/@4site/engrid-scripts/dist/show-if-amount.js
 
 
 class ShowIfAmount {
@@ -17227,7 +17192,7 @@ class ShowIfAmount {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/other-amount.js
+;// ./node_modules/@4site/engrid-scripts/dist/other-amount.js
 // This class automatically select other radio input when an amount is entered into it.
 
 class OtherAmount {
@@ -17299,7 +17264,7 @@ class OtherAmount {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/logger.js
+;// ./node_modules/@4site/engrid-scripts/dist/logger.js
 
 /**
  * A better logger. It only works if debug is enabled.
@@ -17385,7 +17350,7 @@ class logger_EngridLogger {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/min-max-amount.js
+;// ./node_modules/@4site/engrid-scripts/dist/min-max-amount.js
 // This script adds an erros message to the page if the amount is greater than the max amount or less than the min amount.
 
 class MinMaxAmount {
@@ -17513,11 +17478,11 @@ class MinMaxAmount {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/ticker.js
+;// ./node_modules/@4site/engrid-scripts/dist/ticker.js
 
 class Ticker {
     constructor() {
-        this.shuffleSeed = __webpack_require__(7650);
+        this.shuffleSeed = __webpack_require__(3184);
         this.items = [];
         this.tickerElement = document.querySelector(".engrid-ticker");
         this.logger = new logger_EngridLogger("Ticker", "black", "beige", "🔁");
@@ -17581,7 +17546,7 @@ class Ticker {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/data-layer.js
+;// ./node_modules/@4site/engrid-scripts/dist/data-layer.js
 // DataLayer: singleton helper for pushing structured analytics events/vars to window.dataLayer.
 // On load it emits one aggregated event `pageJsonVariablesReady` with:
 //   EN_PAGEJSON_* (normalized pageJson), EN_URLPARAM_*, EN_RECURRING_FREQUENCIES (donation pages),
@@ -17803,7 +17768,7 @@ class DataLayer {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/data-replace.js
+;// ./node_modules/@4site/engrid-scripts/dist/data-replace.js
 // This script is used to replace merge tags in the EN Blocks of the page.
 // It searches for HTML elements containing the data to be replaced and replaces it.
 // The data to be replaced is passed as URL parameters, example: ?engrid_data[key]=value.
@@ -17881,7 +17846,7 @@ class DataReplace {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/data-hide.js
+;// ./node_modules/@4site/engrid-scripts/dist/data-hide.js
 // Hides elements based on URL arguments.
 //
 // The DataHide class is used to hide elements based on URL arguments.
@@ -17949,7 +17914,7 @@ class DataHide {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/add-name-to-message.js
+;// ./node_modules/@4site/engrid-scripts/dist/add-name-to-message.js
 /*
  Adds first and last name when First Name and Last Name fields lose focus if name shortcodes aren't present
 */
@@ -18000,7 +17965,7 @@ class AddNameToMessage {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/expand-region-name.js
+;// ./node_modules/@4site/engrid-scripts/dist/expand-region-name.js
 // Populates hidden supporter field "Region Long Format" with expanded name (e.g FL becomes Florida)
 
 
@@ -18046,7 +18011,7 @@ class ExpandRegionName {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/url-to-form.js
+;// ./node_modules/@4site/engrid-scripts/dist/url-to-form.js
 // Component that allows to set a field value from URL parameters
 // Workflow:
 // 1. Loop through all the URL parameters
@@ -18086,7 +18051,7 @@ class UrlToForm {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/required-if-visible.js
+;// ./node_modules/@4site/engrid-scripts/dist/required-if-visible.js
 
 class RequiredIfVisible {
     constructor() {
@@ -18148,7 +18113,7 @@ class RequiredIfVisible {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/tidycontact.js
+;// ./node_modules/@4site/engrid-scripts/dist/tidycontact.js
 var tidycontact_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -19352,7 +19317,7 @@ class TidyContact {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/live-currency.js
+;// ./node_modules/@4site/engrid-scripts/dist/live-currency.js
 // This script enables live currency symbol and code to the page.
 
 class LiveCurrency {
@@ -19494,7 +19459,7 @@ class LiveCurrency {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/custom-currency.js
+;// ./node_modules/@4site/engrid-scripts/dist/custom-currency.js
 // This component allows you to customize the currency options in the currency field
 // It is used in the following way:
 //
@@ -19608,7 +19573,7 @@ class CustomCurrency {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/autosubmit.js
+;// ./node_modules/@4site/engrid-scripts/dist/autosubmit.js
 // Automatically submits the page if a URL argument is present
 
 class Autosubmit {
@@ -19626,7 +19591,7 @@ class Autosubmit {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/event-tickets.js
+;// ./node_modules/@4site/engrid-scripts/dist/event-tickets.js
 class EventTickets {
     constructor() {
         // --------------------------------------------
@@ -19652,7 +19617,7 @@ class EventTickets {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/swap-amounts.js
+;// ./node_modules/@4site/engrid-scripts/dist/swap-amounts.js
 // This script allows you to override the default donation amounts in Engaging Networks
 // with a custom list of amounts.
 // If the URL contains a query parameter "engrid-amounts" with a comma separated values, the script will load the
@@ -19786,7 +19751,7 @@ class SwapAmounts {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/debug-panel.js
+;// ./node_modules/@4site/engrid-scripts/dist/debug-panel.js
 
 class DebugPanel {
     constructor(pageLayouts) {
@@ -20296,7 +20261,7 @@ class DebugPanel {
 }
 DebugPanel.debugSessionStorageKey = "engrid_debug_panel";
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/debug-hidden-fields.js
+;// ./node_modules/@4site/engrid-scripts/dist/debug-hidden-fields.js
 // Switches hidden fields to be type text when debug mode is enabled.
 
 class DebugHiddenFields {
@@ -20346,7 +20311,7 @@ class DebugHiddenFields {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/branding-html.js
+;// ./node_modules/@4site/engrid-scripts/dist/branding-html.js
 var branding_html_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -20418,7 +20383,7 @@ class BrandingHtml {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/country-disable.js
+;// ./node_modules/@4site/engrid-scripts/dist/country-disable.js
 // This class allows you to disable some countries from the country dropdown list.
 
 class CountryDisable {
@@ -20442,7 +20407,7 @@ class CountryDisable {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/premium-gift.js
+;// ./node_modules/@4site/engrid-scripts/dist/premium-gift.js
 // Component to handle premium gift features
 // 1 - Add a class to body to indicate which premium gift is selected (data-engrid-premium-gift-name="item-name-slugged")
 // 2 - Add a class to body to indicate if the "maximize my impact" is selected (data-engrid-premium-gift-maximize="true|false")
@@ -20627,7 +20592,7 @@ class PremiumGift {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/custom-premium.js
+;// ./node_modules/@4site/engrid-scripts/dist/custom-premium.js
 // ENgrid component: CustomPremium
 // Filters premium gifts based on window.EngridPageOptions.CustomPremium configuration
 // Rules:
@@ -20893,7 +20858,7 @@ class CustomPremium {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/digital-wallets.js
+;// ./node_modules/@4site/engrid-scripts/dist/digital-wallets.js
 
 class DigitalWallets {
     constructor() {
@@ -21038,7 +21003,7 @@ class DigitalWallets {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/mobile-cta.js
+;// ./node_modules/@4site/engrid-scripts/dist/mobile-cta.js
 // This component adds a floating CTA button to the page, which can be used to scroll to the top of the form
 
 class MobileCTA {
@@ -21115,7 +21080,7 @@ class MobileCTA {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/live-frequency.js
+;// ./node_modules/@4site/engrid-scripts/dist/live-frequency.js
 // This script creates merge tags: [[frequency]], [[Frequency]], or [[FREQUENCY]]
 // that gets replaced with the donation frequency
 // and can be used on any Code Block, Text Block, or Form Block
@@ -21226,7 +21191,7 @@ class LiveFrequency {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/universal-opt-in.js
+;// ./node_modules/@4site/engrid-scripts/dist/universal-opt-in.js
 /**
  * This class will add event listeners to every yes/no radio button or checkbox
  * inside a universal opt-in element (any form block with the CSS class universal-opt-in). When the user clicks on a radio/checkbox
@@ -21319,7 +21284,7 @@ class UniversalOptIn {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/plaid.js
+;// ./node_modules/@4site/engrid-scripts/dist/plaid.js
 // Component with a helper to auto-click on the Plaid link
 // when that payment method is selected
 
@@ -21370,7 +21335,7 @@ class Plaid {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/give-by-select.js
+;// ./node_modules/@4site/engrid-scripts/dist/give-by-select.js
 
 class GiveBySelect {
     constructor() {
@@ -21453,7 +21418,7 @@ class GiveBySelect {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/url-params-to-body-attrs.js
+;// ./node_modules/@4site/engrid-scripts/dist/url-params-to-body-attrs.js
 //This component adds any url parameters that begin with "data-engrid-" to the body as attributes.
 
 class UrlParamsToBodyAttrs {
@@ -21469,7 +21434,7 @@ class UrlParamsToBodyAttrs {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/exit-intent-lightbox.js
+;// ./node_modules/@4site/engrid-scripts/dist/exit-intent-lightbox.js
 
 
 class ExitIntentLightbox {
@@ -21616,7 +21581,7 @@ class ExitIntentLightbox {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/supporter-hub.js
+;// ./node_modules/@4site/engrid-scripts/dist/supporter-hub.js
 // Component that adds 4Site Special Features to the Supporter Hub Page
 
 class SupporterHub {
@@ -21693,7 +21658,7 @@ class SupporterHub {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/fast-form-fill.js
+;// ./node_modules/@4site/engrid-scripts/dist/fast-form-fill.js
 /**
  * This class adds body data attributes if all mandatory inputs, on specific form blocks, are filled.
  * Related styling (to hide elements) can be found in "fast-form-fill.scss".
@@ -21770,7 +21735,7 @@ class FastFormFill {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/set-attr.js
+;// ./node_modules/@4site/engrid-scripts/dist/set-attr.js
 /*+
   The class is used to set body attributes via click handlers.
   The format is "setattr--{attribute}--{value}".
@@ -21803,7 +21768,7 @@ class SetAttr {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/show-if-present.js
+;// ./node_modules/@4site/engrid-scripts/dist/show-if-present.js
 /**
  * This class contains the logic for special classes that can be used to hide elements if
  * certain supporter questions are present or absent.
@@ -21884,7 +21849,7 @@ class ShowIfPresent {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/en-validators.js
+;// ./node_modules/@4site/engrid-scripts/dist/en-validators.js
 // This component uses EN's Custom Validators on the client side to validate form fields.
 // It's currently behind a feature flag, so it's not enabled by default.
 // To enable it, add the following to your options:
@@ -21975,7 +21940,7 @@ class ENValidators {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/modal.js
+;// ./node_modules/@4site/engrid-scripts/dist/modal.js
 
 class Modal {
     constructor(options) {
@@ -22118,7 +22083,7 @@ class Modal {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/postal-code-validator.js
+;// ./node_modules/@4site/engrid-scripts/dist/postal-code-validator.js
 
 
 
@@ -22238,7 +22203,7 @@ class PostalCodeValidator {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/vgs.js
+;// ./node_modules/@4site/engrid-scripts/dist/vgs.js
 // This component allows you to customize the VGS theme options
 //
 // It is used in the following way:
@@ -22489,7 +22454,7 @@ class VGS {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/country-redirect.js
+;// ./node_modules/@4site/engrid-scripts/dist/country-redirect.js
 // This component allows you to redirect the user to a different page based on their country.
 // It works by checking the country field on the page and comparing it to the list of countries in the CountryRedirect option.
 // If the country matches one of the countries in the list, the user is redirected to the specified URL only if the URL is not the same as the current page.
@@ -22552,7 +22517,7 @@ class CountryRedirect {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/welcome-back.js
+;// ./node_modules/@4site/engrid-scripts/dist/welcome-back.js
 /**
  * This component adds a welcome back message and a personal details summary to the page.
  * It depends on the "fast-personal-details" functionality from the FastFormFill component.
@@ -22725,7 +22690,7 @@ class WelcomeBack {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/interfaces/ecard-to-target-options.js
+;// ./node_modules/@4site/engrid-scripts/dist/interfaces/ecard-to-target-options.js
 const EcardToTargetOptionsDefaults = {
     targetName: "",
     targetEmail: "",
@@ -22736,7 +22701,7 @@ const EcardToTargetOptionsDefaults = {
     targets: [],
 };
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/ecard-to-target.js
+;// ./node_modules/@4site/engrid-scripts/dist/ecard-to-target.js
 /**
  * This component adjusts an ecard form to target a specific recipient,
  * defined in a code block
@@ -22833,7 +22798,7 @@ class EcardToTarget {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/interfaces/embedded-ecard-options.js
+;// ./node_modules/@4site/engrid-scripts/dist/interfaces/embedded-ecard-options.js
 const EmbeddedEcardOptionsDefaults = {
     pageUrl: "",
     headerText: "Send an Ecard notification of your gift",
@@ -22842,7 +22807,7 @@ const EmbeddedEcardOptionsDefaults = {
     placement: "afterend",
 };
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/embedded-ecard.js
+;// ./node_modules/@4site/engrid-scripts/dist/embedded-ecard.js
 /**
  * This class handles adding a checkbox to a form that, when checked, will display an embedded ecard form.
  * The embedded ecard form is hosted on a separate page and is displayed in an iframe.
@@ -23175,7 +23140,7 @@ class EmbeddedEcard {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/us-only-form.js
+;// ./node_modules/@4site/engrid-scripts/dist/us-only-form.js
 /*
  * This class disables the country field and fixes the country to "United States"
  */
@@ -23207,7 +23172,7 @@ class UsOnlyForm {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/thank-you-page-conditional-content.js
+;// ./node_modules/@4site/engrid-scripts/dist/thank-you-page-conditional-content.js
 
 class ThankYouPageConditionalContent {
     constructor() {
@@ -23255,7 +23220,7 @@ class ThankYouPageConditionalContent {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/checkbox-label.js
+;// ./node_modules/@4site/engrid-scripts/dist/checkbox-label.js
 // Component to allow the user to set custom labels for the checkboxes,
 // you can customize the checkbox label on a per-page basis, which is not possible with Engaging Networks
 // The .checkbox-label element should be placed right before the checkbox form block
@@ -23287,7 +23252,7 @@ class CheckboxLabel {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/optin-ladder.js
+;// ./node_modules/@4site/engrid-scripts/dist/optin-ladder.js
 // This component is responsible for showing a ladder of checkboxes, one at a time, to the user.
 // If the page is not embedded in an iframe, and there are EN's Opt-In fields on the page, we will store the values to sessionStorage upon Form Submit.
 // If the page is embedded in an iframe and on a Thank You Page, we will look for .optin-ladder elements, compare the values to sessionStorage, and show the next checkbox in the ladder, removing all but the first match.
@@ -23551,7 +23516,7 @@ class OptInLadder {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/post-donation-embed.js
+;// ./node_modules/@4site/engrid-scripts/dist/post-donation-embed.js
 // This component only works on Thank You pages and the current page IS NOT embedded as an iframe.
 // It searches for a post-donation tag (engrid-post-donation)
 // and if it exists, it will replace it with an iframe of the chained `src` attribute (or the current donation page, replacing the
@@ -23618,7 +23583,7 @@ class PostDonationEmbed {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/frequency-upsell-modal.js
+;// ./node_modules/@4site/engrid-scripts/dist/frequency-upsell-modal.js
 /*
  * FrequencyUpsellModal - this is class that creates the modal for the frequency upsell.
  * This component is intentionally "dumb" and only creates the modal renders its content.
@@ -23682,7 +23647,7 @@ class FrequencyUpsellModal extends Modal {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/frequency-upsell.js
+;// ./node_modules/@4site/engrid-scripts/dist/frequency-upsell.js
 /*
  * FrequencyUpsell component which creates a modal to upsell the frequency of the donation
  * This is typically used to upsell a single donation into an annual donation, but the component
@@ -23845,10 +23810,10 @@ class FrequencyUpsell {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/version.js
+;// ./node_modules/@4site/engrid-scripts/dist/version.js
 const AppVersion = "0.22.20";
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/index.js
+;// ./node_modules/@4site/engrid-scripts/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
 
 
@@ -23942,67 +23907,62 @@ const AppVersion = "0.22.20";
 // Version
 
 
-;// CONCATENATED MODULE: ./src/scripts/main.js
+;// ./src/scripts/main.js
 const customScript = function (App, DonationFrequency) {
-  console.log("ENGrid client scripts are executing"); // Listen to the message PayPal sends to the parent window when Venmo is enabled
+  console.log("ENGrid client scripts are executing");
 
-  const VENMO_IDENTIFIER = "venmo"; // Print to the console ALL messages from iFrames
+  // Listen to the message PayPal sends to the parent window when Venmo is enabled
+  const VENMO_IDENTIFIER = "venmo";
 
+  // Print to the console ALL messages from iFrames
   window.addEventListener("message", function (event) {
     // Check the origin of the message
     if (event.origin === "https://www.paypal.com") {
-      const data = JSON.parse(event.data); // Get the content from the first item of the data object
-
+      const data = JSON.parse(event.data);
+      // Get the content from the first item of the data object
       const firstKey = Object.keys(data)[0];
       const content = data[firstKey][0];
-      const hasData = ("data" in content);
+      const hasData = "data" in content;
       const hasName = hasData && "name" in content.data;
       const isRemember = hasName && content.data.name === "remember";
       const hasArgs = isRemember && "args" in content.data;
       const isVenmo = hasArgs && Array.isArray(content.data.args) && content.data.args.length > 0 && Array.isArray(content.data.args[0]) && content.data.args[0].length > 0 && content.data.args[0][0] === VENMO_IDENTIFIER;
-
       if (isVenmo) {
         // Venmo is Enabled
         // If you are on iPhone, only enable Venmo if using Safari
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         const isSafari = navigator.userAgent.includes("Safari") && !navigator.userAgent.includes("CriOS") && !navigator.userAgent.includes("FxiOS");
-
         if (isIOS && !isSafari) {
           App.log("Venmo is not enabled on non-Safari iOS");
           return;
         }
-
         App.setBodyData("venmo-enabled", "true");
         App.log("Venmo is enabled");
       }
     }
-  }); // Add Images to the transaction.giveBySelect labels
+  });
 
+  // Add Images to the transaction.giveBySelect labels
   const paymentMethods = document.querySelectorAll("[name='transaction.giveBySelect'] + label");
   paymentMethods.forEach(label => {
     switch (label.getAttribute("for")) {
       case "give-by-select-card":
         label.innerHTML = `<img class="credit-card-logos" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-payment-type_credit-cards.png" alt="Credit Card Logos" />`;
         break;
-
       case "give-by-select-apple-google":
         label.innerHTML = `<img class="apple-pay-google-pay" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-payment-type_apple-pay-google-pay.png" alt="Apple Pay and Google Pay Logos" />`;
         break;
-
       case "give-by-select-venmo":
         label.innerHTML = `<img class="venmo" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/venmo.png" alt="Venmo Logo" />`;
         break;
-
       case "give-by-select-paypal":
         label.innerHTML = `<img class="paypal" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-payment-type_paypal.png" alt="Paypal Logo" />`;
         break;
-
       case "give-by-select-paypaltouch":
         label.innerHTML = `<img class="paypaltouch" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-payment-type_paypal.png" alt="Paypal Logo" />`;
         break;
     }
   });
-
   const addDataAttrToHiddenPaymentMethods = () => {
     // Add a hidden engrid data attribute to every hidden giveBySelect radio parent
     const hiddenGiveBySelect = document.querySelectorAll(".give-by-select-wrapper .en__field--giveBySelect");
@@ -24014,79 +23974,72 @@ const customScript = function (App, DonationFrequency) {
       }
     });
   };
-
   const isSpanish = document.querySelector("label[for='en__field_supporter_emailAddress']") && document.querySelector("label[for='en__field_supporter_emailAddress']").textContent === "Correo electrónico";
   let inlineMonthlyUpsell = document.querySelectorAll(".move-after-transaction-recurrfreq")[0];
   let recurrFrequencyField = document.querySelectorAll(".en__field--recurrfreq")[0];
-
   if (inlineMonthlyUpsell && recurrFrequencyField) {
-    recurrFrequencyField.insertAdjacentElement("beforeend", inlineMonthlyUpsell); // inlineMonthlyUpsell.style.visibility='visible';
+    recurrFrequencyField.insertAdjacentElement("beforeend", inlineMonthlyUpsell);
+    // inlineMonthlyUpsell.style.visibility='visible';
   }
-
   let inlineDonationAmountHeader = document.querySelectorAll(".move-before-transaction-donationamt")[0];
   let donationAmtField = document.querySelectorAll(".en__field--donationAmt")[0];
-
   if (inlineDonationAmountHeader && donationAmtField) {
-    donationAmtField.insertAdjacentElement("afterbegin", inlineDonationAmountHeader); // inlineGiftAmountHeader.style.visibility='visible';
-  } // Legacy Gated Content Donwload Links
+    donationAmtField.insertAdjacentElement("afterbegin", inlineDonationAmountHeader);
+    // inlineGiftAmountHeader.style.visibility='visible';
+  }
 
-
+  // Legacy Gated Content Donwload Links
   if (pageJson.pageNumber === 2) {
     document.body.setAttribute("ty-asset-download-links", "true");
-  } // Get the labels of the first and second opt-in radio selects, so we can replace the first with the second
+  }
 
-
+  // Get the labels of the first and second opt-in radio selects, so we can replace the first with the second
   var firstOptInLabel = document.querySelector(".en__component--formblock.opt-in-label-swap .en__field--question:nth-child(1) .en__field__label");
-  var secondOptInLabel = document.querySelector(".en__component--formblock.opt-in-label-swap .en__field--question:nth-child(2) .en__field__label"); // Check if both labels exist
+  var secondOptInLabel = document.querySelector(".en__component--formblock.opt-in-label-swap .en__field--question:nth-child(2) .en__field__label");
 
+  // Check if both labels exist
   if (firstOptInLabel && secondOptInLabel) {
     // Replace the text content of the first opt-in label with the text content of the second opt-in label
     firstOptInLabel.textContent = secondOptInLabel.textContent;
-  } // Add your client scripts here
+  }
 
-
+  // Add your client scripts here
   const freq = DonationFrequency.getInstance();
   freq.onFrequencyChange.subscribe(s => {
     console.log("frequency changed", s);
     const otherAmount = document.querySelector("[name='transaction.donationAmt.other']");
-
     if (otherAmount) {
       switch (s) {
         case "monthly":
           otherAmount.placeholder = "Other /mo";
           break;
-
         case "annual":
           otherAmount.placeholder = "Other /yr";
           break;
-
         default:
           otherAmount.placeholder = "Other";
       }
-    } // Get selected payment method
-
-
-    const selectedPaymentMethod = document.querySelector("[name='transaction.giveBySelect']:checked"); // Get selected payment method value
-
+    }
+    // Get selected payment method
+    const selectedPaymentMethod = document.querySelector("[name='transaction.giveBySelect']:checked");
+    // Get selected payment method value
     const selectedPaymentMethodValue = selectedPaymentMethod ? selectedPaymentMethod.value : null;
     const paypalOneTouch = document.querySelector("[name='transaction.giveBySelect'][value='paypaltouch'] + label");
     const paypal = document.querySelector("[name='transaction.giveBySelect'][value='paypal'] + label");
-
     if (App.isVisible(paypalOneTouch) && App.isVisible(paypal)) {
       if (selectedPaymentMethodValue === "paypaltouch" && s === "monthly") {
         paypal.click();
       }
-
       if (selectedPaymentMethodValue === "paypal" && s === "onetime") {
         paypalOneTouch.click();
       }
     }
-
     window.setTimeout(() => {
       addDataAttrToHiddenPaymentMethods();
     }, 100);
-  }); // Re-run the addDataAttrToHiddenPaymentMethods function when body attribute changes
+  });
 
+  // Re-run the addDataAttrToHiddenPaymentMethods function when body attribute changes
   const observerConfig = {
     attributes: true,
     childList: false,
@@ -24100,21 +24053,16 @@ const customScript = function (App, DonationFrequency) {
     });
   });
   obs.observe(document.body, observerConfig);
-
   const addMobilePhoneNotice = () => {
     if (!document.querySelector(".en__field--phoneNumber2 .en__field__element")) {
       App.addHtml('<div class="en__field__notice">By providing your mobile number, you agree to receive recurring text messages from WWF. Text STOP to quit, HELP for info. Message and data rates may apply.</div>', '[name="supporter.phoneNumber2"]', "after");
     }
   };
-
   addMobilePhoneNotice();
-
   if ("pageJson" in window && "pageType" in window.pageJson && window.pageJson.pageType === "premiumgift") {
     const country = App.getField("supporter.country");
-
     const getProdVarId = id => {
       let prodVarId = id;
-
       if (window.EngagingNetworks.premiumGifts.products) {
         window.EngagingNetworks.premiumGifts.products.forEach(product => {
           if (product.id == id && "variants" in product) {
@@ -24122,13 +24070,10 @@ const customScript = function (App, DonationFrequency) {
           }
         });
       }
-
       return prodVarId;
     };
-
     const maxMyGift = () => {
       const maxRadio = document.querySelector(".en__pg:last-child input[type='radio'][name='en__pg'][value='0']");
-
       if (maxRadio) {
         maxRadio.checked = true;
         maxRadio.click();
@@ -24137,34 +24082,27 @@ const customScript = function (App, DonationFrequency) {
         }, 150);
       }
     };
-
     const hidePremiumBlock = () => {
       const premiumBlock = document.querySelectorAll(".en__component--premiumgiftblock > div");
       const premiumTitle = document.querySelector(".engrid_premium_title");
-
       if (premiumBlock) {
         premiumBlock.forEach(block => {
           block.setAttribute("data-non-us-donor", "");
         });
       }
-
       if (premiumTitle) {
         premiumTitle.setAttribute("data-non-us-donor", "");
       }
     };
-
     const hideMaxTheirGift = () => {
       const maxTitle = document.querySelectorAll("h2.en__pg__name");
-
       if (maxTitle) {
         maxTitle.forEach(title => {
           if (title.textContent.includes("Maximized Their Gift")) {
             const maxElement = title.closest(".en__pg");
-
             if (maxElement) {
               maxElement.classList.add("hide");
               const maxRadio = maxElement.querySelector("input[type='radio'][name='en__pg']");
-
               if (maxRadio) {
                 window.maxTheirGift = getProdVarId(maxRadio.value);
               }
@@ -24173,37 +24111,30 @@ const customScript = function (App, DonationFrequency) {
         });
       }
     };
-
     const showPremiumBlock = () => {
       const premiumBlock = document.querySelectorAll(".en__component--premiumgiftblock > div");
       const premiumTitle = document.querySelector(".engrid_premium_title");
-
       if (premiumBlock) {
         premiumBlock.forEach(block => {
           block.removeAttribute("data-non-us-donor");
         });
       }
-
       if (premiumTitle) {
         premiumTitle.removeAttribute("data-non-us-donor");
       }
     };
-
     const addCountryNotice = () => {
       if (!document.querySelector(".en__field--country .en__field__notice")) {
         App.addHtml('<div class="en__field__notice">Note: We are unable to mail thank-you gifts to donors outside the United States and its territories and have selected the "Mazimize my gift" option for you.</div>', ".en__field--country .en__field__element", "after");
       }
     };
-
     const removeCountryNotice = () => {
       App.removeHtml(".en__field--country .en__field__notice");
     };
-
     if (!window.EngagingNetworks.require._defined.enjs.checkSubmissionFailed()) {
       maxMyGift();
       hideMaxTheirGift();
     }
-
     if (App.getUrlParameter("premium") !== "international" && country) {
       if (country.value !== "US") {
         maxMyGift();
@@ -24211,7 +24142,6 @@ const customScript = function (App, DonationFrequency) {
         addCountryNotice();
         hideMaxTheirGift();
       }
-
       country.addEventListener("change", () => {
         if (country.value !== "US") {
           maxMyGift();
@@ -24230,17 +24160,13 @@ const customScript = function (App, DonationFrequency) {
           showPremiumBlock();
         }
       });
-    } // Check if the field Donation Has Premiums is present, if not, add it
-
-
+    }
+    // Check if the field Donation Has Premiums is present, if not, add it
     let donationHasPremiums = App.getField("supporter.NOT_TAGGED_45");
-
     if (!donationHasPremiums) {
       App.createHiddenInput("supporter.NOT_TAGGED_45");
     }
-
     const premiumBlock = document.querySelector(".en__component--premiumgiftblock");
-
     if (premiumBlock) {
       //listen for the change event of name "en__pg" using event delegation
       let selectedPremiumId = null;
@@ -24249,15 +24175,15 @@ const customScript = function (App, DonationFrequency) {
         premiumBlock.addEventListener(event, e => {
           setTimeout(() => {
             const selectedGift = document.querySelector('[name="en__pg"]:checked');
-
             if (selectedGift) {
               selectedPremiumId = selectedGift.value;
               selectedVariantId = App.getFieldValue("transaction.selprodvariantid");
             }
           }, 250);
         });
-      }); // Mutation observer to check if the "Maximized Their Gift" radio button is present. If it is, hide it.
+      });
 
+      // Mutation observer to check if the "Maximized Their Gift" radio button is present. If it is, hide it.
       const observer = new MutationObserver(mutationsList => {
         //loop over the mutations and if we're adding a radio with the "checked" attribute, remove that attribute so nothing gets re-selected
         //when the premiums list is re-rendered
@@ -24266,36 +24192,30 @@ const customScript = function (App, DonationFrequency) {
             mutation.addedNodes.forEach(node => {
               if (typeof node.querySelector !== "function") return;
               const preSelectedRadio = node.querySelector("input[checked]");
-
               if (preSelectedRadio) {
                 preSelectedRadio.removeAttribute("checked");
               }
             });
           }
         }
-
         if (mutationsList.some(mutation => mutation.type === "childList")) {
           // Each time premiums list is re-rendered, hide the "Maximized Their Gift" section
           const maximizeTheirGiftHeader = [...document.querySelectorAll(".en__pg__name")].find(el => el.innerText === "Maximized Their Gift");
-
           if (maximizeTheirGiftHeader) {
             const maxElement = maximizeTheirGiftHeader.closest(".en__pg");
-
             if (maxElement) {
               maxElement.classList.add("hide");
               const maxRadio = maxElement.querySelector("input[type='radio'][name='en__pg']");
-
               if (maxRadio) {
                 window.maxTheirGift = getProdVarId(maxRadio.value);
               }
             }
-          } // Re-select the previously selected gift when gift list is re-rendered
+          }
+
+          // Re-select the previously selected gift when gift list is re-rendered
           // If gift no longer exists, choose maximize my gift
-
-
           if (selectedPremiumId && selectedVariantId) {
             const selectedGift = document.querySelector(`input[type="radio"][name="en__pg"][value="${selectedPremiumId}"]`);
-
             if (selectedGift) {
               selectedGift.click();
               window.setTimeout(() => {
@@ -24308,8 +24228,8 @@ const customScript = function (App, DonationFrequency) {
             maxMyGift();
           }
         }
-      }); // Start observing the target node for configured mutations
-
+      });
+      // Start observing the target node for configured mutations
       observer.observe(premiumBlock, {
         attributes: true,
         childList: true,
@@ -24317,17 +24237,14 @@ const customScript = function (App, DonationFrequency) {
       });
     }
   }
-
   let enFieldPhoneNumber = document.querySelector(".en__field--phoneNumber2 input#en__field_supporter_phoneNumber2");
-
   if (enFieldPhoneNumber) {
     enFieldPhoneNumber.placeholder = "000-000-0000";
-  } // App.setBodydata("client-js-loading", "finished");
-
+  }
+  // App.setBodydata("client-js-loading", "finished");
 
   const ccvvLabel = document.querySelector(".en__field--ccvv > label");
   const titleLabel = document.querySelector("[data-engrid-page-type='emailtotarget'] .en__field--title.en__mandatory > label");
-
   if (ccvvLabel || titleLabel) {
     App.loadJS("https://unpkg.com/@popperjs/core@2", () => {
       App.loadJS("https://unpkg.com/tippy.js@6", () => {
@@ -24350,7 +24267,6 @@ const customScript = function (App, DonationFrequency) {
             content: "The three or four digit security code on your debit or credit card to verify transactions when your card is not present."
           });
         }
-
         if (titleLabel) {
           let link = document.createElement("a");
           link.href = "#";
@@ -24373,81 +24289,77 @@ const customScript = function (App, DonationFrequency) {
       });
     });
   }
-
   const fillCount = document.querySelector(".enWidget__fill__count") ? document.querySelector(".enWidget__fill__count").innerText : 0;
   const supportersBar = document.querySelector(".progress-bar_supporters strong");
-
   if (supportersBar) {
     supportersBar.innerText = fillCount;
   }
-
   window.addEventListener("load", () => {
     const enWidgetFillWidth = document.querySelector(".enWidget__fill") ? document.querySelector(".enWidget__fill").style.width : null;
-
     if (enWidgetFillWidth == "100%") {
       const enWidgetDisplay = document.querySelector(".enWidget__display");
-
       if (enWidgetDisplay) {
         enWidgetDisplay.classList.add("enWidget__display_full");
       }
     }
   });
-
   function LauncherWidthWatcher() {
     // Select the #launcher and .engrid-mobile-cta-container elements
     this.launcher = document.querySelector("#launcher");
-    this.engridMobileCTAContainer = document.querySelector(".engrid-mobile-cta-container"); // If both elements are present, set the custom property and add event listeners
+    this.engridMobileCTAContainer = document.querySelector(".engrid-mobile-cta-container");
 
+    // If both elements are present, set the custom property and add event listeners
     if (this.launcher && this.engridMobileCTAContainer) {
       this.setCustomProperty();
       this.addEventListeners();
     }
-  } // Set the CSS custom property on .engrid-mobile-cta-container based on the width of #launcher
+  }
 
-
+  // Set the CSS custom property on .engrid-mobile-cta-container based on the width of #launcher
   LauncherWidthWatcher.prototype.setCustomProperty = function () {
     if (!this.launcher || !this.engridMobileCTAContainer) return;
     var launcherWidth = this.launcher.clientWidth;
     this.engridMobileCTAContainer.style.setProperty("--launcher-width", launcherWidth + "px");
-  }; // Add event listeners to update the custom property when the width of #launcher changes
+  };
 
-
+  // Add event listeners to update the custom property when the width of #launcher changes
   LauncherWidthWatcher.prototype.addEventListeners = function () {
-    if (!this.launcher) return; // Create a ResizeObserver to listen for changes in the width of #launcher
+    if (!this.launcher) return;
 
+    // Create a ResizeObserver to listen for changes in the width of #launcher
     var resizeObserver = new ResizeObserver(function () {
       // Update the custom property when the width of #launcher changes
       this.setCustomProperty();
-    }.bind(this)); // Observe the #launcher element for changes in its size
+    }.bind(this));
 
+    // Observe the #launcher element for changes in its size
     resizeObserver.observe(this.launcher);
-  }; // Function to initialize the LauncherWidthWatcher when the #launcher element is present
+  };
 
-
+  // Function to initialize the LauncherWidthWatcher when the #launcher element is present
   function initLauncherWidthWatcher() {
     if (document.querySelector("#launcher")) {
       var launcherWidthWatcher = new LauncherWidthWatcher();
     } else {
       setTimeout(initLauncherWidthWatcher, 100);
     }
-  } // Use a MutationObserver to watch for changes in the DOM
+  }
 
-
+  // Use a MutationObserver to watch for changes in the DOM
   var observer = new MutationObserver(initLauncherWidthWatcher);
   observer.observe(document.body, {
     childList: true,
     subtree: true
-  }); // On eCard pages, change the label of the "Add contact" button
+  });
 
+  // On eCard pages, change the label of the "Add contact" button
   const ecardAddRecipeintButton = document.querySelector(".en__ecarditems__addrecipient");
-
   if (ecardAddRecipeintButton) {
     ecardAddRecipeintButton.textContent = isSpanish ? "Agrega destinatario" : "Add recipient";
-  } // On eCard pages, add a label to the recipients list
+  }
 
-
+  // On eCard pages, add a label to the recipients list
   const ecardRecipientList = document.querySelector(".en__ecardrecipients__list");
-
   if (ecardRecipientList) {
     const label = document.createElement("h2");
     label.textContent = isSpanish ? "Lista de contactos" : "Recipients list";
@@ -24455,26 +24367,29 @@ const customScript = function (App, DonationFrequency) {
     label.setAttribute("for", "en__ecardrecipients__list");
     ecardRecipientList.setAttribute("aria-labelledby", "recipients-list-label");
     ecardRecipientList.parentNode.insertBefore(label, ecardRecipientList);
-  } //On eCard pages, move the "Add recipients" button out of its current wrapper and add supporting button classes
+  }
 
-
+  //On eCard pages, move the "Add recipients" button out of its current wrapper and add supporting button classes
   const addRecipientButton = document.querySelector(".en__ecarditems__addrecipient");
   const emailDiv = document.querySelector(".en__ecardrecipients__email");
-
   if (addRecipientButton && emailDiv) {
     addRecipientButton.classList.add("button");
     const wrapperDiv = document.createElement("div");
-    wrapperDiv.classList.add("en__ecardrecipients__button"); // Remove the button from its current position
+    wrapperDiv.classList.add("en__ecardrecipients__button");
 
-    addRecipientButton.parentNode.removeChild(addRecipientButton); // Wrap the button with the new div
+    // Remove the button from its current position
+    addRecipientButton.parentNode.removeChild(addRecipientButton);
 
-    wrapperDiv.appendChild(addRecipientButton); // Insert the wrapped button after the email div
+    // Wrap the button with the new div
+    wrapperDiv.appendChild(addRecipientButton);
 
+    // Insert the wrapped button after the email div
     emailDiv.parentNode.insertBefore(wrapperDiv, emailDiv.nextSibling);
-  } // On eCard pages, when the "Add recipients" button is clicked, remove any values in the Add Recipient Name and Email field
+  }
+
+  // On eCard pages, when the "Add recipients" button is clicked, remove any values in the Add Recipient Name and Email field
   // Hide the recipients list header and list until there are recipients added
   // On eCard pages, simulate full field errors on the eCard Recipient name field and email field
-
 
   const addRecipientButton2 = document.querySelector(".en__ecarditems__addrecipient");
   const nameInput = document.querySelector(".en__ecardrecipients__name input");
@@ -24483,41 +24398,36 @@ const customScript = function (App, DonationFrequency) {
   const recipientsListLabel = document.querySelector("#recipients-list-label");
   const emailParent = document.querySelector(".en__ecardrecipients__email");
   const nameParent = document.querySelector(".en__ecardrecipients__name");
-
   if (addRecipientButton2 && nameInput && emailInput && recipientsList && recipientsListLabel && emailParent && nameParent) {
     let previousRecipientCount = document.querySelectorAll(".en__ecardrecipients__recipient .ecardrecipient__email").length;
-
     const clearInputs = () => {
       let currentRecipientCount = document.querySelectorAll(".en__ecardrecipients__recipient .ecardrecipient__email").length;
-
       if (currentRecipientCount > previousRecipientCount) {
         nameInput.value = "";
         emailInput.value = "";
       }
-
       previousRecipientCount = currentRecipientCount;
     };
-
     addRecipientButton2.addEventListener("click", clearInputs);
     addRecipientButton2.addEventListener("touchend", clearInputs);
     addRecipientButton2.addEventListener("keydown", clearInputs);
-
     const toggleElementsVisibility = () => {
       const displayValue = recipientsList.innerHTML.trim() ? "block" : "none";
       recipientsListLabel.style.display = displayValue;
       recipientsList.style.display = displayValue;
-    }; // Initially set the visibility of the label and the recipients list
+    };
 
+    // Initially set the visibility of the label and the recipients list
+    toggleElementsVisibility();
 
-    toggleElementsVisibility(); // Create a MutationObserver instance to monitor changes in the content of the recipients list
+    // Create a MutationObserver instance to monitor changes in the content of the recipients list
+    const listObserver = new MutationObserver(toggleElementsVisibility);
 
-    const listObserver = new MutationObserver(toggleElementsVisibility); // Start observing the recipients list for changes in its content
-
+    // Start observing the recipients list for changes in its content
     listObserver.observe(recipientsList, {
       childList: true,
       subtree: true
     });
-
     const toggleValidationClass = (element, parent) => mutations => {
       for (const mutation of mutations) {
         if (mutation.type === "attributes" && mutation.attributeName === "class") {
@@ -24528,96 +24438,85 @@ const customScript = function (App, DonationFrequency) {
           }
         }
       }
-    }; // Create MutationObserver instances to monitor changes in the input's attributes
+    };
 
-
+    // Create MutationObserver instances to monitor changes in the input's attributes
     const inputObserver1 = new MutationObserver(toggleValidationClass(emailInput, emailParent));
-    const inputObserver2 = new MutationObserver(toggleValidationClass(nameInput, nameParent)); // Start observing the inputs for changes in their attributes
+    const inputObserver2 = new MutationObserver(toggleValidationClass(nameInput, nameParent));
 
+    // Start observing the inputs for changes in their attributes
     inputObserver1.observe(emailInput, {
       attributes: true
     });
     inputObserver2.observe(nameInput, {
       attributes: true
     });
-  } // Inserts a email subscription nudge after the element with the 'universal-opt-in' class
+  }
 
-
+  // Inserts a email subscription nudge after the element with the 'universal-opt-in' class
   const universalOptInFieldClasses = document.querySelector(".universal-opt-in > .en__field")?.classList;
-
   if (universalOptInFieldClasses) {
     const optInClass = [...universalOptInFieldClasses].find(className => {
       return className.startsWith("en__field--") && !isNaN(Number(className.replace("en__field--", "")));
     });
-
     if (optInClass) {
       const showHideClassName = `engrid__supporterquestions${optInClass.replace("en__field--", "")}-N`;
       App.addHtml(`<div style="display: none;" class="en__component en__component--copyblock grey-box email-subscription-nudge ${showHideClassName}"><p></p></div>`, ".universal-opt-in", "after");
     }
   }
-
   function hideOptInDependentElements() {
     // If the SMS opt-in does not appear on the page hide the Mobile Phone Number field and its disclosure
     let smsOptIn = document.querySelector(".en__field--600302");
     let phoneNumberField = document.querySelector(".en__field--phoneNumber2");
     let smsDisclosure = document.querySelector(".sms-disclosure");
-
     if (!smsOptIn && phoneNumberField && smsDisclosure) {
       phoneNumberField.classList.add("hide");
       smsDisclosure.classList.add("hide");
     }
-  } // Call the function
+  }
 
+  // Call the function
+  hideOptInDependentElements();
 
-  hideOptInDependentElements(); // GTM / GA / GCLID Retrieval and Population
+  // GTM / GA / GCLID Retrieval and Population
   // Get GCLID from Local Storage
-
   const getGclidFromLocalStorage = () => {
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-
       if (key && key.includes("gclid")) {
         return localStorage.getItem(key);
       }
     }
-
     return null;
-  }; // Get GCLID from GAC cookie
+  };
 
-
+  // Get GCLID from GAC cookie
   const getGclidFromCookie = () => {
     const match = document.cookie.match("(^|;)\\s*_glc_aw\\s*=\\s*([^;]+)");
     return match ? match.pop() : null;
-  }; // Get GCLID from URL
+  };
 
-
+  // Get GCLID from URL
   const getGclidFromUrl = () => {
     const url = window.location.href;
     let gclid = null;
-
     if (url.includes("gclid")) {
       const urlParts = url.split("gclid=");
-
       if (urlParts[1]) {
         gclid = urlParts[1].split("&")[0];
       }
     }
-
     return gclid;
   };
-
   const handleGclid = () => {
     try {
       // Check if .en__submit exists on the page
       if (!document.querySelector(".en__submit")) {
         return;
       }
-
       const gclid = getGclidFromLocalStorage() || getGclidFromCookie() || getGclidFromUrl();
-
       if (gclid) {
         const transactionField = document.querySelector('input[name="transaction.othamt4"]');
-
         if (transactionField) {
           transactionField.value = gclid;
         } else {
@@ -24630,7 +24529,6 @@ const customScript = function (App, DonationFrequency) {
                     </div>
                 `;
           const submitButton = document.querySelector(".en__submit");
-
           if (submitButton) {
             submitButton.insertAdjacentHTML("afterend", transactionHTML);
           } else {
@@ -24643,9 +24541,9 @@ const customScript = function (App, DonationFrequency) {
     } catch (error) {
       console.error("Error handling GCLID:", error);
     }
-  }; // Add a listener for when GA4 is loaded
+  };
 
-
+  // Add a listener for when GA4 is loaded
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
     event: "gtm.js",
@@ -24655,41 +24553,44 @@ const customScript = function (App, DonationFrequency) {
   window.dataLayer.push({
     event: "GA4_loaded",
     callback: handleGclid
-  }); // Fallback to check for GCLID once the page has finished loading
+  });
 
-  window.addEventListener("load", handleGclid); // Perform an immediate check for the GCLID
+  // Fallback to check for GCLID once the page has finished loading
+  window.addEventListener("load", handleGclid);
 
+  // Perform an immediate check for the GCLID
   handleGclid();
+
   /**
    * Function to rearrange eCard related elements on the page.
    * Moves .en__ecarditems__action to come after .en__ecardmessage and
    * moves .en__ecardrecipients__futureDelivery to come after .en__ecardrecipients.
    */
-
   function rearrangeEcardElements() {
     // Get the elements
     const ecardItemsAction = document.querySelector(".en__ecarditems__action");
     const ecardMessage = document.querySelector(".en__ecardmessage");
     const ecardRecipientsFutureDelivery = document.querySelector(".en__ecardrecipients__futureDelivery");
-    const ecardRecipients = document.querySelector(".en__ecardrecipients"); // Move .en__ecarditems__action so it comes after .en__ecardmessage
+    const ecardRecipients = document.querySelector(".en__ecardrecipients");
 
+    // Move .en__ecarditems__action so it comes after .en__ecardmessage
     if (ecardItemsAction && ecardMessage) {
       ecardMessage.insertAdjacentElement("afterend", ecardItemsAction);
-    } // Move .en__ecardrecipients__futureDelivery so it comes after .en__ecardrecipients
+    }
 
-
+    // Move .en__ecardrecipients__futureDelivery so it comes after .en__ecardrecipients
     if (ecardRecipientsFutureDelivery && ecardRecipients) {
       ecardRecipients.insertAdjacentElement("afterend", ecardRecipientsFutureDelivery);
     }
-  } // Call the function
+  }
 
+  // Call the function
+  rearrangeEcardElements();
 
-  rearrangeEcardElements(); // Prevents the Credit Card field value from incrementing/decrementing when scrolling up/down if it's of type="number"
+  // Prevents the Credit Card field value from incrementing/decrementing when scrolling up/down if it's of type="number"
   // REF: https://stackoverflow.com/questions/9712295/disable-scrolling-on-input-type-number
   // 4Site Note: We suggest the CC field by type="tel" which would remove the need for this and provide other benefits
-
   let ccNumberField = document.querySelector('input[name="transaction.ccnumber"]');
-
   if (ccNumberField) {
     ccNumberField.addEventListener("wheel", () => {
       ccNumberField.blur();
@@ -24697,53 +24598,51 @@ const customScript = function (App, DonationFrequency) {
       passive: true
     });
   }
-
   if (pageJson && (pageJson.pageType === "premiumgift" || pageJson.pageType === "donation") && pageJson.pageNumber === 1) {
     window.zE || function (e, t, s) {
       var n = window.zE = window.zEmbed = function () {
-        n._.push(arguments);
-      },
-          a = n.s = e.createElement(t),
-          r = e.getElementsByTagName(t)[0];
-
+          n._.push(arguments);
+        },
+        a = n.s = e.createElement(t),
+        r = e.getElementsByTagName(t)[0];
       n.set = function (e) {
         n.set._.push(e);
       }, n._ = [], n.set._ = [], a.async = true, a.setAttribute("charset", "utf-8"), a.src = "https://static.zdassets.com/ekr/asset_composer.js?key=" + s, n.t = +new Date(), a.type = "text/javascript", r.parentNode.insertBefore(a, r);
     }(document, "script", "7f237240-f3c5-4922-aa1f-b4c70aa52d65");
-  } // Check if '.en__ecarditems__preview' exists in the page
+  }
 
-
+  // Check if '.en__ecarditems__preview' exists in the page
   const eCardPreview = document.querySelector(".en__ecarditems__preview");
-
   if (eCardPreview) {
     // Add 'data-ecard-preview' attribute to the body
-    document.body.setAttribute("data-ecard-preview", ""); // Function to set 'data-ecard-preview' value based on '.preview--show' class
+    document.body.setAttribute("data-ecard-preview", "");
 
+    // Function to set 'data-ecard-preview' value based on '.preview--show' class
     const setEcardPreviewAttribute = () => {
       if (eCardPreview.classList.contains("preview--show")) {
         document.body.setAttribute("data-ecard-preview", "visible");
       } else {
         document.body.setAttribute("data-ecard-preview", "hidden");
       }
-    }; // Initial setting of 'data-ecard-preview' value
+    };
 
+    // Initial setting of 'data-ecard-preview' value
+    setEcardPreviewAttribute();
 
-    setEcardPreviewAttribute(); // Create a MutationObserver instance to monitor changes in '.en__ecarditems__preview' class
+    // Create a MutationObserver instance to monitor changes in '.en__ecarditems__preview' class
+    const observer = new MutationObserver(setEcardPreviewAttribute);
 
-    const observer = new MutationObserver(setEcardPreviewAttribute); // Start observing '.en__ecarditems__preview' for changes in its class
-
+    // Start observing '.en__ecarditems__preview' for changes in its class
     observer.observe(eCardPreview, {
       attributes: true,
       attributeFilter: ["class"]
     });
-  } // Create the Other 3 field if the payment type exists and the Other 3 field does not
-
-
+  }
+  // Create the Other 3 field if the payment type exists and the Other 3 field does not
   const createOther3Field = () => {
     const paymentType = document.querySelector("#en__field_transaction_paymenttype");
     const other3Field = document.querySelector('input[name="transaction.othamt3"]');
     const vgsField = document.querySelector(".en__field--vgs");
-
     if (paymentType && !other3Field) {
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
       const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
@@ -24758,37 +24657,30 @@ const customScript = function (App, DonationFrequency) {
       inputField.classList.add("en__field__input", "en__field__input--text", "foursite-engrid-added-input");
       inputField.setAttribute("name", "transaction.othamt3");
       inputField.setAttribute("value", vgsField ? "card" : ""); // Set the default value to card (VGS won't change the payment type)
-
       if (App.debug) {
         inputField.style.width = "100%";
         inputField.setAttribute("placeholder", "Payment Type Details (Other 3)");
       }
-
       textElement.appendChild(inputField);
       textField.appendChild(textElement);
       formBlock.appendChild(textField);
       const paymentElement = paymentType.closest(".en__component");
-
       if (paymentElement) {
         // Insert the new field after the submit button
         paymentElement.parentNode?.insertBefore(formBlock, paymentElement.nextSibling);
       } else {
         const form = document.querySelector("form");
-
         if (form) {
           form.appendChild(formBlock);
         }
-      } // Set the value of the Other 3 field to the value of the Payment Type field
+      }
+      // Set the value of the Other 3 field to the value of the Payment Type field
       // When the Payment Type field changes, update the Other 3 field
-
-
       paymentType.addEventListener("change", () => {
         const other3Field = document.querySelector('input[name="transaction.othamt3"]');
-
         if (!other3Field) {
           return;
         }
-
         if (paymentType.value === "stripedigitalwallet") {
           // Set applepay if using IOS or Safari, otherwise set googlepay
           other3Field.value = isIOS || isSafari ? "applepay" : "googlepay";
@@ -24797,17 +24689,15 @@ const customScript = function (App, DonationFrequency) {
         }
       });
     }
-  }; // Call the function
-
-
+  };
+  // Call the function
   createOther3Field();
   const amountNudge = document.querySelector(".amount-nudge:not(.arrow-up)");
-
   if (amountNudge && recurrFrequencyField) {
     recurrFrequencyField.insertAdjacentElement("beforeend", amountNudge);
-  } // Add logo for no header style
+  }
 
-
+  // Add logo for no header style
   if (window.wwfHeaderStyle && window.wwfHeaderStyle === "None") {
     const bodyTitle = document.querySelector(".body-title > .en__component");
     bodyTitle?.insertAdjacentHTML("afterbegin", `<a class="minimal-header-logo" href="https://www.worldwildlife.org/" target="_blank"><img class="no-header-wwf-logo" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo-standalone.png?3" alt="WWF Logo"></a>`);
@@ -24816,15 +24706,13 @@ const customScript = function (App, DonationFrequency) {
   }
 };
 // EXTERNAL MODULE: ./node_modules/smoothscroll-polyfill/dist/smoothscroll.js
-var smoothscroll = __webpack_require__(523);
+var smoothscroll = __webpack_require__(1196);
 var smoothscroll_default = /*#__PURE__*/__webpack_require__.n(smoothscroll);
-;// CONCATENATED MODULE: ./src/scripts/donation-lightbox-form.js
+;// ./src/scripts/donation-lightbox-form.js
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-
 if (isSafari) {
   window.__forceSmoothScrollPolyfill__ = true;
 }
-
 
 smoothscroll_default().polyfill();
 class DonationLightboxForm {
@@ -24834,22 +24722,20 @@ class DonationLightboxForm {
     this.frequency = DonationFrequency;
     this.ipCountry = "";
     this.isDonation = ["donation", "premiumgift"].includes(window.pageJson.pageType);
-    console.log("DonationLightboxForm: constructor"); // Each EN Row is a Section
-
+    console.log("DonationLightboxForm: constructor");
+    // Each EN Row is a Section
     this.sections = document.querySelectorAll("form.en__component > .en__component");
-    this.currentSectionId = 0; // Check if we're on the Thank You page
-
+    this.currentSectionId = 0;
+    // Check if we're on the Thank You page
     if (pageJson.pageNumber === pageJson.pageCount) {
       this.sendMessage("status", "loaded");
       if (this.isDonation) this.sendMessage("status", "celebrate");
       this.sendMessage("class", "thank-you");
-      document.querySelector("body").dataset.thankYou = "true"; // Get Query Strings
-
+      document.querySelector("body").dataset.thankYou = "true";
+      // Get Query Strings
       const urlParams = new URLSearchParams(window.location.search);
-
       if (urlParams.get("name")) {
         let engrid = document.querySelector("#engrid");
-
         if (engrid) {
           let engridContent = engrid.innerHTML;
           engridContent = engridContent.replace("{user_data~First Name}", urlParams.get("name"));
@@ -24874,32 +24760,26 @@ class DonationLightboxForm {
           console.error("PageData Error:", error);
         });
       }
-
       return false;
     }
-
     if (!this.sections.length) {
       // No section or no Donation Page was found
       this.sendMessage("error", "No sections found");
       return false;
     }
-
     console.log(this.sections);
-
     if (this.isIframe()) {
       // If iFrame
-      this.buildSectionNavigation(); // If Form Submission Failed
-
+      this.buildSectionNavigation();
+      // If Form Submission Failed
       if (this.checkNested(EngagingNetworks, "require", "_defined", "enjs", "checkSubmissionFailed") && EngagingNetworks.require._defined.enjs.checkSubmissionFailed()) {
-        console.log("DonationLightboxForm: Submission Failed"); // If the en__field_transaction_ccexpire is not empty, show the credit card section
-
+        console.log("DonationLightboxForm: Submission Failed");
+        // If the en__field_transaction_ccexpire is not empty, show the credit card section
         const creditCardSection = document.querySelector(".en__field--ccexpire");
         const creditCardExpire = creditCardSection ? creditCardSection.querySelector("#en__field_transaction_ccexpire") : null;
-
         if (creditCardExpire && creditCardExpire.value != "") {
           const paymentType = document.querySelector("#en__field_transaction_paymenttype");
           const ccnumberBlock = document.querySelector(".en__field--ccnumber");
-
           if (paymentType && ccnumberBlock) {
             paymentType.value = "visa";
             this.showHideCCSection("card");
@@ -24912,7 +24792,6 @@ class DonationLightboxForm {
         } else if (this.validateForm()) {
           // Front-End Validation Passed, get first Error Message
           const error = document.querySelector("li.en__error");
-
           if (error) {
             // Check if error contains "problem processing" to send a smaller message
             if (error.innerHTML.toLowerCase().indexOf("problem processing") > -1) {
@@ -24920,9 +24799,8 @@ class DonationLightboxForm {
               this.scrollToElement(document.querySelector(".en__field--ccnumber"));
             } else {
               this.sendMessage("error", error.textContent);
-            } // Check if error contains "payment" or "account" and scroll to the right section
-
-
+            }
+            // Check if error contains "payment" or "account" and scroll to the right section
             if (error.innerHTML.toLowerCase().indexOf("payment") > -1 || error.innerHTML.toLowerCase().indexOf("account") > -1) {
               this.scrollToElement(document.querySelector(".en__field--ccnumber"));
             }
@@ -24932,13 +24810,11 @@ class DonationLightboxForm {
         App.watchForError(() => {
           const errorMessage = document.querySelector(".en__error");
           const errorMessageText = errorMessage && errorMessage.textContent.split(". ").length > 1 ? errorMessage.textContent.split(". ")[1] : errorMessage.textContent;
-
           if (errorMessageText) {
             this.sendMessage("error", errorMessageText);
           }
         });
       }
-
       document.querySelectorAll("form.en__component input.en__field__input").forEach(e => {
         e.addEventListener("focus", event => {
           // Run after 50ms - We need this or else some browsers will disregard the scroll due to the focus event
@@ -24946,30 +24822,27 @@ class DonationLightboxForm {
           const currentSectionId = Number(this.currentSectionId);
           setTimeout(() => {
             const focusIsOnNextSection = nextSectionId === currentSectionId + 1;
-
             if (focusIsOnNextSection && this.validateForm(currentSectionId)) {
               // Only scroll if the current section doesn't have radio elements
               const radioElement = this.sections[currentSectionId].querySelector(".en__field--radio");
               if (!radioElement) this.scrollToElement(e);
             }
-          }, 50); // If the field is the credit card number, remove the error class from the parent
-
+          }, 50);
+          // If the field is the credit card number, remove the error class from the parent
           if ("id" in e && e.id === "en__field_transaction_ccnumber") {
             const parent = e.closest(".en__field");
-
             if (parent) {
               parent.classList.remove("has-error");
             }
           }
         });
-      }); // Map the enter key to the next button
-
+      });
+      // Map the enter key to the next button
       document.querySelectorAll("form.en__component input.en__field__input").forEach(e => {
         e.addEventListener("keydown", event => {
           if (event.keyCode === 13) {
             event.preventDefault();
             const sectionId = Number(this.getSectionId(e));
-
             if (this.validateForm(sectionId)) {
               this.scrollToSection(sectionId + 1, sectionId);
             }
@@ -24977,57 +24850,48 @@ class DonationLightboxForm {
         });
       });
     }
-
     let paymentOpts = document.querySelector(".payment-options");
-
     if (paymentOpts) {
       this.clickPaymentOptions(paymentOpts);
     }
-
     this.addTabIndexToLabels();
     this.putArrowUpSVG();
     this.bounceArrow(this.frequency.getInstance().frequency);
     this.addEvents();
     this.changeSubmitButton();
-    this.sendMessage("status", "loaded"); // Check if theres a color value in the url
-
+    this.sendMessage("status", "loaded");
+    // Check if theres a color value in the url
     const urlParams = new URLSearchParams(window.location.search);
-
     if (urlParams.get("color")) {
       document.body.style.setProperty("--color_primary", urlParams.get("color"));
     }
-
     window.addEventListener("message", this.receiveMessage.bind(this), false);
     this.sendMessage("isMobile");
     this.showHideCCSection(false);
-  } // Send iframe message to parent
-
-
+  }
+  // Send iframe message to parent
   sendMessage(key, value) {
     const message = {
       key: key,
       value: value
     };
     window.parent.postMessage(message, "*");
-  } // Receive iframe message from parent
-
-
+  }
+  // Receive iframe message from parent
   receiveMessage(event) {
     if (event.data.key === "isMobile" && event.data.value === true) {
       document.body.classList.add("is-mobile");
     }
-
     if (event.data.key === "isMobile" && event.data.value === false) {
       document.body.classList.remove("is-mobile");
     }
-  } // Check if is iFrame
+  }
 
-
+  // Check if is iFrame
   isIframe() {
     return window.self !== window.top;
-  } // Build Section Navigation
-
-
+  }
+  // Build Section Navigation
   buildSectionNavigation() {
     console.log("DonationLightboxForm: buildSectionNavigation");
     this.sections.forEach((section, key) => {
@@ -25037,7 +24901,6 @@ class DonationLightboxForm {
       const sectionCount = document.createElement("div");
       sectionCount.classList.add("section-count");
       const sectionTotal = this.sections.length;
-
       if (sectionTotal > 1) {
         if (key == 0) {
           sectionNavigation.innerHTML = `
@@ -25076,7 +24939,6 @@ class DonationLightboxForm {
         </button>
       `;
         }
-
         sectionCount.innerHTML = `
         <span class="section-count__current">${key + 1}</span> of
         <span class="section-count__total">${sectionTotal}</span>
@@ -25090,21 +24952,19 @@ class DonationLightboxForm {
         </button>
       `;
       }
-
       sectionNavigation.querySelector(".section-navigation__previous")?.addEventListener("click", e => {
         e.preventDefault();
         this.scrollToSection(key - 1, key);
       });
       sectionNavigation.querySelector(".section-navigation__next")?.addEventListener("click", e => {
         e.preventDefault();
-
         if (this.validateForm(key)) {
           this.scrollToSection(key + 1, key);
         }
       });
       sectionNavigation.querySelector(".section-navigation__submit")?.addEventListener("click", e => {
-        e.preventDefault(); // Validate the entire form again
-
+        e.preventDefault();
+        // Validate the entire form again
         if (this.validateForm()) {
           if (this.isDonation) {
             // Send Basic User Data to Parent
@@ -25112,10 +24972,9 @@ class DonationLightboxForm {
               name: document.querySelector("#en__field_supporter_firstName").value,
               amount: EngagingNetworks.require._defined.enjs.getDonationTotal(),
               frequency: this.frequency.getInstance().frequency
-            })); // Only shows cortain if payment is not paypal
-
+            }));
+            // Only shows cortain if payment is not paypal
             const paymentType = document.querySelector("#en__field_transaction_paymenttype").value;
-
             if (paymentType != "paypal") {
               this.sendMessage("status", "loading");
             } else {
@@ -25130,7 +24989,6 @@ class DonationLightboxForm {
               });
               document.querySelector("form.en__component").target = "_blank";
             }
-
             document.querySelector("form.en__component").submit();
           } else {
             this.sendMessage("status", "loading");
@@ -25142,7 +25000,6 @@ class DonationLightboxForm {
       section.querySelector(".en__component").append(sectionCount);
     });
     const digitalWallets = document.querySelector(".digital-wallets-wrapper");
-
     if (digitalWallets) {
       // Create a back link for digital wallets
       const backLink = document.createElement("a");
@@ -25155,16 +25012,15 @@ class DonationLightboxForm {
       });
       digitalWallets.prepend(backLink);
     }
-  } // Scroll to a section
-
-
+  }
+  // Scroll to a section
   scrollToSection(sectionId, fromSectionId) {
     console.log("DonationLightboxForm: scrollToSection", sectionId);
-    const section = document.querySelector(`[data-section-id="${sectionId}"]`); // Check if we're scrolling to an invisible section
-
+    const section = document.querySelector(`[data-section-id="${sectionId}"]`);
+    // Check if we're scrolling to an invisible section
     if (section && !this.isVisible(section)) {
-      console.log("DonationLightboxForm: scrollToSection: Section is not visible"); // If we're scrolling to a section that's not visible, check fromSectionId to see if we're scrolling left or right
-
+      console.log("DonationLightboxForm: scrollToSection: Section is not visible");
+      // If we're scrolling to a section that's not visible, check fromSectionId to see if we're scrolling left or right
       if (fromSectionId > sectionId) {
         // If we're scrolling left, scroll to the previous section
         this.scrollToSection(sectionId - 1, sectionId);
@@ -25172,27 +25028,23 @@ class DonationLightboxForm {
         // If we're scrolling right, scroll to the next section
         this.scrollToSection(sectionId + 1, sectionId);
       }
-
       return;
     }
-
     if (this.sections[sectionId]) {
       console.log(section);
       this.currentSectionId = sectionId;
       console.log("Changed current section ID to", sectionId);
       this.sections[sectionId].scrollIntoView({
-        behavior: "smooth" // block: "start",
+        behavior: "smooth"
+        // block: "start",
         // inline: "center",
-
       });
     }
-  } // Scroll to an element's section
-
-
+  }
+  // Scroll to an element's section
   scrollToElement(element) {
     if (element) {
       const sectionId = this.getSectionId(element);
-
       if (sectionId) {
         const oldSectionId = this.currentSectionId;
         this.currentSectionId = sectionId;
@@ -25200,144 +25052,116 @@ class DonationLightboxForm {
         this.scrollToSection(sectionId, oldSectionId);
       }
     }
-  } // Get Element's section id
-
-
+  }
+  // Get Element's section id
   getSectionId(element) {
     if (element) {
       return element.closest("[data-section-id]").dataset.sectionId;
     }
-
     return false;
-  } // Validate the form
+  }
 
+  // Validate the form
+  validateForm(sectionId = false) {
+    const form = document.querySelector("form.en__component");
 
-  validateForm() {
-    let sectionId = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-    const form = document.querySelector("form.en__component"); // Validate Frequency
-
+    // Validate Frequency
     const frequency = form.querySelector("[name='transaction.recurrfreq']:checked");
     const frequencyBlock = form.querySelector(".en__field--recurrfreq");
     const frequencySection = this.getSectionId(frequencyBlock);
-
     if (this.isDonation) {
       if (sectionId === false || sectionId == frequencySection) {
         if (!frequency || !frequency.value) {
           this.scrollToElement(form.querySelector("[name='transaction.recurrfreq']:checked"));
           this.sendMessage("error", "Please select a frequency");
-
           if (frequencyBlock) {
             frequencyBlock.classList.add("has-error");
           }
-
           return false;
         } else {
           if (frequencyBlock) {
             frequencyBlock.classList.remove("has-error");
           }
         }
-      } // Validate Amount
-
-
+      }
+      // Validate Amount
       const amount = EngagingNetworks.require._defined.enjs.getDonationTotal();
-
       const amountBlock = form.querySelector(".en__field--donationAmt");
       const amountSection = this.getSectionId(amountBlock);
-
       if (sectionId === false || sectionId == amountSection) {
         if (!amount || amount <= 0) {
           this.scrollToElement(amountBlock);
           this.sendMessage("error", "Please enter a valid amount");
-
           if (amountBlock) {
             amountBlock.classList.add("has-error");
           }
-
           return false;
         } else {
           if (amount < 5) {
             this.sendMessage("error", "Amount must be at least $5 - Contact us for assistance");
-
             if (amountBlock) {
               amountBlock.classList.add("has-error");
             }
-
             return false;
           }
-
           if (amount > 30000) {
             this.sendMessage("error", "Amount must be less than $30,000 - Contact us for assistance");
-
             if (amountBlock) {
               amountBlock.classList.add("has-error");
             }
-
             return false;
           }
-
           if (amountBlock) {
             amountBlock.classList.remove("has-error");
           }
         }
-      } // Validate Payment Method
-
-
+      }
+      // Validate Payment Method
       const paymentType = form.querySelector("#en__field_transaction_paymenttype");
       const ccnumber = form.querySelector("#en__field_transaction_ccnumber");
       const ccnumberBlock = form.querySelector(".en__field--ccnumber");
       const ccnumberSection = this.getSectionId(ccnumberBlock);
       console.log("DonationLightboxForm: validateForm", ccnumberBlock, ccnumberSection);
-
       if (paymentType && paymentType.value === "") {
         // Set payment type to visa if it's empty
         paymentType.value = "visa";
         this.showHideCCSection("card");
       }
-
       if (sectionId === false || sectionId == ccnumberSection) {
         if (!paymentType || !paymentType.value) {
           this.scrollToElement(paymentType);
           this.sendMessage("error", "Please add your credit card information");
-
           if (ccnumberBlock) {
             ccnumberBlock.classList.add("has-error");
           }
-
           return false;
-        } // If payment type is not paypal, check credit card expiration and cvv
-
-
+        }
+        // If payment type is not paypal, check credit card expiration and cvv
         if (paymentType.value !== "paypal" && paymentType.value !== "paypaltouch") {
           if (!ccnumber || !ccnumber.value) {
             this.scrollToElement(ccnumber);
             this.sendMessage("error", "Please add your credit card information");
-
             if (ccnumberBlock) {
               ccnumberBlock.classList.add("has-error");
             }
-
             return false;
           } else {
             if (ccnumberBlock) {
               ccnumberBlock.classList.remove("has-error");
             }
           }
-
           if (/^[0-9\s]+$/.test(ccnumber.value) === false) {
             this.scrollToElement(ccnumber);
             this.sendMessage("error", "Only numbers are allowed on credit card");
-
             if (ccnumberBlock) {
               ccnumberBlock.classList.add("has-error");
             }
-
             return false;
           } else {
             if (ccnumberBlock) {
               ccnumberBlock.classList.remove("has-error");
             }
           }
-
           const ccexpire = form.querySelectorAll("[name='transaction.ccexpire']");
           const ccexpireBlock = form.querySelector(".en__field--ccexpire");
           let ccexpireValid = true;
@@ -25345,16 +25169,13 @@ class DonationLightboxForm {
             if (!e.value) {
               this.scrollToElement(ccexpireBlock);
               this.sendMessage("error", "Please enter a valid expiration date");
-
               if (ccexpireBlock) {
                 ccexpireBlock.classList.add("has-error");
               }
-
               ccexpireValid = false;
               return false;
             }
           });
-
           if (!ccexpireValid && ccexpireBlock) {
             return false;
           } else {
@@ -25362,18 +25183,14 @@ class DonationLightboxForm {
               ccexpireBlock.classList.remove("has-error");
             }
           }
-
           const cvv = form.querySelector("#en__field_transaction_ccvv");
           const cvvBlock = form.querySelector(".en__field--ccvv");
-
           if (!cvv || !cvv.value) {
             this.scrollToElement(cvv);
             this.sendMessage("error", "Please enter a valid CVV");
-
             if (cvvBlock) {
               cvvBlock.classList.add("has-error");
             }
-
             return false;
           } else {
             if (cvvBlock) {
@@ -25382,20 +25199,18 @@ class DonationLightboxForm {
           }
         }
       }
-    } // Validate Everything else
+    }
 
-
+    // Validate Everything else
     const mandatoryFields = form.querySelectorAll(".en__mandatory");
     let hasError = false;
     mandatoryFields.forEach(field => {
       if (hasError) {
         return;
       }
-
       const fieldElement = field.querySelector(".en__field__input");
       const fieldLabel = field.querySelector(".en__field__label");
       const fieldSection = this.getSectionId(fieldElement);
-
       if (sectionId === false || sectionId == fieldSection) {
         if (!fieldElement.value) {
           this.scrollToElement(fieldElement);
@@ -25405,9 +25220,8 @@ class DonationLightboxForm {
           return false;
         } else {
           field.classList.remove("has-error");
-        } // If it's the e-mail field, check if it's a valid email
-
-
+        }
+        // If it's the e-mail field, check if it's a valid email
         if (fieldElement.name === "supporter.emailAddress" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fieldElement.value) === false) {
           this.scrollToElement(fieldElement);
           this.sendMessage("error", "Please enter a valid email address");
@@ -25417,160 +25231,130 @@ class DonationLightboxForm {
         }
       }
     });
-
     if (hasError) {
       return false;
-    } // Validate City Characters Limit
-
-
+    }
+    // Validate City Characters Limit
     const city = form.querySelector("#en__field_supporter_city");
     const cityBlock = form.querySelector(".en__field--city");
-
     if (!this.checkCharsLimit("#en__field_supporter_city", 100)) {
       this.scrollToElement(city);
       this.sendMessage("error", "This field only allows up to 100 characters");
-
       if (cityBlock) {
         cityBlock.classList.add("has-error");
       }
-
       return false;
     } else {
       if (cityBlock) {
         cityBlock.classList.remove("has-error");
       }
-    } // Validate Street Address line 1 Characters Limit
-
-
+    }
+    // Validate Street Address line 1 Characters Limit
     const streetAddress1 = form.querySelector("#en__field_supporter_address1");
     const streetAddress1Block = form.querySelector(".en__field--address1");
-
     if (!this.checkCharsLimit("#en__field_supporter_address1", 35)) {
       this.scrollToElement(streetAddress1);
       this.sendMessage("error", "This field only allows up to 35 characters. Longer street addresses can be broken up between Lines 1 and 2.");
-
       if (streetAddress1Block) {
         streetAddress1Block.classList.add("has-error");
       }
-
       return false;
     } else {
       if (streetAddress1Block) {
         streetAddress1Block.classList.remove("has-error");
       }
-    } // Validate Street Address line 2 Characters Limit
-
-
+    }
+    // Validate Street Address line 2 Characters Limit
     const streetAddress2 = form.querySelector("#en__field_supporter_address2");
     const streetAddress2Block = form.querySelector(".en__field--address2");
-
     if (!this.checkCharsLimit("#en__field_supporter_address2", 35)) {
       this.scrollToElement(streetAddress2);
       this.sendMessage("error", "This field only allows up to 35 characters. Longer street addresses can be broken up between Lines 1 and 2.");
-
       if (streetAddress2Block) {
         streetAddress2Block.classList.add("has-error");
       }
-
       return false;
     } else {
       if (streetAddress2Block) {
         streetAddress2Block.classList.remove("has-error");
       }
-    } // Validate Zip Code Characters Limit
-
-
+    }
+    // Validate Zip Code Characters Limit
     const zipCode = form.querySelector("#en__field_supporter_postcode");
     const zipCodeBlock = form.querySelector(".en__field--postcode");
-
     if (!this.checkCharsLimit("#en__field_supporter_postcode", 20)) {
       this.scrollToElement(zipCode);
       this.sendMessage("error", "This field only allows up to 20 characters");
-
       if (zipCodeBlock) {
         zipCodeBlock.classList.add("has-error");
       }
-
       return false;
     } else {
       if (zipCodeBlock) {
         zipCodeBlock.classList.remove("has-error");
       }
-    } // Validate First Name Characters Limit
+    }
 
-
+    // Validate First Name Characters Limit
     const firstName = form.querySelector("#en__field_supporter_firstName");
     const firstNameBlock = form.querySelector(".en__field--firstName");
-
     if (!this.checkCharsLimit("#en__field_supporter_firstName", 100)) {
       this.scrollToElement(firstName);
       this.sendMessage("error", "This field only allows up to 100 characters");
-
       if (firstNameBlock) {
         firstNameBlock.classList.add("has-error");
       }
-
       return false;
     } else {
       if (firstNameBlock) {
         firstNameBlock.classList.remove("has-error");
       }
-    } // Validate Last Name Characters Limit
-
-
+    }
+    // Validate Last Name Characters Limit
     const lastName = form.querySelector("#en__field_supporter_lastName");
     const lastNameBlock = form.querySelector(".en__field--lastName");
-
     if (!this.checkCharsLimit("#en__field_supporter_lastName", 100)) {
       this.scrollToElement(lastName);
       this.sendMessage("error", "This field only allows up to 100 characters");
-
       if (lastNameBlock) {
         lastNameBlock.classList.add("has-error");
       }
-
       return false;
     } else {
       if (lastNameBlock) {
         lastNameBlock.classList.remove("has-error");
       }
     }
-
     console.log("DonationLightboxForm: validateForm PASSED");
     return true;
   }
-
   checkCharsLimit(field, max) {
     const fieldElement = document.querySelector(field);
-
     if (fieldElement && fieldElement.value.length > max) {
       return false;
     }
-
     return true;
-  } // Bounce Arrow Up and Down
+  }
 
-
+  // Bounce Arrow Up and Down
   bounceArrow(freq) {
     const arrow = document.querySelector(".monthly-upsell-message");
     if (!arrow) return;
-
     if (arrow && freq === "onetime") {
-      arrow.classList.add("bounce"); // setTimeout(() => {
+      arrow.classList.add("bounce");
+      // setTimeout(() => {
       //   arrow.classList.remove("bounce");
       // }, 1000);
     } else {
       arrow.classList.remove("bounce");
     }
   }
-
   changeSubmitButton() {
     const submit = document.querySelector(".section-navigation__submit");
     const amount = this.checkNested(window.EngagingNetworks, "require", "_defined", "enjs", "getDonationTotal") ? "$" + window.EngagingNetworks.require._defined.enjs.getDonationTotal() : null;
     let frequency = this.frequency.getInstance().frequency;
     let label = submit ? submit.dataset.label : "";
     frequency = frequency === "onetime" ? "" : "<small>/mo</small>";
-
     if (amount) {
       label = label.replace("$AMOUNT", amount);
       label = label.replace("$FREQUENCY", frequency);
@@ -25578,31 +25362,26 @@ class DonationLightboxForm {
       label = label.replace("$AMOUNT", "");
       label = label.replace("$FREQUENCY", "");
     }
-
     if (submit && label) {
       submit.innerHTML = `<span>${label}</span>`;
     }
   }
-
   clickPaymentOptions(opts) {
     opts.querySelectorAll("button").forEach(btn => {
       btn.addEventListener("click", e => {
         e.preventDefault();
         const paymentType = document.querySelector("#en__field_transaction_paymenttype");
-
         if (paymentType) {
-          paymentType.value = btn.className.substr(15); // Go to the next section
-
+          paymentType.value = btn.className.substr(15);
+          // Go to the next section
           this.scrollToSection(parseInt(btn.closest("[data-section-id]").dataset.sectionId) + 1, this.currentSectionId);
         }
       });
     });
-  } // Append arrow SVG to the monthly upsell message
-
-
+  }
+  // Append arrow SVG to the monthly upsell message
   putArrowUpSVG() {
     const arrow = document.querySelector(".monthly-upsell-message");
-
     if (arrow) {
       const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
       svg.classList.add(this.setArrowPosition());
@@ -25612,66 +25391,49 @@ class DonationLightboxForm {
       svg.innerHTML = `<path d="M.804 32.388c4.913-1.273 9.461-3.912 14.556-4.458 1-.09 1.183 1.183.728 1.73-.637.727-1.456 1.819-2.365 2.728 2.547.182 4.913 1.092 7.46 1.638 2.366.546 4.73.182 6.914-.637-.546-.546-1-1.183-1.546-1.82-3.64-5.185-5.914-22.198 3.548-23.38 5.368-.729 10.28 6.095 10.553 10.917.364 6.368-3.457 11.736-8.643 14.92 2.184 1.456 4.822 2.184 7.642 2.365 5.914.273 10.1-3.639 12.1-8.915 3.64-9.644.546-22.836-9.825-26.566-.455-.182-.455-.91.09-.91 13.01.182 14.83 19.56 11.555 28.567-3.73 10.28-16.012 12.464-23.745 6.46-.637.273-1.365.636-2.093.819-5.003 1.728-9.461-.728-14.283-1.274.637 1.183 1.273 2.456 2.183 3.548.637.819.091 2.184-1.091 1.82C9.628 38.483 4.624 37.392.44 34.39c-.637-.546-.637-1.82.364-2.002zm29.295 0c1.091-.636 2.183-1.364 3.093-2.183 6.277-5.277 7.187-15.103-.637-19.47-3.64-2.001-5.731 2.457-6.46 5.277-1.091 4.094-.454 8.825 1.274 12.646a19.738 19.738 0 0 0 2.73 3.73zm-19.652 1.183c-.09 0-.182-.182-.182-.273.273-1 1.092-1.82 2.002-2.638-2.911.819-5.64 2.092-8.552 3.002 2.73 1.456 5.732 2.365 8.825 3.275-.546-1-1-2.001-1.82-2.82-.182-.182-.273-.364-.273-.546z" fill="currentColor"/>`;
       arrow.appendChild(svg);
     }
-  } // Return the arrow position
-
-
+  }
+  // Return the arrow position
   setArrowPosition() {
     const frequencyWrapper = document.querySelector(".en__field--recurrfreq .en__field__element--radio");
-
     if (frequencyWrapper) {
       const left = frequencyWrapper.querySelector('.en__field__item:first-child input[value="MONTHLY"]');
       const right = frequencyWrapper.querySelector('.en__field__item:last-child input[value="MONTHLY"]');
-
       if (left) {
         return "left";
       }
-
       if (right) {
         return "right";
       }
     }
-
     return null;
   }
-
-  checkNested(obj, level) {
+  checkNested(obj, level, ...rest) {
     if (obj === undefined) return false;
-
-    for (var _len = arguments.length, rest = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-      rest[_key - 2] = arguments[_key];
-    }
-
     if (rest.length == 0 && obj.hasOwnProperty(level)) return true;
     return this.checkNested(obj[level], ...rest);
-  } // Add Tabindex to Labels
-
-
+  }
+  // Add Tabindex to Labels
   addTabIndexToLabels() {
     const labels = document.querySelectorAll(".en__field__label.en__field__label--item");
     labels.forEach(label => {
       label.tabIndex = 0;
     });
   }
-
   isVisible(element) {
     return !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length);
   }
-
   addEvents() {
     this.frequency.getInstance().onFrequencyChange.subscribe(s => this.bounceArrow(s));
     this.frequency.getInstance().onFrequencyChange.subscribe(() => this.changeSubmitButton());
-    this.amount.getInstance().onAmountChange.subscribe(() => this.changeSubmitButton()); // Payment Type Radio Change
-
+    this.amount.getInstance().onAmountChange.subscribe(() => this.changeSubmitButton());
+    // Payment Type Radio Change
     const paymentType = document.querySelectorAll("input[name='transaction.giveBySelect']");
-
     if (paymentType.length) {
       paymentType.forEach(item => {
         item.addEventListener("change", () => {
           this.showHideCCSection(item.value);
-
           if (item.value === "card") {
             const paymentType = document.querySelector("#en__field_transaction_paymenttype");
-
             if (paymentType) {
               paymentType.value = "visa";
             }
@@ -25680,18 +25442,14 @@ class DonationLightboxForm {
       });
     }
   }
-
   showHideCCSection(paymentType) {
     let ptValue = paymentType;
-
     if (!paymentType) {
       const payment = document.querySelector("#en__field_transaction_paymenttype");
-
       if (payment && ["visa", "mastercard", "amex", "discover", "diners", "jcb"].includes(payment.value)) {
-        ptValue = "card"; // Check Card transaction.giveBySelect
-
+        ptValue = "card";
+        // Check Card transaction.giveBySelect
         const card = document.querySelector("[name='transaction.giveBySelect'][value='card']");
-
         if (card) {
           card.checked = true;
           const event = new Event("change");
@@ -25699,43 +25457,37 @@ class DonationLightboxForm {
         }
       }
     }
-
     const ccnumberBlock = document.querySelector("#en__field_transaction_ccnumber");
     console.log(ccnumberBlock);
     const ccnumberSection = this.getSectionId(ccnumberBlock);
-
     if (ptValue === "card") {
       this.sections[ccnumberSection].style.display = "block";
     } else {
       this.sections[ccnumberSection].style.display = "none";
     }
   }
-
 }
-;// CONCATENATED MODULE: ./src/scripts/tweet-to-target.js
+;// ./src/scripts/tweet-to-target.js
 class TweetToTarget {
   constructor(App, EnForm) {
     this.App = App;
     this._form = EnForm.getInstance();
-
     if (this.shouldRun()) {
       this.tweetToTargetData = JSON.parse(window.sessionStorage.getItem("engrid-ttt-data")) || {};
       this.redirectPresent = window.pageJson.redirectPresent || false;
       this.init();
     }
   }
-
   shouldRun() {
     return this.App.getPageType() === "TWEETPAGE";
   }
-
   init() {
     if (document.querySelector(".en__component--tweetcontactblock") && this.App.getPageNumber() !== 1) {
       this.setupTweetPage();
     } else if ("redirectBack" in this.tweetToTargetData) {
       if (this.tweetToTargetData.redirectBack) {
-        const returnUrl = new URL(this.tweetToTargetData.url); //Adding the "chain" parameter to the URL will prevent EN server side redirect (which causes redirect loop)
-
+        const returnUrl = new URL(this.tweetToTargetData.url);
+        //Adding the "chain" parameter to the URL will prevent EN server side redirect (which causes redirect loop)
         returnUrl.searchParams.set("chain", "");
         window.location.replace(returnUrl.href);
       } else {
@@ -25743,29 +25495,24 @@ class TweetToTarget {
       }
     }
   }
+
   /**
    * Configures the customisations to the Tweet Page with Tweet Contact Block
    */
-
-
   setupTweetPage() {
     //If there is a redirect on the page and we have more than 1 target, we want the user to manually submit the form
     const dontAutomaticallyRedirect = this.redirectPresent && document.querySelectorAll(".en__tweetContact").length > 1;
-
     if (this.tweetToTargetData.positionY) {
       window.scrollTo(0, this.tweetToTargetData.positionY);
     }
-
     if (!dontAutomaticallyRedirect) {
       document.querySelector(".en__submit")?.classList.add("hide");
     }
-
     if (this.tweetToTargetData.tweetedTo) {
       this.tweetToTargetData.tweetedTo.forEach(contactId => {
         this.disableTweetTarget(contactId);
       });
     }
-
     const sendTweetButtons = document.querySelectorAll(".en__tweetButton__send > a");
     sendTweetButtons.forEach(button => {
       button.addEventListener("click", e => {
@@ -25774,7 +25521,6 @@ class TweetToTarget {
           const contactId = e.target.closest(".en__tweetContact").dataset.contact ?? null;
           this.storeTweetData(contactId);
           this.disableTweetTarget(contactId);
-
           if (!dontAutomaticallyRedirect) {
             this._form.submitForm();
           }
@@ -25782,24 +25528,21 @@ class TweetToTarget {
       });
     });
   }
-
   disableTweetTarget(contactId) {
     if (contactId === null) return;
     document.querySelector(`[data-contact="${contactId}"]`).setAttribute("disabled", "");
     document.querySelector(`[data-contact="${contactId}"] .en__tweetButton__send a`).textContent = "Tweet Sent!";
   }
+
   /**
    * Stores tweet to target data in localStorage
    * @param contactId When null, we're using a single tweet to multiple targets page
    */
-
-
   storeTweetData(contactId) {
     const newTweetToTargetData = {
       url: window.location.href,
       positionY: window.scrollY
     };
-
     if (contactId === null) {
       newTweetToTargetData.tweetedTo = [];
       newTweetToTargetData.singleTweet = true;
@@ -25807,38 +25550,63 @@ class TweetToTarget {
       newTweetToTargetData.tweetedTo = this.tweetToTargetData.tweetedTo ? [...this.tweetToTargetData.tweetedTo, contactId] : [contactId];
       newTweetToTargetData.singleTweet = false;
     }
-
     newTweetToTargetData.redirectBack = this.shouldRedirectBack(newTweetToTargetData);
     this.tweetToTargetData = newTweetToTargetData;
     window.sessionStorage.setItem("engrid-ttt-data", JSON.stringify(this.tweetToTargetData));
   }
+
   /**
    * Determines if we should redirect back to the tweet page
    * @returns {boolean}
    */
-
-
   shouldRedirectBack(newTweetToTargetData) {
     return newTweetToTargetData.tweetedTo.length < document.querySelectorAll(".en__tweetContact").length && !newTweetToTargetData.singleTweet;
   }
-
 }
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/defineProperty.js
-function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
+;// ./node_modules/@babel/runtime/helpers/esm/typeof.js
+function _typeof(o) {
+  "@babel/helpers - typeof";
+
+  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) {
+    return typeof o;
+  } : function (o) {
+    return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+  }, _typeof(o);
+}
+
+;// ./node_modules/@babel/runtime/helpers/esm/toPrimitive.js
+
+function toPrimitive(t, r) {
+  if ("object" != _typeof(t) || !t) return t;
+  var e = t[Symbol.toPrimitive];
+  if (void 0 !== e) {
+    var i = e.call(t, r || "default");
+    if ("object" != _typeof(i)) return i;
+    throw new TypeError("@@toPrimitive must return a primitive value.");
   }
-
-  return obj;
+  return ("string" === r ? String : Number)(t);
 }
-;// CONCATENATED MODULE: ./src/scripts/annual-limit.ts
+
+;// ./node_modules/@babel/runtime/helpers/esm/toPropertyKey.js
+
+
+function toPropertyKey(t) {
+  var i = toPrimitive(t, "string");
+  return "symbol" == _typeof(i) ? i : i + "";
+}
+
+;// ./node_modules/@babel/runtime/helpers/esm/defineProperty.js
+
+function _defineProperty(e, r, t) {
+  return (r = toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
+    value: t,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  }) : e[r] = t, e;
+}
+
+;// ./src/scripts/annual-limit.ts
 
 // This script hides the premium gift options for the annual frequency until the amount is
 // greater than the minimum amount for the one-time frequency.
@@ -25846,32 +25614,23 @@ function _defineProperty(obj, key, value) {
 class AnnualLimit {
   constructor() {
     _defineProperty(this, "logger", new logger_EngridLogger("AnnualLimit", "yellow", "darkblue", "📅"));
-
     _defineProperty(this, "_amount", DonationAmount.getInstance());
-
     _defineProperty(this, "_frequency", DonationFrequency.getInstance());
-
     _defineProperty(this, "singleLimit", 0);
-
     if (!this.shouldRun()) return;
     this.loadSingleLimit();
-
     this._frequency.onFrequencyChange.subscribe(() => {
       window.setTimeout(() => this.checkAnnualLimit(), 100);
     });
-
     this._amount.onAmountChange.subscribe(() => {
       window.setTimeout(() => this.checkAnnualLimit(), 100);
     });
-
     this.checkAnnualLimit();
   }
-
   checkAnnualLimit() {
     if (this.singleLimit === 0) return;
     const frequency = this._frequency.frequency;
     const amount = this._amount.amount;
-
     if (this._frequency.frequency === "annual") {
       if (amount < this.singleLimit) {
         this.hidePremium();
@@ -25880,25 +25639,20 @@ class AnnualLimit {
       }
     }
   }
-
   showPremium() {
     const premiumGiftContainer = document.querySelector(".en__component--premiumgiftblock");
-
     if (premiumGiftContainer) {
       premiumGiftContainer.style.display = "block";
       this.logger.log("Premium Gift Container Show");
     }
   }
-
   hidePremium() {
     const premiumGiftContainer = document.querySelector(".en__component--premiumgiftblock");
-
     if (premiumGiftContainer) {
       premiumGiftContainer.style.display = "none";
       this.logger.log("Premium Gift Container Hide");
     }
   }
-
   shouldRun() {
     const isPremiumGift = window.pageJson.pageType === "premiumgift";
     const hasAnnualFrequency = document.querySelector("[name='transaction.recurrfreq'][value='annual' i]");
@@ -25906,23 +25660,19 @@ class AnnualLimit {
     const hasMonthlyFrequency = document.querySelector("[name='transaction.recurrfreq'][value='monthly' i]");
     return isPremiumGift && hasAnnualFrequency && hasMonthlyFrequency && hasPremiumGiftRules;
   }
-
   loadSingleLimit() {
     const premiumGiftRules = window.EngagingNetworks.premiumGifts.rules;
     let singleLimit = 0;
-
     for (let range in premiumGiftRules.single.ranges) {
       if ("productIds" in premiumGiftRules.single.ranges[range] && premiumGiftRules.single.ranges[range].productIds.length === 0) {
         singleLimit = +premiumGiftRules.single.ranges[range].limit;
       }
     }
-
     this.singleLimit = singleLimit;
     this.logger.log("Single Limit", this.singleLimit);
   }
-
 }
-;// CONCATENATED MODULE: ./src/scripts/on-load-modal.ts
+;// ./src/scripts/on-load-modal.ts
 
 class OnLoadModal extends Modal {
   constructor() {
@@ -25931,76 +25681,63 @@ class OnLoadModal extends Modal {
       addCloseButton: false,
       closeButtonLabel: "Close"
     });
-
     if (this.getModalContent().length > 0) {
       this.open();
     }
   }
-
   getModalContent() {
     return document.querySelectorAll(".modal--content");
   }
-
 }
 // EXTERNAL MODULE: ./src/scripts/confetti.js
-var confetti = __webpack_require__(5481);
-;// CONCATENATED MODULE: ./src/scripts/multistep-form.ts
+var confetti = __webpack_require__(2995);
+;// ./src/scripts/multistep-form.ts
 
 
 
 class MultistepForm {
   constructor() {
     _defineProperty(this, "logger", new logger_EngridLogger("MultistepForm", "white", "blue"));
-
     _defineProperty(this, "validators", []);
-
     _defineProperty(this, "contentShouldExpand", false);
-
     if (this.shouldRun()) {
       this.logger.log("MultistepForm running");
-
       if (engrid_ENGrid.checkNested(window.EngagingNetworks, "require", "_defined", "enValidation", "validation", "validators")) {
         this.validators = window.EngagingNetworks.require._defined.enValidation.validation.validators;
       }
-
       this.run();
       this.handleServerSideError();
-    } // Thank you page confetti
+    }
 
-
+    // Thank you page confetti
     if (engrid_ENGrid.getPageType() === "DONATION" && engrid_ENGrid.getBodyData("multistep") === "" && engrid_ENGrid.getGiftProcess()) {
       this.startConfetti();
     }
   }
-
   shouldRun() {
     return engrid_ENGrid.getPageType() === "DONATION" && engrid_ENGrid.getBodyData("multistep") === "" && engrid_ENGrid.getPageNumber() === 1;
   }
-
   run() {
     if (window.EngridMultistepExpandVariant) {
       this.contentShouldExpand = true;
       engrid_ENGrid.setBodyData("multistep-expand", "true");
     }
-
     engrid_ENGrid.setBodyData("multistep-active-step", "1");
     this.addStepDataAttributes();
     this.addBackButtonToFinalStep();
     this.addEventListeners();
   }
-
   addStepDataAttributes() {
     if (engrid_ENGrid.getBodyData("layout") !== "centercenter2col") {
       document.querySelector(".body-title")?.setAttribute("data-multistep-step", "1");
       document.querySelector(".body-top")?.setAttribute("data-multistep-step", "1");
       document.querySelector(".body-bottom")?.setAttribute("data-multistep-step", "3");
     }
-
     const stepperCodeBlocks = [...document.querySelectorAll(".multistep-stepper")].map(el => el.closest(".en__component--codeblock"));
     stepperCodeBlocks.forEach((step, index) => {
-      step.setAttribute("data-multistep-step", `${index + 1}`); // if this is the first step, we start from the first element in ".body-main"
+      step.setAttribute("data-multistep-step", `${index + 1}`);
+      // if this is the first step, we start from the first element in ".body-main"
       // (since the first stepper could be outside of ".body-main")
-
       const start = index === 0 ? document.querySelector(".body-main")?.firstChild : step;
       const nextStep = stepperCodeBlocks[index + 1];
       const elements = this.getElementsBetween(start, nextStep);
@@ -26009,19 +25746,15 @@ class MultistepForm {
       });
     });
   }
-
   getElementsBetween(step, nextStep) {
     const elements = [];
     let currentElement = step.nextElementSibling;
-
     while (currentElement && currentElement !== nextStep) {
       elements.push(currentElement);
       currentElement = currentElement.nextElementSibling;
     }
-
     return elements;
   }
-
   addEventListeners() {
     //Elements for changing step
     const buttons = document.querySelectorAll("[data-multistep-change-step]");
@@ -26031,7 +25764,6 @@ class MultistepForm {
       });
     });
   }
-
   inIframe() {
     try {
       return window.self !== window.top;
@@ -26039,10 +25771,7 @@ class MultistepForm {
       return true;
     }
   }
-
-  scrollTo() {
-    let where = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-
+  scrollTo(where = 0) {
     if (this.inIframe()) {
       setTimeout(() => {
         window.parent.postMessage({
@@ -26055,29 +25784,28 @@ class MultistepForm {
       this.logger.log("NOT in an iFrame, scrolling to top");
     }
   }
-
-  activateStep(targetStep) {
-    let bypassValidation = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  activateStep(targetStep, bypassValidation = false) {
     if (!targetStep) return;
-    const activeStep = engrid_ENGrid.getBodyData("multistep-active-step") ?? "1"; //If no validation or we're going backwards, activate the step
+    const activeStep = engrid_ENGrid.getBodyData("multistep-active-step") ?? "1";
 
+    //If no validation or we're going backwards, activate the step
     if (bypassValidation || targetStep < activeStep) {
       this.logger.log(`Bypassing validation or going backwards. Activating step ${targetStep}`);
       engrid_ENGrid.setBodyData("multistep-active-step", targetStep);
       this.scrollViewport();
       return;
-    } // If we're going forwards, validate the steps between the current and target step
+    }
+
+    // If we're going forwards, validate the steps between the current and target step
     // if validation fields, find first error on the page, activate that step and scroll to it
-
-
     if (!this.validateStepsBetweenCurrentAndTargetStep(activeStep, targetStep)) {
       const field = document.querySelector(".en__field--validationFailed");
       const invalidStep = field?.closest(".en__component--formblock")?.getAttribute("data-multistep-step") ?? "1";
       engrid_ENGrid.setBodyData("multistep-active-step", invalidStep);
-
       if (field) {
-        const scrollToError = field ? field.getBoundingClientRect().top : 0; // Parent pages listens for this message and scrolls to the correct position
+        const scrollToError = field ? field.getBoundingClientRect().top : 0;
 
+        // Parent pages listens for this message and scrolls to the correct position
         if (this.inIframe()) {
           this.scrollTo(scrollToError);
           this.logger.log(`iFrame Event 'scrollTo' - Position of top of first error ${scrollTo} px`); // check the message is being sent correctly
@@ -26087,23 +25815,19 @@ class MultistepForm {
           });
         }
       }
-
       this.logger.log(`Found error on step ${invalidStep}. Going to that step.`);
       return;
-    } // If validation passes, activate the step
+    }
 
-
+    // If validation passes, activate the step
     this.logger.log(`Validation passed. Activating step ${targetStep}`);
     engrid_ENGrid.setBodyData("multistep-active-step", targetStep);
-
     if (this.inIframe()) {
       this.scrollTo();
       return;
     }
-
     this.scrollViewport();
   }
-
   scrollViewport() {
     // If the multistep form is in a content expand variant, scroll to top of the active step
     if (this.contentShouldExpand) {
@@ -26117,13 +25841,12 @@ class MultistepForm {
       });
       return;
     }
+
     /*
       If a .section-header is present and outside the viewport, we should scroll to the section header
       If a .section-header is present and in the viewport, then we should not scroll
       If no .section-header is present we should scroll to the top of the page
      */
-
-
     const sectionHeaders = document.querySelectorAll(".section-header");
     const currentSectionHeader = [...sectionHeaders].find(el => {
       const headerStep = el.closest("[data-multistep-step]")?.getAttribute("data-multistep-step");
@@ -26134,35 +25857,29 @@ class MultistepForm {
       const step = el.closest("[data-multistep-step]")?.getAttribute("data-multistep-step");
       return step === engrid_ENGrid.getBodyData("multistep-active-step");
     });
-
     if (!currentSectionHeader || currentSectionHeader.offsetHeight === 0) {
       if (currentStepper && currentStepper.offsetHeight > 0) {
-        this.logger.log(`No section header found. Scrolling to stepper.`); //HERE
-
+        this.logger.log(`No section header found. Scrolling to stepper.`);
+        //HERE
         this.scrollTo(currentStepper.getBoundingClientRect().top + window.pageYOffset);
         return;
       }
-
       this.logger.log(`No section header or stepper found. Scrolling to top of page.`);
       this.scrollTo();
       return;
     }
-
     if (engrid_ENGrid.isInViewport(currentSectionHeader)) {
       if (this.inIframe()) {
         this.scrollTo();
         return;
       }
-
       this.logger.log(`Section header is in viewport. Not scrolling.`);
       return;
     }
-
     const offset = parseInt(getComputedStyle(currentSectionHeader).marginTop);
     this.logger.log(`Scrolling to section header. ${offset} offset.`);
     this.scrollTo(currentSectionHeader.getBoundingClientRect().top + window.pageYOffset - offset);
   }
-
   addBackButtonToFinalStep() {
     const submitButtonContainer = document.querySelector(".multistep-submit .en__submit");
     if (!submitButtonContainer) return;
@@ -26172,12 +25889,10 @@ class MultistepForm {
          </svg>
        </button>`);
   }
-
   validateStepsBetweenCurrentAndTargetStep(currentStep, targetStep) {
     const stepsBetween = this.getStepsBetween(currentStep, targetStep);
     return stepsBetween.every(step => this.validateStep(step));
   }
-
   validateStep(step) {
     if (this.validators.length === 0) return true;
     const validators = this.validators.filter(validator => {
@@ -26189,19 +25904,15 @@ class MultistepForm {
     });
     return validationResults.every(result => result);
   }
-
   getStepsBetween(currentStep, targetStep) {
     const start = parseInt(currentStep);
     const end = parseInt(targetStep);
     let stepsBetween = [];
-
     for (let i = start; i < end; i++) {
       stepsBetween.push(i.toString());
     }
-
     return stepsBetween;
   }
-
   startConfetti() {
     const duration = 3 * 1000;
     const animationEnd = Date.now() + duration;
@@ -26212,20 +25923,16 @@ class MultistepForm {
       zIndex: 100000,
       useWorker: false
     };
-
     const randomInRange = (min, max) => {
       return Math.random() * (max - min) + min;
     };
-
     const interval = setInterval(function () {
       const timeLeft = animationEnd - Date.now();
-
       if (timeLeft <= 0) {
         return clearInterval(interval);
       }
-
-      const particleCount = 50 * (timeLeft / duration); // since particles fall down, start a bit higher than random
-
+      const particleCount = 50 * (timeLeft / duration);
+      // since particles fall down, start a bit higher than random
       window.confetti(Object.assign({}, defaults, {
         particleCount,
         origin: {
@@ -26242,81 +25949,66 @@ class MultistepForm {
       }));
     }, 250);
   }
-
   handleServerSideError() {
     if (engrid_ENGrid.checkNested(window.EngagingNetworks, "require", "_defined", "enjs", "checkSubmissionFailed") && window.EngagingNetworks.require._defined.enjs.checkSubmissionFailed()) {
       this.logger.log("Server side error detected");
       this.activateStep("3", true);
     }
   }
-
 }
-;// CONCATENATED MODULE: ./src/scripts/add-daf.ts
+;// ./src/scripts/add-daf.ts
 
 // This script adds a DAF payment option to the donation form, only if the DAF payment option is available.
 
 class AddDAF {
   constructor() {
     _defineProperty(this, "logger", new logger_EngridLogger("AddDAF", "lightgray", "darkblue", "🪙"));
-
     _defineProperty(this, "donorAdvisedFundButtonContainer", document.getElementById("en__digitalWallet__chariot__container"));
-
     if (!this.shouldRun()) return;
-
     if (this.donorAdvisedFundButtonContainer?.querySelector("*")) {
       this.addDAF();
     } else {
       this.checkForDafBeingAdded();
     }
   }
-
   shouldRun() {
     return !!this.donorAdvisedFundButtonContainer;
   }
-
   checkForDafBeingAdded() {
     const donorAdvisedFundButtonContainer = document.getElementById("en__digitalWallet__chariot__container");
-
     if (!donorAdvisedFundButtonContainer) {
       this.logger.log("No DAF container found");
       return;
     }
-
     const callback = (mutationList, observer) => {
       for (const mutation of mutationList) {
         //Once a child node has been added, set up the appropriate digital wallet
         if (mutation.type === "childList" && mutation.addedNodes.length) {
-          this.addDAF(); //Disconnect observer to prevent multiple additions
-
+          this.addDAF();
+          //Disconnect observer to prevent multiple additions
           observer.disconnect();
         }
       }
     };
-
     const observer = new MutationObserver(callback);
     observer.observe(donorAdvisedFundButtonContainer, {
       childList: true,
       subtree: true
     });
   }
-
   addDAF() {
     // Check if DAF is already added to the payment options
     const dafPaymentOption = document.querySelector("input[name='transaction.giveBySelect'][value='daf']");
-
     if (dafPaymentOption) {
       this.logger.log("DAF already added");
       return;
     }
-
     this.logger.log("Adding DAF");
     const giveBySelectWrapper = document.querySelector(".give-by-select-wrapper .en__field__element--radio");
-
     if (!giveBySelectWrapper) {
       this.logger.log("No giveBySelectWrapper found");
       return;
     }
-
     const dafPaymentButton = `
     <!-- DAF (added dynamically) -->
       <div class="en__field__item en__field--giveBySelect give-by-select pseudo-en-field showif-daf-available recurring-frequency-y-hide daf">
@@ -26325,39 +26017,32 @@ class AddDAF {
           <img alt="DAF Logo" class="daf-logo" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/daf-logo.png">
         </label>
       </div>
-    `; // Add the DAF payment option to the payment options, before ACH
-
+    `;
+    // Add the DAF payment option to the payment options, before ACH
     const achPaymentOption = document.querySelector(".en__field__item.ach");
-
     if (achPaymentOption) {
       achPaymentOption.insertAdjacentHTML("beforebegin", dafPaymentButton);
     } else {
       giveBySelectWrapper.insertAdjacentHTML("beforeend", dafPaymentButton);
-    } // Add hide-if-daf-selected class to the premium gift container
-
-
+    }
+    // Add hide-if-daf-selected class to the premium gift container
     const premiumGiftContainer = document.querySelector(".en__component--premiumgiftblock");
-
     if (premiumGiftContainer) {
       premiumGiftContainer.classList.add("hideif-daf-selected");
     }
-
     new ShowHideRadioCheckboxes("transaction.giveBySelect", "giveBySelect-");
-    this.logger.log("DAF added"); // Set the on change event for the DAF payment option
-
+    this.logger.log("DAF added");
+    // Set the on change event for the DAF payment option
     const dafOption = document.querySelector("input[name='transaction.giveBySelect'][value='daf']");
-
     if (!dafOption) {
       this.logger.log("Somehow DAF was not added");
       return;
     }
-
     dafOption.addEventListener("change", () => {
       this.logger.log("Payment DAF selected");
-      engrid_ENGrid.setPaymentType("daf"); // Set "Maximize your impact" on Premiums when DAF is selected
-
+      engrid_ENGrid.setPaymentType("daf");
+      // Set "Maximize your impact" on Premiums when DAF is selected
       const maxRadio = document.querySelector("input[type='radio'][name='en__pg'][value='0']");
-
       if (maxRadio) {
         maxRadio.checked = true;
         maxRadio.click();
@@ -26365,9 +26050,8 @@ class AddDAF {
       }
     });
   }
-
 }
-;// CONCATENATED MODULE: ./src/index.ts
+;// ./src/index.ts
  // Uses ENGrid via NPM
 // import {
 //   Options,
@@ -26378,8 +26062,8 @@ class AddDAF {
 // } from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
 
 
- // import { pageHeaderFooter } from "./scripts/page-header-footer";
 
+// import { pageHeaderFooter } from "./scripts/page-header-footer";
 
 
 
@@ -26447,43 +26131,37 @@ const options = {
         event: "EN_PAGEJSON_PAGETYPE-emailsubscribeform",
         pageType: App.getPageType()
       });
-    } // If we're on a Thank You page, let's try to add pageJson.other3 as data-engrid-payment-type body attribute
-
-
+    }
+    // If we're on a Thank You page, let's try to add pageJson.other3 as data-engrid-payment-type body attribute
     if (App.getPageNumber() === App.getPageCount() && "pageJson" in window && "other3" in window.pageJson) {
       document.body.setAttribute("data-engrid-payment-type", window.pageJson.other3);
     }
-
     new AnnualLimit();
     window.DonationLightboxForm = DonationLightboxForm;
     new DonationLightboxForm(DonationAmount, DonationFrequency, App);
-    customScript(App, DonationFrequency); // pageHeaderFooter(App); // Added this line to trigger pageHeaderFooter
-
-    new TweetToTarget(App, en_form_EnForm); // Expand all contact sections on EMAILTOTARGET pages
-
+    customScript(App, DonationFrequency);
+    // pageHeaderFooter(App); // Added this line to trigger pageHeaderFooter
+    new TweetToTarget(App, en_form_EnForm);
+    // Expand all contact sections on EMAILTOTARGET pages
     if (App.getPageType() === "EMAILTOTARGET") {
       const closedContactSections = document.querySelectorAll(".en__contact--closed");
       closedContactSections.forEach(section => {
         section.classList.remove("en__contact--closed");
         section.classList.add("en__contact--open");
       });
-    } // Add Plaid Tooltip to Submit Button
-
-
+    }
+    // Add Plaid Tooltip to Submit Button
     const submitButton = document.querySelector(".en__submit button");
-
     if (submitButton) {
       submitButton.setAttribute("data-balloon", `When you click the button below, a new window will appear.
         Follow the steps to securely donate from your bank account to WWF
         (through Engaging Networks and Plaid).`);
       submitButton.setAttribute("data-balloon-pos", "up");
-    } // If the page has a State field, and it is not required, make a mutation observer
+    }
+    // If the page has a State field, and it is not required, make a mutation observer
     // to watch for changes to the field and hide/show it
-
-
     const regionContainer = document.querySelector(".en__field--region:not(.en__mandatory)");
     const tributeRecipientRegionContainer = document.querySelector(".en__field--infreg:not(.en__mandatory)");
-
     if (regionContainer || tributeRecipientRegionContainer) {
       // Observe changes to the region container
       const observer = new MutationObserver(mutations => {
@@ -26493,44 +26171,36 @@ const options = {
             const stateField = mutation.addedNodes[0];
             stateField.value = "";
             const fieldContainer = stateField.closest(".en__field--select");
-
             if (fieldContainer) {
               fieldContainer.classList.add("hide");
             }
-          } // If it's adding a state SELECT field, show the container
-
-
+          }
+          // If it's adding a state SELECT field, show the container
           if (mutation.addedNodes && mutation.addedNodes.length > 0 && mutation.addedNodes[0].nodeName === "SELECT") {
             const stateField = mutation.addedNodes[0];
             const fieldContainer = stateField.closest(".en__field--select");
-
             if (fieldContainer) {
               fieldContainer.classList.remove("hide");
             }
-          } // console.log(mutation);
-
+          }
+          // console.log(mutation);
         });
       });
       const stateField = document.querySelector("#en__field_supporter_region");
-
       if (stateField && stateField.nodeName === "INPUT") {
         regionContainer.classList.add("hide");
       }
-
       const tributeRecipientStateField = document.querySelector("#en__field_transaction_infreg");
-
       if (tributeRecipientStateField && tributeRecipientStateField.nodeName === "INPUT") {
         tributeRecipientRegionContainer.classList.add("hide");
-      } // Start observing the region container
-
-
+      }
+      // Start observing the region container
       if (regionContainer) {
         observer.observe(regionContainer, {
           childList: true,
           subtree: true
         });
       }
-
       if (tributeRecipientRegionContainer) {
         observer.observe(tributeRecipientRegionContainer, {
           childList: true,
@@ -26538,19 +26208,17 @@ const options = {
         });
       }
     }
-
     new OnLoadModal();
     new MultistepForm();
-    new AddDAF(); // Unsubscribe All Logic
-
+    new AddDAF();
+    // Unsubscribe All Logic
     const unsubscribeAllButton = document.querySelector("#unsubscribe-all");
     const unsubscribeAllRadio = App.getField("supporter.questions.888498");
-
     if (unsubscribeAllButton && unsubscribeAllRadio) {
       unsubscribeAllButton.addEventListener("click", () => {
         unsubscribeAllRadio.click();
-      }); // Hide the unsubscribe all radio button
-
+      });
+      // Hide the unsubscribe all radio button
       unsubscribeAllRadio.closest(".en__field")?.classList.add("hide");
     }
   },
@@ -26558,22 +26226,18 @@ const options = {
   onSubmit: () => {
     if ("pageJson" in window && "pageType" in window.pageJson && window.pageJson.pageType === "premiumgift" && App.getUrlParameter("premium") !== "international") {
       const country = App.getField("supporter.country");
-
       if (country && country.value !== "US") {
         const maxRadio = document.querySelector("input[type='radio'][name='en__pg'][value='0']");
-
         if (maxRadio) {
           maxRadio.checked = true;
           maxRadio.click();
           App.setFieldValue("transaction.selprodvariantid", "");
         }
       }
-
       if (country && country.value === "US") {
         const maxTheirGift = window.maxTheirGift ?? 0;
         const prodVariantValue = App.getFieldValue("transaction.selprodvariantid");
         const pgItems = document.querySelectorAll(".en__pgList .en__pg");
-
         if (maxTheirGift && prodVariantValue === "" && pgItems.length > 0) {
           App.log(`Setting maxTheirGift to ${maxTheirGift}`);
           App.setFieldValue("transaction.selprodvariantid", maxTheirGift);
@@ -26586,7 +26250,6 @@ const options = {
     const transactionSelprodvariantid = App.getField("transaction.selprodvariantid");
     const donationHasPremium = App.getField("supporter.NOT_TAGGED_45");
     const maxTheirGift = window.maxTheirGift ?? 0;
-
     if (transactionSelprodvariantid && donationHasPremium) {
       // If there is, sync the values
       donationHasPremium.value = transactionSelprodvariantid.value && transactionSelprodvariantid.value != maxTheirGift ? "Y" : "N";
@@ -26604,11 +26267,10 @@ window.EngridTranslate = {
     field: "transaction.infpostcd",
     translation: "Recipient ZIP Code"
   }]
-}; // Trying to fix the issue of EN not running the onSubmit & onValidate functions
+};
+// Trying to fix the issue of EN not running the onSubmit & onValidate functions
 // when you use digital wallets
-
 const paymentButtons = document.querySelectorAll('input[name="transaction.giveBySelect"]');
-
 if (paymentButtons.length > 0) {
   paymentButtons.forEach(button => {
     // If the changed radio value is stripedigitalwallet, run the options functions
@@ -26621,14 +26283,13 @@ if (paymentButtons.length > 0) {
     });
   });
 }
+new App(options);
 
-new App(options); // Adding a new listener to the onSubmit event after the App has been instantiated so that
+// Adding a new listener to the onSubmit event after the App has been instantiated so that
 // it runs last and can modify the value of the RegionLongFormat field for the District of Columbia
-
 const enForm = en_form_EnForm.getInstance();
 enForm.onSubmit.subscribe(() => {
   const expandedRegionField = App.getField(App.getOption("RegionLongFormat"));
-
   if (expandedRegionField && ["District of Columbia", "American Samoa", "Northern Mariana Islands", "US Minor Outlying Islands", "Virgin Islands"].includes(expandedRegionField.value)) {
     // Add "the" to the beginning of the region name
     expandedRegionField.value = `the ${expandedRegionField.value}`;
