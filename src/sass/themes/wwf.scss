@@ -1584,13 +1584,6 @@
     text-underline-offset: 1px;
   }
 
-  // Scale up the vanilla radio buttons on Firefox
-  @-moz-document url-prefix() {
-    .en__pg__select input {
-      transform: scale(2);
-    }
-  }
-
   // On premium pages, when the visitor is not in the US, hide the premium gift options other than the no gift option
   &:not([data-engrid-demo])[data-engrid-page-type="premiumgift"]:not([data-engrid-country="US"])
     .en__pgList[data-nogift] {
@@ -2470,15 +2463,15 @@
 }
 
 @media screen and (max-width: 500px) {
-  .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio>.en__field__element .en__field__item {
-    flex-basis: unset;
-    &:nth-child(1) {
-      min-width: 126px;
-    }
-    &:nth-child(2) {
-      flex: 1;
-    }
-  }
+  // .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio>.en__field__element .en__field__item {
+  //   flex-basis: unset;
+  //   &:nth-child(1) {
+  //     min-width: 126px;
+  //   }
+  //   &:nth-child(2) {
+  //     flex: 1;
+  //   }
+  // }
   .alternative-donation-methods {
     p:first-child {
       margin: 1rem 0rem 2rem;
