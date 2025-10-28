@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, October 27, 2025 @ 12:52:06 ET
+ *  Date: Tuesday, October 28, 2025 @ 11:50:13 ET
  *  By: npgiano
  *  ENGrid styles: v0.22.18
  *  ENGrid scripts: v0.22.20
@@ -9297,7 +9297,6 @@ body[data-engrid-debug]:before{
 }
 [data-engrid-theme=wwf] .donation-summary p{
   margin:0 auto;
-  max-width:388px;
   padding-bottom:22px;
   padding-top:22px;
 }
