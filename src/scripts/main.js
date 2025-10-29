@@ -496,6 +496,17 @@ export const customScript = function (App, DonationFrequency) {
   if (supportersBar) {
     supportersBar.innerText = fillCount;
   }
+  window.addEventListener("load", () => {
+    const enWidgetFillWidth = document.querySelector(".enWidget__fill")
+      ? document.querySelector(".enWidget__fill").style.width
+      : null;
+    if (enWidgetFillWidth == "100%") {
+      const enWidgetDisplay = document.querySelector(".enWidget__display");
+      if (enWidgetDisplay) {
+        enWidgetDisplay.classList.add("enWidget__display_full");
+      }
+    }
+  });
 
   function LauncherWidthWatcher() {
     // Select the #launcher and .engrid-mobile-cta-container elements
