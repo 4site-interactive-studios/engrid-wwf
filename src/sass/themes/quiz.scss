@@ -97,9 +97,10 @@ select[disabled] {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
-    margin: 10px auto 0;
+    margin-top: 10px;
+    margin-left: 0;
     align-items: initial;
-    max-width: 360px;
+    max-width: 380px;
   }
 
   .en__field__item {
@@ -109,6 +110,7 @@ select[disabled] {
     :not(:has(input[disabled])) {
       img {
         transition: all 0.5s cubic-bezier(0.545, 0.03, 0.395, 0.965);
+        padding: 0.5rem;
       }
       &:hover img {
         transform: scale(1.05);
@@ -411,6 +413,8 @@ select[disabled] {
       grid-template-columns: repeat(2, 1fr);
       width: 90%;
       max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
     }
   }
 
