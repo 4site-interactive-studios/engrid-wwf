@@ -34,6 +34,11 @@
   &:not([data-engrid-quiz-score="0-25"]) .showif-score0-25 {
     display: none;
   }
+
+  &:not([data-engrid-show-form]):has(.quiz-signup-form) {
+    opacity: 0;
+    visibility: hidden;
+  }
 }
 
 input[disabled],
@@ -43,6 +48,8 @@ select[disabled] {
   cursor: not-allowed;
   opacity: .7;
 }
+
+
 // END: QUIZ FUNCTIONALITY
 
 & {

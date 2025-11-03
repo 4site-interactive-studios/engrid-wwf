@@ -129,6 +129,8 @@ export class Quiz {
     ) {
       sessionStorage.removeItem("quiz-skip-form");
       this.redirectToNextPage();
+    } else {
+      ENGrid.setBodyData("show-form", "true");
     }
   }
 
