@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, October 29, 2025 @ 10:22:36 ET
+ *  Date: Monday, November 3, 2025 @ 06:35:23 ET
  *  By: michael
  *  ENGrid styles: v0.22.18
  *  ENGrid scripts: v0.22.20
@@ -26754,6 +26754,8 @@ class Quiz {
     if (sessionStorage.getItem("quiz-skip-form") === "true" || window.pageJson.supporterId !== undefined) {
       sessionStorage.removeItem("quiz-skip-form");
       this.redirectToNextPage();
+    } else {
+      engrid_ENGrid.setBodyData("show-form", "true");
     }
   }
 
