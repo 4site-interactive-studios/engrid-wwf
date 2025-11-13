@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, November 13, 2025 @ 07:59:19 ET
+ *  Date: Thursday, November 13, 2025 @ 08:00:35 ET
  *  By: michael
  *  ENGrid styles: v0.23.0
  *  ENGrid scripts: v0.23.2
@@ -26976,7 +26976,7 @@ class Bridger {
 
     _defineProperty(this, "key", "-CDxXc3SdzG6a_LLJGKA_p3qJMnZnnsH3DLDGeK97nwXAzFuFmfh5g==");
 
-    _defineProperty(this, "bridgerAmountThreshold", window.BridgerAmountThreshold || 10000);
+    _defineProperty(this, "bridgerAmountThreshold", window.BridgerAmountThreshold || 500);
 
     if (!this.shouldRun()) return;
     this.createBridgerSearchRecord();
