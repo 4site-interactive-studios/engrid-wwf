@@ -19,8 +19,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, October 28, 2025 @ 11:50:13 ET
- *  By: npgiano
+ *  Date: Monday, November 17, 2025 @ 11:08:59 ET
+ *  By: fernando
  *  ENGrid styles: v0.22.18
  *  ENGrid scripts: v0.22.20
  *
@@ -8825,7 +8825,7 @@ body[data-engrid-debug]:before{
   --fields_spacing-block:24px;
 }
 [data-engrid-theme=wwf] .en__field--question .en__field--radio label,[data-engrid-theme=wwf] .en__field--question label{
-  --fields_spacing-block:.5rem;
+  --fields_spacing-block:0.5rem;
 }
 [data-engrid-theme=wwf] .en__field--question .en__field__element--radio{
   --fields_spacing-block:0rem;
@@ -9477,12 +9477,12 @@ body[data-engrid-debug]:before{
   top:100%;
 }
 [data-engrid-theme=wwf] .en__field--recurrfreq .en__field__element--radio{
-  --fields_spacing-inline:.25rem;
-  --fields_spacing-block:.25rem;
+  --fields_spacing-inline:0.25rem;
+  --fields_spacing-block:0.25rem;
 }
 [data-engrid-theme=wwf] .radio-to-buttons_donationAmt .en__field--donationAmt .en__field__element--radio{
-  --fields_spacing-inline:.25rem;
-  --fields_spacing-block:.25rem;
+  --fields_spacing-inline:0.25rem;
+  --fields_spacing-block:0.25rem;
   --donation-amount__button_padding:14px 0;
 }
 [data-engrid-theme=wwf] .radio-to-buttons_donationAmt .en__field--donationAmt input[type=radio]+label{
@@ -10046,11 +10046,11 @@ body[data-engrid-debug]:before{
     --engrid__body_margin:0px;
     --engrid__page_background-color:var(--engrid__body-main_background-color);
     --engrid__content-footer_background-color:#0000;
-    --engrid__body-main_padding:13px 24px;
+    --engrid__body-main_padding:13px;
     --engrid__body-banner_padding:0 0;
     --engrid__body-title_padding:0 24px;
     --engrid__body-title_margin:0 0 16px 0;
-    --engrid__body-top_padding:0 24px;
+    --engrid__body-top_padding:0 13px;
     --button_font-size:18px;
     --submit__button_font-size:18px;
     --button_line-height:140%;
