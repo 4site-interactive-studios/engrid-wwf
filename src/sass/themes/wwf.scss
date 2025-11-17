@@ -34,17 +34,17 @@
 
 & {
   text-decoration-skip-ink: none;
-  
+
   --engrid__body_margin: 0 22px;
   --engrid__body-main_padding: 40px 32px;
   --engrid__body-title_padding: 0px 0px 32px 0px;
   --engrid__body-top_padding: 0px;
 
-  --engrid__page_background-color: #FEFCF9;
+  --engrid__page_background-color: #fefcf9;
   --engrid__body-title_background-color: transparent;
   --engrid__body-banner_background-color: transparent;
   --engrid__body-top_background-color: transparent;
-  --engrid__body-main_background-color: #F9F3EB;
+  --engrid__body-main_background-color: #f9f3eb;
 
   --engrid__content-header_background-color: #000000;
   --engrid__content-footer_background-color: #ffffff;
@@ -88,8 +88,8 @@
 
   --fields_spacing-block: 1rem;
 
-  --error__color: #CB4328;
-  --error__color_faded: #FFEFE9;
+  --error__color: #cb4328;
+  --error__color_faded: #ffefe9;
   // TYPOGRAPHY A:FOCUS
   // TYPOGRAPHY A:HOVER
   --a_text-decoration_hover: underline;
@@ -110,7 +110,6 @@
   // --input_box-shadow: inset 0 2px 2px -1px rgba(74, 74, 104, 0.1);
   --input_padding: 11.5px 15px;
 
-
   // TYPOGRAPHY INPUT:FOCUS
   // TYPOGRAPHY INPUT:HOVER
   // --input_color_hover: var(--input_color);
@@ -119,14 +118,14 @@
   // --input_border-bottom-color_hover: var(--input_border-color_hover);
   // --input_box-shadow_hover: --input_box-shadow;
 
-  --color_primary: #CB4328;
+  --color_primary: #cb4328;
   --color_acadia_400: #1f648c;
-  --color_acadia_500: #0F3D57;
-  --color_punaluu_50: #FCFCFC;
+  --color_acadia_500: #0f3d57;
+  --color_punaluu_50: #fcfcfc;
   --color_punaluu_300: #727272;
-  --color_punaluu_400: #4B4B4B;
+  --color_punaluu_400: #4b4b4b;
   --color_punaluu_500: #0f0f0f;
-  --color_yellowstone: #FFCC66;
+  --color_yellowstone: #ffcc66;
 
   // TYPOGRAPHY BUTTON
   // --button_font-family: var(--default_font-family);
@@ -170,7 +169,7 @@
   --submit__button_padding-top: 1rem;
   --submit__button_padding-bottom: 1rem;
   --submit__button_font-size: 24px;
-  
+
   // DONATION PAGE
   --premium__image_max-width: 134px;
   // --give-monthly-donation-amount-appended-label: "/mo";
@@ -192,7 +191,7 @@
   --radio_height: 30px;
   --radio_width: 30px;
   --radio_border-width: 2px;
-  --radio_color: var(--color_acadia_400);;
+  --radio_color: var(--color_acadia_400);
   // color: var(--radio_color_selected);
   // background-color: var(--radio_background-color_selected);
   // border-color: var(--radio_border-color_selected);
@@ -214,8 +213,8 @@
   --checkbox_content_checked: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='21px' height='15px' viewBox='0 0 20 15' version='1.1'%3E%3Cg id='surface1'%3E%3Cpath style=' stroke:none;fill-rule:nonzero;fill:rgb(100%25,100%25,100%25);fill-opacity:1;' d='M 12.75 6.117188 L 6.835938 12.234375 L 1.335938 6.546875 L 0 7.929688 L 3.417969 11.464844 L 6.835938 15.003906 L 13.417969 8.191406 L 20 1.382812 L 18.664062 0 Z M 12.75 6.117188 '/%3E%3C/g%3E%3C/svg%3E");
   --checkbox_border-width: 2px;
   --checkbox_background-color_hover: #ffffff;
-  --checkbox_border-color_checked: var(--color_acadia_400);;
-  --checkbox_background-color_checked: var(--color_acadia_400);;
+  --checkbox_border-color_checked: var(--color_acadia_400);
+  --checkbox_background-color_checked: var(--color_acadia_400);
   --checkbox_color_checked: #ffffff;
 
   --select_padding-right: 3.75ch;
@@ -285,7 +284,8 @@
     text-underline-offset: 8px;
   }
 
-  .section-header, .en__pgHeader {
+  .section-header,
+  .en__pgHeader {
     margin-top: 40px;
     margin-bottom: 24px;
   }
@@ -511,15 +511,15 @@
   .en__field--question {
     --fields_spacing-block: 24px;
 
-
-    .en__field--radio label, label {
-      --fields_spacing-block: .5rem;
+    .en__field--radio label,
+    label {
+      --fields_spacing-block: 0.5rem;
     }
 
     .en__field__element--radio {
       --fields_spacing-block: 0rem;
       display: grid;
-      gap: .5rem;
+      gap: 0.5rem;
       grid-template-columns: auto auto;
     }
   }
@@ -1284,7 +1284,8 @@
     }
 
     p:last-child {
-      &::before, &::after {
+      &::before,
+      &::after {
         content: "";
       }
       display: grid;
@@ -1292,7 +1293,8 @@
       grid-template-columns: 1fr 101px 190px 101px 1fr;
       height: 101px;
       gap: 1rem;
-      a, img {
+      a,
+      img {
         width: 100%;
         height: auto;
       }
@@ -1310,7 +1312,7 @@
   }
 
   .grey-box {
-    background-color: #F3E7D9;
+    background-color: #f3e7d9;
     color: var(--color_punaluu_400);
     padding: 1rem;
     --p_font-size: 16px;
@@ -1485,15 +1487,15 @@
 
   .en__field--recurrfreq {
     .en__field__element--radio {
-      --fields_spacing-inline: .25rem;
-      --fields_spacing-block: .25rem;
+      --fields_spacing-inline: 0.25rem;
+      --fields_spacing-block: 0.25rem;
     }
   }
 
   .radio-to-buttons_donationAmt .en__field--donationAmt {
     .en__field__element--radio {
-      --fields_spacing-inline: .25rem;
-      --fields_spacing-block: .25rem;
+      --fields_spacing-inline: 0.25rem;
+      --fields_spacing-block: 0.25rem;
       --donation-amount__button_padding: 14px 0;
     }
 
@@ -1567,7 +1569,7 @@
   .en__field__notice {
     order: 3;
   }
-  
+
   .en__field__input {
     --fields_spacing-block: 0.5rem;
   }
@@ -1744,7 +1746,6 @@
   }
 
   .en__component--premiumgiftblock {
-
     border-left: 0;
     border-right: 0;
     border-bottom: 0;
@@ -1900,14 +1901,14 @@
 
       .en__tweetButton__sent a {
         --button_color: #ffffff;
-        --button_background-color: var(--color_acadia_400);;
+        --button_background-color: var(--color_acadia_400);
         border: var(--button_border-width) solid var(--button_border-color);
         cursor: default;
 
         &:hover,
         &:active {
           color: #ffffff;
-          background-color: var(--color_acadia_400);;
+          background-color: var(--color_acadia_400);
         }
       }
     }
@@ -2302,11 +2303,11 @@
     --engrid__page_background-color: var(--engrid__body-main_background-color);
 
     --engrid__content-footer_background-color: transparent;
-    --engrid__body-main_padding: 13px 24px;
+    --engrid__body-main_padding: 13px;
     --engrid__body-banner_padding: 0 0;
     --engrid__body-title_padding: 0 24px;
     --engrid__body-title_margin: 0 0 16px 0;
-    --engrid__body-top_padding: 0 24px;
+    --engrid__body-top_padding: 0 13px;
 
     --button_font-size: 18px;
     --submit__button_font-size: 18px;
@@ -2405,7 +2406,7 @@
       display: none;
     }
     .en__pg--selected {
-      --premium__item_background-color: #FEFCF9;
+      --premium__item_background-color: #fefcf9;
     }
     .en__pg__image:hover {
       transform: none;
@@ -2656,7 +2657,7 @@ button[data-balloon] {
     text-shadow: none;
     font-size: 14px;
     line-height: 1.4;
-    background: #F3E7D9;
+    background: #f3e7d9;
     color: var(--color_punaluu_400);
     border-radius: 3px;
     content: attr(data-balloon);
@@ -2794,7 +2795,6 @@ button[data-balloon] {
       margin: 0 auto;
     }
   }
-
 }
 
 // 1024px is where the show-if-mobile / show-if-desktop classes consider the breakpoint
