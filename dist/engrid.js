@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, November 13, 2025 @ 08:00:35 ET
- *  By: michael
+ *  Date: Monday, December 1, 2025 @ 16:32:12 ET
+ *  By: fernando
  *  ENGrid styles: v0.23.0
  *  ENGrid scripts: v0.23.2
  *
@@ -24254,39 +24254,73 @@ const AppVersion = "0.23.2";
 
 ;// CONCATENATED MODULE: ./src/scripts/main.js
 const customScript = function (App, DonationFrequency) {
-  console.log("ENGrid client scripts are executing"); // Listen to the message PayPal sends to the parent window when Venmo is enabled
+  console.log("ENGrid client scripts are executing"); // Venmo Detection
 
-  const VENMO_IDENTIFIER = "venmo"; // Print to the console ALL messages from iFrames
+  const paypalTouchContainer = document.getElementById("en__digitalWallet__paypalTouch__container");
 
-  window.addEventListener("message", function (event) {
-    // Check the origin of the message
-    if (event.origin === "https://www.paypal.com") {
-      const data = JSON.parse(event.data); // Get the content from the first item of the data object
+  if (paypalTouchContainer) {
+    App.log("Venmo Detection: Container found");
+    let isChecking = false;
 
-      const firstKey = Object.keys(data)[0];
-      const content = data[firstKey][0];
-      const hasData = ("data" in content);
-      const hasName = hasData && "name" in content.data;
-      const isRemember = hasName && content.data.name === "remember";
-      const hasArgs = isRemember && "args" in content.data;
-      const isVenmo = hasArgs && Array.isArray(content.data.args) && content.data.args.length > 0 && Array.isArray(content.data.args[0]) && content.data.args[0].length > 0 && content.data.args[0][0] === VENMO_IDENTIFIER;
+    const checkVenmo = function () {
+      let observer = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+      if (isChecking) return;
+      isChecking = true;
+      App.log("Venmo Detection: Checking..."); // Temporarily make the container visible to check its height
 
-      if (isVenmo) {
-        // Venmo is Enabled
-        // If you are on iPhone, only enable Venmo if using Safari
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-        const isSafari = navigator.userAgent.includes("Safari") && !navigator.userAgent.includes("CriOS") && !navigator.userAgent.includes("FxiOS");
+      const originalDisplay = paypalTouchContainer.style.display;
+      const originalVisibility = paypalTouchContainer.style.visibility;
+      const originalPosition = paypalTouchContainer.style.position;
+      paypalTouchContainer.style.visibility = "hidden";
+      paypalTouchContainer.style.position = "absolute";
+      paypalTouchContainer.style.display = "block";
+      setTimeout(() => {
+        const height = paypalTouchContainer.offsetHeight;
+        App.log(`Venmo Detection: Height is ${height}`); // Restore original styles
 
-        if (isIOS && !isSafari) {
-          App.log("Venmo is not enabled on non-Safari iOS");
-          return;
+        paypalTouchContainer.style.display = originalDisplay;
+        paypalTouchContainer.style.visibility = originalVisibility;
+        paypalTouchContainer.style.position = originalPosition;
+
+        if (height > 70) {
+          // Venmo is Enabled
+          // If you are on iPhone, only enable Venmo if using Safari
+          const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+          const isSafari = navigator.userAgent.includes("Safari") && !navigator.userAgent.includes("CriOS") && !navigator.userAgent.includes("FxiOS");
+
+          if (isIOS && !isSafari) {
+            App.log("Venmo is not enabled on non-Safari iOS");
+          } else {
+            App.setBodyData("venmo-enabled", "true");
+            App.log("Venmo is enabled");
+          }
+        } // Stop observing once checked
+
+
+        if (observer) observer.disconnect();
+        isChecking = false;
+      }, 500);
+    };
+
+    const venmoObserver = new MutationObserver(mutationsList => {
+      for (const mutation of mutationsList) {
+        if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
+          App.log("Venmo Detection: Mutation detected");
+          checkVenmo(venmoObserver);
         }
-
-        App.setBodyData("venmo-enabled", "true");
-        App.log("Venmo is enabled");
       }
+    });
+    venmoObserver.observe(paypalTouchContainer, {
+      childList: true,
+      subtree: true
+    }); // Check immediately in case it's already loaded
+
+    if (paypalTouchContainer.childNodes.length > 0) {
+      App.log("Venmo Detection: Immediate check triggered");
+      checkVenmo(venmoObserver);
     }
-  }); // Add Images to the transaction.giveBySelect labels
+  } // Add Images to the transaction.giveBySelect labels
+
 
   const paymentMethods = document.querySelectorAll("[name='transaction.giveBySelect'] + label");
   paymentMethods.forEach(label => {
