@@ -2468,6 +2468,9 @@ button[data-balloon] {
 }
 
 &[data-engrid-payment-type="ach"] {
+  .multistep-submit {
+    padding-top: 60px;
+  }
   button[data-balloon] {
     margin-top: 90px;
 
