@@ -48895,14 +48895,6 @@ const options = {
       placement: "beforebegin"
     }
   },
-  VGS: {
-    "transaction.ccnumber": {
-      // @ts-ignore
-      validCardBrands: [{
-        type: "visa"
-      }]
-    }
-  },
   onLoad: () => {
     // Send a GTM event is the Page Type is SUBSCRIBEFORM
     if (App.getPageType() === "SUBSCRIBEFORM") {
