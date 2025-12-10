@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, December 4, 2025 @ 19:15:20 ET
- *  By: fernando
+ *  Date: Wednesday, December 10, 2025 @ 11:35:07 ET
+ *  By: michael
  *  ENGrid styles: v0.23.0
  *  ENGrid scripts: v0.23.2
  *
@@ -27139,6 +27139,14 @@ const options = {
       editText: "Change my info",
       anchor: ".fast-personal-details",
       placement: "beforebegin"
+    }
+  },
+  VGS: {
+    "transaction.ccnumber": {
+      // @ts-ignore
+      validCardBrands: [{
+        type: "visa"
+      }]
     }
   },
   onLoad: () => {
