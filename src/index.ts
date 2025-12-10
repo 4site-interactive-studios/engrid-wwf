@@ -1,17 +1,17 @@
-import {
-  Options,
-  App,
-  DonationFrequency,
-  DonationAmount,
-  EnForm,
-} from "@4site/engrid-scripts"; // Uses ENGrid via NPM
 // import {
 //   Options,
 //   App,
 //   DonationFrequency,
 //   DonationAmount,
 //   EnForm,
-// } from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
+// } from "@4site/engrid-scripts"; // Uses ENGrid via NPM
+import {
+  Options,
+  App,
+  DonationFrequency,
+  DonationAmount,
+  EnForm,
+} from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
 
 import "./sass/main.scss";
 import { customScript } from "./scripts/main";
@@ -84,12 +84,6 @@ const options: Options = {
       editText: "Change my info",
       anchor: ".fast-personal-details",
       placement: "beforebegin",
-    },
-  },
-  VGS: {
-    "transaction.ccnumber": {
-      // @ts-ignore
-      validCardBrands: [{ type: "visa" }],
     },
   },
   onLoad: () => {
