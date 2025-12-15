@@ -22,6 +22,7 @@ import { AnnualLimit } from "./scripts/annual-limit";
 import { OnLoadModal } from "./scripts/on-load-modal";
 import MultistepForm from "./scripts/multistep-form";
 import { AddDAF } from "./scripts/add-daf";
+import { Bridger } from "./scripts/Bridger";
 
 import { Quiz } from "./scripts/quiz";
 
@@ -220,6 +221,7 @@ const options: Options = {
       unsubscribeAllRadio.closest(".en__field")?.classList.add("hide");
     }
     new Quiz();
+    new Bridger();
   },
   onResize: () => console.log("Starter Theme Window Resized"),
 
