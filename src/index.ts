@@ -24,6 +24,8 @@ import MultistepForm from "./scripts/multistep-form";
 import { AddDAF } from "./scripts/add-daf";
 import { Bridger } from "./scripts/Bridger";
 
+import { Quiz } from "./scripts/quiz";
+
 const options: Options = {
   AutoYear: true,
   applePay: false,
@@ -218,6 +220,7 @@ const options: Options = {
       // Hide the unsubscribe all radio button
       unsubscribeAllRadio.closest(".en__field")?.classList.add("hide");
     }
+    new Quiz();
     new Bridger();
   },
   onResize: () => console.log("Starter Theme Window Resized"),
