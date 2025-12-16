@@ -2652,3 +2652,28 @@ button[data-balloon] {
 &[data-engrid-venmo-enabled="true"] .en__field--giveBySelect.venmo {
   display: block;
 }
+&[data-engrid-payment-type="paypal"] {
+  .hideif-paypal-selected {
+    display: none;
+  }
+  .showif-paypal-selected {
+    display: block !important;
+  }
+}
+&[data-engrid-payment-type="card"],
+&[data-engrid-payment-type="visa"] {
+  .hideif-card-selected {
+    display: none;
+  }
+  .showif-card-selected {
+    display: block !important;
+  }
+}
+&[data-engrid-payment-type="ach"] {
+  .hideif-ach-selected {
+    display: none;
+  }
+  .showif-ach-selected {
+    display: block !important;
+  }
+}
