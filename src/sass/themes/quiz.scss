@@ -62,8 +62,7 @@ select[disabled] {
   .content-header,
   .content-footer,
   .body-title,
-  .body-top,
-  .page-backgroundImage {
+  .body-top {
     display: none !important;
   }
 }
@@ -257,6 +256,12 @@ select[disabled] {
 
 // 2 column layout specific styles
 &[data-engrid-layout="centercenter2col"] {
+  &#en__pagebuilder {
+    .page-backgroundImage {
+      display: none !important;
+    }
+  }
+
   form > .en__component--advrow {
     grid-template-rows:
           [page-start page-alert-start] min-content
