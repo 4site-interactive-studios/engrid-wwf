@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, December 10, 2025 @ 11:42:10 ET
- *  By: michael
+ *  Date: Wednesday, January 14, 2026 @ 18:20:19 ET
+ *  By: nick
  *  ENGrid styles: v0.23.0
  *  ENGrid scripts: v0.23.2
  *
@@ -31287,9 +31287,7 @@ class vgs_VGS {
         // Autocomplete is not customizable
         autoComplete: "cc-number",
         validations: ["required", "validCardNumber"],
-        validCardBrands: [{
-          type: "visa"
-        }]
+        validCardBrands: null
       },
       "transaction.ccvv": {
         showCardIcon: false,
@@ -31306,7 +31304,12 @@ class vgs_VGS {
         validations: ["required", "validCardExpirationDate"],
         css: styles
       }
-    }; // Deep merge the default options with the options set in the theme
+    }; // Override the validCardBrands if set in the theme options, as this should not be deep merged.
+
+    if (options && options["transaction.ccnumber"] && options["transaction.ccnumber"].validCardBrands) {
+      defaultOptions["transaction.ccnumber"].validCardBrands = options["transaction.ccnumber"].validCardBrands;
+    } // Deep merge the default options with the options set in the theme
+
 
     this.options = engrid_ENGrid.deepMerge(defaultOptions, options);
     this.logger.log("Options", this.options);
@@ -48759,6 +48762,113 @@ class Bridger {
     return window.userData[property];
   }
 
+}
+;// CONCATENATED MODULE: ./src/scripts/quiz.ts
+
+
+class Quiz {
+  constructor() {
+    _defineProperty(this, "logger", new dist_logger_EngridLogger("Quiz", "#FFFFFF", "#4d9068", "🛠️"));
+
+    _defineProperty(this, "sessionItemKey", `quiz-results-${dist_engrid_ENGrid.getPageID()}`);
+
+    if (!this.shouldRun()) return;
+    this.checkForFormSkip();
+    this.handleQuizResults();
+    this.setBgImage();
+    this.addEventListeners();
+  }
+
+  shouldRun() {
+    return dist_engrid_ENGrid.getBodyData("subtheme") === "quiz";
+  }
+
+  setBgImage() {
+    const imageUrl = document.querySelector(".body-banner .en__component--imageblock  img")?.getAttribute("src");
+    const mobileImageUrl = document.querySelector(".body-banner .en__component--imageblock:last-child img")?.getAttribute("src");
+
+    if (imageUrl) {
+      document.body.style.setProperty("--quiz-bg-image", `url(${imageUrl})`);
+      document.body.style.setProperty("--quiz-mobile-bg-image", `url(${mobileImageUrl})`);
+    }
+  }
+
+  addEventListeners() {
+    // Handle check my answer button click
+    const checkAnswerBtn = document.querySelector(".button-quiz-answer");
+    checkAnswerBtn?.addEventListener("click", () => this.checkAnswer()); // Clicking any answer hides the error message
+
+    [...document.querySelectorAll(".en__component--svblock .en__field__input--radio, .en__component--svblock .en__field__input--imageSelectField")].forEach(el => {
+      el.addEventListener("change", () => {
+        this.toggleError(false); // If the button exists, we only check the answer on button click
+
+        if (checkAnswerBtn) return;
+        this.checkAnswer();
+      });
+    }); // Skip button
+
+    const skipBtn = document.querySelector(".button-next-page");
+    skipBtn?.addEventListener("click", () => this.redirectToNextPage());
+  }
+
+  checkAnswer() {
+    const selectedAnswer = document.querySelector(".en__component--svblock input:checked");
+    const correctAnswer = document.querySelector('.en__component--svblock input[value="1"]');
+
+    if (!selectedAnswer) {
+      this.toggleError(true);
+      return;
+    } // Disable inputs after selection
+
+
+    document.querySelectorAll(".en__component--svblock .en__field__input--radio, .en__component--svblock .en__field__input--imageSelectField").forEach(el => {
+      el.setAttribute("disabled", "true");
+    });
+    const isCorrect = selectedAnswer === correctAnswer;
+    dist_engrid_ENGrid.setBodyData("quiz-answer", isCorrect ? "correct" : "incorrect");
+    const results = JSON.parse(sessionStorage.getItem(this.sessionItemKey) || "{}");
+    results[dist_engrid_ENGrid.getPageNumber()] = isCorrect ? 1 : 0;
+    sessionStorage.setItem(this.sessionItemKey, JSON.stringify(results));
+    correctAnswer?.closest(".en__field__item")?.classList.add("quiz-correct-answer");
+
+    if (!isCorrect) {
+      selectedAnswer.closest(".en__field__item")?.classList.add("quiz-incorrect-answer");
+    }
+
+    this.scrollToFeedback();
+  }
+
+  toggleError(show) {
+    const errorMessage = document.querySelector(".quiz-error");
+
+    if (errorMessage) {
+      errorMessage.style.display = show ? "block" : "none";
+    }
+  }
+
+  checkForFormSkip() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    if (urlParams.get("skip_form") === "true") {
+      sessionStorage.setItem("quiz-skip-form", "true");
+    }
+
+    const isFormPage = document.querySelector(".quiz-signup-form");
+    if (!isFormPage) return;
+
+    if (sessionStorage.getItem("quiz-skip-form") === "true" || window.pageJson.supporterId !== undefined) {
+      sessionStorage.removeItem("quiz-skip-form");
+      this.redirectToNextPage();
+    } else {
+      dist_engrid_ENGrid.setBodyData("show-form", "true");
+    }
+  }
+
+  redirectToNextPage() {
+    const nextPage = `/${dist_engrid_ENGrid.getPageNumber() + 1}`;
+    window.location.href = window.location.href.split("?")[0].replace(/\/\d\/?$/, nextPage);
+  }
+
   handleQuizResults() {
     const isResultsPage = document.querySelector(".quiz-results");
     if (!isResultsPage) return;
@@ -48792,7 +48902,7 @@ class Bridger {
       }
     }
 
-    engrid_ENGrid.setBodyData("quiz-score", scoreRange);
+    dist_engrid_ENGrid.setBodyData("quiz-score", scoreRange);
     const enBlocks = document.querySelectorAll(".en__component--copyblock, .en__component--codeblock");
     enBlocks.forEach(block => {
       block.innerHTML = block.innerHTML.replace("{{score}}", String(score)).replace("{{total}}", String(totalQuestions));
@@ -48893,6 +49003,33 @@ const options = {
       editText: "Change my info",
       anchor: ".fast-personal-details",
       placement: "beforebegin"
+    }
+  },
+  VGS: {
+    "transaction.ccnumber": {
+      validCardBrands: [{
+        type: "visa"
+      }, {
+        type: "visaelectron"
+      }, {
+        type: "maestro"
+      }, {
+        type: "mastercard"
+      }, {
+        type: "amex"
+      }, {
+        type: "discover"
+      }, {
+        type: "dankort"
+      }, {
+        type: "unionpay"
+      }, {
+        type: "forbrugsforeningen"
+      }, {
+        type: "elo"
+      }, {
+        type: "hipercard"
+      }]
     }
   },
   onLoad: () => {
@@ -49010,6 +49147,7 @@ const options = {
       unsubscribeAllRadio.closest(".en__field")?.classList.add("hide");
     }
 
+    new Quiz();
     new Bridger();
   },
   onResize: () => console.log("Starter Theme Window Resized"),
