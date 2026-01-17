@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Sunday, January 11, 2026 @ 01:32:00 ET
+ *  Date: Friday, January 16, 2026 @ 23:13:00 ET
  *  By: fernando
  *  ENGrid styles: v0.23.4
- *  ENGrid scripts: v0.23.7
+ *  ENGrid scripts: v0.23.9
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -22511,6 +22511,7 @@ class VGS {
                 // Autocomplete is not customizable
                 autoComplete: "cc-number",
                 validations: ["required", "validCardNumber"],
+                validCardBrands: null
             },
             "transaction.ccvv": {
                 showCardIcon: false,
@@ -22528,6 +22529,12 @@ class VGS {
                 css: styles,
             },
         };
+        // Override the validCardBrands if set in the theme options, as this should not be deep merged.
+        if (options &&
+            options["transaction.ccnumber"] &&
+            options["transaction.ccnumber"].validCardBrands) {
+            defaultOptions["transaction.ccnumber"].validCardBrands = options["transaction.ccnumber"].validCardBrands;
+        }
         // Deep merge the default options with the options set in the theme
         this.options = engrid_ENGrid.deepMerge(defaultOptions, options);
         this.logger.log("Options", this.options);
@@ -24276,7 +24283,7 @@ class PreferredPaymentMethod {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/version.js
-const AppVersion = "0.23.7";
+const AppVersion = "0.23.9";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
