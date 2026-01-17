@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, January 16, 2026 @ 23:13:00 ET
+ *  Date: Friday, January 16, 2026 @ 23:18:01 ET
  *  By: fernando
  *  ENGrid styles: v0.23.4
  *  ENGrid scripts: v0.23.9
@@ -27435,6 +27435,33 @@ const options = {
       editText: "Change my info",
       anchor: ".fast-personal-details",
       placement: "beforebegin"
+    }
+  },
+  VGS: {
+    "transaction.ccnumber": {
+      validCardBrands: [{
+        type: "visa"
+      }, {
+        type: "visaelectron"
+      }, {
+        type: "maestro"
+      }, {
+        type: "mastercard"
+      }, {
+        type: "amex"
+      }, {
+        type: "discover"
+      }, {
+        type: "dankort"
+      }, {
+        type: "unionpay"
+      }, {
+        type: "forbrugsforeningen"
+      }, {
+        type: "elo"
+      }, {
+        type: "hipercard"
+      }]
     }
   },
   onLoad: () => {
