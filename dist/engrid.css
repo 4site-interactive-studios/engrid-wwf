@@ -19,10 +19,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, January 14, 2026 @ 12:11:53 ET
- *  By: michael
- *  ENGrid styles: v0.23.0
- *  ENGrid scripts: v0.23.2
+ *  Date: Friday, January 16, 2026 @ 23:22:58 ET
+ *  By: fernando
+ *  ENGrid styles: v0.23.4
+ *  ENGrid scripts: v0.23.9
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -2854,8 +2854,7 @@ body:not(#en__pagebuilder) .click-to-expand:not(.expanded){
   overflow:hidden;
 }
 body:not(#en__pagebuilder) .click-to-expand:not(.expanded) .click-to-expand-text-wrapper{
-  -webkit-mask-image:linear-gradient(to bottom, #000 50%, #fff0 calc(100% - var(--click-to-expand__cta-image_height)));
-          mask-image:linear-gradient(to bottom, #000 50%, #fff0 calc(100% - var(--click-to-expand__cta-image_height)));
+  mask-image:linear-gradient(to bottom, #000 50%, #fff0 calc(100% - var(--click-to-expand__cta-image_height)));
   max-height:calc(var(--click-to-expand__copy-area_height) - var(--click-to-expand__cta-image_height) - 35px);
 }
 body:not(#en__pagebuilder) .click-to-expand:not(.expanded) .click-to-expand-cta{
@@ -7481,14 +7480,14 @@ body[data-engrid-debug]:before{
   outline-style:solid;
   z-index:1000;
 }
-#en__pagebuilder [class*=engrid__supporter i],#en__pagebuilder [class*=giveBySelect-ach i],#en__pagebuilder [class*=giveBySelect-card i],#en__pagebuilder [class*=giveBySelect-check i],#en__pagebuilder [class*=giveBySelect-digitalwallet i],#en__pagebuilder [class*=giveBySelect-paypal i],#en__pagebuilder [class*=giveBySelect-paypaltouch i],#en__pagebuilder [class*=giveBySelect-stripedigitalwallet i],#en__pagebuilder [class*=inmem-n i],#en__pagebuilder [class*=inmem-y i]{
+#en__pagebuilder [class*=engrid__supporter i],#en__pagebuilder [class*=giveBySelect-ach i],#en__pagebuilder [class*=giveBySelect-card i],#en__pagebuilder [class*=giveBySelect-check i],#en__pagebuilder [class*=giveBySelect-digitalwallet i],#en__pagebuilder [class*=giveBySelect-paypal i],#en__pagebuilder [class*=giveBySelect-paypaltouch i],#en__pagebuilder [class*=giveBySelect-stripedigitalwallet i],#en__pagebuilder [class*=inmem-n i],#en__pagebuilder [class*=inmem-y i],#en__pagebuilder [class*=shipenabled-n i],#en__pagebuilder [class*=shipenabled-y i]{
   background-color:#0000ff1a !important;
 }
-#en__pagebuilder [class*=engrid__supporter i].pboAdvancedRow__preview .en__component--column,#en__pagebuilder [class*=giveBySelect-ach i].pboAdvancedRow__preview .en__component--column,#en__pagebuilder [class*=giveBySelect-card i].pboAdvancedRow__preview .en__component--column,#en__pagebuilder [class*=giveBySelect-check i].pboAdvancedRow__preview .en__component--column,#en__pagebuilder [class*=giveBySelect-digitalwallet i].pboAdvancedRow__preview .en__component--column,#en__pagebuilder [class*=giveBySelect-paypal i].pboAdvancedRow__preview .en__component--column,#en__pagebuilder [class*=giveBySelect-paypaltouch i].pboAdvancedRow__preview .en__component--column,#en__pagebuilder [class*=giveBySelect-stripedigitalwallet i].pboAdvancedRow__preview .en__component--column,#en__pagebuilder [class*=inmem-n i].pboAdvancedRow__preview .en__component--column,#en__pagebuilder [class*=inmem-y i].pboAdvancedRow__preview .en__component--column{
+#en__pagebuilder [class*=engrid__supporter i].pboAdvancedRow__preview .en__component--column,#en__pagebuilder [class*=giveBySelect-ach i].pboAdvancedRow__preview .en__component--column,#en__pagebuilder [class*=giveBySelect-card i].pboAdvancedRow__preview .en__component--column,#en__pagebuilder [class*=giveBySelect-check i].pboAdvancedRow__preview .en__component--column,#en__pagebuilder [class*=giveBySelect-digitalwallet i].pboAdvancedRow__preview .en__component--column,#en__pagebuilder [class*=giveBySelect-paypal i].pboAdvancedRow__preview .en__component--column,#en__pagebuilder [class*=giveBySelect-paypaltouch i].pboAdvancedRow__preview .en__component--column,#en__pagebuilder [class*=giveBySelect-stripedigitalwallet i].pboAdvancedRow__preview .en__component--column,#en__pagebuilder [class*=inmem-n i].pboAdvancedRow__preview .en__component--column,#en__pagebuilder [class*=inmem-y i].pboAdvancedRow__preview .en__component--column,#en__pagebuilder [class*=shipenabled-n i].pboAdvancedRow__preview .en__component--column,#en__pagebuilder [class*=shipenabled-y i].pboAdvancedRow__preview .en__component--column{
   outline-color:#00f !important;
   z-index:1;
 }
-#en__pagebuilder [class*=engrid__supporter i] .en__mandatory,#en__pagebuilder [class*=giveBySelect-ach i] .en__mandatory,#en__pagebuilder [class*=giveBySelect-card i] .en__mandatory,#en__pagebuilder [class*=giveBySelect-check i] .en__mandatory,#en__pagebuilder [class*=giveBySelect-digitalwallet i] .en__mandatory,#en__pagebuilder [class*=giveBySelect-paypal i] .en__mandatory,#en__pagebuilder [class*=giveBySelect-paypaltouch i] .en__mandatory,#en__pagebuilder [class*=giveBySelect-stripedigitalwallet i] .en__mandatory,#en__pagebuilder [class*=inmem-n i] .en__mandatory,#en__pagebuilder [class*=inmem-y i] .en__mandatory{
+#en__pagebuilder [class*=engrid__supporter i] .en__mandatory,#en__pagebuilder [class*=giveBySelect-ach i] .en__mandatory,#en__pagebuilder [class*=giveBySelect-card i] .en__mandatory,#en__pagebuilder [class*=giveBySelect-check i] .en__mandatory,#en__pagebuilder [class*=giveBySelect-digitalwallet i] .en__mandatory,#en__pagebuilder [class*=giveBySelect-paypal i] .en__mandatory,#en__pagebuilder [class*=giveBySelect-paypaltouch i] .en__mandatory,#en__pagebuilder [class*=giveBySelect-stripedigitalwallet i] .en__mandatory,#en__pagebuilder [class*=inmem-n i] .en__mandatory,#en__pagebuilder [class*=inmem-y i] .en__mandatory,#en__pagebuilder [class*=shipenabled-n i] .en__mandatory,#en__pagebuilder [class*=shipenabled-y i] .en__mandatory{
   outline:5px solid #f12222;
 }
 #en__pagebuilder .live-giving-amount,#en__pagebuilder .live-giving-frequency,#en__pagebuilder .live-giving-upsell-amount,#en__pagebuilder .live-giving-upsell-amount-raw{
@@ -8295,8 +8294,7 @@ body[data-engrid-debug]:before{
   -webkit-box-orient:vertical;
   display:-webkit-box;
   margin-bottom:2.5rem;
-  -webkit-mask-image:none;
-          mask-image:none;
+  mask-image:none;
   overflow:hidden;
 }
 @supports (-webkit-hyphens:none){
@@ -8787,8 +8785,7 @@ body[data-engrid-debug]:before{
   width:2rem;
 }
 [data-engrid-theme=wwf] .ecardrecipient__name{
-  -webkit-mask-image:linear-gradient(90deg, #000 75%, #fff0 calc(100% - 1rem));
-          mask-image:linear-gradient(90deg, #000 75%, #fff0 calc(100% - 1rem));
+  mask-image:linear-gradient(90deg, #000 75%, #fff0 calc(100% - 1rem));
   outline:none;
   padding-right:1rem;
 }
