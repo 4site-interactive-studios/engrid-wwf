@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, January 16, 2026 @ 23:18:01 ET
+ *  Date: Friday, January 16, 2026 @ 23:22:58 ET
  *  By: fernando
  *  ENGrid styles: v0.23.4
  *  ENGrid scripts: v0.23.9
@@ -10751,7 +10751,7 @@ body[data-engrid-debug]:before{
   --engrid__body-main_padding:60px 15%;
   --engrid__body-main_background-color:#f8f8f8;
 }
-[data-engrid-theme=wwf][data-engrid-subtheme=quiz]#en__pagebuilder .body-title,[data-engrid-theme=wwf][data-engrid-subtheme=quiz]#en__pagebuilder .body-top,[data-engrid-theme=wwf][data-engrid-subtheme=quiz]#en__pagebuilder .content-footer,[data-engrid-theme=wwf][data-engrid-subtheme=quiz]#en__pagebuilder .content-header,[data-engrid-theme=wwf][data-engrid-subtheme=quiz]#en__pagebuilder .page-backgroundImage{
+[data-engrid-theme=wwf][data-engrid-subtheme=quiz]#en__pagebuilder .body-title,[data-engrid-theme=wwf][data-engrid-subtheme=quiz]#en__pagebuilder .body-top,[data-engrid-theme=wwf][data-engrid-subtheme=quiz]#en__pagebuilder .content-footer,[data-engrid-theme=wwf][data-engrid-subtheme=quiz]#en__pagebuilder .content-header{
   display:none !important;
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__component--imageblock:has(+.en__component--svblock) img{
@@ -10903,6 +10903,9 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--radio.en__field--survey .quiz-correct-answer .en__field__label--item:before{
   background:green url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="10.822" height="8.414"><path d="m9.407 1.414-6 6-2-2.438" fill="none" stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2"/></svg>') 50% no-repeat !important;
   border-color:green !important;
+}
+[data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col]#en__pagebuilder .page-backgroundImage{
+  display:none !important;
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col] form>.en__component--advrow{
   grid-template-columns:[pc-start lpc-start] minmax(0, 1fr) [lpc-end cc-start lcc-start] minmax(0, 0) [lcc-end bc-start lbc-start] minmax(0, 1fr) [lbc-end rbc-start] minmax(0, 1fr) [rbc-end bc-end rcc-start] minmax(0, 0) [rcc-end cc-end rpc-start] minmax(0, 1fr) [rpc-end pc-end];
