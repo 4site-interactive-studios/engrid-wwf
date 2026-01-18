@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, January 16, 2026 @ 23:22:58 ET
- *  By: fernando
+ *  Date: Sunday, January 18, 2026 @ 11:52:18 ET
+ *  By: nick
  *  ENGrid styles: v0.23.4
  *  ENGrid scripts: v0.23.9
  *
@@ -27399,6 +27399,10 @@ const options = {
   SkipToMainContentLink: true,
   SrcDefer: true,
   ProgressBar: true,
+  PreferredPaymentMethod: {
+    preferredPaymentMethodField: "supporter.NOT_TAGGED_150",
+    defaultPaymentMethod: ["card"]
+  },
   RegionLongFormat: "supporter.NOT_TAGGED_97",
   FreshAddress: {
     // dateField: "supporter.NOT_TAGGED_XXX",

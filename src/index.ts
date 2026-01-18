@@ -42,6 +42,10 @@ const options: Options = {
   SkipToMainContentLink: true,
   SrcDefer: true,
   ProgressBar: true,
+  PreferredPaymentMethod: {
+    preferredPaymentMethodField: "supporter.NOT_TAGGED_150",
+    defaultPaymentMethod: ["card"],
+  },
   RegionLongFormat: "supporter.NOT_TAGGED_97",
   FreshAddress: {
     // dateField: "supporter.NOT_TAGGED_XXX",
