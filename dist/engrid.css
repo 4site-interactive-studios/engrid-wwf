@@ -19,8 +19,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, January 16, 2026 @ 23:22:58 ET
- *  By: fernando
+ *  Date: Wednesday, January 21, 2026 @ 12:27:58 ET
+ *  By: michael
  *  ENGrid styles: v0.23.4
  *  ENGrid scripts: v0.23.9
  *
@@ -10742,9 +10742,10 @@ body[data-engrid-debug]:before{
   opacity:0;
   visibility:hidden;
 }
-[data-engrid-theme=wwf][data-engrid-subtheme=quiz] input[disabled],[data-engrid-theme=wwf][data-engrid-subtheme=quiz] input[disabled]+label,[data-engrid-theme=wwf][data-engrid-subtheme=quiz] input[disabled]+span.en__imageSelectField__label,[data-engrid-theme=wwf][data-engrid-subtheme=quiz] select[disabled]{
+[data-engrid-theme=wwf][data-engrid-subtheme=quiz] .quiz-input-disabled,[data-engrid-theme=wwf][data-engrid-subtheme=quiz] .quiz-input-disabled+label,[data-engrid-theme=wwf][data-engrid-subtheme=quiz] .quiz-input-disabled+span.en__imageSelectField__label{
   cursor:not-allowed;
   opacity:.7;
+  pointer-events:none;
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=quiz]{
   --engrid__body_margin:0;
@@ -10793,14 +10794,14 @@ body[data-engrid-debug]:before{
   border:2px solid #000;
   padding:.5rem;
 }
-[data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--imgselect .en__field__item :not(:has(input[disabled])) img{
+[data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--imgselect .en__field__item :not(:has(.quiz-input-disabled)) img{
   padding:.5rem;
   transition:all .5s cubic-bezier(.545, .03, .395, .965);
 }
-[data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--imgselect .en__field__item :not(:has(input[disabled])):hover img{
+[data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--imgselect .en__field__item :not(:has(.quiz-input-disabled)):hover img{
   transform:scale(1.05);
 }
-[data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--imgselect .en__field__item:has(input[disabled]),[data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--imgselect .en__field__item:has(input[disabled]) img{
+[data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--imgselect .en__field__item:has(.quiz-input-disabled),[data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--imgselect .en__field__item:has(.quiz-input-disabled) img{
   cursor:not-allowed;
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--imgselect .en__imageSelectField__control input[type=radio]{

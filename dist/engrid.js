@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, January 16, 2026 @ 23:22:58 ET
- *  By: fernando
+ *  Date: Wednesday, January 21, 2026 @ 12:27:58 ET
+ *  By: michael
  *  ENGrid styles: v0.23.4
  *  ENGrid scripts: v0.23.9
  *
@@ -27232,6 +27232,7 @@ class Quiz {
 
     [...document.querySelectorAll(".en__component--svblock .en__field__input--radio, .en__component--svblock .en__field__input--imageSelectField")].forEach(el => {
       el.addEventListener("change", () => {
+        if (el.classList.contains("quiz-input-disabled")) return;
         this.toggleError(false); // If the button exists, we only check the answer on button click
 
         if (checkAnswerBtn) return;
@@ -27254,7 +27255,9 @@ class Quiz {
 
 
     document.querySelectorAll(".en__component--svblock .en__field__input--radio, .en__component--svblock .en__field__input--imageSelectField").forEach(el => {
-      el.setAttribute("disabled", "true");
+      el.classList.add("quiz-input-disabled");
+      el.setAttribute("aria-disabled", "true");
+      el.tabIndex = -1;
     });
     const isCorrect = selectedAnswer === correctAnswer;
     engrid_ENGrid.setBodyData("quiz-answer", isCorrect ? "correct" : "incorrect");

@@ -41,12 +41,13 @@
   }
 }
 
-input[disabled],
-input[disabled] + label,
-input[disabled] + span.en__imageSelectField__label,
-select[disabled] {
+.quiz-input-disabled,
+.quiz-input-disabled + label,
+.quiz-input-disabled + span.en__imageSelectField__label,
+.quiz-input-disabled {
   cursor: not-allowed;
   opacity: .7;
+  pointer-events: none;
 }
 
 
@@ -113,7 +114,7 @@ select[disabled] {
     border: 2px solid #000;
     padding: 0.5rem;
 
-    :not(:has(input[disabled])) {
+    :not(:has(.quiz-input-disabled)) {
       img {
         transition: all 0.5s cubic-bezier(0.545, 0.03, 0.395, 0.965);
         padding: 0.5rem;
@@ -123,7 +124,7 @@ select[disabled] {
       }
     }
 
-    &:has(input[disabled]) {
+    &:has(.quiz-input-disabled) {
       cursor: not-allowed;
       img {
         cursor: not-allowed;
