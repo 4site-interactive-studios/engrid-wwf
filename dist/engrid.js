@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, January 21, 2026 @ 12:27:58 ET
- *  By: michael
+ *  Date: Monday, February 2, 2026 @ 14:49:15 ET
+ *  By: nick
  *  ENGrid styles: v0.23.4
  *  ENGrid scripts: v0.23.9
  *
@@ -27447,23 +27447,11 @@ const options = {
       }, {
         type: "visaelectron"
       }, {
-        type: "maestro"
-      }, {
         type: "mastercard"
       }, {
         type: "amex"
       }, {
         type: "discover"
-      }, {
-        type: "dankort"
-      }, {
-        type: "unionpay"
-      }, {
-        type: "forbrugsforeningen"
-      }, {
-        type: "elo"
-      }, {
-        type: "hipercard"
       }]
     }
   },
