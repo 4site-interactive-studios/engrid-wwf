@@ -479,6 +479,10 @@
     --checkbox_top: 2px;
   }
 
+  input[type="radio"] + label {
+    align-items: flex-start;
+  }
+
   .en__component--copyblock li {
     margin-bottom: var(--fields_spacing-block);
     font-size: var(--p_font-size);

@@ -19,8 +19,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, February 2, 2026 @ 14:49:15 ET
- *  By: nick
+ *  Date: Wednesday, February 4, 2026 @ 06:30:30 ET
+ *  By: michael
  *  ENGrid styles: v0.23.4
  *  ENGrid scripts: v0.23.9
  *
@@ -8369,6 +8369,9 @@ body[data-engrid-debug]:before{
 }
 [data-engrid-theme=wwf] input[type=checkbox]+label{
   --checkbox_top:2px;
+  align-items:flex-start;
+}
+[data-engrid-theme=wwf] input[type=radio]+label{
   align-items:flex-start;
 }
 [data-engrid-theme=wwf] .en__component--copyblock li{
