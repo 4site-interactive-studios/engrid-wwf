@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, February 9, 2026 @ 00:13:21 ET
- *  By: fernando
+ *  Date: Monday, February 9, 2026 @ 06:42:45 ET
+ *  By: michael
  *  ENGrid styles: v0.23.4
  *  ENGrid scripts: v0.23.11
  *
@@ -27490,8 +27490,7 @@ const options = {
 
     if (submitButton) {
       submitButton.setAttribute("data-balloon", `When you click the button below, a new window will appear.
-        Follow the steps to securely donate from your bank account to WWF
-        (through Engaging Networks and Plaid).`);
+        Follow the steps to securely donate from your bank account to WWF.`);
       submitButton.setAttribute("data-balloon-pos", "up");
     } // If the page has a State field, and it is not required, make a mutation observer
     // to watch for changes to the field and hide/show it

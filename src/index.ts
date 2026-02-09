@@ -142,8 +142,7 @@ const options: Options = {
       submitButton.setAttribute(
         "data-balloon",
         `When you click the button below, a new window will appear.
-        Follow the steps to securely donate from your bank account to WWF
-        (through Engaging Networks and Plaid).`
+        Follow the steps to securely donate from your bank account to WWF.`
       );
       submitButton.setAttribute("data-balloon-pos", "up");
     }
