@@ -1,17 +1,17 @@
-import {
-  Options,
-  App,
-  DonationFrequency,
-  DonationAmount,
-  EnForm,
-} from "@4site/engrid-scripts"; // Uses ENGrid via NPM
 // import {
 //   Options,
 //   App,
 //   DonationFrequency,
 //   DonationAmount,
 //   EnForm,
-// } from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
+// } from "@4site/engrid-scripts"; // Uses ENGrid via NPM
+import {
+  Options,
+  App,
+  DonationFrequency,
+  DonationAmount,
+  EnForm,
+} from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
 
 import "./sass/main.scss";
 import { customScript } from "./scripts/main";
@@ -58,7 +58,6 @@ const options: Options = {
     "Syria",
     "Ukraine",
   ],
-  Plaid: true,
   PageLayouts: [
     "centerleft1col",
     "centercenter1col",
@@ -134,7 +133,7 @@ const options: Options = {
         section.classList.add("en__contact--open");
       });
     }
-    // Add Plaid Tooltip to Submit Button
+    // Add ACH Tooltip to Submit Button
     const submitButton = document.querySelector(
       ".en__submit button"
     ) as HTMLButtonElement;
