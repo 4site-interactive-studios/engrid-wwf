@@ -431,6 +431,58 @@
     display: none;
   }
 
+  // Minimal Header/Footer Layout Adjustments
+  .minimal-header-logo {
+    display: none;
+    + header {
+      display: none;
+    }
+  }
+
+  @media screen and (min-width: 600px) {
+    &[data-header-footer-layout="none"] {
+      .body-title::before {
+        align-items: center;
+        background: #fff url(https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo-standalone.png?1) no-repeat;
+        background-position-x: 0%;
+        background-position-y: 0%;
+        background-size: auto;
+        background-position: 50%;
+        background-size: contain;
+        content: "WWF Logo";
+        display: flex;
+        flex-shrink: 0;
+        height: 100px;
+        justify-content: center;
+        margin: 0;
+        max-width: 80px;
+        text-indent: -9999px;
+        width: 80px;
+        z-index: 3;
+      }
+    }
+  }
+
+  // Page Background Image Adjustments
+  @media screen and (min-width: 1200px) {
+    &[data-engrid-page-background="image"] {
+      .body-title {
+        .desktop h1 {
+          color: white;
+        }
+      }
+      .body-top {
+        margin: var(--engrid__body-main_margin);
+        margin-bottom: var(--fields_spacing-block);
+        background-color: var(--engrid__body-main_background-color);
+        padding: var(--engrid__body-main_padding);
+        border: 1px solid var(--color_punaluu_500);
+        border-radius: 4px;
+      }
+    }
+  }
+
+
   .content-header {
     color: #ffffff;
     margin-bottom: 40px;
@@ -2335,6 +2387,21 @@
     --radio_width: 32px;
     --radio_box-shadow_selected: inset 0 0 0 3px #ffffff;
     --radio_border-width: 1px;
+
+    .minimal-header-logo {
+      display: block;
+      background: #fff;
+
+      .no-header-wwf-logo {
+        height: 100px;
+        width: 80px;
+        max-width: 80px;
+      }
+
+      + header {
+        display: none;
+      }
+    }
 
     .body-main a {
       text-underline-offset: 4px;
