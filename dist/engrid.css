@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, February 11, 2026 @ 16:43:00 ET
+ *  Date: Wednesday, February 11, 2026 @ 17:46:34 ET
  *  By: nick
  *  ENGrid styles: v0.23.4
  *  ENGrid scripts: v0.23.11
@@ -8754,6 +8754,11 @@ body[data-engrid-debug]:before{
   display:none;
 }
 @media screen and (min-width:600px){
+  [data-engrid-theme=wwf][data-header-footer-layout=none] .body-title{
+    align-items:center;
+    display:flex;
+    gap:1rem;
+  }
   [data-engrid-theme=wwf][data-header-footer-layout=none] .body-title:before{
     align-items:center;
     background:#fff url(https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo-standalone.png?1) no-repeat;
@@ -8763,7 +8768,7 @@ body[data-engrid-debug]:before{
     background-size:auto;
     background-size:contain;
     content:"WWF Logo";
-    display:flex;
+    display:inline-block;
     flex-shrink:0;
     height:100px;
     justify-content:center;
@@ -8896,6 +8901,7 @@ body[data-engrid-debug]:before{
   align-items:stretch;
 }
 [data-engrid-theme=wwf] .give-by-select input[type=radio]+label{
+  align-items:center;
   height:48px;
   max-height:48px;
   padding:11px 32px;
@@ -8911,6 +8917,9 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf] .give-by-select .venmo label>img:last-of-type{
   height:20px;
   margin-top:5px;
+}
+[data-engrid-theme=wwf] .giveBySelect{
+  text-align:center;
 }
 [data-engrid-theme=wwf] .divider-top{
   border-top:1px solid #ccc;
