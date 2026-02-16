@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, February 16, 2026 @ 08:10:59 ET
+ *  Date: Monday, February 16, 2026 @ 11:07:45 ET
  *  By: michael
- *  ENGrid styles: v0.23.4
- *  ENGrid scripts: v0.23.11
+ *  ENGrid styles: v0.24.0
+ *  ENGrid scripts: v0.24.0
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -11188,7 +11188,6 @@ const OptionsDefaults = {
     TidyContact: false,
     RegionLongFormat: "",
     CountryDisable: [],
-    Plaid: false,
     Placeholders: false,
     ENValidators: false,
     MobileCTA: false,
@@ -12814,9 +12813,7 @@ class App extends engrid_ENGrid {
         new LiveFrequency();
         // Universal Opt In
         new UniversalOptIn();
-        // Plaid
-        if (this.options.Plaid)
-            new Plaid();
+        new StripeFinancialConnections();
         //Exit Intent Lightbox
         new ExitIntentLightbox();
         new UrlParamsToBodyAttrs();
@@ -17045,8 +17042,40 @@ class RememberMe {
     setFieldValue(field, value, overwrite = false) {
         value = decodeURIComponent(value || "");
         if (field && value !== undefined) {
-            if ((field.value && overwrite) || !field.value) {
-                field.value = value;
+            if ("type" in field) {
+                switch (field.type) {
+                    case "select-one":
+                    case "select-multiple": {
+                        const selectField = field;
+                        for (const option of Array.from(selectField.options)) {
+                            if (option.value === value) {
+                                if ((selectField.value && overwrite) || !selectField.value) {
+                                    option.selected = true;
+                                    selectField.dispatchEvent(new Event("change", { bubbles: true }));
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    case "checkbox":
+                    case "radio": {
+                        const inputField = field;
+                        if (inputField.value === value) {
+                            inputField.checked = true;
+                            inputField.dispatchEvent(new Event("change", { bubbles: true }));
+                        }
+                        break;
+                    }
+                    case "textarea":
+                    case "text":
+                    default:
+                        if ((field.value && overwrite) || !field.value) {
+                            field.value = value;
+                            field.dispatchEvent(new Event("change", { bubbles: true }));
+                            field.dispatchEvent(new Event("blur", { bubbles: true }));
+                        }
+                }
             }
         }
     }
@@ -21444,54 +21473,53 @@ class UniversalOptIn {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/plaid.js
-// Component with a helper to auto-click on the Plaid link
-// when that payment method is selected
+;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/stripe-financial-connections.js
+/**
+ * This component improves EN's implementation of Stripe Financial Connections.
+ * Enhancements:
+ *  - When the modal is closed, it re-enables the submit button.
+ */
 
-class Plaid {
+class StripeFinancialConnections {
     constructor() {
-        this.logger = new logger_EngridLogger("Plaid", "peru", "yellow", "🔗");
-        this._form = en_form_EnForm.getInstance();
-        this.logger.log("Enabled");
-        this._form.onSubmit.subscribe(() => this.submit());
-    }
-    submit() {
-        const plaidLink = document.querySelector("#plaid-link-button");
-        if (plaidLink && plaidLink.textContent === "Link Account") {
-            // Click the Plaid Link button
-            this.logger.log("Clicking Link");
-            plaidLink.click();
-            this._form.submit = false;
-            // Create a observer to watch the Link ID #plaid-link-button for a new Text Node
-            const observer = new MutationObserver((mutations) => {
-                mutations.forEach((mutation) => {
-                    if (mutation.type === "childList") {
-                        mutation.addedNodes.forEach((node) => {
-                            if (node.nodeType === Node.TEXT_NODE) {
-                                // If the Text Node is "Link Account" then the Link has failed
-                                if (node.nodeValue === "Account Linked") {
-                                    this.logger.log("Plaid Linked");
-                                    this._form.submit = true;
-                                    this._form.submitForm();
-                                }
-                                else {
-                                    this._form.submit = true;
-                                }
-                            }
-                        });
+        this.stripeModalOpen = false;
+        this.logger = new logger_EngridLogger("Stripe Financial Connections", "black", "pink", "🏛️");
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                mutation.addedNodes.forEach((node) => {
+                    if (!this.stripeModalOpen && this.isStripeModalNodeWIthIframe(node)) {
+                        this.logger.log("Stripe Financial Connections modal opened.");
+                        this.onStripeModalOpen();
+                    }
+                });
+                mutation.removedNodes.forEach((node) => {
+                    if (this.stripeModalOpen && this.isStripeModalNode(node)) {
+                        this.logger.log("Stripe Financial Connections modal closed.");
+                        this.onStripeModalClose();
                     }
                 });
             });
-            // Start observing the Link ID #plaid-link-button
-            observer.observe(plaidLink, {
-                childList: true,
-                subtree: true,
-            });
-            window.setTimeout(() => {
-                this.logger.log("Enabling Submit");
-                engrid_ENGrid.enableSubmit();
-            }, 1000);
-        }
+        });
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+        });
+    }
+    isStripeModalNode(node) {
+        return (node instanceof HTMLElement &&
+            node.hasAttribute("data-react-aria-top-layer"));
+    }
+    isStripeModalNodeWIthIframe(node) {
+        return !!(this.isStripeModalNode(node) &&
+            node instanceof HTMLElement &&
+            node.querySelector('iframe[src*="js.stripe.com"]'));
+    }
+    onStripeModalOpen() {
+        this.stripeModalOpen = true;
+    }
+    onStripeModalClose() {
+        this.stripeModalOpen = false;
+        engrid_ENGrid.enableSubmit();
     }
 }
 
@@ -21778,7 +21806,7 @@ class SupporterHub {
                 }
             });
         });
-        // Start observing the Link ID #plaid-link-button
+        // Start observing the Link ID
         observer.observe(form, {
             childList: true,
             subtree: true,
@@ -24283,7 +24311,7 @@ class PreferredPaymentMethod {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/version.js
-const AppVersion = "0.23.11";
+const AppVersion = "0.24.0";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
@@ -27410,7 +27438,6 @@ const options = {
     dateFieldFormat: "YYYY-MM-DD"
   },
   CountryDisable: ["Belarus", "Cuba", "Iran", "North Korea", "Russia", "Syria", "Ukraine"],
-  Plaid: true,
   PageLayouts: ["centerleft1col", "centercenter1col", "centercenter2col", "centerright1col"],
   Debug: App.getUrlParameter("debug") == "true" ? true : false,
   MobileCTA: [{
@@ -27483,7 +27510,7 @@ const options = {
         section.classList.remove("en__contact--closed");
         section.classList.add("en__contact--open");
       });
-    } // Add Plaid Tooltip to Submit Button
+    } // Add ACH Tooltip to Submit Button
 
 
     const submitButton = document.querySelector(".en__submit button");

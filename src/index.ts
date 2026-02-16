@@ -58,7 +58,6 @@ const options: Options = {
     "Syria",
     "Ukraine",
   ],
-  Plaid: true,
   PageLayouts: [
     "centerleft1col",
     "centercenter1col",
@@ -134,7 +133,7 @@ const options: Options = {
         section.classList.add("en__contact--open");
       });
     }
-    // Add Plaid Tooltip to Submit Button
+    // Add ACH Tooltip to Submit Button
     const submitButton = document.querySelector(
       ".en__submit button"
     ) as HTMLButtonElement;
