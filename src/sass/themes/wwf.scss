@@ -479,6 +479,18 @@
     --checkbox_top: 2px;
   }
 
+  input[type="radio"] + label {
+    align-items: flex-start;
+  }
+
+  .radio-to-buttons_donationAmt,
+  .radio-to-buttons_recurrfreq,
+  .radio-to-buttons {
+    input[type="radio"] + label {
+      align-items: center;
+    }
+  }
+
   .en__component--copyblock li {
     margin-bottom: var(--fields_spacing-block);
     font-size: var(--p_font-size);
@@ -2472,7 +2484,7 @@ button[data-balloon] {
     padding-top: 60px;
   }
   button[data-balloon] {
-    margin-top: 90px;
+    margin-top: 30px;
 
     @media screen and (max-width: 600px) {
       margin-top: 120px;

@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Sunday, January 18, 2026 @ 11:52:18 ET
- *  By: nick
- *  ENGrid styles: v0.23.4
- *  ENGrid scripts: v0.23.9
+ *  Date: Monday, February 16, 2026 @ 11:07:45 ET
+ *  By: michael
+ *  ENGrid styles: v0.24.0
+ *  ENGrid scripts: v0.24.0
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -11188,7 +11188,6 @@ const OptionsDefaults = {
     TidyContact: false,
     RegionLongFormat: "",
     CountryDisable: [],
-    Plaid: false,
     Placeholders: false,
     ENValidators: false,
     MobileCTA: false,
@@ -12814,9 +12813,7 @@ class App extends engrid_ENGrid {
         new LiveFrequency();
         // Universal Opt In
         new UniversalOptIn();
-        // Plaid
-        if (this.options.Plaid)
-            new Plaid();
+        new StripeFinancialConnections();
         //Exit Intent Lightbox
         new ExitIntentLightbox();
         new UrlParamsToBodyAttrs();
@@ -17045,8 +17042,40 @@ class RememberMe {
     setFieldValue(field, value, overwrite = false) {
         value = decodeURIComponent(value || "");
         if (field && value !== undefined) {
-            if ((field.value && overwrite) || !field.value) {
-                field.value = value;
+            if ("type" in field) {
+                switch (field.type) {
+                    case "select-one":
+                    case "select-multiple": {
+                        const selectField = field;
+                        for (const option of Array.from(selectField.options)) {
+                            if (option.value === value) {
+                                if ((selectField.value && overwrite) || !selectField.value) {
+                                    option.selected = true;
+                                    selectField.dispatchEvent(new Event("change", { bubbles: true }));
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    case "checkbox":
+                    case "radio": {
+                        const inputField = field;
+                        if (inputField.value === value) {
+                            inputField.checked = true;
+                            inputField.dispatchEvent(new Event("change", { bubbles: true }));
+                        }
+                        break;
+                    }
+                    case "textarea":
+                    case "text":
+                    default:
+                        if ((field.value && overwrite) || !field.value) {
+                            field.value = value;
+                            field.dispatchEvent(new Event("change", { bubbles: true }));
+                            field.dispatchEvent(new Event("blur", { bubbles: true }));
+                        }
+                }
             }
         }
     }
@@ -17783,7 +17812,7 @@ class DataLayer {
             if (el.value === "" || this.excludedFields.includes(el.name))
                 return;
             const value = this.hashedFields.includes(el.name)
-                ? this.hash(el.value)
+                ? yield this.hash(el.value)
                 : el.value;
             if (["checkbox", "radio"].includes(el.type)) {
                 if (el.checked) {
@@ -17811,7 +17840,7 @@ class DataLayer {
             }
             if (el.name === this.retainedEmailField) {
                 const retainedEmailValue = this.geRetainedFieldsValue("email");
-                const sha256value = yield this.shaHash(retainedEmailValue);
+                const sha256value = yield this.hash(retainedEmailValue);
                 localStorage.setItem(`EN_HASH_EMAIL`, sha256value);
                 this.dataLayer.push({
                     event: "EN_HASH_VALUE_UPDATED",
@@ -17823,7 +17852,7 @@ class DataLayer {
             }
             else if (this.retainedAddressFields.includes(el.name)) {
                 const retainedAddressValue = this.geRetainedFieldsValue("address");
-                const sha256value = yield this.shaHash(retainedAddressValue);
+                const sha256value = yield this.hash(retainedAddressValue);
                 localStorage.setItem(`EN_HASH_ADDRESS`, sha256value);
                 this.dataLayer.push({
                     event: "EN_HASH_VALUE_UPDATED",
@@ -17834,7 +17863,7 @@ class DataLayer {
             }
             else if (this.retainedPhoneFields.includes(el.name)) {
                 const retainedPhoneValue = this.geRetainedFieldsValue("phone");
-                const sha256value = yield this.shaHash(retainedPhoneValue);
+                const sha256value = yield this.hash(retainedPhoneValue);
                 localStorage.setItem(`EN_HASH_PHONE`, sha256value);
                 this.dataLayer.push({
                     event: "EN_HASH_VALUE_UPDATED",
@@ -17876,10 +17905,6 @@ class DataLayer {
         }
     }
     hash(value) {
-        return btoa(value);
-    }
-    // TODO: Replace the hash function with this secure SHA-256 implementation later
-    shaHash(value) {
         return data_layer_awaiter(this, void 0, void 0, function* () {
             const data = this.encoder.encode(value);
             const hashBuffer = yield crypto.subtle.digest("SHA-256", data);
@@ -21448,54 +21473,53 @@ class UniversalOptIn {
     }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/plaid.js
-// Component with a helper to auto-click on the Plaid link
-// when that payment method is selected
+;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/stripe-financial-connections.js
+/**
+ * This component improves EN's implementation of Stripe Financial Connections.
+ * Enhancements:
+ *  - When the modal is closed, it re-enables the submit button.
+ */
 
-class Plaid {
+class StripeFinancialConnections {
     constructor() {
-        this.logger = new logger_EngridLogger("Plaid", "peru", "yellow", "🔗");
-        this._form = en_form_EnForm.getInstance();
-        this.logger.log("Enabled");
-        this._form.onSubmit.subscribe(() => this.submit());
-    }
-    submit() {
-        const plaidLink = document.querySelector("#plaid-link-button");
-        if (plaidLink && plaidLink.textContent === "Link Account") {
-            // Click the Plaid Link button
-            this.logger.log("Clicking Link");
-            plaidLink.click();
-            this._form.submit = false;
-            // Create a observer to watch the Link ID #plaid-link-button for a new Text Node
-            const observer = new MutationObserver((mutations) => {
-                mutations.forEach((mutation) => {
-                    if (mutation.type === "childList") {
-                        mutation.addedNodes.forEach((node) => {
-                            if (node.nodeType === Node.TEXT_NODE) {
-                                // If the Text Node is "Link Account" then the Link has failed
-                                if (node.nodeValue === "Account Linked") {
-                                    this.logger.log("Plaid Linked");
-                                    this._form.submit = true;
-                                    this._form.submitForm();
-                                }
-                                else {
-                                    this._form.submit = true;
-                                }
-                            }
-                        });
+        this.stripeModalOpen = false;
+        this.logger = new logger_EngridLogger("Stripe Financial Connections", "black", "pink", "🏛️");
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                mutation.addedNodes.forEach((node) => {
+                    if (!this.stripeModalOpen && this.isStripeModalNodeWIthIframe(node)) {
+                        this.logger.log("Stripe Financial Connections modal opened.");
+                        this.onStripeModalOpen();
+                    }
+                });
+                mutation.removedNodes.forEach((node) => {
+                    if (this.stripeModalOpen && this.isStripeModalNode(node)) {
+                        this.logger.log("Stripe Financial Connections modal closed.");
+                        this.onStripeModalClose();
                     }
                 });
             });
-            // Start observing the Link ID #plaid-link-button
-            observer.observe(plaidLink, {
-                childList: true,
-                subtree: true,
-            });
-            window.setTimeout(() => {
-                this.logger.log("Enabling Submit");
-                engrid_ENGrid.enableSubmit();
-            }, 1000);
-        }
+        });
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+        });
+    }
+    isStripeModalNode(node) {
+        return (node instanceof HTMLElement &&
+            node.hasAttribute("data-react-aria-top-layer"));
+    }
+    isStripeModalNodeWIthIframe(node) {
+        return !!(this.isStripeModalNode(node) &&
+            node instanceof HTMLElement &&
+            node.querySelector('iframe[src*="js.stripe.com"]'));
+    }
+    onStripeModalOpen() {
+        this.stripeModalOpen = true;
+    }
+    onStripeModalClose() {
+        this.stripeModalOpen = false;
+        engrid_ENGrid.enableSubmit();
     }
 }
 
@@ -21782,7 +21806,7 @@ class SupporterHub {
                 }
             });
         });
-        // Start observing the Link ID #plaid-link-button
+        // Start observing the Link ID
         observer.observe(form, {
             childList: true,
             subtree: true,
@@ -22736,6 +22760,7 @@ class WelcomeBack {
             region: engrid_ENGrid.getFieldValue("supporter.region"),
             postcode: engrid_ENGrid.getFieldValue("supporter.postcode"),
             country: engrid_ENGrid.getFieldValue("supporter.country"),
+            mobilePhone: engrid_ENGrid.getFieldValue("supporter.phoneNumber2"),
         };
         this.addWelcomeBack();
         this.addPersonalDetailsSummary();
@@ -22790,6 +22815,9 @@ class WelcomeBack {
         ${this.supporterDetails["firstName"]} ${this.supporterDetails["lastName"]}
         <br>
         ${this.supporterDetails["emailAddress"]}
+        ${this.supporterDetails["mobilePhone"]
+            ? `<br>${this.supporterDetails["mobilePhone"]}`
+            : ""}
      </p>
     `);
         if (this.supporterDetails["address1"] &&
@@ -24283,7 +24311,7 @@ class PreferredPaymentMethod {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/version.js
-const AppVersion = "0.23.9";
+const AppVersion = "0.24.0";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
@@ -27232,6 +27260,7 @@ class Quiz {
 
     [...document.querySelectorAll(".en__component--svblock .en__field__input--radio, .en__component--svblock .en__field__input--imageSelectField")].forEach(el => {
       el.addEventListener("change", () => {
+        if (el.classList.contains("quiz-input-disabled")) return;
         this.toggleError(false); // If the button exists, we only check the answer on button click
 
         if (checkAnswerBtn) return;
@@ -27254,7 +27283,9 @@ class Quiz {
 
 
     document.querySelectorAll(".en__component--svblock .en__field__input--radio, .en__component--svblock .en__field__input--imageSelectField").forEach(el => {
-      el.setAttribute("disabled", "true");
+      el.classList.add("quiz-input-disabled");
+      el.setAttribute("aria-disabled", "true");
+      el.tabIndex = -1;
     });
     const isCorrect = selectedAnswer === correctAnswer;
     engrid_ENGrid.setBodyData("quiz-answer", isCorrect ? "correct" : "incorrect");
@@ -27399,10 +27430,6 @@ const options = {
   SkipToMainContentLink: true,
   SrcDefer: true,
   ProgressBar: true,
-  PreferredPaymentMethod: {
-    preferredPaymentMethodField: "supporter.NOT_TAGGED_150",
-    defaultPaymentMethod: ["card"]
-  },
   RegionLongFormat: "supporter.NOT_TAGGED_97",
   FreshAddress: {
     // dateField: "supporter.NOT_TAGGED_XXX",
@@ -27411,7 +27438,6 @@ const options = {
     dateFieldFormat: "YYYY-MM-DD"
   },
   CountryDisable: ["Belarus", "Cuba", "Iran", "North Korea", "Russia", "Syria", "Ukraine"],
-  Plaid: true,
   PageLayouts: ["centerleft1col", "centercenter1col", "centercenter2col", "centerright1col"],
   Debug: App.getUrlParameter("debug") == "true" ? true : false,
   MobileCTA: [{
@@ -27448,23 +27474,11 @@ const options = {
       }, {
         type: "visaelectron"
       }, {
-        type: "maestro"
-      }, {
         type: "mastercard"
       }, {
         type: "amex"
       }, {
         type: "discover"
-      }, {
-        type: "dankort"
-      }, {
-        type: "unionpay"
-      }, {
-        type: "forbrugsforeningen"
-      }, {
-        type: "elo"
-      }, {
-        type: "hipercard"
       }]
     }
   },
@@ -27496,15 +27510,14 @@ const options = {
         section.classList.remove("en__contact--closed");
         section.classList.add("en__contact--open");
       });
-    } // Add Plaid Tooltip to Submit Button
+    } // Add ACH Tooltip to Submit Button
 
 
     const submitButton = document.querySelector(".en__submit button");
 
     if (submitButton) {
       submitButton.setAttribute("data-balloon", `When you click the button below, a new window will appear.
-        Follow the steps to securely donate from your bank account to WWF
-        (through Engaging Networks and Plaid).`);
+        Follow the steps to securely donate from your bank account to WWF.`);
       submitButton.setAttribute("data-balloon-pos", "up");
     } // If the page has a State field, and it is not required, make a mutation observer
     // to watch for changes to the field and hide/show it

@@ -62,7 +62,6 @@ const options: Options = {
     "Syria",
     "Ukraine",
   ],
-  Plaid: true,
   PageLayouts: [
     "centerleft1col",
     "centercenter1col",
@@ -97,15 +96,9 @@ const options: Options = {
       validCardBrands: [
         { type: "visa" },
         { type: "visaelectron" },
-        { type: "maestro" },
         { type: "mastercard" },
         { type: "amex" },
         { type: "discover" },
-        { type: "dankort" },
-        { type: "unionpay" },
-        { type: "forbrugsforeningen" },
-        { type: "elo" },
-        { type: "hipercard" },
       ],
     },
   },
@@ -144,7 +137,7 @@ const options: Options = {
         section.classList.add("en__contact--open");
       });
     }
-    // Add Plaid Tooltip to Submit Button
+    // Add ACH Tooltip to Submit Button
     const submitButton = document.querySelector(
       ".en__submit button"
     ) as HTMLButtonElement;
@@ -152,8 +145,7 @@ const options: Options = {
       submitButton.setAttribute(
         "data-balloon",
         `When you click the button below, a new window will appear.
-        Follow the steps to securely donate from your bank account to WWF
-        (through Engaging Networks and Plaid).`
+        Follow the steps to securely donate from your bank account to WWF.`
       );
       submitButton.setAttribute("data-balloon-pos", "up");
     }

@@ -55,6 +55,7 @@ export class Quiz {
       ),
     ].forEach((el) => {
       el.addEventListener("change", () => {
+        if (el.classList.contains("quiz-input-disabled")) return;
         this.toggleError(false);
         // If the button exists, we only check the answer on button click
         if (checkAnswerBtn) return;
@@ -86,7 +87,9 @@ export class Quiz {
         ".en__component--svblock .en__field__input--radio, .en__component--svblock .en__field__input--imageSelectField"
       )
       .forEach((el) => {
-        el.setAttribute("disabled", "true");
+        el.classList.add("quiz-input-disabled");
+        el.setAttribute("aria-disabled", "true");
+        (el as HTMLInputElement).tabIndex = -1;
       });
 
     const isCorrect = selectedAnswer === correctAnswer;
