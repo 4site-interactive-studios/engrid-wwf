@@ -1,17 +1,17 @@
-import {
-  Options,
-  App,
-  DonationFrequency,
-  DonationAmount,
-  EnForm,
-} from "@4site/engrid-scripts"; // Uses ENGrid via NPM
 // import {
 //   Options,
 //   App,
 //   DonationFrequency,
 //   DonationAmount,
 //   EnForm,
-// } from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
+// } from "@4site/engrid-scripts"; // Uses ENGrid via NPM
+import {
+  Options,
+  App,
+  DonationFrequency,
+  DonationAmount,
+  EnForm,
+} from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
 
 import "./sass/main.scss";
 import { customScript } from "./scripts/main";
@@ -52,6 +52,7 @@ const options: Options = {
     // statusField: "supporter.NOT_TAGGED_YYY",
     // messageField: "supporter.NOT_TAGGED_ZZZ",
     dateFieldFormat: "YYYY-MM-DD",
+    proxyUrl: "https://atdata-proxy-worker.wwfworkers.workers.dev",
   },
   CountryDisable: [
     "Belarus",
