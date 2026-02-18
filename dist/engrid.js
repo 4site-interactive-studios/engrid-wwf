@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, February 18, 2026 @ 08:39:58 ET
+ *  Date: Wednesday, February 18, 2026 @ 09:18:27 ET
  *  By: michael
  *  ENGrid styles: v0.24.0
  *  ENGrid scripts: v0.24.0
@@ -25359,9 +25359,6 @@ class freshaddress_FreshAddress {
         engrid_ENGrid.setError(this.emailWrapper, `This email address is not valid. Did you mean ${res.email_corrections[0]}?`);
       }
     }
-
-    window.FreshAddressStatus = "idle";
-    engrid_ENGrid.enableSubmit();
   }
 
 }
