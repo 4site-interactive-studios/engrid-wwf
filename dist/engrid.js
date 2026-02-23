@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, February 19, 2026 @ 11:21:20 ET
+ *  Date: Monday, February 23, 2026 @ 07:04:55 ET
  *  By: michael
  *  ENGrid styles: v0.24.0
  *  ENGrid scripts: v0.24.1
@@ -25378,6 +25378,7 @@ class freshaddress_FreshAddress {
       (_a = this.emailField) === null || _a === void 0 ? void 0 : _a.focus();
 
       if (res.email_corrections && res.email_corrections.length > 0) {
+        this.emailField.value = res.email_corrections[0];
         engrid_ENGrid.setError(this.emailWrapper, `This email address is not valid. Did you mean ${res.email_corrections[0]}?`);
       }
     }
