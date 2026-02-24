@@ -52,7 +52,7 @@ const options: Options = {
     // statusField: "supporter.NOT_TAGGED_YYY",
     // messageField: "supporter.NOT_TAGGED_ZZZ",
     dateFieldFormat: "YYYY-MM-DD",
-    proxyUrl: "https://atdata-proxy-worker.wwfworkers.workers.dev",
+    proxyUrl: "https://validate.worldwildlife.org",
   },
   CountryDisable: [
     "Belarus",

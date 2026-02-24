@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, February 23, 2026 @ 07:04:55 ET
+ *  Date: Tuesday, February 24, 2026 @ 06:58:52 ET
  *  By: michael
  *  ENGrid styles: v0.24.0
  *  ENGrid scripts: v0.24.1
@@ -49356,7 +49356,7 @@ const options = {
     // statusField: "supporter.NOT_TAGGED_YYY",
     // messageField: "supporter.NOT_TAGGED_ZZZ",
     dateFieldFormat: "YYYY-MM-DD",
-    proxyUrl: "https://atdata-proxy-worker.wwfworkers.workers.dev"
+    proxyUrl: "https://validate.worldwildlife.org"
   },
   CountryDisable: ["Belarus", "Cuba", "Iran", "North Korea", "Russia", "Syria", "Ukraine"],
   PageLayouts: ["centerleft1col", "centercenter1col", "centercenter2col", "centerright1col"],
