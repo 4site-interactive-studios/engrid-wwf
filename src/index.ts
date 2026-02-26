@@ -52,6 +52,7 @@ const options: Options = {
     // statusField: "supporter.NOT_TAGGED_YYY",
     // messageField: "supporter.NOT_TAGGED_ZZZ",
     dateFieldFormat: "YYYY-MM-DD",
+    proxyUrl: "https://validate.worldwildlife.org",
   },
   CountryDisable: [
     "Belarus",

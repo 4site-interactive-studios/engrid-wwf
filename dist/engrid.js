@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, February 18, 2026 @ 00:11:30 ET
- *  By: fernando
+ *  Date: Thursday, February 26, 2026 @ 08:10:57 ET
+ *  By: michael
  *  ENGrid styles: v0.24.0
- *  ENGrid scripts: v0.24.0
+ *  ENGrid scripts: v0.24.2
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -16518,6 +16518,7 @@ class NeverBounce {
 
 class FreshAddress {
     constructor() {
+        var _a;
         this.form = en_form_EnForm.getInstance();
         this.emailField = null;
         this.emailWrapper = document.querySelector(".en__field--emailAddress");
@@ -16527,8 +16528,10 @@ class FreshAddress {
         this.logger = new logger_EngridLogger("FreshAddress", "#039bc4", "#dfdfdf", "📧");
         this.shouldRun = true;
         this.options = engrid_ENGrid.getOption("FreshAddress");
-        if (this.options === false || !window.FreshAddress)
+        if (this.options === false ||
+            (!window.FreshAddress && !((_a = this.options) === null || _a === void 0 ? void 0 : _a.proxyUrl))) {
             return;
+        }
         this.emailField = document.getElementById("en__field_supporter_emailAddress");
         if (this.emailField) {
             this.createFields();
@@ -16598,7 +16601,12 @@ class FreshAddress {
                 return;
             }
             this.logger.log("Validating " + ((_b = this.emailField) === null || _b === void 0 ? void 0 : _b.value));
-            this.callAPI();
+            if (this.options && this.options.proxyUrl) {
+                this.callProxy();
+            }
+            else {
+                this.callAPI();
+            }
         });
         // Add event listener to submit
         this.form.onValidate.subscribe(this.validate.bind(this));
@@ -16701,7 +16709,7 @@ class FreshAddress {
         else if (this.faStatus.value === "Invalid") {
             this.form.validate = false;
             window.setTimeout(() => {
-                engrid_ENGrid.setError(this.emailWrapper, this.faMessage.value);
+                engrid_ENGrid.setError(this.emailWrapper, "This email address is not valid.");
             }, 100);
             (_a = this.emailField) === null || _a === void 0 ? void 0 : _a.focus();
             engrid_ENGrid.enableSubmit();
@@ -16709,6 +16717,89 @@ class FreshAddress {
         }
         this.form.validate = true;
         return true;
+    }
+    callProxy() {
+        var _a, _b;
+        if (!this.options || !this.shouldRun)
+            return;
+        window.FreshAddressStatus = "validating";
+        engrid_ENGrid.disableSubmit("Validating Email Address...");
+        // Before calling the API, do a basic check to see if the email is in a valid format.
+        // This is to prevent unnecessary API calls.
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(this.emailField.value)) {
+            this.logger.log("Invalid Email Format from Basic Check");
+            this.writeToFields("Invalid", "Invalid Email Format");
+            engrid_ENGrid.setError(this.emailWrapper, "This email address is not valid.");
+            (_a = this.emailField) === null || _a === void 0 ? void 0 : _a.focus();
+            engrid_ENGrid.enableSubmit();
+            return;
+        }
+        fetch(this.options.proxyUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email: (_b = this.emailField) === null || _b === void 0 ? void 0 : _b.value }),
+            signal: AbortSignal.timeout(5000),
+        })
+            .then((response) => {
+            if (!response.ok) {
+                throw new Error(`HTTP error ${response.status}`);
+            }
+            return response.json();
+        })
+            .then((data) => {
+            this.logger.log("Proxy API Response", data);
+            this.validateProxyResponse(data);
+        })
+            .catch((error) => {
+            // 422 (Unprocessable Content) - This means the email is in an invalid format.
+            if (error.message.includes("422")) {
+                this.logger.log("Invalid Email Format");
+                this.writeToFields("Invalid", "Invalid Email Format");
+                engrid_ENGrid.setError(this.emailWrapper, "This email address is not valid.");
+                return;
+            }
+            if (error.name === "AbortError") {
+                this.logger.log("Proxy API request timed out");
+                this.writeToFields("Request Timeout", "The request took too long.");
+                return;
+            }
+            this.logger.log("Proxy API Error", error);
+            this.writeToFields("Service Error", error.toString());
+        })
+            .finally(() => {
+            window.FreshAddressStatus = "idle";
+            engrid_ENGrid.enableSubmit();
+        });
+    }
+    /*
+     * Validate a request proxied to AtData's Safe To Send API.
+     * https://docs.atdata.com/reference/safe-to-send
+     * https://docs.atdata.com/reference/email-status
+     * https://docs.atdata.com/reference/status-codes-safe-to-send
+     */
+    validateProxyResponse(data) {
+        var _a;
+        // If response is not in expected format, log error and let through.
+        if (!data.safe_to_send) {
+            this.logger.log("Invalid Proxy Response");
+            this.writeToFields("Service Error", "Invalid Proxy Response");
+            return true;
+        }
+        const res = data.safe_to_send;
+        engrid_ENGrid.removeError(this.emailWrapper);
+        this.writeToFields(res.status, res.status_code);
+        if (["invalid", "trap"].includes(res.status)) {
+            this.writeToFields("Invalid", res.status_code); // Must be "Invalid" to trigger validation error on submit
+            engrid_ENGrid.setError(this.emailWrapper, "This email address is not valid.");
+            (_a = this.emailField) === null || _a === void 0 ? void 0 : _a.focus();
+            if (res.email_corrections && res.email_corrections.length > 0) {
+                this.emailField.value = res.email_corrections[0];
+                engrid_ENGrid.setError(this.emailWrapper, `This email address is not valid. Did you mean ${res.email_corrections[0]}?`);
+            }
+        }
     }
 }
 
@@ -24311,7 +24402,7 @@ class PreferredPaymentMethod {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/version.js
-const AppVersion = "0.24.0";
+const AppVersion = "0.24.2";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
@@ -27439,7 +27530,8 @@ const options = {
     // dateField: "supporter.NOT_TAGGED_XXX",
     // statusField: "supporter.NOT_TAGGED_YYY",
     // messageField: "supporter.NOT_TAGGED_ZZZ",
-    dateFieldFormat: "YYYY-MM-DD"
+    dateFieldFormat: "YYYY-MM-DD",
+    proxyUrl: "https://validate.worldwildlife.org"
   },
   CountryDisable: ["Belarus", "Cuba", "Iran", "North Korea", "Russia", "Syria", "Ukraine"],
   PageLayouts: ["centerleft1col", "centercenter1col", "centercenter2col", "centerright1col"],
