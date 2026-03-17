@@ -1,3 +1,5 @@
+import { RemoteGift } from "./gift-history";
+
 export const mockGiftHistory = {
   pagination: { start: 0, rows: 10, total: 3 },
   data: [
@@ -187,3 +189,30 @@ export const mockGiftHistory = {
   scores: [],
   summary: { USD: "275.00" },
 };
+
+export const mockRemoteGiftHistory: RemoteGift[] = [
+  {
+    ref: "LO-13951288",
+    amount: 10.0,
+    date: "2026-03-17",
+    type: "Recurring gift payment",
+    method: "credit card",
+    source: "Online General",
+  },
+  {
+    ref: "LO-16076621",
+    amount: 10.0,
+    date: "2026-03-05",
+    type: "Recurring gift payment",
+    method: "credit card",
+    source: "Online General",
+  },
+  {
+    ref: "rev-62145558",
+    amount: 10000.0,
+    date: "2026-03-01",
+    type: "Payment",
+    method: "Check",
+    source: "IRA-Gift Planning",
+  },
+];

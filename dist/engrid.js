@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, March 17, 2026 @ 08:17:05 ET
+ *  Date: Tuesday, March 17, 2026 @ 11:30:48 ET
  *  By: michael
  *  ENGrid styles: v0.24.0
  *  ENGrid scripts: v0.24.3
@@ -27484,202 +27484,20 @@ class Quiz {
   }
 
 }
-;// CONCATENATED MODULE: ./src/scripts/mock-gift-history.js
-const mockGiftHistory = {
-  pagination: {
-    start: 0,
-    rows: 10,
-    total: 3
-  },
-  data: [{
-    pageSubtype: null,
-    recurringFrequency: null,
-    recurringDay: null,
-    pageTitle: "REFERENCE - Donation Page (Test Gateway)",
-    createdOn: 1754307276000,
-    pageName: "DEMO PAGE - Donation Page (Test Gateway) - Limited Header",
-    paymentType: "TEST: visa",
-    pageStatus: "live",
-    pageType: "nd",
-    currency: "USD",
-    id: 13853700,
-    expiry: "12/2027",
-    transactionError: null,
-    amount: "30.00",
-    transactionStatus: "success",
-    campaignId: 117098,
-    ccLastFour: "4242",
-    campaignPageId: 52063,
-    recurringStatus: null,
-    inMemoryHonoreeName: null,
-    transactionId: "pm_1OAAjhGZo2KOB80RUirE75dy__cus_Oy6xpuEpd5GeDo__pi_3OAAjkGZo2KOB80R0ox2EYx8",
-    parentTransactionId: null,
-    transactionType: "CREDIT_SINGLE",
-    taxDeductible: "N",
-    recurringPayment: "N",
-    gateway: "Stripe Gateway",
-    child: false
-  }, {
-    pageSubtype: null,
-    recurringFrequency: null,
-    recurringDay: null,
-    pageTitle: "REFERENCE - Donation Page (Test Gateway)",
-    createdOn: 1751628876000,
-    pageName: "DEMO PAGE - Donation Page (Test Gateway) - Limited Header",
-    paymentType: "TEST: ach",
-    pageStatus: "live",
-    pageType: "nd",
-    currency: "USD",
-    id: 13853707,
-    expiry: null,
-    transactionError: null,
-    amount: "80.00",
-    transactionStatus: "success",
-    campaignId: 117098,
-    ccLastFour: null,
-    campaignPageId: 52063,
-    recurringStatus: null,
-    inMemoryHonoreeName: null,
-    transactionId: "ND117098T7347418576038572087__cus_Oy70s6urOxg3PV__py_1OAAmqGZo2KOB80RpTsOhItn",
-    parentTransactionId: null,
-    transactionType: "BANK_SINGLE",
-    taxDeductible: "N",
-    recurringPayment: "N",
-    gateway: "Stripe Gateway",
-    child: false
-  }, {
-    pageSubtype: null,
-    recurringFrequency: "MONTHLY",
-    recurringDay: "8",
-    pageTitle: "REFERENCE - Donation Page (Test Gateway)",
-    createdOn: 1749382476000,
-    pageName: "DEMO PAGE - Donation Page (Test Gateway) - Limited Header",
-    paymentType: "TEST: visa",
-    pageStatus: "live",
-    pageType: "nd",
-    currency: "USD",
-    id: 13853704,
-    expiry: "12/2027",
-    transactionError: null,
-    amount: "15.00",
-    transactionStatus: "success",
-    campaignId: 117098,
-    ccLastFour: "4242",
-    campaignPageId: 52063,
-    recurringStatus: "ACTIVE",
-    inMemoryHonoreeName: null,
-    transactionId: "pm_1OAAkDGZo2KOB80Ry9ao2LJQ__cus_Oy6yLHrYBPXxOF__pi_3OAAkFGZo2KOB80R1qUdtpox",
-    parentTransactionId: null,
-    transactionType: "CREDIT_RECURRING",
-    taxDeductible: "N",
-    recurringPayment: "Y",
-    gateway: "Stripe Gateway",
-    child: false
-  }, {
-    pageSubtype: null,
-    recurringFrequency: null,
-    recurringDay: null,
-    pageTitle: "REFERENCE - Donation Page (Test Gateway)",
-    createdOn: 1752406476000,
-    pageName: "DEMO PAGE - Donation Page (Test Gateway) - Limited Header",
-    paymentType: "TEST: visa",
-    pageStatus: "live",
-    pageType: "nd",
-    currency: "USD",
-    id: 13853700,
-    expiry: "12/2027",
-    transactionError: null,
-    amount: "50.00",
-    transactionStatus: "success",
-    campaignId: 117098,
-    ccLastFour: "4242",
-    campaignPageId: 52063,
-    recurringStatus: null,
-    inMemoryHonoreeName: null,
-    transactionId: "pm_1OAAjhGZo2KOB80RUirE75dy__cus_Oy6xpuEpd5GeDo__pi_3OAAjkGZo2KOB80R0ox2EYx8",
-    parentTransactionId: null,
-    transactionType: "CREDIT_SINGLE",
-    taxDeductible: "N",
-    recurringPayment: "N",
-    gateway: "Stripe Gateway",
-    child: false
-  }, //2024 gift
-  {
-    pageSubtype: null,
-    recurringFrequency: null,
-    recurringDay: null,
-    pageTitle: "REFERENCE - Donation Page (Test Gateway)",
-    createdOn: 1731501276000,
-    pageName: "DEMO PAGE - Donation Page (Test Gateway) - Limited Header",
-    paymentType: "TEST: visa",
-    pageStatus: "live",
-    pageType: "nd",
-    currency: "USD",
-    id: 13853700,
-    expiry: "12/2027",
-    transactionError: null,
-    amount: "50.00",
-    transactionStatus: "success",
-    campaignId: 117098,
-    ccLastFour: "4242",
-    campaignPageId: 52063,
-    recurringStatus: null,
-    inMemoryHonoreeName: null,
-    transactionId: "pm_1OAAjhGZo2KOB80RUirE75dy__cus_Oy6xpuEpd5GeDo__pi_3OAAjkGZo2KOB80R0ox2EYx8",
-    parentTransactionId: null,
-    transactionType: "CREDIT_SINGLE",
-    taxDeductible: "N",
-    recurringPayment: "N",
-    gateway: "Stripe Gateway",
-    child: false
-  }, //2023 gift
-  {
-    pageSubtype: null,
-    recurringFrequency: null,
-    recurringDay: null,
-    pageTitle: "REFERENCE - Donation Page (Test Gateway)",
-    createdOn: 1696592076000,
-    pageName: "DEMO PAGE - Donation Page (Test Gateway) - Limited Header",
-    paymentType: "TEST: visa",
-    pageStatus: "live",
-    pageType: "nd",
-    currency: "USD",
-    id: 13853700,
-    expiry: "12/2027",
-    transactionError: null,
-    amount: "50.00",
-    transactionStatus: "success",
-    campaignId: 117098,
-    ccLastFour: "4242",
-    campaignPageId: 52063,
-    recurringStatus: null,
-    inMemoryHonoreeName: null,
-    transactionId: "pm_1OAAjhGZo2KOB80RUirE75dy__cus_Oy6xpuEpd5GeDo__pi_3OAAjkGZo2KOB80R0ox2EYx8",
-    parentTransactionId: null,
-    transactionType: "CREDIT_SINGLE",
-    taxDeductible: "N",
-    recurringPayment: "N",
-    gateway: "Stripe Gateway",
-    child: false
-  }],
-  scores: [],
-  summary: {
-    USD: "275.00"
-  }
-};
 ;// CONCATENATED MODULE: ./src/scripts/gift-history.ts
-
 
 
 class GiftHistory {
   constructor() {
-    _defineProperty(this, "remoteGiftHistory", void 0);
+    _defineProperty(this, "remoteGiftHistory", []);
 
     _defineProperty(this, "logger", new logger_EngridLogger("Gift History"));
 
-    if (this.shouldRun()) {
-      this.run();
+    if (!this.shouldRun()) {
+      return;
     }
+
+    this.run().then(() => {});
   }
 
   shouldRun() {
@@ -27689,33 +27507,38 @@ class GiftHistory {
   async run() {
     this.remoteGiftHistory = await this.fetchRemoteGiftHistory();
 
-    if (this.remoteGiftHistory) {
-      const targetElement = document.querySelector(".en__component--page");
-
-      if (targetElement) {
-        //This mutation observer is used to detect when new transactions are added to the DOM
-        //When this happens, we merge in the remote gift history
-        const observer = new MutationObserver(mutationsList => {
-          for (const mutation of mutationsList) {
-            if (mutation.type === "childList") {
-              const newTransactionsAdded = [...mutation.addedNodes].some(node => this.isElementWithClass(node, "en__hubTxnGiving__transactions__list"));
-
-              if (newTransactionsAdded) {
-                this.logger.log("New EN transactions added to DOM");
-                this.updateTotalAmountDonated();
-                this.renderMergedGiftHistory();
-              }
-            }
-          }
-        });
-        observer.observe(targetElement, {
-          childList: true,
-          subtree: true
-        });
-      }
-
-      document.head.insertAdjacentHTML("beforeend", `<style>.en__hubTxnGiving__transactions__list:not([data-engrid-transactions-loaded]) { display: none }</style>`);
+    if (!this.remoteGiftHistory || this.remoteGiftHistory.length === 0) {
+      this.logger.log("No remote gift history found, skipping merge");
+      return;
     }
+
+    const targetElement = document.querySelector(".en__component--page");
+
+    if (!targetElement) {
+      this.logger.log("Target element for gift history not found, cannot merge remote gift history");
+      return;
+    } //This mutation observer is used to detect when new transactions are added to the DOM
+    //When this happens, we merge in the remote gift history
+
+
+    const observer = new MutationObserver(mutationsList => {
+      for (const mutation of mutationsList) {
+        if (mutation.type === "childList") {
+          const newTransactionsAdded = [...mutation.addedNodes].some(node => this.isElementWithClass(node, "en__hubTxnGiving__transactions__list"));
+
+          if (newTransactionsAdded) {
+            this.logger.log("New EN transactions added to DOM");
+            this.updateTotalAmountDonated();
+            this.renderMergedGiftHistory();
+          }
+        }
+      }
+    });
+    observer.observe(targetElement, {
+      childList: true,
+      subtree: true
+    });
+    document.head.insertAdjacentHTML("beforeend", `<style>.en__hubTxnGiving__transactions__list:not([data-engrid-transactions-loaded]) { display: none }</style>`);
   }
 
   isElementWithClass(node, className) {
@@ -27727,16 +27550,16 @@ class GiftHistory {
     transactionsList?.removeAttribute("data-engrid-transactions-loaded");
     const enGiftHistory = this.getENGiftHistoryOnPage();
     const giftHistoryToRender = this.mergeRemoteGiftHistoryEntries(enGiftHistory);
-    console.log(this.remoteGiftHistory, giftHistoryToRender);
     this.addGiftHistoryToDOM(giftHistoryToRender);
     transactionsList?.setAttribute("data-engrid-transactions-loaded", "");
   }
 
   getENGiftHistoryOnPage() {
     const giftHeaders = document.querySelectorAll(".en__hubTxnGiving__transaction .en__hubTxnGiving__transaction__header");
-    return [...giftHeaders].map(giftHeader => {
+    const enGifts = [...giftHeaders].map(giftHeader => {
       return giftHeader.textContent ? this.getGiftDateFromGiftHeaderString(giftHeader.textContent.trim()) : null;
     }).filter(gift => gift !== null);
+    return enGifts;
   }
 
   getGiftDateFromGiftHeaderString(headerString) {
@@ -27744,8 +27567,8 @@ class GiftHistory {
 
     if (date) {
       return {
-        createdOn: Date.parse(date[1]),
-        rawDate: date[1],
+        //createdOn: Date.parse(date[1]),
+        date: date[1],
         source: "EngagingNetworks"
       };
     } else {
@@ -27758,56 +27581,59 @@ class GiftHistory {
     const onFirstPage = document.querySelector(".en__pagination__prev")?.hasAttribute("disabled");
     const onLastPage = document.querySelector(".en__pagination__next")?.hasAttribute("disabled");
     const transactionsDate = document.getElementById("en__hubTxnGiving__transactions__date__select")?.value;
-    let remoteGiftHistoryToMerge = [];
+    let remoteGiftHistoryToMerge;
 
     if (enGiftHistory.length > 0) {
       //if the page has gifts, we want to merge in remote gifts based on the date range of the gifts on the page
-      const mostRecentENGift = enGiftHistory[0].createdOn;
-      const oldestENGift = enGiftHistory[enGiftHistory.length - 1].createdOn;
-      remoteGiftHistoryToMerge = this.remoteGiftHistory.data.filter(remoteGift => {
+      const mostRecentENGift = Date.parse(enGiftHistory[0].date);
+      const oldestENGift = Date.parse(enGiftHistory[enGiftHistory.length - 1].date);
+      remoteGiftHistoryToMerge = this.remoteGiftHistory.filter(remoteGift => {
         //If we're on the first page, merge in gifts that are newer than the oldest gift on the page
         //If we're on the last page, merge in gifts that are older than the most recent gift on the page
         //Otherwise, we want to merge in all gifts between the oldest and most recent gifts on the page
         //Also, make sure the year is the same as the year filter (or "all time");
-        const giftYearMatchesOrAllTime = transactionsDate === "0" || transactionsDate === new Date(remoteGift.createdOn).getFullYear().toString();
+        const giftYearMatchesOrAllTime = transactionsDate === "0" || transactionsDate === new Date(remoteGift.date).getFullYear().toString();
+        const remoteGiftDate = Date.parse(remoteGift.date);
 
         if (onFirstPage) {
-          return remoteGift.createdOn >= oldestENGift && giftYearMatchesOrAllTime;
+          return remoteGiftDate >= oldestENGift && giftYearMatchesOrAllTime;
         } else if (onLastPage) {
-          return remoteGift.createdOn <= mostRecentENGift && giftYearMatchesOrAllTime;
+          return remoteGiftDate <= mostRecentENGift && giftYearMatchesOrAllTime;
         }
 
-        return remoteGift.createdOn >= oldestENGift && remoteGift.createdOn <= mostRecentENGift && giftYearMatchesOrAllTime;
+        return remoteGiftDate >= oldestENGift && remoteGiftDate <= mostRecentENGift && giftYearMatchesOrAllTime;
       });
     } else {
       // If we don't have any gifts on the page, we want to merge in remote gifts based on the date filter
-      remoteGiftHistoryToMerge = this.remoteGiftHistory.data.filter(remoteGift => {
+      remoteGiftHistoryToMerge = this.remoteGiftHistory.filter(remoteGift => {
         // If the date filter is set to "All time", merge in all gifts
         if (transactionsDate === "0") {
           return true;
         } // Otherwise, merge in gifts that match the year of the date filter
 
 
-        return new Date(remoteGift.createdOn).getFullYear() === parseInt(transactionsDate);
+        return new Date(remoteGift.date).getFullYear() === parseInt(transactionsDate);
       });
     }
 
-    return [...enGiftHistory, ...remoteGiftHistoryToMerge].sort((a, b) => b.createdOn - a.createdOn);
+    return [...enGiftHistory, ...remoteGiftHistoryToMerge].sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
   }
 
   updateTotalAmountDonated() {
     const el = document.querySelector(".en__hubTxnGiving__transactions__total > span");
     const enTotal = el?.textContent?.trim().replace("$", "").replace(",", "");
     const transactionsDate = document.getElementById("en__hubTxnGiving__transactions__date__select")?.value;
-    let remoteTotal = ""; //All time donations
+    let remoteTotal; //All time donations
 
     if (transactionsDate === "0") {
-      remoteTotal = this.remoteGiftHistory.summary.USD.replace("$", "").replace(",", "");
+      remoteTotal = this.remoteGiftHistory.reduce((total, gift) => {
+        return total + gift.amount;
+      }, 0);
     } else {
       // The value of the year select is a year like "2023".
       // Filter the remote gift history to only include gifts from that year and then sum the USD values
-      remoteTotal = this.remoteGiftHistory.data.filter(gift => {
-        const giftDate = new Date(gift.createdOn);
+      remoteTotal = this.remoteGiftHistory.filter(gift => {
+        const giftDate = new Date(gift.date);
         return giftDate.getFullYear() === parseInt(transactionsDate);
       }).reduce((total, gift) => {
         return total + parseFloat(gift.amount);
@@ -27815,7 +27641,7 @@ class GiftHistory {
     }
 
     if (enTotal && remoteTotal) {
-      const total = parseFloat(enTotal) + parseFloat(remoteTotal);
+      const total = parseFloat(enTotal) + remoteTotal;
       el.textContent = `$${total.toFixed(2)}`;
     }
   }
@@ -27849,42 +27675,60 @@ class GiftHistory {
   }
 
   createGiftElement(gift) {
-    //TODO: adjust this based on final API response structure
     const giftEl = document.createElement("li");
     giftEl.classList.add("en__hubTxnGiving__transaction");
     giftEl.classList.add("en__hubTxnGiving__transaction--remote");
 
-    if (gift.recurringPayment === "Y") {
+    if (gift.type.toLowerCase().includes("recurring")) {
       giftEl.classList.add("en__hubTxnGiving__transaction--recurring");
     } else {
       giftEl.classList.add("en__hubTxnGiving__transaction--single");
     }
 
-    let paymentMethod = "";
+    let paymentString = "";
 
-    if (gift.transactionType.startsWith("CREDIT")) {
-      paymentMethod = "card";
-      giftEl.classList.add("en__hubTxnGiving__transaction--card");
-    } else if (gift.transactionType.startsWith("BANK")) {
-      paymentMethod = "bank";
-      giftEl.classList.add("en__hubTxnGiving__transaction--bank");
+    switch (gift.method.toLowerCase()) {
+      case "credit card":
+        giftEl.classList.add("en__hubTxnGiving__transaction--card");
+        paymentString = `Credit Card Payment`;
+        break;
+
+      case "check":
+        paymentString = `Check Payment`;
+        break;
+
+      case "bank":
+        giftEl.classList.add("en__hubTxnGiving__transaction--bank");
+        paymentString = `Bank Payment`;
+        break;
+
+      default:
+        paymentString = `${gift.method} Payment`;
+        break;
     }
 
-    const giftDate = new Date(gift.createdOn);
-    const giftString = `${giftDate.getMonth() + 1}/${giftDate.getDate()}/${giftDate.getFullYear()}`;
-    const paymentString = paymentMethod === "bank" ? "Bank payment" : `Made with card ending ${gift.ccLastFour}, expiring ${gift.expiry}`;
+    const date = new Date(gift.date);
+    const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+    const formattedAmount = parseFloat(gift.amount.toString()).toFixed(2);
     giftEl.innerHTML = `
       <div class="en__hubTxnGiving__transaction__header">
-        <p>$${gift.amount} on ${giftString} to ${gift.pageTitle}</p>
+        <p>$${formattedAmount} on ${formattedDate} to "${gift.source}". Reference: "${gift.ref}"</p>
       </div>
       <div class="en__hubTxnGiving__transaction__payment"><p>${paymentString}</p></div>
     `;
     return giftEl;
-  } //TODO: implement this once we have the remote API
-
+  }
 
   async fetchRemoteGiftHistory() {
-    return mockGiftHistory;
+    const constituentId = window.constituentId || null;
+
+    if (!constituentId) {
+      this.logger.log("No constituent ID found, cannot fetch remote gift history");
+      return [];
+    }
+
+    const req = await fetch(`https://encrmgifthistapi.wwfus.org/api/supporter/${constituentId}?code=4ZoWptvxmdnaZEKLAS65bFH7ErI17TY0YeE305o2HDLnAzFugcpdAw==`);
+    return await req.json();
   }
 
 }
