@@ -22,6 +22,9 @@ import { AnnualLimit } from "./scripts/annual-limit";
 import { OnLoadModal } from "./scripts/on-load-modal";
 import MultistepForm from "./scripts/multistep-form";
 import { AddDAF } from "./scripts/add-daf";
+import { Bridger } from "./scripts/Bridger";
+
+import { Quiz } from "./scripts/quiz";
 import GiftHistory from "./scripts/gift-history";
 
 const options: Options = {
@@ -40,12 +43,17 @@ const options: Options = {
   SkipToMainContentLink: true,
   SrcDefer: true,
   ProgressBar: true,
+  PreferredPaymentMethod: {
+    preferredPaymentMethodField: "supporter.NOT_TAGGED_150",
+    defaultPaymentMethod: ["card"],
+  },
   RegionLongFormat: "supporter.NOT_TAGGED_97",
   FreshAddress: {
     // dateField: "supporter.NOT_TAGGED_XXX",
     // statusField: "supporter.NOT_TAGGED_YYY",
     // messageField: "supporter.NOT_TAGGED_ZZZ",
     dateFieldFormat: "YYYY-MM-DD",
+    proxyUrl: "https://validate.worldwildlife.org",
   },
   CountryDisable: [
     "Belarus",
@@ -56,7 +64,6 @@ const options: Options = {
     "Syria",
     "Ukraine",
   ],
-  Plaid: true,
   PageLayouts: [
     "centerleft1col",
     "centercenter1col",
@@ -86,7 +93,25 @@ const options: Options = {
       placement: "beforebegin",
     },
   },
+  VGS: {
+    "transaction.ccnumber": {
+      validCardBrands: [
+        { type: "visa" },
+        { type: "visaelectron" },
+        { type: "mastercard" },
+        { type: "amex" },
+        { type: "discover" },
+      ],
+    },
+  },
   onLoad: () => {
+    // Send a GTM event is the Page Type is SUBSCRIBEFORM
+    if (App.getPageType() === "SUBSCRIBEFORM") {
+      (window as any).dataLayer.push({
+        event: "EN_PAGEJSON_PAGETYPE-emailsubscribeform",
+        pageType: App.getPageType(),
+      });
+    }
     // If we're on a Thank You page, let's try to add pageJson.other3 as data-engrid-payment-type body attribute
     if (
       App.getPageNumber() === App.getPageCount() &&
@@ -114,7 +139,7 @@ const options: Options = {
         section.classList.add("en__contact--open");
       });
     }
-    // Add Plaid Tooltip to Submit Button
+    // Add ACH Tooltip to Submit Button
     const submitButton = document.querySelector(
       ".en__submit button"
     ) as HTMLButtonElement;
@@ -122,8 +147,7 @@ const options: Options = {
       submitButton.setAttribute(
         "data-balloon",
         `When you click the button below, a new window will appear.
-        Follow the steps to securely donate from your bank account to WWF
-        (through Engaging Networks and Plaid).`
+        Follow the steps to securely donate from your bank account to WWF.`
       );
       submitButton.setAttribute("data-balloon-pos", "up");
     }
@@ -211,6 +235,8 @@ const options: Options = {
       // Hide the unsubscribe all radio button
       unsubscribeAllRadio.closest(".en__field")?.classList.add("hide");
     }
+    new Quiz();
+    new Bridger();
     new GiftHistory();
   },
   onResize: () => console.log("Starter Theme Window Resized"),
