@@ -23,6 +23,7 @@ declare global {
 
 export default class GiftHistory {
   private remoteGiftHistory: RemoteGift[] = [];
+  private remoteGiftHistoryFetched: boolean = false;
   private logger = new EngridLogger("Gift History");
 
   constructor() {
@@ -39,13 +40,6 @@ export default class GiftHistory {
   }
 
   private async run() {
-    this.remoteGiftHistory = await this.fetchRemoteGiftHistory();
-
-    if (!this.remoteGiftHistory || this.remoteGiftHistory.length === 0) {
-      this.logger.log("No remote gift history found, skipping merge");
-      return;
-    }
-
     const targetElement = document.querySelector(".en__component--page");
 
     if (!targetElement) {
@@ -57,7 +51,7 @@ export default class GiftHistory {
 
     //This mutation observer is used to detect when new transactions are added to the DOM
     //When this happens, we merge in the remote gift history
-    const observer = new MutationObserver((mutationsList) => {
+    const observer = new MutationObserver(async (mutationsList) => {
       for (const mutation of mutationsList) {
         if (mutation.type === "childList") {
           const newTransactionsAdded = [...mutation.addedNodes].some((node) =>
@@ -68,6 +62,7 @@ export default class GiftHistory {
           );
           if (newTransactionsAdded) {
             this.logger.log("New EN transactions added to DOM");
+            this.remoteGiftHistory = await this.fetchRemoteGiftHistory();
             this.updateTotalAmountDonated();
             this.renderMergedGiftHistory();
           }
@@ -343,6 +338,11 @@ export default class GiftHistory {
   }
 
   private async fetchRemoteGiftHistory(): Promise<RemoteGift[]> {
+    if (this.remoteGiftHistoryFetched) {
+      this.logger.log("Remote gift history already fetched, skipping fetch");
+      return this.remoteGiftHistory;
+    }
+
     const constituentId = window.constituentId || null;
     if (!constituentId) {
       this.logger.log(
@@ -353,6 +353,7 @@ export default class GiftHistory {
     const req = await fetch(
       `https://encrmgifthistapi.wwfus.org/api/supporter/${constituentId}?code=4ZoWptvxmdnaZEKLAS65bFH7ErI17TY0YeE305o2HDLnAzFugcpdAw==`
     );
+    this.remoteGiftHistoryFetched = true;
     return await req.json();
   }
 }
