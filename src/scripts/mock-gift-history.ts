@@ -210,7 +210,7 @@ export const mockRemoteGiftHistory: RemoteGift[] = [
   {
     ref: "rev-62145558",
     amount: 10000.0,
-    date: "2026-03-01",
+    date: "2020-03-01",
     type: "Payment",
     method: "Check",
     source: "IRA-Gift Planning",
