@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, April 23, 2026 @ 12:29:59 ET
+ *  Date: Wednesday, April 29, 2026 @ 09:20:39 ET
  *  By: michael
  *  ENGrid styles: v0.25.0
  *  ENGrid scripts: v0.25.1
@@ -28212,9 +28212,9 @@ class GiftHistory {
     const formattedAmount = parseFloat(gift.amount.toString()).toFixed(2);
     giftEl.innerHTML = `
       <div class="en__hubTxnGiving__transaction__header">
-        <p>$${formattedAmount} on ${formattedDate}.</p>
+        <p>$${formattedAmount} on ${formattedDate}</p>
       </div>
-      <div class="en__hubTxnGiving__transaction__payment"><p>${paymentString}.</p></div>
+      <div class="en__hubTxnGiving__transaction__payment"><p>${paymentString}</p></div>
     `;
     return giftEl;
   }

@@ -329,9 +329,9 @@ export default class GiftHistory {
 
     giftEl.innerHTML = `
       <div class="en__hubTxnGiving__transaction__header">
-        <p>$${formattedAmount} on ${formattedDate}.</p>
+        <p>$${formattedAmount} on ${formattedDate}</p>
       </div>
-      <div class="en__hubTxnGiving__transaction__payment"><p>${paymentString}.</p></div>
+      <div class="en__hubTxnGiving__transaction__payment"><p>${paymentString}</p></div>
     `;
 
     return giftEl;
