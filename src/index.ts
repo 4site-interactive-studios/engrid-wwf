@@ -26,6 +26,7 @@ import { Bridger } from "./scripts/Bridger";
 
 import { Quiz } from "./scripts/quiz";
 import GiftHistory from "./scripts/gift-history";
+import Accessibility from "./scripts/accessibility";
 
 const options: Options = {
   AutoYear: true,
@@ -238,6 +239,7 @@ const options: Options = {
     new Quiz();
     new Bridger();
     new GiftHistory();
+    new Accessibility();
   },
   onResize: () => console.log("Starter Theme Window Resized"),
 
