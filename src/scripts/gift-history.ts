@@ -85,11 +85,36 @@ export default class GiftHistory {
     );
   }
 
+  private parseISODate(dateString: string): {
+    year: number;
+    month: number;
+    day: number;
+  } {
+    const parts = dateString.split("-").map(Number);
+    return { year: parts[0], month: parts[1], day: parts[2] };
+  }
+
+  private dateToComparable(dateString: string): number {
+    // Handles both "yyyy-MM-dd" and "MM/dd/yyyy" formats
+    if (dateString.includes("-")) {
+      const parts = dateString.split("-").map(Number);
+      return parts[0] * 10000 + parts[1] * 100 + parts[2];
+    } else {
+      const parts = dateString.split("/").map(Number);
+      return parts[2] * 10000 + parts[0] * 100 + parts[1];
+    }
+  }
+
   private renderMergedGiftHistory() {
     const transactionsList = document.querySelector(
       ".en__hubTxnGiving__transactions__list"
     );
     transactionsList?.removeAttribute("data-engrid-transactions-loaded");
+
+    // Remove previously inserted remote gifts to avoid duplication on pagination
+    transactionsList
+      ?.querySelectorAll(".en__hubTxnGiving__transaction--remote")
+      .forEach((el) => el.remove());
 
     const enGiftHistory = this.getENGiftHistoryOnPage();
 
@@ -150,12 +175,12 @@ export default class GiftHistory {
       ) as HTMLSelectElement
     )?.value;
 
-    let remoteGiftHistoryToMerge;
+    let remoteGiftHistoryToMerge: RemoteGift[] = [];
 
     if (enGiftHistory.length > 0) {
       //if the page has gifts, we want to merge in remote gifts based on the date range of the gifts on the page
-      const mostRecentENGift = Date.parse(enGiftHistory[0].date);
-      const oldestENGift = Date.parse(
+      const mostRecentENGift = this.dateToComparable(enGiftHistory[0].date);
+      const oldestENGift = this.dateToComparable(
         enGiftHistory[enGiftHistory.length - 1].date
       );
 
@@ -168,9 +193,9 @@ export default class GiftHistory {
           const giftYearMatchesOrAllTime =
             transactionsDate === "0" ||
             transactionsDate ===
-              new Date(remoteGift.date).getFullYear().toString();
+              this.parseISODate(remoteGift.date).year.toString();
 
-          const remoteGiftDate = Date.parse(remoteGift.date);
+          const remoteGiftDate = this.dateToComparable(remoteGift.date);
 
           if (onFirstPage) {
             return remoteGiftDate >= oldestENGift && giftYearMatchesOrAllTime;
@@ -187,7 +212,6 @@ export default class GiftHistory {
         }
       );
     } else {
-      // If we don't have any gifts on the page, we want to merge in remote gifts based on the date filter
       remoteGiftHistoryToMerge = this.remoteGiftHistory.filter(
         (remoteGift: RemoteGift) => {
           // If the date filter is set to "All time", merge in all gifts
@@ -196,7 +220,7 @@ export default class GiftHistory {
           }
           // Otherwise, merge in gifts that match the year of the date filter
           return (
-            new Date(remoteGift.date).getFullYear() ===
+            this.parseISODate(remoteGift.date).year ===
             parseInt(transactionsDate)
           );
         }
@@ -204,7 +228,7 @@ export default class GiftHistory {
     }
 
     return [...enGiftHistory, ...remoteGiftHistoryToMerge].sort(
-      (a, b) => Date.parse(b.date) - Date.parse(a.date)
+      (a, b) => this.dateToComparable(b.date) - this.dateToComparable(a.date)
     );
   }
 
@@ -235,8 +259,9 @@ export default class GiftHistory {
       // Filter the remote gift history to only include gifts from that year and then sum the USD values
       remoteTotal = this.remoteGiftHistory
         .filter((gift: RemoteGift) => {
-          const giftDate = new Date(gift.date);
-          return giftDate.getFullYear() === parseInt(transactionsDate);
+          return (
+            this.parseISODate(gift.date).year === parseInt(transactionsDate)
+          );
         })
         .reduce((total: number, gift: any) => {
           return total + parseFloat(gift.amount);
@@ -320,10 +345,8 @@ export default class GiftHistory {
         break;
     }
 
-    const date = new Date(gift.date);
-    const formattedDate = `${
-      date.getMonth() + 1
-    }/${date.getDate()}/${date.getFullYear()}`;
+    const date = this.parseISODate(gift.date);
+    const formattedDate = `${date.month}/${date.day}/${date.year}`;
 
     const formattedAmount = parseFloat(gift.amount.toString()).toFixed(2);
 

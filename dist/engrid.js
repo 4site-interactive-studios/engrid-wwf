@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, April 29, 2026 @ 09:20:39 ET
+ *  Date: Thursday, May 14, 2026 @ 12:11:14 ET
  *  By: michael
  *  ENGrid styles: v0.25.0
  *  ENGrid scripts: v0.25.1
@@ -28045,9 +28045,31 @@ class GiftHistory {
     return node.nodeType === Node.ELEMENT_NODE && node.classList.contains(className);
   }
 
+  parseISODate(dateString) {
+    const parts = dateString.split("-").map(Number);
+    return {
+      year: parts[0],
+      month: parts[1],
+      day: parts[2]
+    };
+  }
+
+  dateToComparable(dateString) {
+    // Handles both "yyyy-MM-dd" and "MM/dd/yyyy" formats
+    if (dateString.includes("-")) {
+      const parts = dateString.split("-").map(Number);
+      return parts[0] * 10000 + parts[1] * 100 + parts[2];
+    } else {
+      const parts = dateString.split("/").map(Number);
+      return parts[2] * 10000 + parts[0] * 100 + parts[1];
+    }
+  }
+
   renderMergedGiftHistory() {
     const transactionsList = document.querySelector(".en__hubTxnGiving__transactions__list");
-    transactionsList?.removeAttribute("data-engrid-transactions-loaded");
+    transactionsList?.removeAttribute("data-engrid-transactions-loaded"); // Remove previously inserted remote gifts to avoid duplication on pagination
+
+    transactionsList?.querySelectorAll(".en__hubTxnGiving__transaction--remote").forEach(el => el.remove());
     const enGiftHistory = this.getENGiftHistoryOnPage();
     const giftHistoryToRender = this.mergeRemoteGiftHistoryEntries(enGiftHistory);
     this.addGiftHistoryToDOM(giftHistoryToRender);
@@ -28081,19 +28103,19 @@ class GiftHistory {
     const onFirstPage = document.querySelector(".en__pagination__prev")?.hasAttribute("disabled");
     const onLastPage = document.querySelector(".en__pagination__next")?.hasAttribute("disabled");
     const transactionsDate = document.getElementById("en__hubTxnGiving__transactions__date__select")?.value;
-    let remoteGiftHistoryToMerge;
+    let remoteGiftHistoryToMerge = [];
 
     if (enGiftHistory.length > 0) {
       //if the page has gifts, we want to merge in remote gifts based on the date range of the gifts on the page
-      const mostRecentENGift = Date.parse(enGiftHistory[0].date);
-      const oldestENGift = Date.parse(enGiftHistory[enGiftHistory.length - 1].date);
+      const mostRecentENGift = this.dateToComparable(enGiftHistory[0].date);
+      const oldestENGift = this.dateToComparable(enGiftHistory[enGiftHistory.length - 1].date);
       remoteGiftHistoryToMerge = this.remoteGiftHistory.filter(remoteGift => {
         //If we're on the first page, merge in gifts that are newer than the oldest gift on the page
         //If we're on the last page, merge in gifts that are older than the most recent gift on the page
         //Otherwise, we want to merge in all gifts between the oldest and most recent gifts on the page
         //Also, make sure the year is the same as the year filter (or "all time");
-        const giftYearMatchesOrAllTime = transactionsDate === "0" || transactionsDate === new Date(remoteGift.date).getFullYear().toString();
-        const remoteGiftDate = Date.parse(remoteGift.date);
+        const giftYearMatchesOrAllTime = transactionsDate === "0" || transactionsDate === this.parseISODate(remoteGift.date).year.toString();
+        const remoteGiftDate = this.dateToComparable(remoteGift.date);
 
         if (onFirstPage) {
           return remoteGiftDate >= oldestENGift && giftYearMatchesOrAllTime;
@@ -28104,7 +28126,6 @@ class GiftHistory {
         return remoteGiftDate >= oldestENGift && remoteGiftDate <= mostRecentENGift && giftYearMatchesOrAllTime;
       });
     } else {
-      // If we don't have any gifts on the page, we want to merge in remote gifts based on the date filter
       remoteGiftHistoryToMerge = this.remoteGiftHistory.filter(remoteGift => {
         // If the date filter is set to "All time", merge in all gifts
         if (transactionsDate === "0") {
@@ -28112,11 +28133,11 @@ class GiftHistory {
         } // Otherwise, merge in gifts that match the year of the date filter
 
 
-        return new Date(remoteGift.date).getFullYear() === parseInt(transactionsDate);
+        return this.parseISODate(remoteGift.date).year === parseInt(transactionsDate);
       });
     }
 
-    return [...enGiftHistory, ...remoteGiftHistoryToMerge].sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+    return [...enGiftHistory, ...remoteGiftHistoryToMerge].sort((a, b) => this.dateToComparable(b.date) - this.dateToComparable(a.date));
   }
 
   updateTotalAmountDonated() {
@@ -28133,8 +28154,7 @@ class GiftHistory {
       // The value of the year select is a year like "2023".
       // Filter the remote gift history to only include gifts from that year and then sum the USD values
       remoteTotal = this.remoteGiftHistory.filter(gift => {
-        const giftDate = new Date(gift.date);
-        return giftDate.getFullYear() === parseInt(transactionsDate);
+        return this.parseISODate(gift.date).year === parseInt(transactionsDate);
       }).reduce((total, gift) => {
         return total + parseFloat(gift.amount);
       }, 0);
@@ -28207,8 +28227,8 @@ class GiftHistory {
         break;
     }
 
-    const date = new Date(gift.date);
-    const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+    const date = this.parseISODate(gift.date);
+    const formattedDate = `${date.month}/${date.day}/${date.year}`;
     const formattedAmount = parseFloat(gift.amount.toString()).toFixed(2);
     giftEl.innerHTML = `
       <div class="en__hubTxnGiving__transaction__header">
