@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, April 21, 2026 @ 12:14:51 ET
+ *  Date: Monday, May 18, 2026 @ 04:18:17 ET
  *  By: michael
  *  ENGrid styles: v0.25.0
  *  ENGrid scripts: v0.25.1
@@ -8143,7 +8143,7 @@ body[data-engrid-debug]:before{
   --engrid__content-footer_background-color:#fff;
   --engrid__body_box-shadow:none;
   --default_font-family:"Open Sans", sans-serif;
-  --default_color:##1f2937;
+  --default_color:#1f2937;
   --default_font-size:20px;
   --default_line-height:32px;
   --h1_font-size:46px;

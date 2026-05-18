@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, April 21, 2026 @ 12:14:51 ET
+ *  Date: Monday, May 18, 2026 @ 04:18:17 ET
  *  By: michael
  *  ENGrid styles: v0.25.0
  *  ENGrid scripts: v0.25.1
@@ -27988,6 +27988,276 @@ class Quiz {
   }
 
 }
+;// CONCATENATED MODULE: ./src/scripts/gift-history.ts
+
+
+class GiftHistory {
+  constructor() {
+    _defineProperty(this, "remoteGiftHistory", []);
+
+    _defineProperty(this, "remoteGiftHistoryFetched", false);
+
+    _defineProperty(this, "logger", new logger_EngridLogger("Gift History"));
+
+    if (!this.shouldRun()) {
+      return;
+    }
+
+    this.run().then(() => {});
+  }
+
+  shouldRun() {
+    return engrid_ENGrid.getPageType() === "SUPPORTERHUB" && engrid_ENGrid.getPageNumber() === 2;
+  }
+
+  async run() {
+    const targetElement = document.querySelector(".en__component--page");
+
+    if (!targetElement) {
+      this.logger.log("Target element for gift history not found, cannot merge remote gift history");
+      return;
+    } //This mutation observer is used to detect when new transactions are added to the DOM
+    //When this happens, we merge in the remote gift history
+
+
+    const observer = new MutationObserver(async mutationsList => {
+      for (const mutation of mutationsList) {
+        if (mutation.type === "childList") {
+          const newTransactionsAdded = [...mutation.addedNodes].some(node => this.isElementWithClass(node, "en__hubTxnGiving__transactions__list"));
+
+          if (newTransactionsAdded) {
+            this.logger.log("New EN transactions added to DOM");
+            this.remoteGiftHistory = await this.fetchRemoteGiftHistory();
+            this.updateTotalAmountDonated();
+            this.renderMergedGiftHistory();
+          }
+        }
+      }
+    });
+    observer.observe(targetElement, {
+      childList: true,
+      subtree: true
+    });
+    document.head.insertAdjacentHTML("beforeend", `<style>.en__hubTxnGiving__transactions__list:not([data-engrid-transactions-loaded]) { display: none }</style>`);
+  }
+
+  isElementWithClass(node, className) {
+    return node.nodeType === Node.ELEMENT_NODE && node.classList.contains(className);
+  }
+
+  parseISODate(dateString) {
+    const parts = dateString.split("-").map(Number);
+    return {
+      year: parts[0],
+      month: parts[1],
+      day: parts[2]
+    };
+  }
+
+  dateToComparable(dateString) {
+    // Handles both "yyyy-MM-dd" and "MM/dd/yyyy" formats
+    if (dateString.includes("-")) {
+      const parts = dateString.split("-").map(Number);
+      return parts[0] * 10000 + parts[1] * 100 + parts[2];
+    } else {
+      const parts = dateString.split("/").map(Number);
+      return parts[2] * 10000 + parts[0] * 100 + parts[1];
+    }
+  }
+
+  renderMergedGiftHistory() {
+    const transactionsList = document.querySelector(".en__hubTxnGiving__transactions__list");
+    transactionsList?.removeAttribute("data-engrid-transactions-loaded"); // Remove previously inserted remote gifts to avoid duplication on pagination
+
+    transactionsList?.querySelectorAll(".en__hubTxnGiving__transaction--remote").forEach(el => el.remove());
+    const enGiftHistory = this.getENGiftHistoryOnPage();
+    const giftHistoryToRender = this.mergeRemoteGiftHistoryEntries(enGiftHistory);
+    this.addGiftHistoryToDOM(giftHistoryToRender);
+    transactionsList?.setAttribute("data-engrid-transactions-loaded", "");
+  }
+
+  getENGiftHistoryOnPage() {
+    const giftHeaders = document.querySelectorAll(".en__hubTxnGiving__transaction .en__hubTxnGiving__transaction__header");
+    const enGifts = [...giftHeaders].map(giftHeader => {
+      return giftHeader.textContent ? this.getGiftDateFromGiftHeaderString(giftHeader.textContent.trim()) : null;
+    }).filter(gift => gift !== null);
+    return enGifts;
+  }
+
+  getGiftDateFromGiftHeaderString(headerString) {
+    const date = headerString.match(/^.*?(\d{1,2}\/\d{1,2}\/\d{4}).*?$/);
+
+    if (date) {
+      return {
+        //createdOn: Date.parse(date[1]),
+        date: date[1],
+        source: "EngagingNetworks"
+      };
+    } else {
+      this.logger.log(`Gift string did not match expected format: ${headerString}}`);
+      return null;
+    }
+  }
+
+  mergeRemoteGiftHistoryEntries(enGiftHistory) {
+    const onFirstPage = document.querySelector(".en__pagination__prev")?.hasAttribute("disabled");
+    const onLastPage = document.querySelector(".en__pagination__next")?.hasAttribute("disabled");
+    const transactionsDate = document.getElementById("en__hubTxnGiving__transactions__date__select")?.value;
+    let remoteGiftHistoryToMerge = [];
+
+    if (enGiftHistory.length > 0) {
+      //if the page has gifts, we want to merge in remote gifts based on the date range of the gifts on the page
+      const mostRecentENGift = this.dateToComparable(enGiftHistory[0].date);
+      const oldestENGift = this.dateToComparable(enGiftHistory[enGiftHistory.length - 1].date);
+      remoteGiftHistoryToMerge = this.remoteGiftHistory.filter(remoteGift => {
+        //If we're on the first page, merge in gifts that are newer than the oldest gift on the page
+        //If we're on the last page, merge in gifts that are older than the most recent gift on the page
+        //Otherwise, we want to merge in all gifts between the oldest and most recent gifts on the page
+        //Also, make sure the year is the same as the year filter (or "all time");
+        const giftYearMatchesOrAllTime = transactionsDate === "0" || transactionsDate === this.parseISODate(remoteGift.date).year.toString();
+        const remoteGiftDate = this.dateToComparable(remoteGift.date);
+
+        if (onFirstPage) {
+          return remoteGiftDate >= oldestENGift && giftYearMatchesOrAllTime;
+        } else if (onLastPage) {
+          return remoteGiftDate <= mostRecentENGift && giftYearMatchesOrAllTime;
+        }
+
+        return remoteGiftDate >= oldestENGift && remoteGiftDate <= mostRecentENGift && giftYearMatchesOrAllTime;
+      });
+    } else {
+      remoteGiftHistoryToMerge = this.remoteGiftHistory.filter(remoteGift => {
+        // If the date filter is set to "All time", merge in all gifts
+        if (transactionsDate === "0") {
+          return true;
+        } // Otherwise, merge in gifts that match the year of the date filter
+
+
+        return this.parseISODate(remoteGift.date).year === parseInt(transactionsDate);
+      });
+    }
+
+    return [...enGiftHistory, ...remoteGiftHistoryToMerge].sort((a, b) => this.dateToComparable(b.date) - this.dateToComparable(a.date));
+  }
+
+  updateTotalAmountDonated() {
+    const el = document.querySelector(".en__hubTxnGiving__transactions__total > span");
+    const enTotal = el?.textContent?.trim().replace("$", "").replace(",", "");
+    const transactionsDate = document.getElementById("en__hubTxnGiving__transactions__date__select")?.value;
+    let remoteTotal; //All time donations
+
+    if (transactionsDate === "0") {
+      remoteTotal = this.remoteGiftHistory.reduce((total, gift) => {
+        return total + gift.amount;
+      }, 0);
+    } else {
+      // The value of the year select is a year like "2023".
+      // Filter the remote gift history to only include gifts from that year and then sum the USD values
+      remoteTotal = this.remoteGiftHistory.filter(gift => {
+        return this.parseISODate(gift.date).year === parseInt(transactionsDate);
+      }).reduce((total, gift) => {
+        return total + parseFloat(gift.amount);
+      }, 0);
+    }
+
+    if (enTotal && remoteTotal) {
+      const total = parseFloat(enTotal) + remoteTotal;
+      el.textContent = `$${total.toFixed(2)}`;
+    }
+  }
+
+  addGiftHistoryToDOM(giftHistoryToRender) {
+    const transactionsList = document.querySelector(".en__hubTxnGiving__transactions__list > ol");
+
+    if (transactionsList) {
+      giftHistoryToRender.forEach((gift, index) => {
+        if (!gift.source || gift.source !== "EngagingNetworks") {
+          transactionsList.insertBefore(this.createGiftElement(gift), transactionsList.children[index]);
+        }
+      });
+    } else {
+      // If this "ol" doesn't exist, it means there are no EN transactions on the page
+      // So we make a list element and add the remote gifts to it
+      const transactionsList = document.querySelector(".en__hubTxnGiving__transactions__list")?.appendChild(document.createElement("ol"));
+
+      if (transactionsList) {
+        giftHistoryToRender.forEach(gift => {
+          if (!gift.source || gift.source !== "EngagingNetworks") {
+            transactionsList.appendChild(this.createGiftElement(gift));
+          }
+        });
+      }
+    }
+
+    if (giftHistoryToRender.length > 0) {
+      document.querySelector(".en__hubTxnGiving__transactions__empty")?.remove();
+    }
+  }
+
+  createGiftElement(gift) {
+    const giftEl = document.createElement("li");
+    giftEl.classList.add("en__hubTxnGiving__transaction");
+    giftEl.classList.add("en__hubTxnGiving__transaction--remote");
+
+    if (gift.type.toLowerCase().includes("recurring")) {
+      giftEl.classList.add("en__hubTxnGiving__transaction--recurring");
+    } else {
+      giftEl.classList.add("en__hubTxnGiving__transaction--single");
+    }
+
+    let paymentString = "";
+
+    switch (gift.method.toLowerCase()) {
+      case "credit card":
+        giftEl.classList.add("en__hubTxnGiving__transaction--card");
+        paymentString = `Credit Card Payment`;
+        break;
+
+      case "check":
+        paymentString = `Check Payment`;
+        break;
+
+      case "bank":
+        giftEl.classList.add("en__hubTxnGiving__transaction--bank");
+        paymentString = `Bank Payment`;
+        break;
+
+      default:
+        paymentString = `${gift.method} Payment`;
+        break;
+    }
+
+    const date = this.parseISODate(gift.date);
+    const formattedDate = `${date.month}/${date.day}/${date.year}`;
+    const formattedAmount = parseFloat(gift.amount.toString()).toFixed(2);
+    giftEl.innerHTML = `
+      <div class="en__hubTxnGiving__transaction__header">
+        <p>$${formattedAmount} on ${formattedDate}</p>
+      </div>
+      <div class="en__hubTxnGiving__transaction__payment"><p>${paymentString}</p></div>
+    `;
+    return giftEl;
+  }
+
+  async fetchRemoteGiftHistory() {
+    if (this.remoteGiftHistoryFetched) {
+      this.logger.log("Remote gift history already fetched, skipping fetch");
+      return this.remoteGiftHistory;
+    }
+
+    const constituentId = window.constituentId || null;
+
+    if (!constituentId) {
+      this.logger.log("No constituent ID found, cannot fetch remote gift history");
+      return [];
+    }
+
+    const req = await fetch(`https://encrmgifthistapi.wwfus.org/api/supporter/${constituentId}?code=4ZoWptvxmdnaZEKLAS65bFH7ErI17TY0YeE305o2HDLnAzFugcpdAw==`);
+    this.remoteGiftHistoryFetched = true;
+    return await req.json();
+  }
+
+}
 ;// CONCATENATED MODULE: ./src/index.ts
  // Uses ENGrid via NPM
 // import {
@@ -27997,6 +28267,7 @@ class Quiz {
 //   DonationAmount,
 //   EnForm,
 // } from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
+
 
 
 
@@ -28198,6 +28469,7 @@ const options = {
 
     new Quiz();
     new Bridger();
+    new GiftHistory();
   },
   onResize: () => console.log("Starter Theme Window Resized"),
   onSubmit: () => {

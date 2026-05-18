@@ -25,6 +25,7 @@ import { AddDAF } from "./scripts/add-daf";
 import { Bridger } from "./scripts/Bridger";
 
 import { Quiz } from "./scripts/quiz";
+import GiftHistory from "./scripts/gift-history";
 
 const options: Options = {
   AutoYear: true,
@@ -236,6 +237,7 @@ const options: Options = {
     }
     new Quiz();
     new Bridger();
+    new GiftHistory();
   },
   onResize: () => console.log("Starter Theme Window Resized"),
 
