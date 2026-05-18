@@ -1,5 +1,4 @@
 import { ENGrid, EngridLogger } from "@4site/engrid-scripts";
-import { mockRemoteGiftHistory } from "./mock-gift-history";
 
 export type RemoteGift = {
   ref: string; // CRM Constituent Lookup ID,
