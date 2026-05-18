@@ -372,10 +372,26 @@ export default class GiftHistory {
       );
       return [];
     }
-    const req = await fetch(
-      `https://encrmgifthistapi.wwfus.org/api/supporter/${constituentId}?code=4ZoWptvxmdnaZEKLAS65bFH7ErI17TY0YeE305o2HDLnAzFugcpdAw==`
-    );
-    this.remoteGiftHistoryFetched = true;
-    return await req.json();
+
+    try {
+      const req = await fetch(
+        `https://encrmgifthistapi.wwfus.org/api/supporter/${constituentId}?code=4ZoWptvxmdnaZEKLAS65bFH7ErI17TY0YeE305o2HDLnAzFugcpdAw==`
+      );
+      this.remoteGiftHistoryFetched = true;
+      if (!req.ok) {
+        this.logger.log(
+          `Remote gift history request failed with status ${req.status}`
+        );
+        return [];
+      }
+      return await req.json();
+    } catch (error) {
+      this.logger.log(
+        `Error fetching remote gift history: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+      return [];
+    }
   }
 }

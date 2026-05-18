@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, May 18, 2026 @ 04:18:17 ET
+ *  Date: Monday, May 18, 2026 @ 05:15:50 ET
  *  By: michael
  *  ENGrid styles: v0.25.0
  *  ENGrid scripts: v0.25.1
@@ -28252,9 +28252,20 @@ class GiftHistory {
       return [];
     }
 
-    const req = await fetch(`https://encrmgifthistapi.wwfus.org/api/supporter/${constituentId}?code=4ZoWptvxmdnaZEKLAS65bFH7ErI17TY0YeE305o2HDLnAzFugcpdAw==`);
-    this.remoteGiftHistoryFetched = true;
-    return await req.json();
+    try {
+      const req = await fetch(`https://encrmgifthistapi.wwfus.org/api/supporter/${constituentId}?code=4ZoWptvxmdnaZEKLAS65bFH7ErI17TY0YeE305o2HDLnAzFugcpdAw==`);
+      this.remoteGiftHistoryFetched = true;
+
+      if (!req.ok) {
+        this.logger.log(`Remote gift history request failed with status ${req.status}`);
+        return [];
+      }
+
+      return await req.json();
+    } catch (error) {
+      this.logger.log(`Error fetching remote gift history: ${error instanceof Error ? error.message : "Unknown error"}`);
+      return [];
+    }
   }
 
 }
