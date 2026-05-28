@@ -19,8 +19,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, May 18, 2026 @ 05:15:50 ET
- *  By: michael
+ *  Date: Thursday, May 28, 2026 @ 14:00:30 ET
+ *  By: nick
  *  ENGrid styles: v0.25.0
  *  ENGrid scripts: v0.25.1
  *
@@ -8245,6 +8245,9 @@ body[data-engrid-debug]:before{
 }
 [data-engrid-theme=wwf] h1{
   margin-top:1rem;
+}
+[data-engrid-theme=wwf] .desktop h1,[data-engrid-theme=wwf] .desktop h2,[data-engrid-theme=wwf] .desktop h3,[data-engrid-theme=wwf] .desktop h4,[data-engrid-theme=wwf] .desktop h5,[data-engrid-theme=wwf] .desktop h6,[data-engrid-theme=wwf] .mobile h1,[data-engrid-theme=wwf] .mobile h2,[data-engrid-theme=wwf] .mobile h3,[data-engrid-theme=wwf] .mobile h4,[data-engrid-theme=wwf] .mobile h5,[data-engrid-theme=wwf] .mobile h6,[data-engrid-theme=wwf] .showif-desktop h1,[data-engrid-theme=wwf] .showif-desktop h2,[data-engrid-theme=wwf] .showif-desktop h3,[data-engrid-theme=wwf] .showif-desktop h4,[data-engrid-theme=wwf] .showif-desktop h5,[data-engrid-theme=wwf] .showif-desktop h6,[data-engrid-theme=wwf] .showif-mobile h1,[data-engrid-theme=wwf] .showif-mobile h2,[data-engrid-theme=wwf] .showif-mobile h3,[data-engrid-theme=wwf] .showif-mobile h4,[data-engrid-theme=wwf] .showif-mobile h5,[data-engrid-theme=wwf] .showif-mobile h6{
+  color:inherit;
 }
 [data-engrid-theme=wwf] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio input[type=radio][value=ANNUAL]+label:before,[data-engrid-theme=wwf] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio input[type=radio][value=MONTHLY]+label:before{
   background-color:initial;
