@@ -250,6 +250,21 @@
     margin-top: 1rem;
   }
 
+  // Allow page-level wrapper classes (e.g. .desktop) to control heading color.
+  .showif-desktop,
+  .desktop,
+  .showif-mobile,
+  .mobile {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      color: inherit;
+    }
+  }
+
   // Add a Heart Icon to the Monthly Donation Button
   .radio-to-buttons_recurrfreq
     .en__field--recurrfreq.en__field--radio
