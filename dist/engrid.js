@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, June 4, 2026 @ 12:19:37 ET
+ *  Date: Thursday, June 4, 2026 @ 14:58:17 ET
  *  By: nick
  *  ENGrid styles: v0.25.6
  *  ENGrid scripts: v0.25.6
@@ -53009,6 +53009,7 @@ class Accessibility {
     this.otherAmountTabSelect();
     this.otherAmountFieldLabel();
     this.premiumGifts();
+    this.generalOptIns();
   }
 
   otherAmountTabSelect() {
@@ -53079,6 +53080,21 @@ class Accessibility {
           field.setAttribute("aria-labelledby", label.id);
         }
       });
+    }
+  }
+
+  generalOptIns() {
+    const generalOptInBlock = document.querySelector('.general-opt-in-copy');
+    const generalOptInInput = document.querySelector('.en__field--opt-conservation-updates');
+
+    if (generalOptInBlock && generalOptInInput) {
+      const label = generalOptInBlock.querySelector('.label');
+
+      if (label) {
+        label.setAttribute('id', `en__field__label--${Math.random().toString(36).slice(2, 7)}`);
+        generalOptInInput?.setAttribute('aria-labelledby', label.id);
+        this.logger.log('Added aria-labelledby to general opt-in checkbox with label id: ' + label.id);
+      }
     }
   }
 

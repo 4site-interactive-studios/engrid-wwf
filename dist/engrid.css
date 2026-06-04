@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, June 4, 2026 @ 12:19:37 ET
+ *  Date: Thursday, June 4, 2026 @ 14:58:17 ET
  *  By: nick
  *  ENGrid styles: v0.25.6
  *  ENGrid scripts: v0.25.6
@@ -8353,7 +8353,7 @@ body[data-engrid-debug]:before{
   border-radius:0;
   box-shadow:none;
   color:#0000;
-  content:".";
+  content:"​";
   display:block;
   height:auto;
   margin-right:.5rem;
@@ -9217,6 +9217,26 @@ body[data-engrid-debug]:before{
   --a_color:#006ea5;
   --a_text-decoration:none;
 }
+[data-engrid-theme=wwf] button.label-tooltip,[data-engrid-theme=wwf] button.label-tooltip:hover{
+  background:unset;
+  border:unset;
+  border-radius:unset;
+  color:#006ea5;
+  cursor:pointer;
+  font-family:var(--label_font-family);
+  font-size:var(--label_font-size);
+  font-weight:var(--a_font-weight);
+  letter-spacing:var(--label_letter-spacing);
+  line-height:var(--label_line-height);
+  margin:unset;
+  margin-left:0;
+  margin-right:0;
+  padding:unset;
+  text-align:unset;
+  -webkit-text-decoration:var(--a_text-decoration);
+  text-decoration:var(--a_text-decoration);
+  text-transform:var(--label_text-transform);
+}
 [data-engrid-theme=wwf]#en__pagebuilder>footer,[data-engrid-theme=wwf]#en__pagebuilder>header{
   pointer-events:none;
 }
@@ -9385,7 +9405,7 @@ body[data-engrid-debug]:before{
   flex-direction:column;
   justify-content:center;
 }
-[data-engrid-theme=wwf] .involved-action__header h4{
+[data-engrid-theme=wwf] .involved-action__header h3,[data-engrid-theme=wwf] .involved-action__header h4{
   color:var(--h2_color);
   font-family:var(--h2_font-family);
   font-size:var(--h2_font-size);
@@ -11222,7 +11242,7 @@ body[data-engrid-debug]:before{
   gap:16px;
   margin:0;
 }
-#footer .footer-links>ul li>a{
+#footer .footer-links>ul li>a,#footer .footer-links>ul li>button{
   color:var(--label_color);
   font-size:18px;
   font-weight:600;
@@ -11230,6 +11250,14 @@ body[data-engrid-debug]:before{
   text-decoration:underline;
   text-decoration-thickness:2px;
   text-underline-offset:8px;
+}
+#footer .footer-links>ul li>button{
+  background-color:unset;
+  border:none;
+  cursor:pointer;
+  padding:0;
+  position:relative;
+  top:-1px;
 }
 @media screen and (max-width:1200px){
   #footer .footer-links>ul{
@@ -11669,6 +11697,69 @@ body[data-engrid-debug]:before{
   [data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true] .body-title{
     padding:0 20px 28px;
   }
+}
+
+.sr-only{
+  clip:rect(0, 0, 0, 0) !important;
+  border:0 !important;
+  height:1px !important;
+  margin:-1px !important;
+  overflow:hidden !important;
+  padding:0 !important;
+  position:absolute !important;
+  white-space:nowrap !important;
+  width:1px !important;
+}
+
+.en__field--donationAmt .en__field__element--radio .en__field__item input:focus+label,.en__field--recurrfreq .en__field__element--radio .en__field__item input:focus+label,.give-by-select-wrapper .en__field--radio .en__field__element--radio .en__field__item input:focus+label{
+  outline:3px solid #e98300;
+  outline-offset:3px;
+}
+
+.en__component--premiumgiftblock .en__pgList .en__pg--selected .en__pg__body .en__pg__select:has(input:focus){
+  border-radius:30px;
+  outline:3px solid #e98300;
+  outline-offset:3px;
+}
+
+[data-engrid-theme=wwf] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio input[type=radio][value=ANNUAL]:focus+label{
+  clip:auto;
+  border:initial;
+  display:flex !important;
+  height:auto;
+  margin:initial;
+  overflow:initial;
+  padding:initial;
+  position:static;
+  white-space:normal;
+  width:auto;
+}
+
+.other-amount-tab-button:not(:focus){
+  clip:rect(0, 0, 0, 0) !important;
+  border:0 !important;
+  height:1px !important;
+  margin:-1px !important;
+  overflow:hidden !important;
+  padding:0 !important;
+  position:absolute !important;
+  white-space:nowrap !important;
+  width:1px !important;
+}
+
+.other-amount-tab-button:focus{
+  font-size:19px;
+  outline:3px solid #e98300;
+  outline-offset:3px;
+  position:absolute;
+}
+
+.i1-force-hide-label .en__field:first-of-type>label,.i10-force-hide-label .en__field:nth-of-type(10)>label,.i11-force-hide-label .en__field:nth-of-type(11)>label,.i2-force-hide-label .en__field:nth-of-type(2)>label,.i3-force-hide-label .en__field:nth-of-type(3)>label,.i4-force-hide-label .en__field:nth-of-type(4)>label,.i5-force-hide-label .en__field:nth-of-type(5)>label,.i6-force-hide-label .en__field:nth-of-type(6)>label,.i7-force-hide-label .en__field:nth-of-type(7)>label,.i8-force-hide-label .en__field:nth-of-type(8)>label,.i9-force-hide-label .en__field:nth-of-type(9)>label,label.force-hide-label{
+  background-color:#ff00001a !important;
+}
+
+body:not(#en__pagebuilder):not([data-engrid-debug]) .i1-force-hide-label .en__field:not(.en__field--validationFailed):first-of-type>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i10-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(10)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i11-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(11)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i2-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(2)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i3-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(3)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i4-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(4)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i5-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(5)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i6-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(6)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i7-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(7)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i8-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(8)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i9-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(9)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) div:not(.en__field--validationFailed) label.force-hide-label{
+  display:none;
 }
 body{
   opacity:1;
