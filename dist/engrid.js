@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, June 4, 2026 @ 14:58:17 ET
+ *  Date: Thursday, June 4, 2026 @ 15:03:03 ET
  *  By: nick
  *  ENGrid styles: v0.25.6
  *  ENGrid scripts: v0.25.6
@@ -53008,7 +53008,6 @@ class Accessibility {
 
     this.otherAmountTabSelect();
     this.otherAmountFieldLabel();
-    this.premiumGifts();
     this.generalOptIns();
   }
 
@@ -53061,24 +53060,6 @@ class Accessibility {
         const frequencyText = this._frequency.frequency == 'onetime' ? 'one-time' : this._frequency.frequency;
         label.textContent = `Other Amount (${frequencyText})`;
         this.logger.log(`Updated other amount label to: ${label.textContent}`);
-      });
-    }
-  }
-
-  premiumGifts() {
-    const premiumGiftBlock = document.querySelector('.en__component--premiumgiftblock');
-
-    if (premiumGiftBlock) {
-      const radioFields = premiumGiftBlock.querySelectorAll(".en__pg:not(.hide) .en__pg__body .en__pg__select input");
-      radioFields.forEach(field => {
-        field.setAttribute("role", "group"); // Add random ID to the label
-
-        const label = field.querySelector("label");
-
-        if (label) {
-          label.setAttribute("id", `en__field__label--${Math.random().toString(36).slice(2, 7)}`);
-          field.setAttribute("aria-labelledby", label.id);
-        }
       });
     }
   }

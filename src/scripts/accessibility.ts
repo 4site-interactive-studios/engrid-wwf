@@ -13,7 +13,6 @@ export default class Accessibility {
   constructor() {
     this.otherAmountTabSelect()
     this.otherAmountFieldLabel()
-    this.premiumGifts()
     this.generalOptIns();
   }
 
@@ -63,24 +62,6 @@ export default class Accessibility {
         label.textContent = `Other Amount (${frequencyText})`
         this.logger.log(`Updated other amount label to: ${label.textContent}`)
       })
-    }
-  }
-  private premiumGifts() {
-    const premiumGiftBlock = document.querySelector('.en__component--premiumgiftblock');
-    if (premiumGiftBlock) {
-      const radioFields = premiumGiftBlock.querySelectorAll(".en__pg:not(.hide) .en__pg__body .en__pg__select input");
-      radioFields.forEach((field) => {
-        field.setAttribute("role", "group");
-        // Add random ID to the label
-        const label = field.querySelector("label") as HTMLLabelElement;
-        if (label) {
-          label.setAttribute(
-            "id",
-            `en__field__label--${Math.random().toString(36).slice(2, 7)}`
-          );
-          field.setAttribute("aria-labelledby", label.id);
-        }
-      });
     }
   }
   private generalOptIns() {
