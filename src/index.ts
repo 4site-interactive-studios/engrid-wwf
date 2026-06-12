@@ -85,6 +85,17 @@ const options: Options = {
       placement: "beforebegin",
     },
   },
+  VGS: {
+    "transaction.ccnumber": {
+      validCardBrands: [
+        { type: "visa" },
+        { type: "visaelectron" },
+        { type: "mastercard" },
+        { type: "amex" },
+        { type: "discover" },
+      ],
+    },
+  },
   onLoad: () => {
     // Send a GTM event is the Page Type is SUBSCRIBEFORM
     if (App.getPageType() === "SUBSCRIBEFORM") {
@@ -266,7 +277,7 @@ const options: Options = {
       // If there is, sync the values
       donationHasPremium.value =
         transactionSelprodvariantid.value &&
-        transactionSelprodvariantid.value != maxTheirGift
+          transactionSelprodvariantid.value != maxTheirGift
           ? "Y"
           : "N";
     }
