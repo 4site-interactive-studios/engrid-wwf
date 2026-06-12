@@ -85,17 +85,6 @@ const options: Options = {
       placement: "beforebegin",
     },
   },
-  VGS: {
-    "transaction.ccnumber": {
-      validCardBrands: [
-        { type: "visa" },
-        { type: "visaelectron" },
-        { type: "mastercard" },
-        { type: "amex" },
-        { type: "discover" },
-      ],
-    },
-  },
   onLoad: () => {
     // Send a GTM event is the Page Type is SUBSCRIBEFORM
     if (App.getPageType() === "SUBSCRIBEFORM") {
