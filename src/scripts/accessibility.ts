@@ -13,7 +13,7 @@ export default class Accessibility {
   constructor() {
     this.otherAmountTabSelect()
     this.otherAmountFieldLabel()
-    this.generalOptIns();
+    this.universalOptIns();
     this.multistepStepper();
   }
 
@@ -65,15 +65,15 @@ export default class Accessibility {
       })
     }
   }
-  private generalOptIns() {
-    const generalOptInBlock = document.querySelector('.general-opt-in-copy') as HTMLElement;
-    const generalOptInInput = document.querySelector('.en__field--opt-conservation-updates') as HTMLElement;
-    if (generalOptInBlock && generalOptInInput) {
-      const label = generalOptInBlock.querySelector('.label') as HTMLElement;
+  private universalOptIns() {
+    const universalOptInBlock = document.querySelector('.universal-opt-in-copy, .general-opt-in-copy, .be-a-part-of-our-community') as HTMLElement;
+    const universalOptInInput = document.querySelector('.universal-opt-in .en__field') as HTMLElement;
+    if (universalOptInBlock && universalOptInInput) {
+      const label = universalOptInBlock.querySelector('.label p, .label') as HTMLElement;
       if (label) {
         label.setAttribute('id', `en__field__label--${Math.random().toString(36).slice(2, 7)}`)
-        generalOptInInput?.setAttribute('aria-labelledby', label.id)
-        this.logger.log('Added aria-labelledby to general opt-in checkbox with label id: ' + label.id)
+        universalOptInInput.setAttribute('aria-labelledby', label.id)
+        this.logger.log('Added aria-labelledby to universal opt-in checkbox with label id: ' + label.id)
       }
     }
   }

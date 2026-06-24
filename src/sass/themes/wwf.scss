@@ -255,7 +255,6 @@
   .desktop,
   .showif-mobile,
   .mobile {
-
     h1,
     h2,
     h3,
@@ -1322,10 +1321,13 @@
   .email-subscription-nudge {
     margin-bottom: calc(2rem * var(--scale-down_20pct));
 
-    p::after {
+    // The nudge text is injected into the <p> via JS (see main.js) so that the
+    // aria-live region actually contains DOM text for screen readers to
+    // announce. We only style it here; the text itself comes from the
+    // --email-subscription-nudge variable at the top.
+    p {
       color: #b71234;
       font-style: italic;
-      content: var(--email-subscription-nudge);
     }
   }
 

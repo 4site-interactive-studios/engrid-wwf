@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, June 24, 2026 @ 10:16:48 ET
+ *  Date: Wednesday, June 24, 2026 @ 16:04:03 ET
  *  By: nick
  *  ENGrid styles: v0.25.8
  *  ENGrid scripts: v0.25.8
@@ -26667,35 +26667,22 @@ const customScript = function (App, DonationFrequency) {
     App.loadJS("https://unpkg.com/@popperjs/core@2", () => {
       App.loadJS("https://unpkg.com/tippy.js@6", () => {
         if (ccvvLabel) {
-          const HELP_TEXT = "The three or four digit security code on your debit or credit card to verify transactions when your card is not present.";
-          let button = document.createElement("button");
-          button.href = "#";
-          button.id = "cvv-tooltip";
-          button.className = "label-tooltip";
-          button.innerText = "What's this?";
-          button.setAttribute("aria-label", "CVV Help");
-          button.setAttribute("aria-haspopup", "dialog");
-          button.setAttribute("aria-expanded", "false");
-          button.setAttribute("aria-controls", "tippy-1");
-          button.addEventListener("click", e => e.preventDefault());
-          ccvvLabel.insertAdjacentElement("afterend", button);
+          let link = document.createElement("a");
+          link.href = "#";
+          link.id = "ccv-tooltip";
+          link.className = "label-tooltip";
+          link.tabIndex = "-1";
+          link.innerText = "What's this?";
+          link.addEventListener("click", e => e.preventDefault());
+          ccvvLabel.insertAdjacentElement("afterend", link);
           let wrapper = document.createElement("span");
           wrapper.className = "label-wrapper";
           ccvvLabel.parentNode.insertBefore(wrapper, ccvvLabel);
           wrapper.appendChild(ccvvLabel);
-          wrapper.appendChild(button);
-          tippy("#cvv-tooltip", {
+          wrapper.appendChild(link);
+          tippy("#ccv-tooltip", {
             theme: "light",
-            content: HELP_TEXT,
-
-            onShow() {
-              button.setAttribute("aria-expanded", "true");
-            },
-
-            onHide() {
-              button.setAttribute("aria-expanded", "false");
-            }
-
+            content: "The three or four digit security code on your debit or credit card to verify transactions when your card is not present."
           });
         }
 
@@ -26900,7 +26887,61 @@ const customScript = function (App, DonationFrequency) {
 
     if (optInClass) {
       const showHideClassName = `engrid__supporterquestions${optInClass.replace("en__field--", "")}-N`;
-      App.addHtml(`<div style="display: none;" class="en__component en__component--copyblock grey-box email-subscription-nudge ${showHideClassName}"><p></p></div>`, ".universal-opt-in", "after");
+      App.addHtml(`<div style="display: none;" class="en__component en__component--copyblock grey-box email-subscription-nudge ${showHideClassName}"><p></p></div>`, ".universal-opt-in", "after"); // Accessibility:
+      // 1. The nudge text used to be injected via CSS `::after`, which never
+      //    enters the DOM, so there was nothing for a screen reader to read.
+      // 2. The aria-live region originally lived inside this box, but the box is
+      //    toggled with `display: none`. VoiceOver does not reliably announce a
+      //    live region that only enters the accessibility tree at the moment its
+      //    text changes. So we use a separate, persistent, visually-hidden live
+      //    region that is always in the DOM/accessibility tree, and push the
+      //    message into it (on a short delay) when ENGrid reveals the box.
+
+      const nudge = document.querySelector(`.${showHideClassName}`);
+
+      if (nudge) {
+        const nudgeText = nudge.querySelector("p"); // Single source of truth: read the message from the CSS variable, with
+        // a hardcoded fallback in case it isn't defined.
+
+        const cssMessage = window.getComputedStyle(nudge).getPropertyValue("--email-subscription-nudge").trim().replace(/^["']|["']$/g, "");
+        const message = cssMessage || "Are you sure? We'd like to share how you're making a difference."; // Visible text for sighted users (kept out of the a11y announcement
+        // flow so it isn't read twice).
+
+        nudgeText.textContent = message;
+        nudgeText.setAttribute("aria-hidden", "true"); // Persistent live region — always present, never display:none.
+
+        const announcer = document.createElement("div");
+        announcer.className = "sr-only";
+        announcer.setAttribute("role", "status");
+        announcer.setAttribute("aria-live", "polite");
+        announcer.setAttribute("aria-atomic", "true");
+        document.body.appendChild(announcer);
+        let wasVisible = window.getComputedStyle(nudge).display !== "none";
+
+        const syncAnnouncement = () => {
+          const isVisible = window.getComputedStyle(nudge).display !== "none";
+          if (isVisible === wasVisible) return;
+          wasVisible = isVisible;
+
+          if (isVisible) {
+            // Clear first, then set on a short delay so VoiceOver registers the
+            // text change as a discrete mutation and announces it.
+            announcer.textContent = "";
+            window.setTimeout(() => {
+              announcer.textContent = message;
+            }, 150);
+          } else {
+            announcer.textContent = "";
+          }
+        }; // ENGrid toggles visibility via the inline style / class attributes.
+
+
+        const nudgeObserver = new MutationObserver(syncAnnouncement);
+        nudgeObserver.observe(nudge, {
+          attributes: true,
+          attributeFilter: ["style", "class"]
+        });
+      }
     }
   }
 
@@ -29241,150 +29282,6 @@ class Quiz {
   }
 
 }
-;// CONCATENATED MODULE: ./src/scripts/accessibility.ts
-
-
-class Accessibility {
-  constructor() {
-    _defineProperty(this, "logger", new logger_EngridLogger('WWF Accessibility', 'black', 'pink', '👁️‍🗨️'));
-
-    _defineProperty(this, "_form", en_form_EnForm.getInstance());
-
-    _defineProperty(this, "_frequency", DonationFrequency.getInstance());
-
-    this.otherAmountTabSelect();
-    this.otherAmountFieldLabel();
-    this.generalOptIns();
-    this.multistepStepper();
-  }
-
-  otherAmountTabSelect() {
-    const otherAmountField = engrid_ENGrid.getField('transaction.donationAmt.other');
-    const donationAmount = DonationAmount.getInstance();
-
-    if (otherAmountField) {
-      this.logger.log('Adding tab button for other amount field'); // Behavior: Prevent the "Other Amount" field from being focused when tabbing beyond the "transaction.donationAmt" radio group
-      // The next tab past the radio group should be a button that when triggered, focuses the "transaction.donationAmt.other" field, and when tabbed, skips that input
-
-      const tabButton = document.createElement("button");
-      tabButton.setAttribute("type", "button");
-      tabButton.setAttribute("aria-label", "Enter other amount");
-      tabButton.textContent = "Other Amount";
-      tabButton.addEventListener("click", () => {
-        otherAmountField.focus();
-      });
-      tabButton.classList.add("other-amount-tab-button");
-      tabButton.style.width = `${otherAmountField.offsetWidth}px`;
-      tabButton.style.height = `${otherAmountField.offsetHeight}px`;
-      otherAmountField.parentNode?.insertBefore(tabButton, otherAmountField);
-      otherAmountField.setAttribute('tabindex', '-1');
-      donationAmount.onAmountChange.subscribe(() => {
-        if (otherAmountField.value) {
-          otherAmountField.removeAttribute('tabindex');
-          tabButton.setAttribute('tabindex', '-1');
-        } else {
-          otherAmountField.setAttribute('tabindex', '-1');
-          tabButton.removeAttribute('tabindex');
-        }
-      });
-    }
-  }
-
-  otherAmountFieldLabel() {
-    const otherAmountField = engrid_ENGrid.getField('transaction.donationAmt.other');
-
-    if (otherAmountField) {
-      this.logger.log('Adding screen reader label for other amount field');
-      const label = document.createElement('label');
-      label.setAttribute('id', 'other-amount-label');
-      label.textContent = 'Other Amount';
-      label.classList.add('sr-only');
-      otherAmountField.parentNode?.insertBefore(label, otherAmountField);
-      otherAmountField.setAttribute('aria-labelledby', label.id);
-      otherAmountField.removeAttribute('aria-label');
-
-      this._frequency.onFrequencyChange.subscribe(e => {
-        const frequencyText = this._frequency.frequency == 'onetime' ? 'one-time' : this._frequency.frequency;
-        label.textContent = `Other Amount (${frequencyText})`;
-        this.logger.log(`Updated other amount label to: ${label.textContent}`);
-      });
-    }
-  }
-
-  generalOptIns() {
-    const generalOptInBlock = document.querySelector('.general-opt-in-copy');
-    const generalOptInInput = document.querySelector('.en__field--opt-conservation-updates');
-
-    if (generalOptInBlock && generalOptInInput) {
-      const label = generalOptInBlock.querySelector('.label');
-
-      if (label) {
-        label.setAttribute('id', `en__field__label--${Math.random().toString(36).slice(2, 7)}`);
-        generalOptInInput?.setAttribute('aria-labelledby', label.id);
-        this.logger.log('Added aria-labelledby to general opt-in checkbox with label id: ' + label.id);
-      }
-    }
-  }
-
-  multistepStepper() {
-    // for every multistep-stepper element, run through the children and add aria-labels to each step
-    const multistepSteppers = document.querySelectorAll('.multistep-stepper');
-    this.logger.log(`Found ${multistepSteppers.length} multistep-stepper elements`);
-    multistepSteppers.forEach((stepper, index) => {
-      stepper.setAttribute('role', 'tablist');
-      stepper.setAttribute('aria-label', 'Form Steps');
-      const steps = stepper.querySelectorAll('.multistep-stepper__step');
-      steps.forEach((step, stepIndex) => {
-        const isActive = step.classList.contains('multistep-stepper__step--active');
-        step.setAttribute('role', 'tab');
-        step.setAttribute('aria-selected', isActive ? 'true' : 'false'); // Roving tabindex: only the active tab is in the tab order
-
-        step.setAttribute('tabindex', isActive ? '0' : '-1');
-        const label = step.querySelector('.multistep-stepper__label');
-
-        if (label) {
-          label.setAttribute('id', `multistep-step-label-${index}-${stepIndex}`);
-          step.setAttribute('aria-labelledby', label.id);
-        }
-
-        step.addEventListener('keydown', e => {
-          let nextIndex = null;
-
-          switch (e.key) {
-            case 'ArrowRight':
-              nextIndex = (stepIndex + 1) % steps.length;
-              break;
-
-            case 'ArrowLeft':
-              nextIndex = (stepIndex - 1 + steps.length) % steps.length;
-              break;
-
-            case 'Home':
-              nextIndex = 0;
-              break;
-
-            case 'End':
-              nextIndex = steps.length - 1;
-              break;
-
-            case 'Enter':
-            case ' ':
-              e.preventDefault();
-              step.click();
-              return;
-
-            default:
-              return;
-          }
-
-          e.preventDefault();
-          steps[nextIndex].focus();
-        });
-      });
-    });
-  }
-
-}
 ;// CONCATENATED MODULE: ./src/scripts/gift-history.ts
 
 
@@ -29666,6 +29563,150 @@ class GiftHistory {
   }
 
 }
+;// CONCATENATED MODULE: ./src/scripts/accessibility.ts
+
+
+class Accessibility {
+  constructor() {
+    _defineProperty(this, "logger", new logger_EngridLogger('WWF Accessibility', 'black', 'pink', '👁️‍🗨️'));
+
+    _defineProperty(this, "_form", en_form_EnForm.getInstance());
+
+    _defineProperty(this, "_frequency", DonationFrequency.getInstance());
+
+    this.otherAmountTabSelect();
+    this.otherAmountFieldLabel();
+    this.universalOptIns();
+    this.multistepStepper();
+  }
+
+  otherAmountTabSelect() {
+    const otherAmountField = engrid_ENGrid.getField('transaction.donationAmt.other');
+    const donationAmount = DonationAmount.getInstance();
+
+    if (otherAmountField) {
+      this.logger.log('Adding tab button for other amount field'); // Behavior: Prevent the "Other Amount" field from being focused when tabbing beyond the "transaction.donationAmt" radio group
+      // The next tab past the radio group should be a button that when triggered, focuses the "transaction.donationAmt.other" field, and when tabbed, skips that input
+
+      const tabButton = document.createElement("button");
+      tabButton.setAttribute("type", "button");
+      tabButton.setAttribute("aria-label", "Enter other amount");
+      tabButton.textContent = "Other Amount";
+      tabButton.addEventListener("click", () => {
+        otherAmountField.focus();
+      });
+      tabButton.classList.add("other-amount-tab-button");
+      tabButton.style.width = `${otherAmountField.offsetWidth}px`;
+      tabButton.style.height = `${otherAmountField.offsetHeight}px`;
+      otherAmountField.parentNode?.insertBefore(tabButton, otherAmountField);
+      otherAmountField.setAttribute('tabindex', '-1');
+      donationAmount.onAmountChange.subscribe(() => {
+        if (otherAmountField.value) {
+          otherAmountField.removeAttribute('tabindex');
+          tabButton.setAttribute('tabindex', '-1');
+        } else {
+          otherAmountField.setAttribute('tabindex', '-1');
+          tabButton.removeAttribute('tabindex');
+        }
+      });
+    }
+  }
+
+  otherAmountFieldLabel() {
+    const otherAmountField = engrid_ENGrid.getField('transaction.donationAmt.other');
+
+    if (otherAmountField) {
+      this.logger.log('Adding screen reader label for other amount field');
+      const label = document.createElement('label');
+      label.setAttribute('id', 'other-amount-label');
+      label.textContent = 'Other Amount';
+      label.classList.add('sr-only');
+      otherAmountField.parentNode?.insertBefore(label, otherAmountField);
+      otherAmountField.setAttribute('aria-labelledby', label.id);
+      otherAmountField.removeAttribute('aria-label');
+
+      this._frequency.onFrequencyChange.subscribe(e => {
+        const frequencyText = this._frequency.frequency == 'onetime' ? 'one-time' : this._frequency.frequency;
+        label.textContent = `Other Amount (${frequencyText})`;
+        this.logger.log(`Updated other amount label to: ${label.textContent}`);
+      });
+    }
+  }
+
+  universalOptIns() {
+    const universalOptInBlock = document.querySelector('.universal-opt-in-copy, .general-opt-in-copy, .be-a-part-of-our-community');
+    const universalOptInInput = document.querySelector('.universal-opt-in .en__field');
+
+    if (universalOptInBlock && universalOptInInput) {
+      const label = universalOptInBlock.querySelector('.label p, .label');
+
+      if (label) {
+        label.setAttribute('id', `en__field__label--${Math.random().toString(36).slice(2, 7)}`);
+        universalOptInInput.setAttribute('aria-labelledby', label.id);
+        this.logger.log('Added aria-labelledby to universal opt-in checkbox with label id: ' + label.id);
+      }
+    }
+  }
+
+  multistepStepper() {
+    // for every multistep-stepper element, run through the children and add aria-labels to each step
+    const multistepSteppers = document.querySelectorAll('.multistep-stepper');
+    this.logger.log(`Found ${multistepSteppers.length} multistep-stepper elements`);
+    multistepSteppers.forEach((stepper, index) => {
+      stepper.setAttribute('role', 'tablist');
+      stepper.setAttribute('aria-label', 'Form Steps');
+      const steps = stepper.querySelectorAll('.multistep-stepper__step');
+      steps.forEach((step, stepIndex) => {
+        const isActive = step.classList.contains('multistep-stepper__step--active');
+        step.setAttribute('role', 'tab');
+        step.setAttribute('aria-selected', isActive ? 'true' : 'false'); // Roving tabindex: only the active tab is in the tab order
+
+        step.setAttribute('tabindex', isActive ? '0' : '-1');
+        const label = step.querySelector('.multistep-stepper__label');
+
+        if (label) {
+          label.setAttribute('id', `multistep-step-label-${index}-${stepIndex}`);
+          step.setAttribute('aria-labelledby', label.id);
+        }
+
+        step.addEventListener('keydown', e => {
+          let nextIndex = null;
+
+          switch (e.key) {
+            case 'ArrowRight':
+              nextIndex = (stepIndex + 1) % steps.length;
+              break;
+
+            case 'ArrowLeft':
+              nextIndex = (stepIndex - 1 + steps.length) % steps.length;
+              break;
+
+            case 'Home':
+              nextIndex = 0;
+              break;
+
+            case 'End':
+              nextIndex = steps.length - 1;
+              break;
+
+            case 'Enter':
+            case ' ':
+              e.preventDefault();
+              step.click();
+              return;
+
+            default:
+              return;
+          }
+
+          e.preventDefault();
+          steps[nextIndex].focus();
+        });
+      });
+    });
+  }
+
+}
 ;// CONCATENATED MODULE: ./src/index.ts
  // Uses ENGrid via NPM
 // import {
@@ -29674,6 +29715,7 @@ class GiftHistory {
 //   DonationFrequency,
 //   DonationAmount,
 //   EnForm,
+//   Ecard
 // } from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
 
 
@@ -29878,8 +29920,9 @@ const options = {
 
     new Quiz();
     new Bridger();
-    new Accessibility();
     new GiftHistory();
+    new Accessibility();
+    new Ecard();
   },
   onResize: () => console.log("Starter Theme Window Resized"),
   onSubmit: () => {

@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, June 24, 2026 @ 10:16:48 ET
+ *  Date: Wednesday, June 24, 2026 @ 16:04:03 ET
  *  By: nick
  *  ENGrid styles: v0.25.8
  *  ENGrid scripts: v0.25.8
@@ -8362,7 +8362,7 @@ body[data-engrid-debug]:before{
   border-radius:0;
   box-shadow:none;
   color:#0000;
-  content:"​";
+  content:".";
   display:block;
   height:auto;
   margin-right:.5rem;
@@ -9005,9 +9005,8 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf] .email-subscription-nudge{
   margin-bottom:calc(2rem*var(--scale-down_20pct));
 }
-[data-engrid-theme=wwf] .email-subscription-nudge p:after{
+[data-engrid-theme=wwf] .email-subscription-nudge p{
   color:#b71234;
-  content:var(--email-subscription-nudge);
   font-style:italic;
 }
 [data-engrid-theme=wwf] .en__field--emailAddress.en__field--validationFailed:not([data-freshaddress-safetosendstatus=invalid])>label{
@@ -9226,26 +9225,6 @@ body[data-engrid-debug]:before{
   --a_color:#006ea5;
   --a_text-decoration:none;
 }
-[data-engrid-theme=wwf] button.label-tooltip,[data-engrid-theme=wwf] button.label-tooltip:hover{
-  background:unset;
-  border:unset;
-  border-radius:unset;
-  color:#006ea5;
-  cursor:pointer;
-  font-family:var(--label_font-family);
-  font-size:var(--label_font-size);
-  font-weight:var(--a_font-weight);
-  letter-spacing:var(--label_letter-spacing);
-  line-height:var(--label_line-height);
-  margin:unset;
-  margin-left:0;
-  margin-right:0;
-  padding:unset;
-  text-align:unset;
-  -webkit-text-decoration:var(--a_text-decoration);
-  text-decoration:var(--a_text-decoration);
-  text-transform:var(--label_text-transform);
-}
 [data-engrid-theme=wwf]#en__pagebuilder>footer,[data-engrid-theme=wwf]#en__pagebuilder>header{
   pointer-events:none;
 }
@@ -9414,7 +9393,7 @@ body[data-engrid-debug]:before{
   flex-direction:column;
   justify-content:center;
 }
-[data-engrid-theme=wwf] .involved-action__header h3,[data-engrid-theme=wwf] .involved-action__header h4{
+[data-engrid-theme=wwf] .involved-action__header h4{
   color:var(--h2_color);
   font-family:var(--h2_font-family);
   font-size:var(--h2_font-size);
@@ -11251,7 +11230,7 @@ body[data-engrid-debug]:before{
   gap:16px;
   margin:0;
 }
-#footer .footer-links>ul li>a,#footer .footer-links>ul li>button{
+#footer .footer-links>ul li>a{
   color:var(--label_color);
   font-size:18px;
   font-weight:600;
@@ -11259,14 +11238,6 @@ body[data-engrid-debug]:before{
   text-decoration:underline;
   text-decoration-thickness:2px;
   text-underline-offset:8px;
-}
-#footer .footer-links>ul li>button{
-  background-color:unset;
-  border:none;
-  cursor:pointer;
-  padding:0;
-  position:relative;
-  top:-1px;
 }
 @media screen and (max-width:1200px){
   #footer .footer-links>ul{
