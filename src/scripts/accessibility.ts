@@ -14,6 +14,7 @@ export default class Accessibility {
     this.otherAmountTabSelect()
     this.otherAmountFieldLabel()
     this.generalOptIns();
+    this.multistepStepper();
   }
 
   private otherAmountTabSelect() {
@@ -75,5 +76,53 @@ export default class Accessibility {
         this.logger.log('Added aria-labelledby to general opt-in checkbox with label id: ' + label.id)
       }
     }
+  }
+  private multistepStepper() {
+    // for every multistep-stepper element, run through the children and add aria-labels to each step
+    const multistepSteppers = document.querySelectorAll('.multistep-stepper');
+    this.logger.log(`Found ${multistepSteppers.length} multistep-stepper elements`)
+    multistepSteppers.forEach((stepper, index) => {
+      stepper.setAttribute('role', 'tablist')
+      stepper.setAttribute('aria-label', 'Form Steps')
+      const steps = stepper.querySelectorAll('.multistep-stepper__step') as NodeListOf<HTMLElement>;
+      steps.forEach((step, stepIndex) => {
+        const isActive = step.classList.contains('multistep-stepper__step--active');
+        step.setAttribute('role', 'tab')
+        step.setAttribute('aria-selected', isActive ? 'true' : 'false')
+        // Roving tabindex: only the active tab is in the tab order
+        step.setAttribute('tabindex', isActive ? '0' : '-1')
+        const label = step.querySelector('.multistep-stepper__label');
+        if (label) {
+          label.setAttribute('id', `multistep-step-label-${index}-${stepIndex}`)
+          step.setAttribute('aria-labelledby', label.id)
+        }
+        step.addEventListener('keydown', (e: KeyboardEvent) => {
+          let nextIndex: number | null = null;
+          switch (e.key) {
+            case 'ArrowRight':
+              nextIndex = (stepIndex + 1) % steps.length;
+              break;
+            case 'ArrowLeft':
+              nextIndex = (stepIndex - 1 + steps.length) % steps.length;
+              break;
+            case 'Home':
+              nextIndex = 0;
+              break;
+            case 'End':
+              nextIndex = steps.length - 1;
+              break;
+            case 'Enter':
+            case ' ':
+              e.preventDefault();
+              step.click();
+              return;
+            default:
+              return;
+          }
+          e.preventDefault();
+          steps[nextIndex].focus();
+        })
+      })
+    })
   }
 }
