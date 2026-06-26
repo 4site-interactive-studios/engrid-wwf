@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, June 26, 2026 @ 15:55:09 ET
+ *  Date: Friday, June 26, 2026 @ 19:56:17 ET
  *  By: nick
  *  ENGrid styles: v0.25.8
  *  ENGrid scripts: v0.25.8
@@ -2568,6 +2568,15 @@ body[data-engrid-live-currency=active] .en__field--donationAmt .en__field__item:
 
 .en__field__error--hidden-by-a11y{
   display:none !important;
+}
+
+.engrid__sr-only{
+  clip:rect(0 0 0 0);
+  height:1px;
+  overflow:hidden;
+  position:absolute;
+  white-space:nowrap;
+  width:1px;
 }
 
 @supports (-webkit-appearance:-apple-pay-button){

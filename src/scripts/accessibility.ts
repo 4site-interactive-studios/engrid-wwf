@@ -17,6 +17,7 @@ export default class Accessibility {
     this.multistepStepper();
     this.otCookieSettings();
     this.thankYouTitle();
+    this.relocateSupporterHubAlerts();
   }
 
   private otherAmountTabSelect() {
@@ -151,6 +152,19 @@ export default class Accessibility {
       const originalTitle = document.title;
       document.title = `Thank You | ${originalTitle}`;
       this.logger.log(`Updated document title to: ${document.title}`)
+    }
+  }
+
+  private relocateSupporterHubAlerts() {
+    if (ENGrid.getPageType() === "SUPPORTERHUB" && ENGrid.getPageNumber() === 1) {
+      const emailField = document.querySelector('.en__supporterHubLogin__emailAddress') as HTMLElement;
+      const alerts = document.querySelectorAll('.en__hubgadget__response') as NodeListOf<HTMLElement>;
+      if (emailField && alerts) {
+        alerts.forEach(alert => {
+          emailField.insertAdjacentElement('afterend', alert);
+        });
+        this.logger.log('Relocated supporter hub alerts to be after the email field')
+      }
     }
   }
 }

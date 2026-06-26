@@ -316,17 +316,41 @@ export const customScript = function (App, DonationFrequency) {
         premiumTitle.removeAttribute("data-non-us-donor");
       }
     };
+    const countryNoticeMessage =
+      'Note: We are unable to mail thank-you gifts to donors outside the United States and its territories and have selected the "Maximize my gift" option for you.';
+    let _countryAnnouncer = null;
+    const getCountryAnnouncer = () => {
+      if (!_countryAnnouncer) {
+        _countryAnnouncer = document.createElement("div");
+        _countryAnnouncer.className = "sr-only";
+        _countryAnnouncer.setAttribute("role", "status");
+        _countryAnnouncer.setAttribute("aria-live", "polite");
+        _countryAnnouncer.setAttribute("aria-atomic", "true");
+        document.body.appendChild(_countryAnnouncer);
+      }
+      return _countryAnnouncer;
+    };
     const addCountryNotice = () => {
       if (!document.querySelector(".en__field--country .en__field__notice")) {
         App.addHtml(
-          '<div class="en__field__notice">Note: We are unable to mail thank-you gifts to donors outside the United States and its territories and have selected the "Mazimize my gift" option for you.</div>',
+          `<div class="en__field__notice">${countryNoticeMessage}</div>`,
           ".en__field--country .en__field__element",
           "after"
         );
       }
+      // Announce to screen readers via a persistent live region.
+      // A live region that enters the DOM already populated is unreliable in
+      // VoiceOver, so we clear first then set on a short delay so the AT
+      // registers the text change as a discrete mutation and announces it.
+      const announcer = getCountryAnnouncer();
+      announcer.textContent = "";
+      window.setTimeout(() => {
+        announcer.textContent = countryNoticeMessage;
+      }, 150);
     };
     const removeCountryNotice = () => {
       App.removeHtml(".en__field--country .en__field__notice");
+      getCountryAnnouncer().textContent = "";
     };
     if (
       !window.EngagingNetworks.require._defined.enjs.checkSubmissionFailed()
@@ -792,8 +816,7 @@ export const customScript = function (App, DonationFrequency) {
         let wasVisible = window.getComputedStyle(nudge).display !== "none";
 
         const syncAnnouncement = () => {
-          const isVisible =
-            window.getComputedStyle(nudge).display !== "none";
+          const isVisible = window.getComputedStyle(nudge).display !== "none";
           if (isVisible === wasVisible) return;
           wasVisible = isVisible;
 
