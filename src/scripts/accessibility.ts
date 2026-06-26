@@ -15,6 +15,7 @@ export default class Accessibility {
     this.otherAmountFieldLabel()
     this.universalOptIns();
     this.multistepStepper();
+    this.TEMPnewColors();
   }
 
   private otherAmountTabSelect() {
@@ -124,5 +125,16 @@ export default class Accessibility {
         })
       })
     })
+  }
+  /**
+   * Temporary - Replace some content with higher-contrast versions until CMS is updated with new assets. This is a temporary solution to allow for review of the new assets before they are published to the CMS.
+   * TODO: Remove this function once the CMS is updated with new assets.
+   */
+  private TEMPnewColors() {
+    const securePadlock = document.querySelector('.padlock-icon div img[src*="donation-icon_secure-payment"]') as HTMLElement;
+    if (securePadlock) {
+      securePadlock.setAttribute('src', 'https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-icon_secure-payment.webp?v=1782489751000');
+      this.logger.log('Updated secure padlock image to new asset for higher contrast')
+    }
   }
 }

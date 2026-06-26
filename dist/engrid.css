@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, June 24, 2026 @ 16:04:03 ET
+ *  Date: Friday, June 26, 2026 @ 13:28:24 ET
  *  By: nick
  *  ENGrid styles: v0.25.8
  *  ENGrid scripts: v0.25.8
@@ -994,7 +994,7 @@ template{
 }
 
 .en__ecardmessage__default{
-  border:1px solid #bfbfbf;
+  border:1px solid var(--textarea_border-color, #bfbfbf);
   min-height:15.625rem;
   padding:.625rem;
 }
@@ -1023,7 +1023,7 @@ template{
 
 .en__ecardrecipients__list{
   background:var(--color_white);
-  border:1px solid #bfbfbf;
+  border:1px solid var(--textarea_border-color, #bfbfbf);
   margin:1.25rem 0 0;
   min-height:15.625rem;
   padding:.625rem;
@@ -3899,6 +3899,11 @@ button.en__ecarditems__addrecipient{
   margin-left:var(--fields_spacing-inline);
   margin-right:var(--fields_spacing-inline);
   width:calc((100% - var(--fields_spacing-inline)*var(--ecard_thumnail-row_count)*2)/var(--ecard_thumnail-row_count));
+}
+
+.en__ecarditems__thumb:focus,.en__ecarditems__thumb:focus-visible{
+  outline:3px solid var(--focus_outline_color, #086ce7);
+  outline-offset:var(--focus_outline_offset, 2px);
 }
 
 .en__ecarditems__thumb img{
@@ -8245,6 +8250,7 @@ body[data-engrid-debug]:before{
   --engrid__content-header_background-color:#000;
   --engrid__content-footer_background-color:#fff;
   --engrid__body_box-shadow:none;
+  --error__color:#cf2300;
   --default_font-family:"Open Sans", sans-serif;
   --default_color:#1f2937;
   --default_font-size:20px;
@@ -8262,6 +8268,7 @@ body[data-engrid-debug]:before{
   --input_border-color:grey;
   --input_border-radius:2px;
   --input_padding:1.3ch 1.2ch;
+  --input_placeholder-color:#686b67;
   --color_primary:#e5621a;
   --button_color:#006ea3;
   --button_font-size:24px;
@@ -8297,12 +8304,11 @@ body[data-engrid-debug]:before{
   --label_line-height:24px;
   --label_font-weight:700;
   --label_color:#222;
-  --input_placeholder-color:#989b97;
   --radio_height:30px;
   --radio_width:30px;
   --radio_border-width:2px;
   --radio_color:#006ea3;
-  --radio_background-color_hover:#bababa;
+  --radio_background-color_hover:var(--input_placeholder-color);
   --radio_box-shadow_hover:inset 0 0 0 4px #fff;
   --radio_background-color_selected:#006ea3;
   --radio_border-color_selected:#006ea3;
@@ -10944,7 +10950,7 @@ body[data-engrid-debug]:before{
   width:16px;
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--imgselect .quiz-correct-answer{
-  background-color:#d4f0d5;
+  background-color:#e4ffe5;
   border:2px solid green;
   color:green;
   font-weight:700;
@@ -10995,7 +11001,7 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--radio.en__field--survey .quiz-incorrect-answer .en__field__label--item{
   background-color:#f8e0e0;
   border:2px solid #9e1919;
-  color:red;
+  color:#9e1919;
   opacity:1;
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--radio.en__field--survey .quiz-incorrect-answer .en__field__label--item:before{
@@ -11732,6 +11738,16 @@ body[data-engrid-debug]:before{
   outline:3px solid #e98300;
   outline-offset:3px;
   position:absolute;
+}
+
+.en__hubOverlay__impact .en__hubOverlay__header h2{
+  color:#404040;
+  font-size:.875rem;
+}
+
+.progress-bar_goal,.progress-bar_supporters{
+  font-size:19px;
+  font-weight:700;
 }
 
 .i1-force-hide-label .en__field:first-of-type>label,.i10-force-hide-label .en__field:nth-of-type(10)>label,.i11-force-hide-label .en__field:nth-of-type(11)>label,.i2-force-hide-label .en__field:nth-of-type(2)>label,.i3-force-hide-label .en__field:nth-of-type(3)>label,.i4-force-hide-label .en__field:nth-of-type(4)>label,.i5-force-hide-label .en__field:nth-of-type(5)>label,.i6-force-hide-label .en__field:nth-of-type(6)>label,.i7-force-hide-label .en__field:nth-of-type(7)>label,.i8-force-hide-label .en__field:nth-of-type(8)>label,.i9-force-hide-label .en__field:nth-of-type(9)>label,label.force-hide-label{
