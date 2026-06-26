@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, June 26, 2026 @ 13:39:43 ET
+ *  Date: Friday, June 26, 2026 @ 15:35:51 ET
  *  By: nick
  *  ENGrid styles: v0.25.8
  *  ENGrid scripts: v0.25.8
@@ -53968,7 +53968,7 @@ class Accessibility {
     this.otherAmountFieldLabel();
     this.universalOptIns();
     this.multistepStepper();
-    this.TEMPnewColors();
+    this.otCookieSettings();
   }
 
   otherAmountTabSelect() {
@@ -54096,18 +54096,18 @@ class Accessibility {
       });
     });
   }
-  /**
-   * Temporary - Replace some content with higher-contrast versions until CMS is updated with new assets. This is a temporary solution to allow for review of the new assets before they are published to the CMS.
-   * TODO: Remove this function once the CMS is updated with new assets.
-   */
 
+  otCookieSettings() {
+    const otCookies = document.querySelector('.ot-sdk-show-settings');
 
-  TEMPnewColors() {
-    const securePadlock = document.querySelector('.padlock-icon div img[src*="donation-icon_secure-payment"]');
-
-    if (securePadlock) {
-      securePadlock.setAttribute('src', 'https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-icon_secure-payment.webp?v=1782489751000');
-      this.logger.log('Updated secure padlock image to new asset for higher contrast');
+    if (otCookies) {
+      otCookies.setAttribute('tabindex', '0');
+      otCookies.setAttribute('aria-label', 'Cookie Settings');
+      otCookies.setAttribute('role', 'button');
+      otCookies.setAttribute('aria-haspopup', 'dialog');
+      otCookies.setAttribute('aria-expanded', 'false');
+      otCookies.setAttribute('aria-controls', 'onetrust-pc-sdk');
+      this.logger.log('Added aria-label and role to cookie settings button');
     }
   }
 
