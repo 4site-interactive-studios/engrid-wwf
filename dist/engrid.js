@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, June 26, 2026 @ 15:35:51 ET
+ *  Date: Friday, June 26, 2026 @ 15:55:09 ET
  *  By: nick
  *  ENGrid styles: v0.25.8
  *  ENGrid scripts: v0.25.8
@@ -53969,6 +53969,7 @@ class Accessibility {
     this.universalOptIns();
     this.multistepStepper();
     this.otCookieSettings();
+    this.thankYouTitle();
   }
 
   otherAmountTabSelect() {
@@ -54108,6 +54109,20 @@ class Accessibility {
       otCookies.setAttribute('aria-expanded', 'false');
       otCookies.setAttribute('aria-controls', 'onetrust-pc-sdk');
       this.logger.log('Added aria-label and role to cookie settings button');
+    }
+  }
+
+  thankYouTitle() {
+    if (dist_engrid_ENGrid.isThankYouPage()) {
+      // Add "Thank You | <original title>" to the document title for screen readers if the title does not already contain "Thank You"
+      if (document.title.includes('Thank You')) {
+        this.logger.log('Document title already contains "Thank You", skipping update');
+        return;
+      }
+
+      const originalTitle = document.title;
+      document.title = `Thank You | ${originalTitle}`;
+      this.logger.log(`Updated document title to: ${document.title}`);
     }
   }
 
