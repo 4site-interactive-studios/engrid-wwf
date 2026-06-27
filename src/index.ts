@@ -1,11 +1,3 @@
-// import {
-//   Options,
-//   App,
-//   DonationFrequency,
-//   DonationAmount,
-//   EnForm,
-//   Ecard
-// } from "@4site/engrid-scripts"; // Uses ENGrid via NPM
 import {
   Options,
   App,
@@ -13,7 +5,15 @@ import {
   DonationAmount,
   EnForm,
   Ecard
-} from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
+} from "@4site/engrid-scripts"; // Uses ENGrid via NPM
+// import {
+//   Options,
+//   App,
+//   DonationFrequency,
+//   DonationAmount,
+//   EnForm,
+//   Ecard
+// } from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
 
 import "./sass/main.scss";
 import { customScript } from "./scripts/main";
