@@ -316,17 +316,41 @@ export const customScript = function (App, DonationFrequency) {
         premiumTitle.removeAttribute("data-non-us-donor");
       }
     };
+    const countryNoticeMessage =
+      'Note: We are unable to mail thank-you gifts to donors outside the United States and its territories and have selected the "Maximize my gift" option for you.';
+    let _countryAnnouncer = null;
+    const getCountryAnnouncer = () => {
+      if (!_countryAnnouncer) {
+        _countryAnnouncer = document.createElement("div");
+        _countryAnnouncer.className = "sr-only";
+        _countryAnnouncer.setAttribute("role", "status");
+        _countryAnnouncer.setAttribute("aria-live", "polite");
+        _countryAnnouncer.setAttribute("aria-atomic", "true");
+        document.body.appendChild(_countryAnnouncer);
+      }
+      return _countryAnnouncer;
+    };
     const addCountryNotice = () => {
       if (!document.querySelector(".en__field--country .en__field__notice")) {
         App.addHtml(
-          '<div class="en__field__notice">Note: We are unable to mail thank-you gifts to donors outside the United States and its territories and have selected the "Mazimize my gift" option for you.</div>',
+          `<div class="en__field__notice">${countryNoticeMessage}</div>`,
           ".en__field--country .en__field__element",
           "after"
         );
       }
+      // Announce to screen readers via a persistent live region.
+      // A live region that enters the DOM already populated is unreliable in
+      // VoiceOver, so we clear first then set on a short delay so the AT
+      // registers the text change as a discrete mutation and announces it.
+      const announcer = getCountryAnnouncer();
+      announcer.textContent = "";
+      window.setTimeout(() => {
+        announcer.textContent = countryNoticeMessage;
+      }, 150);
     };
     const removeCountryNotice = () => {
       App.removeHtml(".en__field--country .en__field__notice");
+      getCountryAnnouncer().textContent = "";
     };
     if (
       !window.EngagingNetworks.require._defined.enjs.checkSubmissionFailed()
@@ -746,12 +770,75 @@ export const customScript = function (App, DonationFrequency) {
         "en__field--",
         ""
       )}-N`;
-
       App.addHtml(
         `<div style="display: none;" class="en__component en__component--copyblock grey-box email-subscription-nudge ${showHideClassName}"><p></p></div>`,
         ".universal-opt-in",
         "after"
       );
+
+      // Accessibility:
+      // 1. The nudge text used to be injected via CSS `::after`, which never
+      //    enters the DOM, so there was nothing for a screen reader to read.
+      // 2. The aria-live region originally lived inside this box, but the box is
+      //    toggled with `display: none`. VoiceOver does not reliably announce a
+      //    live region that only enters the accessibility tree at the moment its
+      //    text changes. So we use a separate, persistent, visually-hidden live
+      //    region that is always in the DOM/accessibility tree, and push the
+      //    message into it (on a short delay) when ENGrid reveals the box.
+      const nudge = document.querySelector(`.${showHideClassName}`);
+      if (nudge) {
+        const nudgeText = nudge.querySelector("p");
+
+        // Single source of truth: read the message from the CSS variable, with
+        // a hardcoded fallback in case it isn't defined.
+        const cssMessage = window
+          .getComputedStyle(nudge)
+          .getPropertyValue("--email-subscription-nudge")
+          .trim()
+          .replace(/^["']|["']$/g, "");
+        const message =
+          cssMessage ||
+          "Are you sure? We'd like to share how you're making a difference.";
+
+        // Visible text for sighted users (kept out of the a11y announcement
+        // flow so it isn't read twice).
+        nudgeText.textContent = message;
+        nudgeText.setAttribute("aria-hidden", "true");
+
+        // Persistent live region — always present, never display:none.
+        const announcer = document.createElement("div");
+        announcer.className = "sr-only";
+        announcer.setAttribute("role", "status");
+        announcer.setAttribute("aria-live", "polite");
+        announcer.setAttribute("aria-atomic", "true");
+        document.body.appendChild(announcer);
+
+        let wasVisible = window.getComputedStyle(nudge).display !== "none";
+
+        const syncAnnouncement = () => {
+          const isVisible = window.getComputedStyle(nudge).display !== "none";
+          if (isVisible === wasVisible) return;
+          wasVisible = isVisible;
+
+          if (isVisible) {
+            // Clear first, then set on a short delay so VoiceOver registers the
+            // text change as a discrete mutation and announces it.
+            announcer.textContent = "";
+            window.setTimeout(() => {
+              announcer.textContent = message;
+            }, 150);
+          } else {
+            announcer.textContent = "";
+          }
+        };
+
+        // ENGrid toggles visibility via the inline style / class attributes.
+        const nudgeObserver = new MutationObserver(syncAnnouncement);
+        nudgeObserver.observe(nudge, {
+          attributes: true,
+          attributeFilter: ["style", "class"],
+        });
+      }
     }
   }
 

@@ -19,10 +19,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, June 1, 2026 @ 16:35:37 ET
+ *  Date: Monday, June 29, 2026 @ 23:37:58 ET
  *  By: fernando
- *  ENGrid styles: v0.25.6
- *  ENGrid scripts: v0.25.6
+ *  ENGrid styles: v0.25.11
+ *  ENGrid scripts: v0.25.11
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -994,7 +994,7 @@ template{
 }
 
 .en__ecardmessage__default{
-  border:1px solid #bfbfbf;
+  border:1px solid var(--textarea_border-color, #bfbfbf);
   min-height:15.625rem;
   padding:.625rem;
 }
@@ -1023,7 +1023,7 @@ template{
 
 .en__ecardrecipients__list{
   background:var(--color_white);
-  border:1px solid #bfbfbf;
+  border:1px solid var(--textarea_border-color, #bfbfbf);
   margin:1.25rem 0 0;
   min-height:15.625rem;
   padding:.625rem;
@@ -2570,6 +2570,15 @@ body[data-engrid-live-currency=active] .en__field--donationAmt .en__field__item:
   display:none !important;
 }
 
+.engrid__sr-only{
+  clip:rect(0 0 0 0);
+  height:1px;
+  overflow:hidden;
+  position:absolute;
+  white-space:nowrap;
+  width:1px;
+}
+
 @supports (-webkit-appearance:-apple-pay-button){
   .apple-pay-button{
     -apple-pay-button-type:donate;
@@ -3901,6 +3910,11 @@ button.en__ecarditems__addrecipient{
   width:calc((100% - var(--fields_spacing-inline)*var(--ecard_thumnail-row_count)*2)/var(--ecard_thumnail-row_count));
 }
 
+.en__ecarditems__thumb:focus,.en__ecarditems__thumb:focus-visible{
+  outline:3px solid var(--focus_outline_color, #086ce7);
+  outline-offset:var(--focus_outline_offset, 2px);
+}
+
 .en__ecarditems__thumb img{
   border:var(--ecard_thumnail-border-width) solid var(--color_primary);
   filter:brightness(75%);
@@ -3944,6 +3958,17 @@ button.en__ecarditems__prevclose{
 }
 .en__ecarditems__showprev :hover{
   color:#fff;
+}
+.en__ecardrecipients__futureDelivery input[type=date]{
+  appearance:none;
+  box-sizing:border-box;
+  max-width:100%;
+  min-width:0;
+  width:100%;
+}
+
+.en__ecardrecipients__futureDelivery input[type=date]::-webkit-date-and-time-value{
+  text-align:left;
 }
 
 @media screen and (max-width:700px){
@@ -5099,6 +5124,11 @@ div[id^=nb-field-].nb-success input{
   padding:0;
   width:var(--radio_width);
 }
+[data-engrid-theme] .en__pg__select:has(input:focus){
+  border-radius:30px;
+  outline:3px solid var(--focus_outline_color, #086ce7);
+  outline-offset:var(--focus_outline_offset, 2px);
+}
 [data-engrid-theme] .en__pg__display{
   grid-area:en__pg__display;
   padding:0;
@@ -5416,6 +5446,10 @@ body:not(#en__pagebuilder):not([data-engrid-debug]) [class*=showifamount].animat
 }
 [data-engrid-theme][data-engrid-page-type=supporterhub] .en__hubPledge__validationFail .en__field__element{
   border:none;
+}
+[data-engrid-theme][data-engrid-page-type=supporterhub] .en__component--hubgadget:focus{
+  outline:3px solid var(--focus_outline_color, #086ce7);
+  outline-offset:var(--focus_outline_offset, 2px);
 }
 @media screen and (max-width:768px){
   [data-engrid-theme] .en__hubPledge__buttons{
@@ -8236,6 +8270,7 @@ body[data-engrid-debug]:before{
   --engrid__content-header_background-color:#000;
   --engrid__content-footer_background-color:#fff;
   --engrid__body_box-shadow:none;
+  --error__color:#cf2300;
   --default_font-family:"Open Sans", sans-serif;
   --default_color:#1f2937;
   --default_font-size:20px;
@@ -8253,6 +8288,7 @@ body[data-engrid-debug]:before{
   --input_border-color:grey;
   --input_border-radius:2px;
   --input_padding:1.3ch 1.2ch;
+  --input_placeholder-color:#686b67;
   --color_primary:#e5621a;
   --button_color:#006ea3;
   --button_font-size:24px;
@@ -8288,12 +8324,11 @@ body[data-engrid-debug]:before{
   --label_line-height:24px;
   --label_font-weight:700;
   --label_color:#222;
-  --input_placeholder-color:#989b97;
   --radio_height:30px;
   --radio_width:30px;
   --radio_border-width:2px;
   --radio_color:#006ea3;
-  --radio_background-color_hover:#bababa;
+  --radio_background-color_hover:var(--input_placeholder-color);
   --radio_box-shadow_hover:inset 0 0 0 4px #fff;
   --radio_background-color_selected:#006ea3;
   --radio_border-color_selected:#006ea3;
@@ -8996,9 +9031,8 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf] .email-subscription-nudge{
   margin-bottom:calc(2rem*var(--scale-down_20pct));
 }
-[data-engrid-theme=wwf] .email-subscription-nudge p:after{
+[data-engrid-theme=wwf] .email-subscription-nudge p{
   color:#b71234;
-  content:var(--email-subscription-nudge);
   font-style:italic;
 }
 [data-engrid-theme=wwf] .en__field--emailAddress.en__field--validationFailed:not([data-freshaddress-safetosendstatus=invalid])>label{
@@ -10936,7 +10970,7 @@ body[data-engrid-debug]:before{
   width:16px;
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--imgselect .quiz-correct-answer{
-  background-color:#d4f0d5;
+  background-color:#e4ffe5;
   border:2px solid green;
   color:green;
   font-weight:700;
@@ -10987,7 +11021,7 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--radio.en__field--survey .quiz-incorrect-answer .en__field__label--item{
   background-color:#f8e0e0;
   border:2px solid #9e1919;
-  color:red;
+  color:#9e1919;
   opacity:1;
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--radio.en__field--survey .quiz-incorrect-answer .en__field__label--item:before{
@@ -10995,7 +11029,7 @@ body[data-engrid-debug]:before{
   border-color:#9e1919 !important;
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--radio.en__field--survey .quiz-correct-answer .en__field__label--item{
-  background-color:#d4f0d5;
+  background-color:#e4ffe5;
   border:2px solid green;
   color:green;
   font-weight:700;
@@ -11669,6 +11703,79 @@ body[data-engrid-debug]:before{
   [data-engrid-theme=wwf][data-engrid-multistep][data-engrid-multistep-expand=true] .body-title{
     padding:0 20px 28px;
   }
+}
+
+.sr-only{
+  clip:rect(0, 0, 0, 0) !important;
+  border:0 !important;
+  height:1px !important;
+  margin:-1px !important;
+  overflow:hidden !important;
+  padding:0 !important;
+  position:absolute !important;
+  white-space:nowrap !important;
+  width:1px !important;
+}
+
+.en__field--donationAmt .en__field__element--radio .en__field__item input:focus+label,.en__field--recurrfreq .en__field__element--radio .en__field__item input:focus+label,.give-by-select-wrapper .en__field--radio .en__field__element--radio .en__field__item input:focus+label{
+  outline:3px solid #e98300;
+  outline-offset:3px;
+}
+
+.en__component--premiumgiftblock .en__pgList .en__pg--selected .en__pg__body .en__pg__select:has(input:focus){
+  border-radius:30px;
+  outline:3px solid #e98300;
+  outline-offset:3px;
+}
+
+[data-engrid-theme=wwf] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio input[type=radio][value=ANNUAL]:focus+label{
+  clip:auto;
+  border:initial;
+  display:flex !important;
+  height:auto;
+  margin:initial;
+  overflow:initial;
+  padding:initial;
+  position:static;
+  white-space:normal;
+  width:auto;
+}
+
+.other-amount-tab-button:not(:focus){
+  clip:rect(0, 0, 0, 0) !important;
+  border:0 !important;
+  height:1px !important;
+  margin:-1px !important;
+  overflow:hidden !important;
+  padding:0 !important;
+  position:absolute !important;
+  white-space:nowrap !important;
+  width:1px !important;
+}
+
+.other-amount-tab-button:focus{
+  font-size:19px;
+  outline:3px solid #e98300;
+  outline-offset:3px;
+  position:absolute;
+}
+
+.en__hubOverlay__impact .en__hubOverlay__header h2{
+  color:#404040;
+  font-size:.875rem;
+}
+
+.progress-bar_goal,.progress-bar_supporters{
+  font-size:19px;
+  font-weight:700;
+}
+
+.i1-force-hide-label .en__field:first-of-type>label,.i10-force-hide-label .en__field:nth-of-type(10)>label,.i11-force-hide-label .en__field:nth-of-type(11)>label,.i2-force-hide-label .en__field:nth-of-type(2)>label,.i3-force-hide-label .en__field:nth-of-type(3)>label,.i4-force-hide-label .en__field:nth-of-type(4)>label,.i5-force-hide-label .en__field:nth-of-type(5)>label,.i6-force-hide-label .en__field:nth-of-type(6)>label,.i7-force-hide-label .en__field:nth-of-type(7)>label,.i8-force-hide-label .en__field:nth-of-type(8)>label,.i9-force-hide-label .en__field:nth-of-type(9)>label,label.force-hide-label{
+  background-color:#ff00001a !important;
+}
+
+body:not(#en__pagebuilder):not([data-engrid-debug]) .i1-force-hide-label .en__field:not(.en__field--validationFailed):first-of-type>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i10-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(10)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i11-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(11)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i2-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(2)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i3-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(3)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i4-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(4)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i5-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(5)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i6-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(6)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i7-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(7)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i8-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(8)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i9-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(9)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) div:not(.en__field--validationFailed) label.force-hide-label{
+  display:none;
 }
 body{
   opacity:1;

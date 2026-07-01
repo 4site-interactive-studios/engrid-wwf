@@ -4,6 +4,7 @@ import {
   DonationFrequency,
   DonationAmount,
   EnForm,
+  Ecard
 } from "@4site/engrid-scripts"; // Uses ENGrid via NPM
 // import {
 //   Options,
@@ -11,6 +12,7 @@ import {
 //   DonationFrequency,
 //   DonationAmount,
 //   EnForm,
+//   Ecard
 // } from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
 
 import "./sass/main.scss";
@@ -26,6 +28,7 @@ import { Bridger } from "./scripts/Bridger";
 
 import { Quiz } from "./scripts/quiz";
 import GiftHistory from "./scripts/gift-history";
+import Accessibility from "./scripts/accessibility";
 
 const options: Options = {
   AutoYear: true,
@@ -238,6 +241,8 @@ const options: Options = {
     new Quiz();
     new Bridger();
     new GiftHistory();
+    new Accessibility();
+    new Ecard();
   },
   onResize: () => console.log("Starter Theme Window Resized"),
 
@@ -287,7 +292,7 @@ const options: Options = {
       // If there is, sync the values
       donationHasPremium.value =
         transactionSelprodvariantid.value &&
-        transactionSelprodvariantid.value != maxTheirGift
+          transactionSelprodvariantid.value != maxTheirGift
           ? "Y"
           : "N";
     }
