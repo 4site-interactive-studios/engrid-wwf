@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, July 16, 2026 @ 09:18:04 ET
+ *  Date: Thursday, July 16, 2026 @ 15:12:23 ET
  *  By: nick
  *  ENGrid styles: v0.25.8
  *  ENGrid scripts: v0.25.8
@@ -29156,10 +29156,49 @@ class Quiz {
     this.handleQuizResults();
     this.setBgImage();
     this.addEventListeners();
+    this.altsAndArias();
   }
 
   shouldRun() {
     return engrid_ENGrid.getBodyData("subtheme") === "quiz";
+  }
+
+  altsAndArias() {
+    // Expose a default (valid) state on the survey group for assistive tech
+    // and inject a static hint that is shown once keyboard navigation is used.
+    const group = document.querySelector(".en__component--svblock .en__field--survey[role='group']");
+    if (!group) return;
+    group.setAttribute("aria-invalid", "false");
+
+    if (!document.getElementById("quiz-confirm-hint")) {
+      const hint = document.createElement("span");
+      hint.id = "quiz-confirm-hint";
+      hint.className = "quiz-confirm-hint";
+      hint.textContent = "Press Enter to confirm your choice.";
+      group.appendChild(hint);
+    } // Promote result headings (span style="font-size:26px;") to h2 semantics.
+
+
+    this.labelResultHeadings(); // Live region for announcing the revealed answer feedback text.
+
+    if (!document.getElementById("quiz-feedback-live")) {
+      const live = document.createElement("div");
+      live.id = "quiz-feedback-live";
+      live.className = "sr-only";
+      live.setAttribute("aria-live", "polite");
+      live.setAttribute("aria-atomic", "true");
+      document.body.appendChild(live);
+    } // Live region for announcing the keyboard confirmation instruction.
+
+
+    if (!document.getElementById("quiz-instruction-live")) {
+      const live = document.createElement("div");
+      live.id = "quiz-instruction-live";
+      live.className = "sr-only";
+      live.setAttribute("aria-live", "polite");
+      live.setAttribute("aria-atomic", "true");
+      document.body.appendChild(live);
+    }
   }
 
   setBgImage() {
@@ -29175,13 +29214,69 @@ class Quiz {
   addEventListeners() {
     // Handle check my answer button click
     const checkAnswerBtn = document.querySelector(".button-quiz-answer");
-    checkAnswerBtn?.addEventListener("click", () => this.checkAnswer()); // Clicking any answer hides the error message
+    checkAnswerBtn?.addEventListener("click", () => this.checkAnswer()); // Option selection: click or Enter checks the answer; arrow keys only move
+    // selection, so we don't auto-check from change events.
 
-    [...document.querySelectorAll(".en__component--svblock .en__field__input--radio, .en__component--svblock .en__field__input--imageSelectField")].forEach(el => {
-      el.addEventListener("change", () => {
-        if (el.classList.contains("quiz-input-disabled")) return;
-        this.toggleError(false); // If the button exists, we only check the answer on button click
+    const optionSelector = ".en__component--svblock .en__field__input--radio, .en__component--svblock .en__field__input--imageSelectField";
+    let keyboardJustUsed = false;
+    let instructionAnnounced = false;
+    const group = document.querySelector(".en__component--svblock .en__field--survey[role='group']");
 
+    const maybeAnnounceInstruction = () => {
+      if (instructionAnnounced) return;
+      if (engrid_ENGrid.getBodyData("quiz-answer")) return;
+      this.announceInstruction();
+      instructionAnnounced = true;
+    };
+
+    document.addEventListener("keydown", () => {
+      keyboardJustUsed = true;
+    }, {
+      capture: true
+    });
+    document.addEventListener("mousedown", () => {
+      keyboardJustUsed = false;
+    }, {
+      capture: true
+    });
+    document.querySelectorAll(optionSelector).forEach(el => {
+      const input = el; // If the user reached this option by keyboard, show the hint.
+
+      input.addEventListener("focus", () => {
+        if (!keyboardJustUsed) return;
+        group?.classList.add("keyboard-nav");
+        keyboardJustUsed = false;
+        maybeAnnounceInstruction();
+      }); // Change events (including arrow-key navigation) clear the error but
+      // do not submit the answer.
+
+      input.addEventListener("change", () => {
+        if (input.classList.contains("quiz-input-disabled")) return;
+        this.toggleError(false);
+      }); // Arrow keys move selection natively; Enter confirms.
+
+      input.addEventListener("keydown", event => {
+        const e = event; // Show the confirmation hint once the user starts navigating by keyboard.
+
+        group?.classList.add("keyboard-nav");
+        maybeAnnounceInstruction();
+        if (e.key !== "Enter") return;
+        if (input.classList.contains("quiz-input-disabled")) return;
+        e.preventDefault();
+        input.checked = true;
+        this.toggleError(false);
+
+        if (checkAnswerBtn) {
+          checkAnswerBtn.click();
+        } else {
+          this.checkAnswer();
+        }
+      }); // Real pointer clicks confirm; keyboard-generated clicks (Space, etc.) do not.
+
+      input.addEventListener("click", event => {
+        if (input.classList.contains("quiz-input-disabled")) return;
+        if (event.detail === 0) return;
+        this.toggleError(false);
         if (checkAnswerBtn) return;
         this.checkAnswer();
       });
@@ -29217,7 +29312,17 @@ class Quiz {
       selectedAnswer.closest(".en__field__item")?.classList.add("quiz-incorrect-answer");
     }
 
+    this.setAnswerAriaLabels();
     this.scrollToFeedback();
+    this.focusAfterAnswer();
+    this.announceFeedback(); // Hide the keyboard confirmation hint now that the answer is locked in.
+
+    const group = document.querySelector(".en__component--svblock .en__field--survey[role='group']");
+    group?.classList.remove("keyboard-nav");
+    const hint = document.getElementById("quiz-confirm-hint");
+    if (hint) hint.textContent = "";
+    const instructionLive = document.getElementById("quiz-instruction-live");
+    if (instructionLive) instructionLive.textContent = "";
   }
 
   toggleError(show) {
@@ -29226,6 +29331,97 @@ class Quiz {
     if (errorMessage) {
       errorMessage.style.display = show ? "block" : "none";
     }
+
+    const group = document.querySelector(".en__component--svblock .en__field--survey[role='group']");
+    group?.setAttribute("aria-invalid", String(show));
+  }
+
+  focusAfterAnswer() {
+    const submitBtn = document.querySelector(".en__submit button");
+
+    const isVisible = el => !!el && el.offsetParent !== null;
+
+    if (isVisible(submitBtn)) {
+      submitBtn.focus();
+      return;
+    } // Fallback: focus the quiz block itself without adding it to the tab order.
+
+
+    const svBlock = document.querySelector(".en__component--svblock");
+    if (!svBlock) return;
+    svBlock.setAttribute("tabindex", "-1");
+    svBlock.focus();
+  }
+
+  getOptionLabelText(input) {
+    if (input.hasAttribute("aria-label")) {
+      return input.getAttribute("aria-label") || undefined;
+    }
+
+    return this.getOptionLabelElementText(input);
+  }
+
+  getOptionLabelElementText(input) {
+    const label = input.closest(".en__field__item")?.querySelector(".en__field__label--item, .en__imageSelectField__label");
+    return label?.textContent?.trim() || undefined;
+  }
+
+  setAnswerAriaLabels() {
+    document.querySelectorAll(".en__component--svblock .en__field__input--radio, .en__component--svblock .en__field__input--imageSelectField").forEach(input => {
+      const labelText = this.getOptionLabelText(input);
+      if (!labelText) return;
+      const isCorrect = input.value === "1";
+
+      if (isCorrect && input.checked) {
+        input.setAttribute("aria-label", `${labelText}, your selection (correct)`);
+      } else if (isCorrect && !input.checked) {
+        input.setAttribute("aria-label", `${labelText} (correct)`);
+      } else if (!isCorrect && input.checked) {
+        input.setAttribute("aria-label", `${labelText}, your selection (incorrect)`);
+      }
+    });
+  }
+
+  announceFeedback() {
+    const live = document.getElementById("quiz-feedback-live");
+    if (!live) return;
+    const selectedAnswer = document.querySelector(".en__component--svblock input:checked");
+    const correctAnswer = document.querySelector('.en__component--svblock input[value="1"]');
+    const selectedLabel = selectedAnswer ? this.getOptionLabelElementText(selectedAnswer) : undefined;
+    const correctLabel = correctAnswer ? this.getOptionLabelElementText(correctAnswer) : undefined;
+    let summary = "";
+
+    if (selectedAnswer && correctAnswer && selectedLabel && correctLabel) {
+      if (selectedAnswer === correctAnswer) {
+        summary = `${correctLabel} was the correct answer.`;
+      } else {
+        summary = `${selectedLabel} was incorrect, ${correctLabel} is the correct answer.`;
+      }
+    }
+
+    const feedbackBlocks = document.querySelectorAll(".showif-correct, .showif-incorrect, .showif-answered");
+    const visibleText = Array.from(feedbackBlocks).filter(block => window.getComputedStyle(block).display !== "none").map(block => block.textContent?.trim()).filter(text => !!text).join(" ");
+    live.textContent = summary ? `${summary} ${visibleText}` : visibleText;
+  }
+
+  announceInstruction() {
+    if (engrid_ENGrid.getBodyData("quiz-answer")) return;
+    const live = document.getElementById("quiz-instruction-live");
+    if (!live) return; // Clear then set so screen readers reliably detect the change.
+
+    live.textContent = "";
+    window.setTimeout(() => {
+      if (engrid_ENGrid.getBodyData("quiz-answer")) return;
+      live.textContent = "Press Enter to confirm your choice.";
+    }, 100);
+  }
+
+  labelResultHeadings() {
+    document.querySelectorAll(".showif-correct span, .showif-incorrect span").forEach(span => {
+      if (span.style.fontSize !== "26px") return;
+      span.setAttribute("role", "heading");
+      span.setAttribute("aria-level", "2");
+    });
   }
 
   checkForFormSkip() {
@@ -29910,12 +30106,14 @@ const options = {
     } // Add ACH Tooltip to Submit Button
 
 
-    const submitButton = document.querySelector(".en__submit button");
+    if (App.getPageType() === "DONATION" || App.getPageType() === "EVENT") {
+      const submitButton = document.querySelector(".en__submit button");
 
-    if (submitButton) {
-      submitButton.setAttribute("data-balloon", `When you click the button below, a new window will appear.
+      if (submitButton) {
+        submitButton.setAttribute("data-balloon", `When you click the button below, a new window will appear.
         Follow the steps to securely donate from your bank account to WWF.`);
-      submitButton.setAttribute("data-balloon-pos", "up");
+        submitButton.setAttribute("data-balloon-pos", "up");
+      }
     } // If the page has a State field, and it is not required, make a mutation observer
     // to watch for changes to the field and hide/show it
 
