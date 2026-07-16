@@ -19,10 +19,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, June 29, 2026 @ 23:37:58 ET
- *  By: fernando
- *  ENGrid styles: v0.25.11
- *  ENGrid scripts: v0.25.11
+ *  Date: Thursday, July 16, 2026 @ 15:12:23 ET
+ *  By: nick
+ *  ENGrid styles: v0.25.8
+ *  ENGrid scripts: v0.25.8
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -994,7 +994,7 @@ template{
 }
 
 .en__ecardmessage__default{
-  border:1px solid var(--textarea_border-color, #bfbfbf);
+  border:1px solid #bfbfbf;
   min-height:15.625rem;
   padding:.625rem;
 }
@@ -1023,7 +1023,7 @@ template{
 
 .en__ecardrecipients__list{
   background:var(--color_white);
-  border:1px solid var(--textarea_border-color, #bfbfbf);
+  border:1px solid #bfbfbf;
   margin:1.25rem 0 0;
   min-height:15.625rem;
   padding:.625rem;
@@ -2570,15 +2570,6 @@ body[data-engrid-live-currency=active] .en__field--donationAmt .en__field__item:
   display:none !important;
 }
 
-.engrid__sr-only{
-  clip:rect(0 0 0 0);
-  height:1px;
-  overflow:hidden;
-  position:absolute;
-  white-space:nowrap;
-  width:1px;
-}
-
 @supports (-webkit-appearance:-apple-pay-button){
   .apple-pay-button{
     -apple-pay-button-type:donate;
@@ -3910,11 +3901,6 @@ button.en__ecarditems__addrecipient{
   width:calc((100% - var(--fields_spacing-inline)*var(--ecard_thumnail-row_count)*2)/var(--ecard_thumnail-row_count));
 }
 
-.en__ecarditems__thumb:focus,.en__ecarditems__thumb:focus-visible{
-  outline:3px solid var(--focus_outline_color, #086ce7);
-  outline-offset:var(--focus_outline_offset, 2px);
-}
-
 .en__ecarditems__thumb img{
   border:var(--ecard_thumnail-border-width) solid var(--color_primary);
   filter:brightness(75%);
@@ -3958,17 +3944,6 @@ button.en__ecarditems__prevclose{
 }
 .en__ecarditems__showprev :hover{
   color:#fff;
-}
-.en__ecardrecipients__futureDelivery input[type=date]{
-  appearance:none;
-  box-sizing:border-box;
-  max-width:100%;
-  min-width:0;
-  width:100%;
-}
-
-.en__ecardrecipients__futureDelivery input[type=date]::-webkit-date-and-time-value{
-  text-align:left;
 }
 
 @media screen and (max-width:700px){
@@ -9635,9 +9610,6 @@ body[data-engrid-debug]:before{
     left:3px;
     top:6.5px;
   }
-  [data-engrid-theme=wwf] #engrid>.en__component--advrow,[data-engrid-theme=wwf] form>.en__component--advrow{
-    grid-template-rows:[page-start page-alert-start] min-content [page-alert-end content-header-start] min-content [content-header-end body-headerOutside-start] min-content [body-headerOutside-end body-header-start] min-content [body-header-end body-banner-start] min-content [body-banner-end body-bannerOverlay-start] min-content [body-bannerOverlay-end body-title-start] min-content [body-title-end body-top-start] min-content [body-top-end body-side-start] min-content [body-side-end body-main-start] min-content [body-main-end body-bottom-start] min-content [body-bottom-end body-footer-start] min-content [body-footer-end body-footerOutside-start] min-content [body-footerOutside-end content-footerSpacer-start] minmax(0, 1fr) [content-footerSpacer-end content-preFooter-start] min-content [content-preFooter-end content-footer-start] min-content [content-footer-end page-backgroundImage-start] min-content [page-backgroundImage-end page-backgroundImageOverlay-start] min-content [page-backgroundImageOverlay-end page-end page-customCode-start] min-content [page-customCode-end];
-  }
   [data-engrid-theme=wwf][data-engrid-layout] .content-header{
     margin-bottom:20px;
   }
@@ -10927,6 +10899,15 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--imgselect .en__field__item{
   border:2px solid #000;
   padding:.5rem;
+  transition:background-color .15s ease,border-color .15s ease;
+}
+[data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--imgselect .en__field__item:not(:has(.quiz-input-disabled)):hover{
+  background-color:#f0f0f0;
+  border-color:#1a1a1a;
+}
+[data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--imgselect .en__field__item:focus-within{
+  outline:3px solid var(--focus_outline_color, #086ce7);
+  outline-offset:2px;
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--imgselect .en__field__item :not(:has(.quiz-input-disabled)) img{
   padding:.5rem;
@@ -10939,7 +10920,16 @@ body[data-engrid-debug]:before{
   cursor:not-allowed;
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--imgselect .en__imageSelectField__control input[type=radio]{
-  display:none;
+  clip:rect(0 0 0 0);
+  border:0;
+  clip-path:inset(50%);
+  height:1px;
+  margin:-1px;
+  overflow:hidden;
+  padding:0;
+  position:absolute;
+  white-space:nowrap;
+  width:1px;
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--imgselect .en__imageSelectField{
   display:flex;
@@ -10996,8 +10986,13 @@ body[data-engrid-debug]:before{
   --radio_font-size:18px;
   --radio_background-color_hover:#fff;
 }
-[data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--radio.en__field--survey input[type=checkbox]:checked+label:before,[data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--radio.en__field--survey input[type=radio]:checked+label:before{
-  background:#1a1a1a url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="10.822" height="8.414"><path d="m9.407 1.414-6 6-2-2.438" fill="none" stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2"/></svg>') 50% no-repeat;
+[data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--radio.en__field--survey .en__field__input--radio:focus-visible+.en__field__label--item:before,[data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--radio.en__field--survey .en__field__item:not(:has(.quiz-input-disabled)) .en__field__label--item:hover:before,[data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--radio.en__field--survey input[type=checkbox]:checked+label:before,[data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--radio.en__field--survey input[type=radio]:checked+label:before{
+  background:#1a1a1a url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><path fill="%23fff" d="M1 4h8v2H1z"/></svg>') 50% no-repeat;
+}
+@supports not selector(:focus-visible){
+  [data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--radio.en__field--survey .en__field__input--radio:focus+.en__field__label--item:before{
+    background:#1a1a1a url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><path fill="%23fff" d="M1 4h8v2H1z"/></svg>') 50% no-repeat;
+  }
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--radio.en__field--survey .en__field__item{
   padding-left:0;
@@ -11013,10 +11008,26 @@ body[data-engrid-debug]:before{
   align-items:center;
   background-color:#fff;
   border:2px solid #000;
+  cursor:pointer;
   display:flex;
   outline:none;
   padding:1rem 1.25rem;
   text-align:left;
+  transition:background-color .15s ease,border-color .15s ease;
+}
+[data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--radio.en__field--survey .en__field__item:not(:has(.quiz-input-disabled)) .en__field__label--item:hover{
+  background-color:#f0f0f0;
+  border-color:#1a1a1a;
+}
+[data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--radio.en__field--survey .en__field__input--radio:focus-visible+.en__field__label--item{
+  outline:3px solid var(--focus_outline_color, #086ce7);
+  outline-offset:2px;
+}
+@supports not selector(:focus-visible){
+  [data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--radio.en__field--survey .en__field__input--radio:focus+.en__field__label--item{
+    outline:3px solid var(--focus_outline_color, #086ce7);
+    outline-offset:2px;
+  }
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--radio.en__field--survey .quiz-incorrect-answer .en__field__label--item{
   background-color:#f8e0e0;
@@ -11038,6 +11049,31 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--radio.en__field--survey .quiz-correct-answer .en__field__label--item:before{
   background:green url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="10.822" height="8.414"><path d="m9.407 1.414-6 6-2-2.438" fill="none" stroke="%23fff" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2"/></svg>') 50% no-repeat !important;
   border-color:green !important;
+}
+[data-engrid-theme=wwf][data-engrid-subtheme=quiz] .quiz-confirm-hint{
+  clip:rect(0, 0, 0, 0) !important;
+  border:0 !important;
+  height:1px !important;
+  margin:-1px !important;
+  overflow:hidden !important;
+  padding:0 !important;
+  position:absolute !important;
+  white-space:nowrap !important;
+  width:1px !important;
+}
+[data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__component--svblock.keyboard-nav .quiz-confirm-hint,[data-engrid-theme=wwf][data-engrid-subtheme=quiz] .en__field--survey.keyboard-nav .quiz-confirm-hint{
+  clip:auto !important;
+  border:initial !important;
+  color:#1a1a1a;
+  display:block;
+  font-size:.875rem;
+  height:auto !important;
+  margin:.5rem 0 0 !important;
+  overflow:initial !important;
+  padding:initial !important;
+  position:static !important;
+  white-space:normal !important;
+  width:auto !important;
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=quiz][data-engrid-layout=centercenter2col]#en__pagebuilder .page-backgroundImage{
   display:none !important;
@@ -11768,6 +11804,10 @@ body[data-engrid-debug]:before{
 .progress-bar_goal,.progress-bar_supporters{
   font-size:19px;
   font-weight:700;
+}
+
+.en__ecarditems__prevclose:focus,.en__ecarditems__prevclose:hover{
+  --button_color_hover:#000;
 }
 
 .i1-force-hide-label .en__field:first-of-type>label,.i10-force-hide-label .en__field:nth-of-type(10)>label,.i11-force-hide-label .en__field:nth-of-type(11)>label,.i2-force-hide-label .en__field:nth-of-type(2)>label,.i3-force-hide-label .en__field:nth-of-type(3)>label,.i4-force-hide-label .en__field:nth-of-type(4)>label,.i5-force-hide-label .en__field:nth-of-type(5)>label,.i6-force-hide-label .en__field:nth-of-type(6)>label,.i7-force-hide-label .en__field:nth-of-type(7)>label,.i8-force-hide-label .en__field:nth-of-type(8)>label,.i9-force-hide-label .en__field:nth-of-type(9)>label,label.force-hide-label{
