@@ -19,10 +19,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, June 29, 2026 @ 23:37:58 ET
- *  By: fernando
- *  ENGrid styles: v0.25.11
- *  ENGrid scripts: v0.25.11
+ *  Date: Thursday, July 16, 2026 @ 09:18:04 ET
+ *  By: nick
+ *  ENGrid styles: v0.25.8
+ *  ENGrid scripts: v0.25.8
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -994,7 +994,7 @@ template{
 }
 
 .en__ecardmessage__default{
-  border:1px solid var(--textarea_border-color, #bfbfbf);
+  border:1px solid #bfbfbf;
   min-height:15.625rem;
   padding:.625rem;
 }
@@ -1023,7 +1023,7 @@ template{
 
 .en__ecardrecipients__list{
   background:var(--color_white);
-  border:1px solid var(--textarea_border-color, #bfbfbf);
+  border:1px solid #bfbfbf;
   margin:1.25rem 0 0;
   min-height:15.625rem;
   padding:.625rem;
@@ -2570,15 +2570,6 @@ body[data-engrid-live-currency=active] .en__field--donationAmt .en__field__item:
   display:none !important;
 }
 
-.engrid__sr-only{
-  clip:rect(0 0 0 0);
-  height:1px;
-  overflow:hidden;
-  position:absolute;
-  white-space:nowrap;
-  width:1px;
-}
-
 @supports (-webkit-appearance:-apple-pay-button){
   .apple-pay-button{
     -apple-pay-button-type:donate;
@@ -3910,11 +3901,6 @@ button.en__ecarditems__addrecipient{
   width:calc((100% - var(--fields_spacing-inline)*var(--ecard_thumnail-row_count)*2)/var(--ecard_thumnail-row_count));
 }
 
-.en__ecarditems__thumb:focus,.en__ecarditems__thumb:focus-visible{
-  outline:3px solid var(--focus_outline_color, #086ce7);
-  outline-offset:var(--focus_outline_offset, 2px);
-}
-
 .en__ecarditems__thumb img{
   border:var(--ecard_thumnail-border-width) solid var(--color_primary);
   filter:brightness(75%);
@@ -3958,17 +3944,6 @@ button.en__ecarditems__prevclose{
 }
 .en__ecarditems__showprev :hover{
   color:#fff;
-}
-.en__ecardrecipients__futureDelivery input[type=date]{
-  appearance:none;
-  box-sizing:border-box;
-  max-width:100%;
-  min-width:0;
-  width:100%;
-}
-
-.en__ecardrecipients__futureDelivery input[type=date]::-webkit-date-and-time-value{
-  text-align:left;
 }
 
 @media screen and (max-width:700px){
@@ -9635,9 +9610,6 @@ body[data-engrid-debug]:before{
     left:3px;
     top:6.5px;
   }
-  [data-engrid-theme=wwf] #engrid>.en__component--advrow,[data-engrid-theme=wwf] form>.en__component--advrow{
-    grid-template-rows:[page-start page-alert-start] min-content [page-alert-end content-header-start] min-content [content-header-end body-headerOutside-start] min-content [body-headerOutside-end body-header-start] min-content [body-header-end body-banner-start] min-content [body-banner-end body-bannerOverlay-start] min-content [body-bannerOverlay-end body-title-start] min-content [body-title-end body-top-start] min-content [body-top-end body-side-start] min-content [body-side-end body-main-start] min-content [body-main-end body-bottom-start] min-content [body-bottom-end body-footer-start] min-content [body-footer-end body-footerOutside-start] min-content [body-footerOutside-end content-footerSpacer-start] minmax(0, 1fr) [content-footerSpacer-end content-preFooter-start] min-content [content-preFooter-end content-footer-start] min-content [content-footer-end page-backgroundImage-start] min-content [page-backgroundImage-end page-backgroundImageOverlay-start] min-content [page-backgroundImageOverlay-end page-end page-customCode-start] min-content [page-customCode-end];
-  }
   [data-engrid-theme=wwf][data-engrid-layout] .content-header{
     margin-bottom:20px;
   }
@@ -11768,6 +11740,10 @@ body[data-engrid-debug]:before{
 .progress-bar_goal,.progress-bar_supporters{
   font-size:19px;
   font-weight:700;
+}
+
+.en__ecarditems__prevclose:focus,.en__ecarditems__prevclose:hover{
+  --button_color_hover:#000;
 }
 
 .i1-force-hide-label .en__field:first-of-type>label,.i10-force-hide-label .en__field:nth-of-type(10)>label,.i11-force-hide-label .en__field:nth-of-type(11)>label,.i2-force-hide-label .en__field:nth-of-type(2)>label,.i3-force-hide-label .en__field:nth-of-type(3)>label,.i4-force-hide-label .en__field:nth-of-type(4)>label,.i5-force-hide-label .en__field:nth-of-type(5)>label,.i6-force-hide-label .en__field:nth-of-type(6)>label,.i7-force-hide-label .en__field:nth-of-type(7)>label,.i8-force-hide-label .en__field:nth-of-type(8)>label,.i9-force-hide-label .en__field:nth-of-type(9)>label,label.force-hide-label{
