@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, June 29, 2026 @ 23:37:58 ET
- *  By: fernando
+ *  Date: Tuesday, July 21, 2026 @ 11:00:49 ET
+ *  By: michael
  *  ENGrid styles: v0.25.11
  *  ENGrid scripts: v0.25.11
  *
@@ -30046,7 +30046,7 @@ class GiftHistory {
 
 class Accessibility {
   constructor() {
-    _defineProperty(this, "logger", new logger_EngridLogger('WWF Accessibility', 'black', 'pink', '👁️‍🗨️'));
+    _defineProperty(this, "logger", new logger_EngridLogger("WWF Accessibility", "black", "pink", "👁️‍🗨️"));
 
     _defineProperty(this, "_form", en_form_EnForm.getInstance());
 
@@ -30062,11 +30062,11 @@ class Accessibility {
   }
 
   otherAmountTabSelect() {
-    const otherAmountField = engrid_ENGrid.getField('transaction.donationAmt.other');
+    const otherAmountField = engrid_ENGrid.getField("transaction.donationAmt.other");
     const donationAmount = DonationAmount.getInstance();
 
     if (otherAmountField) {
-      this.logger.log('Adding tab button for other amount field'); // Behavior: Prevent the "Other Amount" field from being focused when tabbing beyond the "transaction.donationAmt" radio group
+      this.logger.log("Adding tab button for other amount field"); // Behavior: Prevent the "Other Amount" field from being focused when tabbing beyond the "transaction.donationAmt" radio group
       // The next tab past the radio group should be a button that when triggered, focuses the "transaction.donationAmt.other" field, and when tabbed, skips that input
 
       const tabButton = document.createElement("button");
@@ -30080,34 +30080,34 @@ class Accessibility {
       tabButton.style.width = `${otherAmountField.offsetWidth}px`;
       tabButton.style.height = `${otherAmountField.offsetHeight}px`;
       otherAmountField.parentNode?.insertBefore(tabButton, otherAmountField);
-      otherAmountField.setAttribute('tabindex', '-1');
+      otherAmountField.setAttribute("tabindex", "-1");
       donationAmount.onAmountChange.subscribe(() => {
         if (otherAmountField.value) {
-          otherAmountField.removeAttribute('tabindex');
-          tabButton.setAttribute('tabindex', '-1');
+          otherAmountField.removeAttribute("tabindex");
+          tabButton.setAttribute("tabindex", "-1");
         } else {
-          otherAmountField.setAttribute('tabindex', '-1');
-          tabButton.removeAttribute('tabindex');
+          otherAmountField.setAttribute("tabindex", "-1");
+          tabButton.removeAttribute("tabindex");
         }
       });
     }
   }
 
   otherAmountFieldLabel() {
-    const otherAmountField = engrid_ENGrid.getField('transaction.donationAmt.other');
+    const otherAmountField = engrid_ENGrid.getField("transaction.donationAmt.other");
 
     if (otherAmountField) {
-      this.logger.log('Adding screen reader label for other amount field');
-      const label = document.createElement('label');
-      label.setAttribute('id', 'other-amount-label');
-      label.textContent = 'Other Amount';
-      label.classList.add('sr-only');
+      this.logger.log("Adding screen reader label for other amount field");
+      const label = document.createElement("label");
+      label.setAttribute("id", "other-amount-label");
+      label.textContent = "Other Amount";
+      label.classList.add("sr-only");
       otherAmountField.parentNode?.insertBefore(label, otherAmountField);
-      otherAmountField.setAttribute('aria-labelledby', label.id);
-      otherAmountField.removeAttribute('aria-label');
+      otherAmountField.setAttribute("aria-labelledby", label.id);
+      otherAmountField.removeAttribute("aria-label");
 
       this._frequency.onFrequencyChange.subscribe(e => {
-        const frequencyText = this._frequency.frequency == 'onetime' ? 'one-time' : this._frequency.frequency;
+        const frequencyText = this._frequency.frequency == "onetime" ? "one-time" : this._frequency.frequency;
         label.textContent = `Other Amount (${frequencyText})`;
         this.logger.log(`Updated other amount label to: ${label.textContent}`);
       });
@@ -30115,63 +30115,63 @@ class Accessibility {
   }
 
   universalOptIns() {
-    const universalOptInBlock = document.querySelector('.universal-opt-in-copy, .general-opt-in-copy, .be-a-part-of-our-community');
-    const universalOptInInput = document.querySelector('.universal-opt-in .en__field');
+    const universalOptInBlock = document.querySelector(".universal-opt-in-copy, .general-opt-in-copy, .be-a-part-of-our-community");
+    const universalOptInInput = document.querySelector(".universal-opt-in .en__field");
 
     if (universalOptInBlock && universalOptInInput) {
-      const label = universalOptInBlock.querySelector('.label p, .label');
+      const label = universalOptInBlock.querySelector(".label p, .label");
 
       if (label) {
-        label.setAttribute('id', `en__field__label--${Math.random().toString(36).slice(2, 7)}`);
-        universalOptInInput.setAttribute('aria-labelledby', label.id);
-        this.logger.log('Added aria-labelledby to universal opt-in checkbox with label id: ' + label.id);
+        label.setAttribute("id", `en__field__label--${Math.random().toString(36).slice(2, 7)}`);
+        universalOptInInput.setAttribute("aria-labelledby", label.id);
+        this.logger.log("Added aria-labelledby to universal opt-in checkbox with label id: " + label.id);
       }
     }
   }
 
   multistepStepper() {
     // for every multistep-stepper element, run through the children and add aria-labels to each step
-    const multistepSteppers = document.querySelectorAll('.multistep-stepper');
+    const multistepSteppers = document.querySelectorAll(".multistep-stepper");
     this.logger.log(`Found ${multistepSteppers.length} multistep-stepper elements`);
     multistepSteppers.forEach((stepper, index) => {
-      stepper.setAttribute('role', 'tablist');
-      stepper.setAttribute('aria-label', 'Form Steps');
-      const steps = stepper.querySelectorAll('.multistep-stepper__step');
+      stepper.setAttribute("role", "tablist");
+      stepper.setAttribute("aria-label", "Form Steps");
+      const steps = stepper.querySelectorAll(".multistep-stepper__step");
       steps.forEach((step, stepIndex) => {
-        const isActive = step.classList.contains('multistep-stepper__step--active');
-        step.setAttribute('role', 'tab');
-        step.setAttribute('aria-selected', isActive ? 'true' : 'false'); // Roving tabindex: only the active tab is in the tab order
+        const isActive = step.classList.contains("multistep-stepper__step--active");
+        step.setAttribute("role", "tab");
+        step.setAttribute("aria-selected", isActive ? "true" : "false"); // Roving tabindex: only the active tab is in the tab order
 
-        step.setAttribute('tabindex', isActive ? '0' : '-1');
-        const label = step.querySelector('.multistep-stepper__label');
+        step.setAttribute("tabindex", isActive ? "0" : "-1");
+        const label = step.querySelector(".multistep-stepper__label");
 
         if (label) {
-          label.setAttribute('id', `multistep-step-label-${index}-${stepIndex}`);
-          step.setAttribute('aria-labelledby', label.id);
+          label.setAttribute("id", `multistep-step-label-${index}-${stepIndex}`);
+          step.setAttribute("aria-labelledby", label.id);
         }
 
-        step.addEventListener('keydown', e => {
+        step.addEventListener("keydown", e => {
           let nextIndex = null;
 
           switch (e.key) {
-            case 'ArrowRight':
+            case "ArrowRight":
               nextIndex = (stepIndex + 1) % steps.length;
               break;
 
-            case 'ArrowLeft':
+            case "ArrowLeft":
               nextIndex = (stepIndex - 1 + steps.length) % steps.length;
               break;
 
-            case 'Home':
+            case "Home":
               nextIndex = 0;
               break;
 
-            case 'End':
+            case "End":
               nextIndex = steps.length - 1;
               break;
 
-            case 'Enter':
-            case ' ':
+            case "Enter":
+            case " ":
               e.preventDefault();
               step.click();
               return;
@@ -30188,23 +30188,23 @@ class Accessibility {
   }
 
   otCookieSettings() {
-    const otCookies = document.querySelector('.ot-sdk-show-settings');
+    const otCookies = document.querySelector(".ot-sdk-show-settings");
 
     if (otCookies) {
-      otCookies.setAttribute('tabindex', '0');
-      otCookies.setAttribute('aria-label', 'Cookie Settings');
-      otCookies.setAttribute('role', 'button');
-      otCookies.setAttribute('aria-haspopup', 'dialog');
-      otCookies.setAttribute('aria-expanded', 'false');
-      otCookies.setAttribute('aria-controls', 'onetrust-pc-sdk');
-      this.logger.log('Added aria-label and role to cookie settings button');
+      otCookies.setAttribute("tabindex", "0");
+      otCookies.setAttribute("aria-label", "Cookie Settings");
+      otCookies.setAttribute("role", "button");
+      otCookies.setAttribute("aria-haspopup", "dialog");
+      otCookies.setAttribute("aria-expanded", "false");
+      otCookies.setAttribute("aria-controls", "onetrust-pc-sdk");
+      this.logger.log("Added aria-label and role to cookie settings button");
     }
   }
 
   thankYouTitle() {
-    if (engrid_ENGrid.isThankYouPage()) {
+    if (engrid_ENGrid.isThankYouPage() && engrid_ENGrid.getPageNumber() > 1) {
       // Add "Thank You | <original title>" to the document title for screen readers if the title does not already contain "Thank You"
-      if (document.title.includes('Thank You')) {
+      if (document.title.includes("Thank You")) {
         this.logger.log('Document title already contains "Thank You", skipping update');
         return;
       }
@@ -30217,14 +30217,14 @@ class Accessibility {
 
   relocateSupporterHubAlerts() {
     if (engrid_ENGrid.getPageType() === "SUPPORTERHUB" && engrid_ENGrid.getPageNumber() === 1) {
-      const emailField = document.querySelector('.en__supporterHubLogin__emailAddress');
-      const alerts = document.querySelectorAll('.en__hubgadget__response');
+      const emailField = document.querySelector(".en__supporterHubLogin__emailAddress");
+      const alerts = document.querySelectorAll(".en__hubgadget__response");
 
       if (emailField && alerts) {
         alerts.forEach(alert => {
-          emailField.insertAdjacentElement('afterend', alert);
+          emailField.insertAdjacentElement("afterend", alert);
         });
-        this.logger.log('Relocated supporter hub alerts to be after the email field');
+        this.logger.log("Relocated supporter hub alerts to be after the email field");
       }
     }
   }
