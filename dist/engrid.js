@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, July 21, 2026 @ 11:00:49 ET
+ *  Date: Thursday, July 23, 2026 @ 11:49:43 ET
  *  By: michael
  *  ENGrid styles: v0.25.11
  *  ENGrid scripts: v0.25.11
@@ -27680,7 +27680,32 @@ const customScript = function (App, DonationFrequency) {
     bodyTitle?.insertAdjacentHTML("afterbegin", `<a class="minimal-header-logo" href="https://www.worldwildlife.org/" target="_blank"><img class="no-header-wwf-logo" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo-standalone.png?3" alt="WWF Logo"></a>`);
     const contentHeader = document.querySelector(".content-header");
     contentHeader?.insertAdjacentHTML("afterbegin", `<a class="minimal-header-logo" href="https://www.worldwildlife.org/" target="_blank"><img class="no-header-wwf-logo" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo-no-tab.png?3" alt="WWF Logo"></a>`);
-  }
+  } // Upsell modal: remove trailing ".00" from dollar amounts in the Yes/No button labels
+
+
+  const stripUpsellLabelCents = () => {
+    const modal = document.getElementById("en__upsellModal");
+    if (!modal) return;
+    modal.querySelectorAll("#en__upsellModal__yes .label, #en__upsellModal__no .label").forEach(label => {
+      label.textContent = label.textContent.replace(/(\$[\d,]+)\.00\b/g, "$1");
+    });
+  }; // Run each time the modal is added to the page (it can close and re-open)
+
+
+  const upsellObserver = new MutationObserver(mutationsList => {
+    for (const mutation of mutationsList) {
+      for (const node of mutation.addedNodes) {
+        if (node.nodeType === Node.ELEMENT_NODE && (node.id === "en__upsellModal" || node.querySelector("#en__upsellModal"))) {
+          stripUpsellLabelCents();
+          return;
+        }
+      }
+    }
+  });
+  upsellObserver.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
 };
 ;// CONCATENATED MODULE: ./src/scripts/page-header-footer.js
 const pageHeaderFooter = function (App) {
