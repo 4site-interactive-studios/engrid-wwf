@@ -1,0 +1,197 @@
+// Styles for the BackgroundRotation component (src/scripts/background-rotation.ts)
+// Each item's layer (the item itself, or its wrapping figure.media-with-attribution
+// when MediaAttribution has processed it) becomes a fixed full-viewport layer
+// (mirroring how .page-backgroundImage:before renders the background) and
+// cross-fades via opacity.
+body:not(#en__pagebuilder) {
+  .page-backgroundImage .background-rotation {
+    .background-rotation-layer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: top right;
+      opacity: 0;
+      pointer-events: none;
+      will-change: opacity;
+      transition: opacity var(--background-rotation-transition-duration, 500ms) ease-in-out;
+
+      &.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
+
+    // When the item is the <img> tag itself, override the core rule that hides
+    // images inside .page-backgroundImage and make it behave like a cover background
+    img.background-rotation-layer {
+      display: block;
+      object-fit: cover;
+    }
+
+    // A figure wrapping an item's (hidden) img that is NOT itself the fade layer
+    // should not paint the shared background layer
+    figure.media-with-attribution:not(.background-rotation-layer) {
+      position: static;
+      display: block;
+      background-image: none;
+    }
+  }
+
+  // Match the layout-specific background positions used by .page-backgroundImage:before
+  &[data-engrid-layout="centercenter1col"],
+  &[data-engrid-layout="centercenter2col"] {
+    .page-backgroundImage .background-rotation .background-rotation-layer {
+      background-position: top center;
+    }
+  }
+
+  &[data-engrid-layout="centerright1col"],
+  &[data-engrid-layout="rightright1col"] {
+    .page-backgroundImage .background-rotation .background-rotation-layer {
+      background-position: top left;
+    }
+  }
+}
+
+// The WWF multistep theme hides the page background at the 1200px breakpoint
+// (see non-embed-multistep.scss), the rotation layers should respect that too
+@media screen and (max-width: 1200px) {
+  [data-engrid-theme="wwf"]:not(#en__pagebuilder) {
+
+    &[data-engrid-page-background="image"][data-engrid-layout="centerleft1col"] .page-backgroundImage .background-rotation .background-rotation-layer,
+    &[data-engrid-page-background="image"][data-engrid-layout="leftleft1col"] .page-backgroundImage .background-rotation .background-rotation-layer {
+      display: none;
+    }
+  }
+}
+
+// At 499px and below the core "replace banner with background" styles move the
+// page-backgroundImage section into the body-banner grid row and un-hide its imgs
+// (see _engrid-background-image.scss). Bring the active rotation layer in-flow so
+// the section gets the image's natural height; keep the inactive layers hidden.
+@media screen and (max-width: 499px) {
+  [data-engrid-theme="wwf"]:not(#en__pagebuilder) {
+
+    &[data-engrid-page-background="image"][data-engrid-layout="centerleft1col"],
+    &[data-engrid-page-background="image"][data-engrid-layout="leftleft1col"] {
+      .page-backgroundImage .background-rotation {
+        .background-rotation-layer {
+          display: none;
+
+          &.active {
+            display: block;
+            top: auto;
+            left: auto;
+            width: 100%;
+            height: auto;
+            background-image: none !important;
+            opacity: 1;
+            pointer-events: auto;
+          }
+        }
+
+        // The core mixin forces figures to position: absolute at this breakpoint,
+        // override it so the img inside flows and gives the section its height
+        figure.background-rotation-layer.active {
+          position: relative !important;
+          width: 100% !important;
+          height: auto !important;
+          transform: none !important;
+        }
+
+        img.background-rotation-layer.active {
+          position: static;
+          object-fit: initial;
+        }
+      }
+    }
+  }
+}
+
+// Each image item can set a theme="light" or theme="dark" (default) attribute,
+// which switches the .body-title h1 text color so it stays visible over the
+// current background image. Only applies to the >1200px layout.
+@media screen and (min-width: 1201px) {
+  [data-engrid-theme="wwf"]:not(#en__pagebuilder) {
+
+    &[data-engrid-layout="centerleft1col"],
+    &[data-engrid-layout="leftleft1col"] {
+      &[data-engrid-background-rotation-theme] .body-title h1 {
+        transition: color var(--background-rotation-transition-duration, 500ms) ease-in-out;
+      }
+
+      &[data-engrid-background-rotation-theme="light"] .body-title h1 {
+        color: #ffffff;
+      }
+    }
+  }
+}
+
+// Back / pause / forward controls for the rotation (see the 'controls' option),
+// fixed to the top right of the screen on the >1200px layout
+.background-rotation-controls {
+  display: none;
+}
+
+@media screen and (min-width: 1201px) {
+  [data-engrid-theme="wwf"]:not(#en__pagebuilder)[data-engrid-background-rotation="active"] {
+    .background-rotation-controls {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 8;
+      display: flex;
+      gap: 0.5rem;
+
+      button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        border: none;
+        border-radius: 50%;
+        background-color: rgba(0, 0, 0, 0.75);
+        color: #ffffff;
+        cursor: pointer;
+        transition: background-color 150ms ease-in-out;
+
+        &:hover,
+        &:focus-visible {
+          background-color: rgba(0, 0, 0, 0.75);
+        }
+
+        &:focus-visible {
+          outline: 2px solid #ffffff;
+          outline-offset: 2px;
+        }
+
+        &:disabled {
+          opacity: 0.4;
+          cursor: default;
+
+          &:hover,
+          &:focus-visible {
+            background-color: rgba(0, 0, 0, 0.5);
+          }
+        }
+
+        svg {
+          width: 20px;
+          height: 20px;
+        }
+      }
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body:not(#en__pagebuilder) .page-backgroundImage .background-rotation .background-rotation-layer {
+    transition: none;
+  }
+}

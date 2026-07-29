@@ -27,6 +27,7 @@ import { AddDAF } from "./scripts/add-daf";
 import { Bridger } from "./scripts/Bridger";
 
 import { Quiz } from "./scripts/quiz";
+import { BackgroundRotation } from "./scripts/background-rotation";
 import GiftHistory from "./scripts/gift-history";
 import Accessibility from "./scripts/accessibility";
 
@@ -241,6 +242,7 @@ const options: Options = {
       unsubscribeAllRadio.closest(".en__field")?.classList.add("hide");
     }
     new Quiz();
+    new BackgroundRotation({ controls: true });
     new Bridger();
     new GiftHistory();
     new Accessibility();
