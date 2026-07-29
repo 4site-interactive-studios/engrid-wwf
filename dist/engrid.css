@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, September 2, 2026 @ 12:38:03 ET
+ *  Date: Wednesday, September 2, 2026 @ 12:38:13 ET
  *  By: nick
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.3
@@ -11998,6 +11998,10 @@ body:not(#en__pagebuilder)[data-engrid-layout=centerright1col] .page-backgroundI
   }
 }
 @media screen and (max-width:499px){
+  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=centerleft1col] .page-backgroundImage .background-rotation,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=leftleft1col] .page-backgroundImage .background-rotation{
+    overflow:hidden;
+    position:relative;
+  }
   [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=centerleft1col] .page-backgroundImage .background-rotation .background-rotation-layer,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=leftleft1col] .page-backgroundImage .background-rotation .background-rotation-layer{
     display:none;
   }
@@ -12005,21 +12009,26 @@ body:not(#en__pagebuilder)[data-engrid-layout=centerright1col] .page-backgroundI
     background-image:none !important;
     display:block;
     height:auto;
-    left:auto;
+    left:0;
     opacity:1;
     pointer-events:auto;
-    top:auto;
+    position:absolute;
+    top:0;
     width:100%;
+  }
+  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=centerleft1col] .page-backgroundImage .background-rotation .background-rotation-layer.background-rotation-flow,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=leftleft1col] .page-backgroundImage .background-rotation .background-rotation-layer.background-rotation-flow{
+    position:static;
   }
   [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=centerleft1col] .page-backgroundImage .background-rotation figure.background-rotation-layer.active,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=leftleft1col] .page-backgroundImage .background-rotation figure.background-rotation-layer.active{
     height:auto !important;
-    position:relative !important;
     transform:none !important;
     width:100% !important;
   }
+  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=centerleft1col] .page-backgroundImage .background-rotation figure.background-rotation-layer.background-rotation-flow,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=leftleft1col] .page-backgroundImage .background-rotation figure.background-rotation-layer.background-rotation-flow{
+    position:relative !important;
+  }
   [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=centerleft1col] .page-backgroundImage .background-rotation img.background-rotation-layer.active,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=leftleft1col] .page-backgroundImage .background-rotation img.background-rotation-layer.active{
     object-fit:fill;
-    position:static;
   }
 }
 @media screen and (min-width:1201px){

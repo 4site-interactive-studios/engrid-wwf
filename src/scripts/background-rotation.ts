@@ -208,8 +208,8 @@ export class BackgroundRotation {
       this.currentIndex !== -1
         ? this.currentIndex
         : this.options.randomStart
-        ? this.getRandomIndex()
-        : 0;
+          ? this.getRandomIndex()
+          : 0;
     this.setActiveItem(startIndex);
     ENGrid.setBodyData("background-rotation", "active");
     if (!this.isPaused) this.startRotationTimer();
@@ -243,6 +243,9 @@ export class BackgroundRotation {
         layer.setAttribute("aria-hidden", "true");
       }
     });
+    if (this.currentIndex !== -1) {
+      this.setFlowLayer(this.layers[this.currentIndex]);
+    }
     this.container?.classList.remove(this.options.transitionClass);
   }
 
@@ -252,12 +255,13 @@ export class BackgroundRotation {
     ENGrid.setBodyData("background-rotation", "static");
   }
 
-  private setActiveItem(index: number) {
+  private setActiveItem(index: number, moveFlow = true) {
     const layer = this.layers[index];
     if (!layer) return;
     layer.classList.add("active");
     layer.removeAttribute("aria-hidden");
     this.currentIndex = index;
+    if (moveFlow) this.setFlowLayer(layer);
     const imageUrl = this.getItemImageUrl(this.items[index]);
     if (imageUrl) {
       document.body.style.setProperty(
@@ -280,6 +284,17 @@ export class BackgroundRotation {
     );
   }
 
+  // Marks the single layer that stays in-flow to give the container its height
+  // at the <=499px breakpoint. Kept on the outgoing layer during a cross-fade
+  // so two in-flow layers never stack, and moved to the incoming layer once
+  // the transition ends (see goToImage)
+  private setFlowLayer(layer: HTMLElement) {
+    this.layers.forEach((item) =>
+      item.classList.remove("background-rotation-flow")
+    );
+    layer.classList.add("background-rotation-flow");
+  }
+
   private rotateToNextImage() {
     this.goToImage(this.getNextIndex());
   }
@@ -293,12 +308,13 @@ export class BackgroundRotation {
     this.updatePreviousButtonState();
     const previousLayer = this.layers[this.currentIndex];
     this.container!.classList.add(this.options.transitionClass);
-    this.setActiveItem(nextIndex);
+    this.setActiveItem(nextIndex, false);
     window.clearTimeout(this.transitionTimer ?? undefined);
     this.transitionTimer = window.setTimeout(() => {
       previousLayer?.classList.remove("active");
       previousLayer?.setAttribute("aria-hidden", "true");
       this.container!.classList.remove(this.options.transitionClass);
+      this.setFlowLayer(this.layers[nextIndex]);
     }, this.options.transitionDuration);
   }
 
@@ -426,9 +442,8 @@ export class BackgroundRotation {
     const description =
       this.getItemImage(item)?.getAttribute("alt") ||
       this.getItemAttribution(item);
-    this.liveRegion.textContent = `Background image ${
-      this.currentIndex + 1
-    } of ${this.items.length}${description ? `: ${description}` : ""}`;
+    this.liveRegion.textContent = `Background image ${this.currentIndex + 1
+      } of ${this.items.length}${description ? `: ${description}` : ""}`;
   }
 
   private createControlButton(

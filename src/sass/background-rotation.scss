@@ -71,40 +71,52 @@ body:not(#en__pagebuilder) {
 
 // At 499px and below the core "replace banner with background" styles move the
 // page-backgroundImage section into the body-banner grid row and un-hide its imgs
-// (see _engrid-background-image.scss). Bring the active rotation layer in-flow so
-// the section gets the image's natural height; keep the inactive layers hidden.
+// (see _engrid-background-image.scss). The flow layer (tagged by the component)
+// stays in-flow so the section gets the image's natural height; any other active
+// layer (mid cross-fade) overlays it absolutely so the two never stack.
 @media screen and (max-width: 499px) {
   [data-engrid-theme="wwf"]:not(#en__pagebuilder) {
 
     &[data-engrid-page-background="image"][data-engrid-layout="centerleft1col"],
     &[data-engrid-page-background="image"][data-engrid-layout="leftleft1col"] {
       .page-backgroundImage .background-rotation {
+        position: relative;
+        overflow: hidden;
+
         .background-rotation-layer {
           display: none;
 
           &.active {
             display: block;
-            top: auto;
-            left: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: auto;
             background-image: none !important;
             opacity: 1;
             pointer-events: auto;
           }
+
+          &.background-rotation-flow {
+            position: static;
+          }
         }
 
         // The core mixin forces figures to position: absolute at this breakpoint,
-        // override it so the img inside flows and gives the section its height
+        // override it for the flow layer so the img inside flows and gives the
+        // section its height
         figure.background-rotation-layer.active {
-          position: relative !important;
           width: 100% !important;
           height: auto !important;
           transform: none !important;
         }
 
+        figure.background-rotation-layer.background-rotation-flow {
+          position: relative !important;
+        }
+
         img.background-rotation-layer.active {
-          position: static;
           object-fit: initial;
         }
       }
