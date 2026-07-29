@@ -14,15 +14,23 @@ body:not(#en__pagebuilder) {
       background-repeat: no-repeat;
       background-size: cover;
       background-position: top right;
+      // Mirrors background-position for the items that render as an <img> layer
+      // rather than painting the background (see the img rule below), so every
+      // image in the rotation is cropped the same way
+      object-position: top right;
       opacity: 0;
       pointer-events: none;
-      will-change: opacity;
       transition: opacity var(--background-rotation-transition-duration, 500ms) ease-in-out;
 
       &.active {
         opacity: 1;
-        pointer-events: auto;
       }
+    }
+
+    // Promote the layers only while a fade is actually running, instead of
+    // holding a viewport-sized compositor layer per image for the whole session
+    &.background-rotation-transition .background-rotation-layer {
+      will-change: opacity;
     }
 
     // When the item is the <img> tag itself, override the core rule that hides
@@ -30,6 +38,13 @@ body:not(#en__pagebuilder) {
     img.background-rotation-layer {
       display: block;
       object-fit: cover;
+    }
+
+    // A figure layer keeps its MediaAttribution overlay clickable, the way core
+    // does for a background that isn't rotating. The inactive layers stay
+    // click-through so the stack of hidden layers can't swallow those clicks
+    figure.background-rotation-layer.active {
+      pointer-events: auto;
     }
 
     // A figure wrapping an item's (hidden) img that is NOT itself the fade layer
@@ -41,11 +56,21 @@ body:not(#en__pagebuilder) {
     }
   }
 
+  // PageBackground (core) sets --engrid__page-backgroundImage_url from the first
+  // <img> in the section, so .page-backgroundImage:before would paint that one
+  // image underneath every layer and wash through the middle of each cross-fade.
+  // Point it at the current image instead, so a fade reads as one image
+  // dissolving into the next with nothing else showing through.
+  &[data-engrid-background-rotation] .page-backgroundImage:before {
+    background-image: var(--background-rotation-image, none);
+  }
+
   // Match the layout-specific background positions used by .page-backgroundImage:before
   &[data-engrid-layout="centercenter1col"],
   &[data-engrid-layout="centercenter2col"] {
     .page-backgroundImage .background-rotation .background-rotation-layer {
       background-position: top center;
+      object-position: top center;
     }
   }
 
@@ -53,18 +78,27 @@ body:not(#en__pagebuilder) {
   &[data-engrid-layout="rightright1col"] {
     .page-backgroundImage .background-rotation .background-rotation-layer {
       background-position: top left;
+      object-position: top left;
     }
   }
 }
 
 // The WWF multistep theme hides the page background at the 1200px breakpoint
-// (see non-embed-multistep.scss), the rotation layers should respect that too
+// (see non-embed-multistep.scss), the rotation layers should respect that too.
+// The component matches this breakpoint in JS and stops rotating below it.
 @media screen and (max-width: 1200px) {
   [data-engrid-theme="wwf"]:not(#en__pagebuilder) {
 
     &[data-engrid-page-background="image"][data-engrid-layout="centerleft1col"] .page-backgroundImage .background-rotation .background-rotation-layer,
     &[data-engrid-page-background="image"][data-engrid-layout="leftleft1col"] .page-backgroundImage .background-rotation .background-rotation-layer {
       display: none;
+    }
+
+    // The rotation backdrop above is hidden here as well, so it can't put a
+    // full-bleed image back at a width where the theme wants none
+    &[data-engrid-page-background="image"][data-engrid-layout="centerleft1col"] .page-backgroundImage:before,
+    &[data-engrid-page-background="image"][data-engrid-layout="leftleft1col"] .page-backgroundImage:before {
+      background-image: none !important;
     }
   }
 }
@@ -83,11 +117,14 @@ body:not(#en__pagebuilder) {
         position: relative;
         overflow: hidden;
 
+        // The core mixin un-hides the section's imgs with `display: block
+        // !important` at this breakpoint, so keeping the inactive layers hidden
+        // takes the same weight
         .background-rotation-layer {
-          display: none;
+          display: none !important;
 
           &.active {
-            display: block;
+            display: block !important;
             position: absolute;
             top: 0;
             left: 0;
@@ -95,7 +132,6 @@ body:not(#en__pagebuilder) {
             height: auto;
             background-image: none !important;
             opacity: 1;
-            pointer-events: auto;
           }
 
           &.background-rotation-flow {

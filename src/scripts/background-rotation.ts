@@ -4,7 +4,7 @@
 // On mobile, the background image will not rotate, and a random image in the list will be displayed as a static background image
 // The background image will also not rotate if the user has set a preference for reduced motion in their system settings
 // Figattributes/figcaptions, if included on the image, will also need to be updated to reflect the new image being displayed
-// Each image item can include a theme="light" or theme="dark" (default) attribute, which switches the .body-title h1 text color so it stays visible over the current background image (>1200px layout only)
+// Each image item can include a data-theme="light" or data-theme="dark" (default) attribute, which switches the .body-title h1 text color so it stays visible over the current background image (>1200px layout only)
 // Options block:
 /**
  * Set via the default options, overridden by the options passed to the constructor, and overridden by a window-level variable called 'BackgroundRotationOptions' if it exists. The options are as follows:
@@ -63,6 +63,8 @@ export class BackgroundRotation {
   private container: HTMLElement | null = null;
   private items: HTMLElement[] = [];
   private layers: HTMLElement[] = [];
+  private imageUrls: (string | null)[] = [];
+  private imagesWarmed = false;
   private currentIndex = -1;
   private randomBag: number[] = [];
   private history: number[] = [];
@@ -73,7 +75,9 @@ export class BackgroundRotation {
   private liveRegion: HTMLElement | null = null;
   private rotationTimer: number | null = null;
   private transitionTimer: number | null = null;
-  private mobileMediaQuery = window.matchMedia("(max-width: 1023px)");
+  // Matches the breakpoint where background-rotation.scss stops painting the
+  // rotation layers, so the timer never runs against hidden images
+  private mobileMediaQuery = window.matchMedia("(max-width: 1200px)");
   private reducedMotionMediaQuery = window.matchMedia(
     "(prefers-reduced-motion: reduce)"
   );
@@ -142,15 +146,47 @@ export class BackgroundRotation {
     this.items.forEach((item, index) => {
       const layer = this.getItemLayer(item);
       const imageUrl = this.getItemImageUrl(item);
-      if (imageUrl) {
-        layer.style.backgroundImage = `url('${imageUrl}')`;
-      } else {
+      if (!imageUrl) {
         this.logger.log("Background image item has no image source", item);
       }
+      this.imageUrls[index] = imageUrl;
       layer.classList.add("background-rotation-layer");
       layer.setAttribute("aria-hidden", "true");
       this.layers[index] = layer;
     });
+  }
+
+  // The inline background-image is what makes a layer fetch its image, so it is
+  // applied when the layer is first shown rather than for every layer up front
+  private applyLayerImage(index: number) {
+    const layer = this.layers[index];
+    const imageUrl = this.imageUrls[index];
+    if (!layer || !imageUrl || layer.style.backgroundImage) return;
+    layer.style.backgroundImage = `url('${imageUrl}')`;
+  }
+
+  // The remaining layers are applied once the page has settled, so a full set of
+  // viewport-sized images isn't competing with the form's own assets during load.
+  // They are still applied ahead of the first rotation, so cross-fades don't
+  // start against an image that hasn't been fetched yet.
+  private warmRemainingImages() {
+    if (this.imagesWarmed) return;
+    this.imagesWarmed = true;
+    const warm = () =>
+      this.items.forEach((_, index) => this.applyLayerImage(index));
+    const requestIdle = (
+      window as unknown as {
+        requestIdleCallback?: (
+          callback: () => void,
+          options?: { timeout: number }
+        ) => void;
+      }
+    ).requestIdleCallback;
+    if (requestIdle) {
+      requestIdle.call(window, warm, { timeout: 3000 });
+    } else {
+      window.setTimeout(warm, 1000);
+    }
   }
 
   // The item is typically the <img> tag itself. If MediaAttribution has wrapped
@@ -211,8 +247,9 @@ export class BackgroundRotation {
           ? this.getRandomIndex()
           : 0;
     this.setActiveItem(startIndex);
+    this.warmRemainingImages();
     ENGrid.setBodyData("background-rotation", "active");
-    if (!this.isPaused) this.startRotationTimer();
+    if (this.canRotate()) this.startRotationTimer();
     this.logger.log(
       `Rotating ${this.items.length} background images every ${this.options.interval}ms`
     );
@@ -235,13 +272,22 @@ export class BackgroundRotation {
 
   private stopRotation() {
     this.stopRotationTimer();
-    // Settle any in-progress transition so only the current image stays visible
-    window.clearTimeout(this.transitionTimer ?? undefined);
+    this.finishTransition();
+  }
+
+  // Settles a cross-fade: only the current image keeps the class that makes it
+  // visible, and the in-flow layer moves to it. Runs when a transition ends, and
+  // again if the next transition starts first, so an interrupted fade can never
+  // leave a stale layer stacked on top of the current one
+  private finishTransition() {
+    if (this.transitionTimer !== null) {
+      window.clearTimeout(this.transitionTimer);
+      this.transitionTimer = null;
+    }
     this.layers.forEach((layer, index) => {
-      if (index !== this.currentIndex) {
-        layer.classList.remove("active");
-        layer.setAttribute("aria-hidden", "true");
-      }
+      if (index === this.currentIndex) return;
+      layer.classList.remove("active");
+      layer.setAttribute("aria-hidden", "true");
     });
     if (this.currentIndex !== -1) {
       this.setFlowLayer(this.layers[this.currentIndex]);
@@ -258,11 +304,12 @@ export class BackgroundRotation {
   private setActiveItem(index: number, moveFlow = true) {
     const layer = this.layers[index];
     if (!layer) return;
+    this.applyLayerImage(index);
     layer.classList.add("active");
     layer.removeAttribute("aria-hidden");
     this.currentIndex = index;
     if (moveFlow) this.setFlowLayer(layer);
-    const imageUrl = this.getItemImageUrl(this.items[index]);
+    const imageUrl = this.imageUrls[index];
     if (imageUrl) {
       document.body.style.setProperty(
         "--background-rotation-image",
@@ -287,7 +334,7 @@ export class BackgroundRotation {
   // Marks the single layer that stays in-flow to give the container its height
   // at the <=499px breakpoint. Kept on the outgoing layer during a cross-fade
   // so two in-flow layers never stack, and moved to the incoming layer once
-  // the transition ends (see goToImage)
+  // the transition ends (see finishTransition)
   private setFlowLayer(layer: HTMLElement) {
     this.layers.forEach((item) =>
       item.classList.remove("background-rotation-flow")
@@ -306,22 +353,20 @@ export class BackgroundRotation {
       if (this.history.length > this.items.length * 2) this.history.shift();
     }
     this.updatePreviousButtonState();
-    const previousLayer = this.layers[this.currentIndex];
+    // Settle a fade that is still running before starting the next one
+    this.finishTransition();
     this.container!.classList.add(this.options.transitionClass);
     this.setActiveItem(nextIndex, false);
-    window.clearTimeout(this.transitionTimer ?? undefined);
-    this.transitionTimer = window.setTimeout(() => {
-      previousLayer?.classList.remove("active");
-      previousLayer?.setAttribute("aria-hidden", "true");
-      this.container!.classList.remove(this.options.transitionClass);
-      this.setFlowLayer(this.layers[nextIndex]);
-    }, this.options.transitionDuration);
+    this.transitionTimer = window.setTimeout(
+      () => this.finishTransition(),
+      this.options.transitionDuration
+    );
   }
 
   private goToNextImage() {
     this.goToImage(this.getNextIndex());
     this.announceImage();
-    if (!this.isPaused) this.startRotationTimer();
+    if (this.canRotate()) this.startRotationTimer();
   }
 
   private goToPreviousImage() {
@@ -332,7 +377,7 @@ export class BackgroundRotation {
     }
     this.goToImage(previousIndex, false);
     this.announceImage();
-    if (!this.isPaused) this.startRotationTimer();
+    if (this.canRotate()) this.startRotationTimer();
   }
 
   private togglePause() {
@@ -341,7 +386,7 @@ export class BackgroundRotation {
       this.stopRotationTimer();
       this.logger.log("Background rotation paused");
     } else {
-      this.startRotationTimer();
+      if (this.canRotate()) this.startRotationTimer();
       this.logger.log("Background rotation resumed");
     }
     this.updatePauseButton();
@@ -395,7 +440,7 @@ export class BackgroundRotation {
     nextButton.addEventListener("click", () => this.goToNextImage());
 
     this.liveRegion = document.createElement("div");
-    this.liveRegion.className = "engrid__sr-only";
+    this.liveRegion.className = "sr-only";
     this.liveRegion.setAttribute("aria-live", "polite");
     this.liveRegion.setAttribute("aria-atomic", "true");
 
@@ -419,13 +464,19 @@ export class BackgroundRotation {
   private resumeFromInteraction(kind: "hover" | "focus") {
     this.interactionPauses.delete(kind);
     if (
-      this.interactionPauses.size === 0 &&
-      !this.isPaused &&
+      this.canRotate() &&
       this.rotationTimer === null &&
       !this.isStaticMode()
     ) {
       this.startRotationTimer();
     }
+  }
+
+  // Auto-rotation only runs when nothing is holding it: no user-initiated pause,
+  // and no hover or focus on the controls. Using a control implies one of those
+  // interactions, so the timer can't be restarted out from under the user
+  private canRotate(): boolean {
+    return !this.isPaused && this.interactionPauses.size === 0;
   }
 
   private updatePreviousButtonState() {
@@ -518,10 +569,10 @@ export class BackgroundRotation {
     return index;
   }
 
-  // Each item can set a theme="light" or theme="dark" (default) attribute to
-  // control the .body-title h1 text color shown over its image
+  // Each item can set a data-theme="light" or data-theme="dark" (default)
+  // attribute to control the .body-title h1 text color shown over its image
   private getItemTheme(item: HTMLElement): "light" | "dark" {
-    return item.getAttribute("theme")?.toLowerCase() === "light"
+    return item.getAttribute("data-theme")?.toLowerCase() === "light"
       ? "light"
       : "dark";
   }
