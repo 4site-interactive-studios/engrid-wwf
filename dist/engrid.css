@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, August 24, 2026 @ 16:38:22 ET
+ *  Date: Monday, August 24, 2026 @ 16:38:32 ET
  *  By: nick
  *  ENGrid styles: v0.27.3
  *  ENGrid scripts: v0.27.5
@@ -11830,37 +11830,50 @@ body:not(#en__pagebuilder) .page-backgroundImage .background-rotation .backgroun
   background-size:cover;
   height:100vh;
   left:0;
+  object-position:top right;
   opacity:0;
   pointer-events:none;
   position:fixed;
   top:0;
   transition:opacity var(--background-rotation-transition-duration, .5s) ease-in-out;
   width:100vw;
-  will-change:opacity;
 }
 body:not(#en__pagebuilder) .page-backgroundImage .background-rotation .background-rotation-layer.active{
   opacity:1;
-  pointer-events:auto;
+}
+body:not(#en__pagebuilder) .page-backgroundImage .background-rotation.background-rotation-transition .background-rotation-layer{
+  will-change:opacity;
 }
 body:not(#en__pagebuilder) .page-backgroundImage .background-rotation img.background-rotation-layer{
   display:block;
   object-fit:cover;
+}
+body:not(#en__pagebuilder) .page-backgroundImage .background-rotation figure.background-rotation-layer.active{
+  pointer-events:auto;
 }
 body:not(#en__pagebuilder) .page-backgroundImage .background-rotation figure.media-with-attribution:not(.background-rotation-layer){
   background-image:none;
   display:block;
   position:static;
 }
+body:not(#en__pagebuilder)[data-engrid-background-rotation] .page-backgroundImage:before{
+  background-image:var(--background-rotation-image, none);
+}
 body:not(#en__pagebuilder)[data-engrid-layout=centercenter1col] .page-backgroundImage .background-rotation .background-rotation-layer,body:not(#en__pagebuilder)[data-engrid-layout=centercenter2col] .page-backgroundImage .background-rotation .background-rotation-layer{
   background-position:top;
+  object-position:top center;
 }
 body:not(#en__pagebuilder)[data-engrid-layout=centerright1col] .page-backgroundImage .background-rotation .background-rotation-layer,body:not(#en__pagebuilder)[data-engrid-layout=rightright1col] .page-backgroundImage .background-rotation .background-rotation-layer{
   background-position:0 0;
+  object-position:top left;
 }
 
 @media screen and (max-width:1200px){
   [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=centerleft1col] .page-backgroundImage .background-rotation .background-rotation-layer,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=leftleft1col] .page-backgroundImage .background-rotation .background-rotation-layer{
     display:none;
+  }
+  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=centerleft1col] .page-backgroundImage:before,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=leftleft1col] .page-backgroundImage:before{
+    background-image:none !important;
   }
 }
 @media screen and (max-width:499px){
@@ -11869,15 +11882,14 @@ body:not(#en__pagebuilder)[data-engrid-layout=centerright1col] .page-backgroundI
     position:relative;
   }
   [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=centerleft1col] .page-backgroundImage .background-rotation .background-rotation-layer,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=leftleft1col] .page-backgroundImage .background-rotation .background-rotation-layer{
-    display:none;
+    display:none !important;
   }
   [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=centerleft1col] .page-backgroundImage .background-rotation .background-rotation-layer.active,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=leftleft1col] .page-backgroundImage .background-rotation .background-rotation-layer.active{
     background-image:none !important;
-    display:block;
+    display:block !important;
     height:auto;
     left:0;
     opacity:1;
-    pointer-events:auto;
     position:absolute;
     top:0;
     width:100%;
