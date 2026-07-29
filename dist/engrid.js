@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, August 24, 2026 @ 16:38:14 ET
+ *  Date: Monday, August 24, 2026 @ 16:38:22 ET
  *  By: nick
  *  ENGrid styles: v0.27.3
  *  ENGrid scripts: v0.27.5
@@ -30982,6 +30982,11 @@ class BackgroundRotation {
         layer.setAttribute("aria-hidden", "true");
       }
     });
+
+    if (this.currentIndex !== -1) {
+      this.setFlowLayer(this.layers[this.currentIndex]);
+    }
+
     this.container?.classList.remove(this.options.transitionClass);
   }
 
@@ -30992,11 +30997,13 @@ class BackgroundRotation {
   }
 
   setActiveItem(index) {
+    let moveFlow = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
     const layer = this.layers[index];
     if (!layer) return;
     layer.classList.add("active");
     layer.removeAttribute("aria-hidden");
     this.currentIndex = index;
+    if (moveFlow) this.setFlowLayer(layer);
     const imageUrl = this.getItemImageUrl(this.items[index]);
 
     if (imageUrl) {
@@ -31007,6 +31014,15 @@ class BackgroundRotation {
       engrid_ENGrid.setBodyData("background-rotation-theme", this.getItemTheme(this.items[index]));
     }, 300);
     this.logger.log("Active background image", index + 1, "of", this.items.length, this.getItemAttribution(this.items[index]) ?? "");
+  } // Marks the single layer that stays in-flow to give the container its height
+  // at the <=499px breakpoint. Kept on the outgoing layer during a cross-fade
+  // so two in-flow layers never stack, and moved to the incoming layer once
+  // the transition ends (see goToImage)
+
+
+  setFlowLayer(layer) {
+    this.layers.forEach(item => item.classList.remove("background-rotation-flow"));
+    layer.classList.add("background-rotation-flow");
   }
 
   rotateToNextImage() {
@@ -31025,12 +31041,13 @@ class BackgroundRotation {
     this.updatePreviousButtonState();
     const previousLayer = this.layers[this.currentIndex];
     this.container.classList.add(this.options.transitionClass);
-    this.setActiveItem(nextIndex);
+    this.setActiveItem(nextIndex, false);
     window.clearTimeout(this.transitionTimer ?? undefined);
     this.transitionTimer = window.setTimeout(() => {
       previousLayer?.classList.remove("active");
       previousLayer?.setAttribute("aria-hidden", "true");
       this.container.classList.remove(this.options.transitionClass);
+      this.setFlowLayer(this.layers[nextIndex]);
     }, this.options.transitionDuration);
   }
 
