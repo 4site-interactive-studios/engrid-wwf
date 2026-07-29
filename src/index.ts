@@ -242,7 +242,7 @@ const options: Options = {
       unsubscribeAllRadio.closest(".en__field")?.classList.add("hide");
     }
     new Quiz();
-    new BackgroundRotation({ controls: true });
+    new BackgroundRotation();
     new Bridger();
     new GiftHistory();
     new Accessibility();

@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, September 2, 2026 @ 12:37:35 ET
+ *  Date: Wednesday, September 2, 2026 @ 12:38:03 ET
  *  By: nick
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.3
@@ -32581,9 +32581,7 @@ const options = {
     }
 
     new Quiz();
-    new BackgroundRotation({
-      controls: true
-    });
+    new BackgroundRotation();
     new Bridger();
     new GiftHistory();
     new Accessibility();
