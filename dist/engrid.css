@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, September 2, 2026 @ 12:38:22 ET
+ *  Date: Wednesday, September 2, 2026 @ 12:38:29 ET
  *  By: nick
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.3
@@ -5099,6 +5099,9 @@ body:not(#en__pagebuilder) .page-backgroundImage .page-background-rotation figur
   display:block;
   position:static;
 }
+body:not(#en__pagebuilder)[data-engrid-background-rotation] .page-backgroundImage:before{
+  background-image:var(--background-rotation-image, none);
+}
 body:not(#en__pagebuilder)[data-engrid-layout=centercenter1col] .page-backgroundImage .page-background-rotation .background-rotation-layer,body:not(#en__pagebuilder)[data-engrid-layout=centercenter2col] .page-backgroundImage .page-background-rotation .background-rotation-layer{
   background-position:top;
   object-position:top center;
@@ -5143,6 +5146,9 @@ body:not(#en__pagebuilder)[data-engrid-layout=centerright1col] .page-backgroundI
   body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-background-image] .page-backgroundImage .page-background-rotation img.background-rotation-layer.active,body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-banner-empty][data-engrid-body-banner=empty] .page-backgroundImage .page-background-rotation img.background-rotation-layer.active{
     object-fit:fill;
   }
+}
+.background-rotation-controls{
+  display:none;
 }
 
 body:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls{
@@ -10148,6 +10154,25 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf][data-engrid-payment-type=ach] .showif-ach-selected{
   display:block !important;
 }
+@media screen and (max-width:1200px){
+  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=centerleft1col] .page-backgroundImage .background-rotation .background-rotation-layer,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=leftleft1col] .page-backgroundImage .background-rotation .background-rotation-layer{
+    display:none;
+  }
+  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=centerleft1col] .page-backgroundImage:before,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=leftleft1col] .page-backgroundImage:before{
+    background-image:none !important;
+  }
+  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls{
+    display:none;
+  }
+}
+@media screen and (min-width:1201px){
+  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-layout=centerleft1col][data-engrid-background-rotation-theme] .body-title h1,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-layout=leftleft1col][data-engrid-background-rotation-theme] .body-title h1{
+    transition:color var(--background-rotation-transition-duration, .5s) ease-in-out;
+  }
+  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-layout=centerleft1col][data-engrid-background-rotation-theme=light] .body-title h1,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-layout=leftleft1col][data-engrid-background-rotation-theme=light] .body-title h1{
+    color:#fff;
+  }
+}
 [data-engrid-theme=wwf][data-engrid-subtheme=multistep]{
   --fields_spacing-inline:5px;
   --fields_spacing-block:4px;
@@ -11953,151 +11978,6 @@ body[data-engrid-debug]:before{
 
 body:not(#en__pagebuilder):not([data-engrid-debug]) .i1-force-hide-label .en__field:not(.en__field--validationFailed):first-of-type>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i10-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(10)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i11-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(11)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i2-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(2)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i3-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(3)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i4-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(4)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i5-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(5)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i6-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(6)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i7-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(7)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i8-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(8)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i9-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(9)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) div:not(.en__field--validationFailed) label.force-hide-label{
   display:none;
-}
-
-body:not(#en__pagebuilder) .page-backgroundImage .background-rotation .background-rotation-layer{
-  background-position:100% 0;
-  background-repeat:no-repeat;
-  background-size:cover;
-  height:100vh;
-  left:0;
-  object-position:top right;
-  opacity:0;
-  pointer-events:none;
-  position:fixed;
-  top:0;
-  transition:opacity var(--background-rotation-transition-duration, .5s) ease-in-out;
-  width:100vw;
-}
-body:not(#en__pagebuilder) .page-backgroundImage .background-rotation .background-rotation-layer.active{
-  opacity:1;
-}
-body:not(#en__pagebuilder) .page-backgroundImage .background-rotation.background-rotation-transition .background-rotation-layer{
-  will-change:opacity;
-}
-body:not(#en__pagebuilder) .page-backgroundImage .background-rotation img.background-rotation-layer{
-  display:block;
-  object-fit:cover;
-}
-body:not(#en__pagebuilder) .page-backgroundImage .background-rotation figure.background-rotation-layer.active{
-  pointer-events:auto;
-}
-body:not(#en__pagebuilder) .page-backgroundImage .background-rotation figure.media-with-attribution:not(.background-rotation-layer){
-  background-image:none;
-  display:block;
-  position:static;
-}
-body:not(#en__pagebuilder)[data-engrid-background-rotation] .page-backgroundImage:before{
-  background-image:var(--background-rotation-image, none);
-}
-body:not(#en__pagebuilder)[data-engrid-layout=centercenter1col] .page-backgroundImage .background-rotation .background-rotation-layer,body:not(#en__pagebuilder)[data-engrid-layout=centercenter2col] .page-backgroundImage .background-rotation .background-rotation-layer{
-  background-position:top;
-  object-position:top center;
-}
-body:not(#en__pagebuilder)[data-engrid-layout=centerright1col] .page-backgroundImage .background-rotation .background-rotation-layer,body:not(#en__pagebuilder)[data-engrid-layout=rightright1col] .page-backgroundImage .background-rotation .background-rotation-layer{
-  background-position:0 0;
-  object-position:top left;
-}
-
-@media screen and (max-width:1200px){
-  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=centerleft1col] .page-backgroundImage .background-rotation .background-rotation-layer,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=leftleft1col] .page-backgroundImage .background-rotation .background-rotation-layer{
-    display:none;
-  }
-  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=centerleft1col] .page-backgroundImage:before,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=leftleft1col] .page-backgroundImage:before{
-    background-image:none !important;
-  }
-}
-@media screen and (max-width:499px){
-  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=centerleft1col] .page-backgroundImage .background-rotation,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=leftleft1col] .page-backgroundImage .background-rotation{
-    overflow:hidden;
-    position:relative;
-  }
-  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=centerleft1col] .page-backgroundImage .background-rotation .background-rotation-layer,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=leftleft1col] .page-backgroundImage .background-rotation .background-rotation-layer{
-    display:none !important;
-  }
-  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=centerleft1col] .page-backgroundImage .background-rotation .background-rotation-layer.active,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=leftleft1col] .page-backgroundImage .background-rotation .background-rotation-layer.active{
-    background-image:none !important;
-    display:block !important;
-    height:auto;
-    left:0;
-    opacity:1;
-    position:absolute;
-    top:0;
-    width:100%;
-  }
-  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=centerleft1col] .page-backgroundImage .background-rotation .background-rotation-layer.background-rotation-flow,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=leftleft1col] .page-backgroundImage .background-rotation .background-rotation-layer.background-rotation-flow{
-    position:static;
-  }
-  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=centerleft1col] .page-backgroundImage .background-rotation figure.background-rotation-layer.active,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=leftleft1col] .page-backgroundImage .background-rotation figure.background-rotation-layer.active{
-    height:auto !important;
-    transform:none !important;
-    width:100% !important;
-  }
-  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=centerleft1col] .page-backgroundImage .background-rotation figure.background-rotation-layer.background-rotation-flow,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=leftleft1col] .page-backgroundImage .background-rotation figure.background-rotation-layer.background-rotation-flow{
-    position:relative !important;
-  }
-  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=centerleft1col] .page-backgroundImage .background-rotation img.background-rotation-layer.active,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-page-background=image][data-engrid-layout=leftleft1col] .page-backgroundImage .background-rotation img.background-rotation-layer.active{
-    object-fit:fill;
-  }
-}
-@media screen and (min-width:1201px){
-  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-layout=centerleft1col][data-engrid-background-rotation-theme] .body-title h1,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-layout=leftleft1col][data-engrid-background-rotation-theme] .body-title h1{
-    transition:color var(--background-rotation-transition-duration, .5s) ease-in-out;
-  }
-  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-layout=centerleft1col][data-engrid-background-rotation-theme=light] .body-title h1,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-layout=leftleft1col][data-engrid-background-rotation-theme=light] .body-title h1{
-    color:#fff;
-  }
-}
-.background-rotation-controls{
-  display:none;
-}
-
-@media screen and (min-width:1201px){
-  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls{
-    display:flex;
-    gap:.5rem;
-    position:fixed;
-    right:1rem;
-    top:1rem;
-    z-index:8;
-  }
-  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls button{
-    align-items:center;
-    background-color:#000000bf;
-    border:none;
-    border-radius:50%;
-    color:#fff;
-    cursor:pointer;
-    display:flex;
-    height:40px;
-    justify-content:center;
-    padding:0;
-    transition:background-color .15s ease-in-out;
-    width:40px;
-  }
-  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls button:focus-visible,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls button:hover{
-    background-color:#000000bf;
-  }
-  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls button:focus-visible{
-    outline:2px solid #fff;
-    outline-offset:2px;
-  }
-  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls button:disabled{
-    cursor:default;
-    opacity:.4;
-  }
-  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls button:disabled:focus-visible,[data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls button:disabled:hover{
-    background-color:#00000080;
-  }
-  [data-engrid-theme=wwf]:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls button svg{
-    height:20px;
-    width:20px;
-  }
-}
-@media (prefers-reduced-motion:reduce){
-  body:not(#en__pagebuilder) .page-backgroundImage .background-rotation .background-rotation-layer{
-    transition:none;
-  }
 }
 body{
   opacity:1;

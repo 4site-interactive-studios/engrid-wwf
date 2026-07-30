@@ -1,0 +1,47 @@
+// WWF-specific styles for the BackgroundRotation component. The generic
+// mechanics live in ../background-rotation.scss; this file holds everything
+// tied to the WWF theme's breakpoints and layout. This partial is imported
+// inside the [data-engrid-theme="wwf"] block (see page-template-styles.scss).
+
+// The WWF theme hides the page background at the 1200px breakpoint
+// (see non-embed-multistep.scss), the rotation layers should respect that too.
+// The component matches this breakpoint in JS via the mobileBreakpoint option
+// passed in index.ts and stops rotating below it.
+@media screen and (max-width: 1200px) {
+  &:not(#en__pagebuilder) {
+    &[data-engrid-page-background="image"][data-engrid-layout="centerleft1col"] .page-backgroundImage .background-rotation .background-rotation-layer,
+    &[data-engrid-page-background="image"][data-engrid-layout="leftleft1col"] .page-backgroundImage .background-rotation .background-rotation-layer {
+      display: none;
+    }
+
+    // The rotation backdrop is hidden here as well, so it can't put a
+    // full-bleed image back at a width where the theme wants none
+    &[data-engrid-page-background="image"][data-engrid-layout="centerleft1col"] .page-backgroundImage:before,
+    &[data-engrid-page-background="image"][data-engrid-layout="leftleft1col"] .page-backgroundImage:before {
+      background-image: none !important;
+    }
+
+    // The controls only make sense where the full-bleed background is visible
+    &[data-engrid-background-rotation="active"] .background-rotation-controls {
+      display: none;
+    }
+  }
+}
+
+// Each image item can set a theme="light" or theme="dark" (default) attribute,
+// which switches the .body-title h1 text color so it stays visible over the
+// current background image. Only applies to the >1200px layout.
+@media screen and (min-width: 1201px) {
+  &:not(#en__pagebuilder) {
+    &[data-engrid-layout="centerleft1col"],
+    &[data-engrid-layout="leftleft1col"] {
+      &[data-engrid-background-rotation-theme] .body-title h1 {
+        transition: color var(--background-rotation-transition-duration, 500ms) ease-in-out;
+      }
+
+      &[data-engrid-background-rotation-theme="light"] .body-title h1 {
+        color: #ffffff;
+      }
+    }
+  }
+}
