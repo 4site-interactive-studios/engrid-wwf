@@ -1,11 +1,3 @@
-import {
-  Options,
-  App,
-  DonationFrequency,
-  DonationAmount,
-  EnForm,
-  Ecard
-} from "@4site/engrid-scripts"; // Uses ENGrid via NPM
 // import {
 //   Options,
 //   App,
@@ -13,7 +5,16 @@ import {
 //   DonationAmount,
 //   EnForm,
 //   Ecard
-// } from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
+// } from "@4site/engrid-scripts"; // Uses ENGrid via NPM
+import {
+  Options,
+  App,
+  DonationFrequency,
+  DonationAmount,
+  EnForm,
+  Ecard,
+  PageBackgroundRotation,
+} from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
 
 import "./sass/main.scss";
 import { customScript } from "./scripts/main";
@@ -27,7 +28,6 @@ import { AddDAF } from "./scripts/add-daf";
 import { Bridger } from "./scripts/Bridger";
 
 import { Quiz } from "./scripts/quiz";
-import { BackgroundRotation } from "./scripts/background-rotation";
 import GiftHistory from "./scripts/gift-history";
 import Accessibility from "./scripts/accessibility";
 
@@ -242,7 +242,10 @@ const options: Options = {
       unsubscribeAllRadio.closest(".en__field")?.classList.add("hide");
     }
     new Quiz();
-    new BackgroundRotation();
+    // The WWF theme stops painting the full-bleed page background below
+    // 1200px (see sass/themes/wwf-background-rotation.scss), so the rotation
+    // treats that as its mobile breakpoint
+    new PageBackgroundRotation({ mobileBreakpoint: "(max-width: 1200px)" });
     new Bridger();
     new GiftHistory();
     new Accessibility();

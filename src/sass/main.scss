@@ -2,8 +2,8 @@
 @import "./page-template-variables";
 
 /* ENGRID ASSETS */
-@import "@4site/engrid-styles"; // Uses ENGrid via NPM
-// @import "../../../engrid/packages/styles"; // Uses ENGrid via Visual Studio Workspace
+// @import "@4site/engrid-styles"; // Uses ENGrid via NPM
+@import "../../../engrid/packages/styles"; // Uses ENGrid via Visual Studio Workspace
 
 /* CLIENT THEME FONTS AND STYLES */
 @import "./page-template-fonts";
@@ -11,7 +11,6 @@
 @import "./page-header-footer";
 @import "./non-embed-multistep";
 @import "./accessibility";
-@import "./background-rotation";
 
 /* ENGRID PAGE TEMPLATES MAKES THE BODY INVISIBLE SO THE USER NEVER SEE'S AN UNSTYLED PAGE*/
 /* THIS MAKES THE BODY VISIBLE AFTER IT'S DOWNLOADED AND PARSED BY THE BROWSER */
