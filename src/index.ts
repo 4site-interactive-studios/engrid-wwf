@@ -56,6 +56,10 @@ const options: Options = {
     "Ukraine",
   ],
   Plaid: true,
+  PreferredPaymentMethod: {
+    preferredPaymentMethodField: "supporter.NOT_TAGGED_150",
+    defaultPaymentMethod: ["card"],
+  },
   PageLayouts: [
     "centerleft1col",
     "centercenter1col",

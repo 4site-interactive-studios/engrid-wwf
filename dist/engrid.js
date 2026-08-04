@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, July 29, 2026 @ 15:47:54 ET
+ *  Date: Tuesday, August 4, 2026 @ 10:15:59 ET
  *  By: nick
  *  ENGrid styles: v0.23.4
  *  ENGrid scripts: v0.23.9
@@ -26533,6 +26533,10 @@ const options = {
   },
   CountryDisable: ["Belarus", "Cuba", "Iran", "North Korea", "Russia", "Syria", "Ukraine"],
   Plaid: true,
+  PreferredPaymentMethod: {
+    preferredPaymentMethodField: "supporter.NOT_TAGGED_150",
+    defaultPaymentMethod: ["card"]
+  },
   PageLayouts: ["centerleft1col", "centercenter1col", "centercenter2col", "centerright1col"],
   Debug: App.getUrlParameter("debug") == "true" ? true : false,
   MobileCTA: [{
