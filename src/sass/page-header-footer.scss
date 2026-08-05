@@ -213,9 +213,11 @@
       align-items: center;
       &:before {
         background: #fff
-          url("https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo-standalone.png?1")
+          url("https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/wwf-logo-2026-theme.svg")
           no-repeat;
-        background-size: contain;
+        background-size: 65%;
+        background-position: center;
+        border: 1px solid #ccc;
         height: 100px;
         margin: 0;
         width: 100%;
@@ -232,6 +234,12 @@
     }
   }
 
+  @media screen and (max-width: 960px) {
+    .body-title .en__component:before {
+      border: none;
+    }
+  }
+
   @media screen and (max-width: 599px) {
     .content-header {
       --engrid__content-header_background-color: #ffffff;
@@ -239,9 +247,9 @@
       margin-top: 10px;
       &:before {
         background: #fff
-          url("https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo-no-tab.png?1")
+          url("https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/wwf-logo-2026-theme.svg")
           no-repeat;
-        background-size: contain;
+        background-size: 65%;
         // box-shadow: 0 1px 3px #00000014;
         height: 100px;
         margin: 0;
