@@ -1,19 +1,19 @@
-import {
-  Options,
-  App,
-  DonationFrequency,
-  DonationAmount,
-  EnForm,
-  Ecard
-} from "@4site/engrid-scripts"; // Uses ENGrid via NPM
 // import {
 //   Options,
 //   App,
 //   DonationFrequency,
 //   DonationAmount,
 //   EnForm,
-//   Ecard
-// } from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
+//   Ecard,
+// } from "@4site/engrid-scripts"; // Uses ENGrid via NPM
+import {
+  Options,
+  App,
+  DonationFrequency,
+  DonationAmount,
+  EnForm,
+  Ecard,
+} from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
 
 import "./sass/main.scss";
 import { customScript } from "./scripts/main";
@@ -294,7 +294,7 @@ const options: Options = {
       // If there is, sync the values
       donationHasPremium.value =
         transactionSelprodvariantid.value &&
-          transactionSelprodvariantid.value != maxTheirGift
+        transactionSelprodvariantid.value != maxTheirGift
           ? "Y"
           : "N";
     }
