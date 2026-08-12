@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, August 11, 2026 @ 23:44:48 ET
+ *  Date: Tuesday, August 11, 2026 @ 23:45:16 ET
  *  By: fernando
  *  ENGrid styles: v0.27.2
  *  ENGrid scripts: v0.27.2
@@ -75,8 +75,7 @@ a{
 }
 abbr[title]{
   text-decoration:underline;
-  -webkit-text-decoration:underline dotted;
-          text-decoration:underline dotted;
+  text-decoration:underline dotted;
 }
 b,strong{
   font-weight:bolder;
@@ -489,7 +488,6 @@ template{
 .en__eventOccurrencesDateSelector__clear,.en__occurrenceSummary__change{
   color:#0070ba;
   cursor:pointer;
-  -webkit-text-decoration:underline;
   text-decoration:underline;
 }
 
@@ -1862,13 +1860,11 @@ p{
 a{
   color:var(--a_color);
   font-family:var(--a_font-family);
-  -webkit-text-decoration:var(--a_text-decoration);
-          text-decoration:var(--a_text-decoration);
+  text-decoration:var(--a_text-decoration);
 }
 a:focus,a:hover{
   color:var(--a_color_hover);
-  -webkit-text-decoration:var(--a_text-decoration_hover);
-          text-decoration:var(--a_text-decoration_hover);
+  text-decoration:var(--a_text-decoration_hover);
 }
 
 [data-engrid-theme]{
@@ -2045,7 +2041,6 @@ label a.label-tooltip{
   margin-left:var(--fields_spacing-inline);
   margin-right:var(--fields_spacing-inline);
   right:0;
-  -webkit-text-decoration:underline;
   text-decoration:underline;
   text-transform:none;
 }
@@ -2070,8 +2065,7 @@ label a.label-tooltip:last-child{
   line-height:var(--label_line-height);
   margin-left:0;
   margin-right:0;
-  -webkit-text-decoration:var(--a_text-decoration);
-          text-decoration:var(--a_text-decoration);
+  text-decoration:var(--a_text-decoration);
   text-transform:var(--label_text-transform);
 }
 input,input.en__field__input{
@@ -2768,7 +2762,6 @@ body{
   color:var(--button_color_checked);
 }
 a.button,a.button.active,a.button:active,a.button:focus,a.button:hover{
-  -webkit-text-decoration:none;
   text-decoration:none;
 }
 
@@ -4591,7 +4584,6 @@ figure.media-with-attribution figattribution,figure.media-with-attribution figat
   font-weight:var(--media-attribution__font-weight);
 }
 figure.media-with-attribution figattribution a,figure.media-with-attribution figattribution a:focus,figure.media-with-attribution figattribution a:hover{
-  -webkit-text-decoration:none;
   text-decoration:none;
 }
 figure.media-with-attribution figattribution{
@@ -4887,7 +4879,6 @@ body:not(#en__pagebuilder) img:not([src]):not([srcset]){
   display:flex;
   justify-content:center;
   position:relative;
-  -webkit-text-decoration:none;
   text-decoration:none;
   width:100%;
 }
@@ -5192,7 +5183,6 @@ a.skip-link{
   z-index:2147483647 !important;
 }
 a.skip-link:active,a.skip-link:focus,a.skip-link:hover{
-  -webkit-text-decoration:underline !important;
   text-decoration:underline !important;
 }
 a.skip-link:not(:focus):not(:active){
@@ -5780,7 +5770,6 @@ body[data-engrid-exit-intent-lightbox=open]{
   padding-bottom:var(--exit-intent__button_padding-bottom);
   padding-top:var(--exit-intent__button_padding-top);
   text-align:center;
-  -webkit-text-decoration:none;
   text-decoration:none;
   text-transform:var(--exit-intent__button_text-transform);
   transition:all .3s ease-in-out;
@@ -5823,7 +5812,6 @@ body[data-engrid-exit-intent-lightbox=open]{
   color:#016da3;
   cursor:pointer;
   font-weight:700;
-  -webkit-text-decoration:underline;
   text-decoration:underline;
 }
 .engrid-reset-welcome-back svg,.engrid-welcome-back-clear svg{
@@ -7492,7 +7480,6 @@ body[data-engrid-debug]:before{
   color:#000;
   cursor:pointer;
   text-align:center;
-  -webkit-text-decoration:none;
   text-decoration:none;
 }
 .debug-panel__link-label .debug-panel__edit-link,.debug-panel__link-label .debug-panel__edit-link:hover{
@@ -7860,7 +7847,6 @@ body[data-engrid-debug]:before{
   padding-right:0;
   padding-top:var(--fields_spacing-block);
   text-align:left;
-  -webkit-text-decoration:none;
   text-decoration:none;
   white-space:nowrap;
 }
@@ -8845,7 +8831,6 @@ body[data-engrid-debug]:before{
 }
 [data-engrid-theme=wwf] .en__twitterTarget__details a{
   color:#006ea5;
-  -webkit-text-decoration:none;
   text-decoration:none;
 }
 [data-engrid-theme=wwf][data-engrid-page-type=emailtotarget] .en__field--title.en__mandatory .en__field__label{
@@ -8953,7 +8938,6 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf] .alternative-donation-methods a{
   color:#006da4;
   font-weight:700;
-  -webkit-text-decoration:none;
   text-decoration:none;
 }
 [data-engrid-theme=wwf] .cn-bbb-badges{
@@ -8977,7 +8961,6 @@ body[data-engrid-debug]:before{
   --p_font-weight:400;
   color:#006da4;
   font-weight:700;
-  -webkit-text-decoration:none;
   text-decoration:none;
 }
 [data-engrid-theme=wwf] .white-box{
@@ -9392,16 +9375,13 @@ body[data-engrid-debug]:before{
   --a_text-decoration_hover:none;
 }
 [data-engrid-theme=wwf] .get-involved>a,[data-engrid-theme=wwf] .get-involved>a:hover{
-  -webkit-text-decoration:none;
   text-decoration:none;
 }
 [data-engrid-theme=wwf] .get-involved>a h4:hover,[data-engrid-theme=wwf] .get-involved>a:hover h4:hover{
-  -webkit-text-decoration:underline;
   text-decoration:underline;
 }
 [data-engrid-theme=wwf] .get-involved>a p,[data-engrid-theme=wwf] .get-involved>a:hover p{
   color:#000;
-  -webkit-text-decoration:none;
   text-decoration:none;
 }
 [data-engrid-theme=wwf] .get-involved a:not(:last-child){
@@ -9458,14 +9438,12 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf] .wallpapers a{
   color:#006ea5;
   font-size:14px;
-  -webkit-text-decoration:none;
   text-decoration:none;
 }
 [data-engrid-theme=wwf]:not([ty-asset-download-links=true]) .wallpapers p,[data-engrid-theme=wwf][ty-asset-download-links=true] .og-origami{
   display:none;
 }
 [data-engrid-theme=wwf] .wallpapers a:hover{
-  -webkit-text-decoration:underline;
   text-decoration:underline;
 }
 [data-engrid-theme=wwf] .wallpapers p{
@@ -10621,7 +10599,6 @@ body[data-engrid-debug]:before{
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=multistep][data-engrid-payment-type=paypaltouch] .back-link,[data-engrid-theme=wwf][data-engrid-subtheme=multistep][data-engrid-payment-type=stripedigitalwallet] .back-link{
   display:block;
-  -webkit-text-decoration:none;
   text-decoration:none;
 }
 [data-engrid-theme=wwf][data-engrid-subtheme=multistep][conditonally-hide-show-digital-wallet-elements] #en__digitalWallet .en__digitalWallet__container{
@@ -11191,7 +11168,6 @@ body[data-engrid-debug]:before{
   min-width:120px;
   padding:16px 20px;
   text-align:center;
-  -webkit-text-decoration:none;
   text-decoration:none;
   transition:background .2s ease;
 }
@@ -11269,7 +11245,6 @@ body[data-engrid-debug]:before{
   color:var(--label_color);
   font-size:18px;
   font-weight:600;
-  -webkit-text-decoration:underline;
   text-decoration:underline;
   text-decoration-thickness:2px;
   text-underline-offset:8px;
