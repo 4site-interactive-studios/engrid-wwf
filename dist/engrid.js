@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, August 6, 2026 @ 10:58:04 ET
+ *  Date: Thursday, July 16, 2026 @ 15:12:23 ET
  *  By: nick
- *  ENGrid styles: v0.27.0
- *  ENGrid scripts: v0.27.0
+ *  ENGrid styles: v0.25.8
+ *  ENGrid scripts: v0.25.8
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -11211,7 +11211,6 @@ const OptionsDefaults = {
         "rightright1col",
         "none",
     ],
-    UseBodyBannerImageAsBackground: false,
 };
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/interfaces/upsell-options.js
@@ -11744,7 +11743,6 @@ class DonationAmount {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/engrid.js
-const errorCallbacks = new Map();
 class engrid_ENGrid {
     constructor() {
         if (!engrid_ENGrid.enForm) {
@@ -11917,7 +11915,7 @@ class engrid_ENGrid {
         return null;
     }
     static isThankYouPage() {
-        return (this.getPageNumber() === this.getPageCount() && this.getPageCount() > 1);
+        return this.getPageNumber() === this.getPageCount();
     }
     // Return the current page ID
     static getPageID() {
@@ -12173,7 +12171,6 @@ class engrid_ENGrid {
             else {
                 errorMessageElement.innerHTML = errorMessage;
             }
-            errorCallbacks.forEach((callback) => callback());
         }
     }
     static removeError(element) {
@@ -12258,24 +12255,6 @@ class engrid_ENGrid {
     // This function is used to run a callback function when an error is displayed on the page
     static watchForError(callback) {
         const errorElement = document.querySelector(".en__errorList");
-        const callbackType = engrid_ENGrid.getErrorCallbackKey(callback);
-        // Register callback so setError can trigger it too
-        if (!errorCallbacks.has(callbackType)) {
-            errorCallbacks.set(callbackType, callback);
-        }
-        if (errorElement && !errorElement.dataset[callbackType]) {
-            errorElement.dataset[callbackType] = "true";
-            const observer = new MutationObserver(function (mutations) {
-                mutations.forEach(function (mutation) {
-                    if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
-                        callback();
-                    }
-                });
-            });
-            observer.observe(errorElement, { childList: true });
-        }
-    }
-    static getErrorCallbackKey(callback) {
         const capitalize = (word) => word.charAt(0).toUpperCase() + word.slice(1);
         // Avoid duplicate callbacks
         let callbackType = callback.toString();
@@ -12289,7 +12268,18 @@ class engrid_ENGrid {
         callbackType = callbackType.replace(/[^a-zA-Z0-9]/g, "");
         // Limit to 20 characters and add prefix
         callbackType = callbackType.substring(0, 20);
-        return "engrid" + capitalize(callbackType);
+        callbackType = "engrid" + capitalize(callbackType);
+        if (errorElement && !errorElement.dataset[callbackType]) {
+            errorElement.dataset[callbackType] = "true";
+            const observer = new MutationObserver(function (mutations) {
+                mutations.forEach(function (mutation) {
+                    if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
+                        callback();
+                    }
+                });
+            });
+            observer.observe(errorElement, { childList: true });
+        }
     }
     // Get the Payment Type
     static getPaymentType() {
@@ -12906,14 +12896,12 @@ class App extends engrid_ENGrid {
         new CustomCurrency();
         // Auto Country Select
         new AutoCountrySelect();
-        // Page Background
-        new PageBackground(this.options.UseBodyBannerImageAsBackground);
         // Add Image Attribution
         if (this.options.MediaAttribution)
             new MediaAttribution();
         // Apple Pay
         if (this.options.applePay)
-            ApplePay.getInstance();
+            new ApplePay();
         // Capitalize Fields
         if (this.options.CapitalizeFields)
             new CapitalizeFields();
@@ -12958,6 +12946,8 @@ class App extends engrid_ENGrid {
         new A11y();
         new AddNameToMessage();
         new ExpandRegionName();
+        // Page Background
+        new PageBackground();
         // Url Params to Form Fields
         new UrlToForm();
         // Required if Visible Fields
@@ -12982,11 +12972,10 @@ class App extends engrid_ENGrid {
         // Supporter Hub Features
         new SupporterHub();
         // Digital Wallets Features
-        if (engrid_ENGrid.getPageType() === "DONATION" ||
-            engrid_ENGrid.getPageType() === "EVENT") {
+        if (engrid_ENGrid.getPageType() === "DONATION") {
             new DigitalWallets();
+            new PreferredPaymentMethod();
         }
-        new PreferredPaymentMethod();
         // Mobile CTA
         new MobileCTA();
         // Live Frequency
@@ -13143,313 +13132,50 @@ const merchantCapabilities = window.merchantCapabilities;
 const merchantTotalLabel = window.merchantTotalLabel;
 class ApplePay {
     constructor() {
-        this.logger = new logger_EngridLogger("ApplePay", "#000000", "#a6f3a6", "🍎");
         this.applePay = document.querySelector('.en__field__input.en__field__input--radio[value="applepay"]');
         this._amount = DonationAmount.getInstance();
         this._fees = ProcessingFees.getInstance();
         this._form = en_form_EnForm.getInstance();
-        // Client hook: runs after the built-in pre-flight, right before the Apple
-        // Pay sheet opens. Return false to abort. The hook shows its own errors
-        // with ENGrid.setError; the donation amount field error is cleared before
-        // every attempt.
-        this.beforeSession = null;
-        // Fields the wallet supplies via requiredBillingContactFields, so they are
-        // excluded from the mandatory-field pre-flight.
-        this.walletFields = [
-            "supporter.address1",
-            "supporter.address2",
-            "supporter.city",
-            "supporter.region",
-            "supporter.postcode",
-            "supporter.country",
-            "supporter.phoneNumber",
-        ];
-        // Field containers this component flagged with ENGrid.setError, so they can
-        // be cleared on the next attempt.
-        this.errorFields = [];
-        ApplePay.instance = this;
         this.checkApplePay();
-    }
-    static getInstance() {
-        if (!ApplePay.instance) {
-            ApplePay.instance = new ApplePay();
-        }
-        return ApplePay.instance;
-    }
-    // True when the page offers Apple Pay, either as a giveBySelect radio tile
-    // or as an option of the payment type select.
-    hasApplePayOption() {
-        if (this.applePay)
-            return true;
-        const paymentTypeField = engrid_ENGrid.getField("transaction.paymenttype");
-        if (!paymentTypeField || !paymentTypeField.options)
-            return false;
-        return Array.from(paymentTypeField.options).some((option) => option.value.toLowerCase() === "applepay");
     }
     checkApplePay() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!this.hasApplePayOption() ||
-                !window.hasOwnProperty("ApplePaySession")) {
+            const pageform = document.querySelector("form.en__component--page");
+            if (!this.applePay || !window.hasOwnProperty("ApplePaySession")) {
                 const applePayContainer = document.querySelector(".en__field__item.applepay");
                 if (applePayContainer)
                     applePayContainer.remove();
-                engrid_ENGrid.setBodyData("apple-pay-available", "false");
-                this.logger.log("DISABLED: not supported by this browser or page");
-                return false;
-            }
-            if (!merchantIdentifier) {
-                engrid_ENGrid.setBodyData("apple-pay-available", "false");
-                this.logger.log("DISABLED: window.merchantIdentifier is not defined");
-                return false;
-            }
-            let applePayEnabled = false;
-            try {
-                applePayEnabled = yield ApplePaySession.canMakePaymentsWithActiveCard(merchantIdentifier);
-            }
-            catch (e) {
-                applePayEnabled = false;
-            }
-            engrid_ENGrid.setBodyData("apple-pay-available", applePayEnabled ? "true" : "false");
-            if (!applePayEnabled) {
-                this.logger.log("DISABLED: no provisioned card");
-                return false;
-            }
-            // Hidden field that carries the wallet token to EN. Only create it if it
-            // doesn't exist yet, so we never post a duplicate PkPaymentToken.
-            if (!engrid_ENGrid.getField("PkPaymentToken")) {
-                engrid_ENGrid.createHiddenInput("PkPaymentToken").setAttribute("id", "applePayToken");
-            }
-            this.writeButtonContainer();
-            // Fallback trigger: an implicit submit (e.g. Enter key) while Apple Pay
-            // is selected and no token exists yet opens the sheet instead of
-            // submitting. After authorization the token is set and the submit
-            // passes through.
-            this._form.onSubmit.subscribe(() => this.onSubmitFallback());
-            this.logger.log("ENABLED");
-            return true;
-        });
-    }
-    // Writes the native Apple Pay button container right before the submit
-    // button. CSS swaps it with the submit button while the applepay payment
-    // type is selected (data-engrid-payment-type="applepay").
-    writeButtonContainer() {
-        if (document.querySelector(".apple-pay-container"))
-            return;
-        if (!document.querySelector(".en__submit"))
-            return;
-        // The -apple-pay-button-* properties are set inline because cssnano's
-        // colormin rewrites the keyword "black" to #000 in built stylesheets,
-        // which is not a valid value for -apple-pay-button-style, so Safari
-        // drops it and falls back to white-outline.
-        engrid_ENGrid.addHtml('<div class="apple-pay-container showif-applepay-selected">' +
-            '<div class="apple-pay-button" role="button" tabindex="0" aria-label="Donate with Apple Pay" ' +
-            'style="-apple-pay-button-type: donate; -apple-pay-button-style: black;"></div>' +
-            "</div>", ".en__submit", "before");
-        const button = document.querySelector(".apple-pay-container .apple-pay-button");
-        if (!button)
-            return;
-        button.addEventListener("click", () => this.onPayClicked());
-        button.addEventListener("keydown", (event) => {
-            if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
-                this.onPayClicked();
-            }
-        });
-    }
-    onSubmitFallback() {
-        const applePayToken = document.getElementById("applePayToken");
-        if (engrid_ENGrid.getPaymentType().toLowerCase() !== "applepay" ||
-            (applePayToken && applePayToken.value !== "")) {
-            return; // Not Apple Pay, or already authorized: let the submit proceed
-        }
-        if (!this._form.submit)
-            return; // Another component vetoed this submit
-        this._form.submit = false; // Veto the submit and open the sheet instead
-        this.onPayClicked();
-    }
-    onPayClicked() {
-        if (!this.preflight())
-            return;
-        this.openSession();
-    }
-    preflight() {
-        this.clearErrors();
-        // The wallet supplies billing address and phone, but nothing else. Flag
-        // empty mandatory fields before the sheet opens so a donor never
-        // authorizes a payment EN will bounce for a missing mandatory field.
-        const missing = this.missingMandatoryFields();
-        missing.forEach((field) => {
-            engrid_ENGrid.setError(field, "This field is required");
-            this.errorFields.push(field);
-        });
-        if (missing.length) {
-            this.scrollToError();
-            return false;
-        }
-        const amount = this._amount.amount;
-        if (!amount || amount <= 0) {
-            engrid_ENGrid.setError(".en__field--donationAmt", "Please select a gift amount.");
-            this.scrollToError();
-            return false;
-        }
-        // The client hook owns the donation amount field error from here on
-        engrid_ENGrid.removeError(".en__field--donationAmt");
-        if (this.beforeSession && this.beforeSession() === false) {
-            this.scrollToError();
-            return false;
-        }
-        return true;
-    }
-    // Scrolls to the first field flagged with a validation error so the donor
-    // sees what needs fixing; without this the button looks unresponsive.
-    scrollToError() {
-        const errorField = (this.errorFields[0] ||
-            document.querySelector(".en__field--validationFailed"));
-        if (errorField) {
-            errorField.scrollIntoView({ behavior: "smooth", block: "center" });
-        }
-    }
-    clearErrors() {
-        this.errorFields.forEach((field) => engrid_ENGrid.removeError(field));
-        this.errorFields = [];
-        engrid_ENGrid.removeError(".en__field--donationAmt");
-    }
-    // Every visible mandatory field container that is empty and that the
-    // wallet cannot fill.
-    missingMandatoryFields() {
-        const missing = [];
-        document
-            .querySelectorAll(".en__field.en__mandatory")
-            .forEach((field) => {
-            const fieldElement = field;
-            if (!engrid_ENGrid.isVisible(fieldElement))
-                return;
-            const input = fieldElement.querySelector("input, select, textarea");
-            if (!input || !input.name)
-                return;
-            if (this.walletFields.indexOf(input.name) !== -1)
-                return;
-            if (input.type === "radio" || input.type === "checkbox") {
-                if (!fieldElement.querySelector("input:checked")) {
-                    missing.push(fieldElement);
-                }
-                return;
-            }
-            if (input.value.trim() === "") {
-                missing.push(fieldElement);
-            }
-        });
-        return missing;
-    }
-    openSession() {
-        // ProcessingFees mirrors EN's own fee cover calculation, so the sheet
-        // total matches what EN will actually charge.
-        const donationAmount = (this._amount.amount + this._fees.fee).toFixed(2);
-        const request = {
-            supportedNetworks: merchantSupportedNetworks,
-            merchantCapabilities: merchantCapabilities,
-            countryCode: merchantCountryCode,
-            currencyCode: merchantCurrencyCode,
-            requiredBillingContactFields: ["postalAddress", "phone"],
-            total: {
-                label: merchantTotalLabel || merchantDisplayName || "Donation",
-                amount: donationAmount,
-                type: "final",
-            },
-        };
-        let session;
-        try {
-            session = new ApplePaySession(3, request);
-        }
-        catch (e) {
-            const errorTarget = (document.querySelector(".apple-pay-container") || document.querySelector(".en__submit"));
-            if (errorTarget) {
-                engrid_ENGrid.setError(errorTarget, "Apple Pay error: '" + e.message + "'");
-            }
-            this._form.dispatchError();
-            return;
-        }
-        const thisClass = this;
-        session.onvalidatemerchant = function (event) {
-            thisClass
-                .performValidation(event.validationURL)
-                .then(function (merchantSession) {
                 if (engrid_ENGrid.debug)
-                    console.log("Apple Pay merchantSession", merchantSession);
-                session.completeMerchantValidation(merchantSession);
-            })
-                .catch(function () {
-                session.abort();
-            });
-        };
-        session.onpaymentauthorized = function (event) {
-            thisClass.onPaymentAuthorized(session, event);
-        };
-        session.oncancel = function () {
-            // Donor closed the sheet; return them to the form quietly.
-            thisClass.logger.log("Sheet cancelled by the donor");
-        };
-        session.begin();
-    }
-    onPaymentAuthorized(session, event) {
-        if (engrid_ENGrid.debug)
-            console.log("Apple Pay Token", event.payment.token);
-        // Pass the billing info from Apple Pay back into the EN billing fields -
-        // this won't happen automatically with Vantiv Apple Pay.
-        const billing = event.payment.billingContact || {};
-        const addressLines = billing.addressLines || [];
-        // Country goes first, dispatching change: EN swaps country-dependent
-        // fields (supporter.region is a select for some countries and a text
-        // input for others) when the country changes, so the region field must
-        // already be in its final shape when we fill it below.
-        this.setField("supporter.country", billing.countryCode, true);
-        this.setField("supporter.address1", addressLines[0]);
-        this.setField("supporter.address2", addressLines[1]);
-        this.setField("supporter.city", billing.locality);
-        if (billing.administrativeArea) {
-            this.setRegion(billing.administrativeArea);
-        }
-        this.setField("supporter.postcode", billing.postalCode);
-        this.setField("supporter.phoneNumber", billing.phone);
-        // Apple Pay gifts are one-time on this setup; make sure recurrpay isn't
-        // submitted blank when we bypass the EN submit button.
-        const recurrpay = engrid_ENGrid.getField("transaction.recurrpay");
-        if (recurrpay && !recurrpay.value)
-            recurrpay.value = "N";
-        const applePayToken = document.getElementById("applePayToken");
-        if (applePayToken) {
-            applePayToken.value = JSON.stringify(event.payment.token);
-        }
-        session.completePayment(ApplePaySession.STATUS_SUCCESS);
-        this._form.submitForm();
-    }
-    setField(name, value, dispatchEvents = false) {
-        if (value == null || value === "")
-            return;
-        if (!engrid_ENGrid.getField(name))
-            return;
-        engrid_ENGrid.setFieldValue(name, value, true, dispatchEvents);
-    }
-    // The region field is a select for countries EN has subdivisions for and a
-    // text input for the rest. On a select, the wallet value must match an
-    // option or the write is silently dropped, so match case-insensitively by
-    // option value or label (Apple returns subdivision codes for some
-    // countries and full names for others).
-    setRegion(value) {
-        const field = engrid_ENGrid.getField("supporter.region");
-        if (!field)
-            return;
-        if (field instanceof HTMLSelectElement) {
-            const option = Array.from(field.options).find((o) => o.value.toLowerCase() === value.toLowerCase() ||
-                o.text.toLowerCase() === value.toLowerCase());
-            if (!option) {
-                this.logger.log(`Region "${value}" doesn't match any region select option`);
-                return;
+                    console.log("Apple Pay DISABLED");
+                return false;
             }
-            engrid_ENGrid.setFieldValue("supporter.region", option.value);
-            return;
-        }
-        engrid_ENGrid.setFieldValue("supporter.region", value);
+            const promise = ApplePaySession.canMakePaymentsWithActiveCard(merchantIdentifier);
+            let applePayEnabled = false;
+            yield promise.then((canMakePayments) => {
+                applePayEnabled = canMakePayments;
+                if (canMakePayments) {
+                    let input = document.createElement("input");
+                    input.setAttribute("type", "hidden");
+                    input.setAttribute("name", "PkPaymentToken");
+                    input.setAttribute("id", "applePayToken");
+                    pageform.appendChild(input);
+                    this._form.onSubmit.subscribe(() => this.onPayClicked());
+                }
+            });
+            if (engrid_ENGrid.debug)
+                console.log("applePayEnabled", applePayEnabled);
+            let applePayWrapper = this.applePay.closest(".en__field__item");
+            if (applePayEnabled) {
+                // Set Apple Pay Class
+                applePayWrapper === null || applePayWrapper === void 0 ? void 0 : applePayWrapper.classList.add("applePayWrapper");
+            }
+            else {
+                // Hide Apple Pay Wrapper
+                if (applePayWrapper)
+                    applePayWrapper.style.display = "none";
+            }
+            return applePayEnabled;
+        });
     }
     performValidation(url) {
         return new Promise(function (resolve, reject) {
@@ -13478,6 +13204,75 @@ class ApplePay {
             xhr.open("GET", validationUrl);
             xhr.send();
         });
+    }
+    log(name, msg) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/ea-dataservice/rest/applepay/log?name=" + name + "&msg=" + msg);
+        xhr.send();
+    }
+    sendPaymentToken(token) {
+        return new Promise(function (resolve, reject) {
+            resolve(true);
+        });
+    }
+    onPayClicked() {
+        if (!this._form.submit)
+            return;
+        const enFieldPaymentType = document.querySelector("#en__field_transaction_paymenttype");
+        const applePayToken = document.getElementById("applePayToken");
+        const formClass = this._form;
+        // Only work if Payment Type is Apple Pay
+        if (enFieldPaymentType.value == "applepay" && applePayToken.value == "") {
+            try {
+                let donationAmount = this._amount.amount + this._fees.fee;
+                var request = {
+                    supportedNetworks: merchantSupportedNetworks,
+                    merchantCapabilities: merchantCapabilities,
+                    countryCode: merchantCountryCode,
+                    currencyCode: merchantCurrencyCode,
+                    total: {
+                        label: merchantTotalLabel,
+                        amount: donationAmount,
+                    },
+                };
+                var session = new ApplePaySession(1, request);
+                var thisClass = this;
+                session.onvalidatemerchant = function (event) {
+                    thisClass
+                        .performValidation(event.validationURL)
+                        .then(function (merchantSession) {
+                        if (engrid_ENGrid.debug)
+                            console.log("Apple Pay merchantSession", merchantSession);
+                        session.completeMerchantValidation(merchantSession);
+                    });
+                };
+                session.onpaymentauthorized = function (event) {
+                    thisClass
+                        .sendPaymentToken(event.payment.token)
+                        .then(function (success) {
+                        if (engrid_ENGrid.debug)
+                            console.log("Apple Pay Token", event.payment.token);
+                        document.getElementById("applePayToken").value = JSON.stringify(event.payment.token);
+                        formClass.submitForm();
+                    });
+                };
+                session.oncancel = function (event) {
+                    if (engrid_ENGrid.debug)
+                        console.log("Cancelled", event);
+                    alert("You cancelled. Sorry it didn't work out.");
+                    formClass.dispatchError();
+                };
+                session.begin();
+                this._form.submit = false;
+                return false;
+            }
+            catch (e) {
+                alert("Developer mistake: '" + e.message + "'");
+                formClass.dispatchError();
+            }
+        }
+        this._form.submit = true;
+        return true;
     }
 }
 
@@ -13575,32 +13370,21 @@ class A11y {
     constructor() {
         this.logger = new logger_EngridLogger("A11y", "#FFFFFF", "#811212", "👁️‍🗨️");
         this.observer = null;
-        A11y.scanFields();
+        this.addErrorAlertArea();
+        this.addRequired();
+        this.addLabel();
+        this.addGroupRole();
         this.updateFrequencyLabel();
         const ecardImages = document.querySelectorAll('.en__ecarditems__list img');
         this.setAutoGeneratedAltTags(ecardImages);
         this.manageErrorListAlertRole();
         this.observeErrorMessages();
     }
-    /**
-     * Apply the field-level accessibility tagging (error alert live regions,
-     * aria-required, fallback aria-labels, radio group roles) to every field
-     * within `root`. Defaults to the whole document on initial load, but can be
-     * pointed at a freshly injected fragment (e.g. a Supporter Hub overlay) so
-     * dynamically added forms get the same treatment. All operations are
-     * idempotent, so re-scanning already tagged fields is safe.
-     */
-    static scanFields(root = document) {
-        A11y.addErrorAlertArea(root);
-        A11y.addRequired(root);
-        A11y.addLabel(root);
-        A11y.addGroupRole(root);
-    }
-    static addErrorAlertArea(root = document) {
-        const fieldElements = root.querySelectorAll('.en__field .en__field__element');
+    addErrorAlertArea() {
+        const fieldElements = document.querySelectorAll('.en__field .en__field__element');
         fieldElements.forEach((fieldElement) => {
-            const fieldWrapper = fieldElement.closest('.en__field');
-            if (fieldWrapper === null || fieldWrapper === void 0 ? void 0 : fieldWrapper.querySelector('.en__field__error__alert'))
+            var _a;
+            if ((_a = fieldElement.nextElementSibling) === null || _a === void 0 ? void 0 : _a.classList.contains('en__field__error__alert'))
                 return;
             const errorAlert = document.createElement('div');
             errorAlert.setAttribute('aria-live', 'polite');
@@ -13610,13 +13394,10 @@ class A11y {
             fieldElement.insertAdjacentElement('afterend', errorAlert);
         });
     }
-    static addGroupRole(root = document) {
+    addGroupRole() {
         // Add role="group" to all EN Radio fields
-        const radioFields = root.querySelectorAll(".en__field--radio");
+        const radioFields = document.querySelectorAll(".en__field--radio");
         radioFields.forEach((field) => {
-            // Skip fields already tagged so re-scans don't regenerate label IDs.
-            if (field.getAttribute("role") === "group")
-                return;
             field.setAttribute("role", "group");
             // Add random ID to the label
             const label = field.querySelector("label");
@@ -13626,19 +13407,19 @@ class A11y {
             }
         });
     }
-    static addRequired(root = document) {
-        const mandatoryFields = root.querySelectorAll(".en__mandatory .en__field__input");
+    addRequired() {
+        const mandatoryFields = document.querySelectorAll(".en__mandatory .en__field__input");
         mandatoryFields.forEach((field) => {
             field.setAttribute("aria-required", "true");
         });
     }
-    static addLabel(root = document) {
-        const otherAmount = root.querySelector(".en__field__input--otheramount");
+    addLabel() {
+        const otherAmount = document.querySelector(".en__field__input--otheramount");
         if (otherAmount) {
             otherAmount.setAttribute("aria-label", "Enter your custom donation amount");
         }
         // Split selects usually don't have a label, so let's make the first option the label
-        const splitSelects = root.querySelectorAll(".en__field__input--splitselect");
+        const splitSelects = document.querySelectorAll(".en__field__input--splitselect");
         splitSelects.forEach((select) => {
             var _a, _b, _c, _d;
             const firstOption = select.querySelector("option");
@@ -13788,47 +13569,6 @@ class A11y {
             inputElement.removeAttribute('aria-describedby');
         }
     }
-    /**
-     * Make everything on the page inert except the supplied overlay element and
-     * its ancestors. This hides background content from assistive technology and
-     * prevents focus from escaping a modal-style overlay.
-     *
-     * @param inert   When true, set `inert` on all siblings of the overlay and of
-     *                each of its ancestors. When false, remove `inert` from every
-     *                element this method previously marked (tracked via the
-     *                `data-engrid-inert` flag).
-     * @param overlay The element that should remain interactive. Required when
-     *                `inert` is true; ignored when `inert` is false.
-     */
-    static inertPage(inert, overlay) {
-        if (inert) {
-            if (!overlay)
-                return;
-            let element = overlay;
-            while (element && element !== document.body) {
-                const parent = element.parentElement;
-                if (parent) {
-                    Array.from(parent.children).forEach((sibling) => {
-                        if (sibling !== element &&
-                            sibling instanceof HTMLElement &&
-                            !sibling.hasAttribute("inert")) {
-                            sibling.setAttribute("inert", "");
-                            sibling.dataset.engridInert = "true";
-                        }
-                    });
-                }
-                element = parent;
-            }
-        }
-        else {
-            document
-                .querySelectorAll("[data-engrid-inert]")
-                .forEach((element) => {
-                element.removeAttribute("inert");
-                delete element.dataset.engridInert;
-            });
-        }
-    }
     manageErrorListAlertRole() {
         const errorList = document.querySelector('ul.en__errorList');
         if (!errorList)
@@ -13965,7 +13705,6 @@ class Ecard {
         this.logger = new logger_EngridLogger("Ecard", "red", "#f5f5f5", "🪪");
         if (!this.shouldRun())
             return;
-        this.altsAndArias();
         this._form.onValidate.subscribe(() => this.checkRecipientFields());
         const schedule = engrid_ENGrid.getUrlParameter("engrid_ecard.schedule");
         const scheduleField = engrid_ENGrid.getField("ecard.schedule");
@@ -14018,200 +13757,6 @@ class Ecard {
             addRecipientButton.click();
         }
         return true;
-    }
-    altsAndArias() {
-        document.querySelectorAll(".en__ecarditems__list").forEach((list) => {
-            this.altsAndAriasEcardItemsList(list);
-        });
-        const ecardMessage = document.querySelector(".en__ecardmessage");
-        if (ecardMessage) {
-            this.coupleH2AndInput(ecardMessage, "Add a Message to your eCard");
-        }
-        const ecardRecipients = document.querySelector(".en__ecardrecipients");
-        if (ecardRecipients) {
-            const recipientName = ecardRecipients.querySelector(".en__ecardrecipients__name");
-            if (recipientName) {
-                this.coupleLabelAndInput(recipientName, "Recipient Name");
-            }
-            const recipientEmail = ecardRecipients.querySelector(".en__ecardrecipients__email");
-            if (recipientEmail) {
-                this.coupleLabelAndInput(recipientEmail, "Recipient Email");
-            }
-        }
-        const ecardFutureDelivery = document.querySelector(".en__ecardrecipients__futureDelivery");
-        if (ecardFutureDelivery) {
-            this.coupleH2AndInput(ecardFutureDelivery, "Schedule your eCard for future delivery");
-        }
-        const previewButton = document.querySelector(".en__ecarditems__showprev");
-        if (previewButton) {
-            previewButton.setAttribute("aria-controls", "ecard-preview");
-            previewButton.setAttribute("aria-haspopup", "dialog");
-        }
-        const previewModal = document.querySelector(".en__ecarditems__preview");
-        if (previewModal) {
-            previewModal.setAttribute("role", "dialog");
-            previewModal.setAttribute("aria-modal", "true");
-            previewModal.setAttribute("aria-label", "Ecard Preview Modal");
-            previewModal.setAttribute("id", "ecard-preview");
-            const closeButton = previewModal.querySelector(".en__ecarditems__prevclose");
-            if (closeButton) {
-                closeButton.setAttribute("role", "button");
-                closeButton.setAttribute("aria-label", "Close Preview");
-                document.addEventListener("keydown", (e) => {
-                    if (e.key === "Escape" &&
-                        previewModal.classList.contains("preview--show")) {
-                        closeButton.click();
-                    }
-                });
-            }
-            const iframe = previewModal.querySelector("iframe");
-            if (iframe) {
-                iframe.setAttribute("title", "Ecard Preview Frame");
-            }
-            const observer = new MutationObserver((mutations) => {
-                mutations.forEach((mutation) => {
-                    if (mutation.type === "attributes" &&
-                        mutation.attributeName === "class") {
-                        const target = mutation.target;
-                        if (target.classList.contains("preview--show")) {
-                            A11y.inertPage(true, previewModal);
-                            // Focus the iframe or the first focusable element in the modal
-                            const focusableElements = previewModal.querySelectorAll('iframe, a[href], area[href], button:not([disabled]), object, embed, [tabindex="0"]');
-                            if (focusableElements.length) {
-                                focusableElements[0].focus();
-                            }
-                        }
-                        else {
-                            A11y.inertPage(false);
-                            // Return focus to the preview button
-                            if (previewButton) {
-                                previewButton.focus();
-                            }
-                        }
-                    }
-                });
-            });
-            observer.observe(previewModal, {
-                attributes: true,
-                attributeFilter: ["class"],
-            });
-        }
-    }
-    altsAndAriasEcardItemsList(list) {
-        // if there's a sibling h2, use its text as the aria-label for the list
-        const h2 = list.previousElementSibling;
-        if (h2 && h2.tagName === "H2") {
-            const id = `ecard-list-${Math.random().toString(36).substring(2, 9)}`;
-            h2.setAttribute("id", id);
-            list.setAttribute("aria-labelledby", id);
-        }
-        list.setAttribute("role", "radiogroup");
-        const thumbs = Array.from(list.querySelectorAll(".en__ecarditems__thumb"));
-        let isSelection = false;
-        thumbs.forEach((thumb, index) => {
-            thumb.setAttribute("role", "radio");
-            if (thumb.classList.contains("thumb--active")) {
-                thumb.setAttribute("aria-checked", "true");
-                thumb.setAttribute("tabindex", "0");
-                isSelection = true;
-            }
-            else {
-                thumb.setAttribute("aria-checked", "false");
-                thumb.setAttribute("tabindex", "-1");
-            }
-            const img = thumb.querySelector("img");
-            if (img) {
-                thumb.setAttribute("aria-label", img.alt || "Ecard Thumbnail");
-                img.setAttribute("aria-hidden", "true");
-            }
-            // Keyboard navigation (WAI-ARIA radio group pattern)
-            thumb.addEventListener("keydown", (e) => {
-                let nextIndex = null;
-                switch (e.key) {
-                    case "ArrowRight":
-                    case "ArrowDown":
-                        nextIndex = (index + 1) % thumbs.length;
-                        break;
-                    case "ArrowLeft":
-                    case "ArrowUp":
-                        nextIndex = (index - 1 + thumbs.length) % thumbs.length;
-                        break;
-                    case "Home":
-                        nextIndex = 0;
-                        break;
-                    case "End":
-                        nextIndex = thumbs.length - 1;
-                        break;
-                    case "Enter":
-                    case " ":
-                        e.preventDefault();
-                        thumb.click();
-                        return;
-                    default:
-                        return;
-                }
-                e.preventDefault();
-                // In a radio group, moving focus also selects the option.
-                // click() lets EN's own handler set the value + thumb--active class;
-                // the MutationObserver below then syncs aria-checked + tabindex.
-                thumbs[nextIndex].focus();
-                thumbs[nextIndex].click();
-            });
-        });
-        if (!isSelection && thumbs.length) {
-            thumbs[0].setAttribute("tabindex", "0");
-        }
-        // MutationObserver to watch for "thumb--active" class changes and keep
-        // aria-checked + roving tabindex in sync with the selected thumb
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.type === "attributes" &&
-                    mutation.attributeName === "class") {
-                    const target = mutation.target;
-                    if (target.classList.contains("thumb--active")) {
-                        target.setAttribute("aria-checked", "true");
-                        // Roving tabindex: only the active thumb is tabbable
-                        target.setAttribute("tabindex", "0");
-                        thumbs.forEach((t) => {
-                            if (t !== target)
-                                t.setAttribute("tabindex", "-1");
-                        });
-                    }
-                    else {
-                        target.setAttribute("aria-checked", "false");
-                    }
-                }
-            });
-        });
-        observer.observe(list, {
-            attributes: true,
-            subtree: true,
-            attributeFilter: ["class"],
-        });
-    }
-    coupleLabelAndInput(parent, labelText) {
-        const label = parent.querySelector("label");
-        const input = parent.querySelector("input, textarea, select");
-        if (label && input) {
-            const id = `ecard-input-${Math.random().toString(36).substring(2, 9)}`;
-            label.setAttribute("id", id);
-            input.setAttribute("aria-labelledby", id);
-        }
-        else if (input) {
-            input.setAttribute("aria-label", labelText);
-        }
-    }
-    coupleH2AndInput(parent, labelText) {
-        const h2 = parent.querySelector("h2");
-        const input = parent.querySelector("textarea, input, select");
-        if (h2 && input) {
-            const id = `ecard-message-${Math.random().toString(36).substring(2, 9)}`;
-            h2.setAttribute("id", id);
-            input.setAttribute("aria-labelledby", id);
-        }
-        else if (input) {
-            input.setAttribute("aria-label", labelText);
-        }
     }
 }
 
@@ -17516,17 +17061,12 @@ class setRecurrFreq {
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/page-background.js
 
 class PageBackground {
-    constructor(useBodyBannerImage = false) {
+    constructor() {
         // @TODO: Change page-backgroundImage to page-background
         this.pageBackground = document.querySelector(".page-backgroundImage");
-        this.bodyBanner = document.querySelector(".body-banner");
-        this.bodyBannerImage = null;
         this.mutationObserver = null;
         this.logger = new logger_EngridLogger("PageBackground", "lightblue", "darkblue", "🖼️");
-        if (useBodyBannerImage) {
-            this.bodyBannerImage = this.findBodyBannerImage();
-        }
-        if (!this.pageBackground && !this.bodyBannerImage) {
+        if (!this.pageBackground) {
             this.logger.log("A background image set in the page was not found, any default image set in the theme on --engrid__page-backgroundImage_url will be used");
             return;
         }
@@ -17535,66 +17075,28 @@ class PageBackground {
         this.processAttributionPositioning();
         this.setupMutationObserver();
     }
-    findBodyBannerImage() {
-        var _a;
-        if (!this.bodyBanner) {
-            return null;
-        }
-        return ((_a = this.bodyBanner.querySelector("img.preferred-image")) !== null && _a !== void 0 ? _a : this.bodyBanner.querySelector("img"));
-    }
     /**
      * Initialize background image by finding and setting CSS custom property
      */
     initializeBackgroundImage() {
-        const backgroundImg = this.getBackgroundImage();
-        if (!backgroundImg) {
-            this.logger.log("No image found in page background and no body banner image found (or pageBackground is already occupied), any default image set in the theme on --engrid__page-backgroundImage_url will be used");
+        if (!this.pageBackground)
+            return;
+        const pageBackgroundImg = this.pageBackground.querySelector("img");
+        if (!pageBackgroundImg) {
+            this.logger.log("A background image set in the page was not found, any default image set in the theme on --engrid__page-backgroundImage_url will be used");
             return;
         }
-        const imageSource = this.getImageSource(backgroundImg);
-        if (!imageSource) {
-            this.logger.log("A background image set in the page was found but without a data-src or src value, no action taken", backgroundImg);
-            return;
-        }
-        this.setBackgroundImageUrl(imageSource.url, imageSource.sourceType);
-    }
-    getBackgroundImage() {
-        if (!this.pageBackground) {
-            return null;
-        }
-        const existingImage = this.pageBackground.querySelector("img");
-        if (existingImage) {
-            return existingImage;
-        }
-        if (this.bodyBannerImage && this.pageBackground.children.length === 0) {
-            return this.useBodyBannerAsBackground();
-        }
-        return null;
-    }
-    useBodyBannerAsBackground() {
-        var _a;
-        if (!this.pageBackground || !this.bodyBanner) {
-            return null;
-        }
-        this.logger.log("No image found in page background, using body banner image as background image instead");
-        const clonedBodyBanner = this.bodyBanner.cloneNode(true);
-        while (clonedBodyBanner.firstChild) {
-            this.pageBackground.appendChild(clonedBodyBanner.firstChild);
-        }
-        document.body.removeAttribute("data-engrid-no-page-backgroundImage");
-        engrid_ENGrid.setBodyData("use-body-banner-background", "");
-        return ((_a = this.pageBackground.querySelector("img.preferred-image")) !== null && _a !== void 0 ? _a : this.pageBackground.querySelector("img"));
-    }
-    getImageSource(backgroundImg) {
-        const dataSrc = backgroundImg.getAttribute("data-src");
+        const dataSrc = pageBackgroundImg.getAttribute("data-src");
+        const src = pageBackgroundImg.src;
         if (dataSrc) {
-            return { sourceType: "data-src", url: dataSrc };
+            this.setBackgroundImageUrl(dataSrc, "data-src");
         }
-        const src = backgroundImg.src;
-        if (src) {
-            return { sourceType: "src", url: src };
+        else if (src) {
+            this.setBackgroundImageUrl(src, "src");
         }
-        return null;
+        else {
+            this.logger.log("A background image set in the page was found but without a data-src or src value, no action taken", pageBackgroundImg);
+        }
     }
     /**
      * Set the background image URL as a CSS custom property
@@ -18446,29 +17948,14 @@ class ProgressBar {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/remember-me.js
-var remember_me_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 
 
 const remember_me_tippy = (__webpack_require__(3861)/* ["default"] */ .ZP);
-// localStorage key used to cache the per-device AES-GCM encryption key.
-// A random secret generated once per device and held in localStorage.
-const RM_ENCRYPTION_KEY_STORAGE_NAME = "engrid-remember-me-key";
 class RememberMe {
     constructor(options) {
         this._form = en_form_EnForm.getInstance();
         this._events = RememberMeEvents.getInstance();
-        this._frequency = DonationFrequency.getInstance();
         this.iframe = null;
-        this.encryptData = options.encryptData ? options.encryptData : false;
-        this.hide = options.hide ? options.hide : false;
         this.remoteUrl = options.remoteUrl ? options.remoteUrl : null;
         this.cookieName = options.cookieName
             ? options.cookieName
@@ -18488,10 +17975,6 @@ class RememberMe {
             options.fieldDonationRecurrPayRadioName
                 ? options.fieldDonationRecurrPayRadioName
                 : "transaction.recurrpay";
-        this.fieldDonationRecurrFreqRadioName =
-            options.fieldDonationRecurrFreqRadioName
-                ? options.fieldDonationRecurrFreqRadioName
-                : "transaction.recurrfreq";
         this.fieldDonationAmountOtherCheckboxID =
             options.fieldDonationAmountOtherCheckboxID
                 ? options.fieldDonationAmountOtherCheckboxID
@@ -18510,18 +17993,11 @@ class RememberMe {
             options.fieldClearSelectorTargetLocation
                 ? options.fieldClearSelectorTargetLocation
                 : "before";
-        this.fieldClearLabel = options.fieldClearLabel
-            ? options.fieldClearLabel
-            : "(clear autofill)";
         this.fieldData = {};
         if (this.useRemote()) {
             this.createIframe(() => {
                 if (this.iframe && this.iframe.contentWindow) {
-                    this.iframe.contentWindow.postMessage(JSON.stringify({
-                        key: this.cookieName,
-                        operation: "read",
-                        encryptData: this.encryptData,
-                    }), "*");
+                    this.iframe.contentWindow.postMessage(JSON.stringify({ key: this.cookieName, operation: "read" }), "*");
                     this._form.onSubmit.subscribe(() => {
                         if (this.rememberMeOptIn) {
                             this.readFields();
@@ -18540,9 +18016,7 @@ class RememberMe {
                     data.key &&
                     data.value !== undefined &&
                     data.key === this.cookieName) {
-                    if (data.value !== null) {
-                        this.updateFieldData(data.value);
-                    }
+                    this.updateFieldData(data.value);
                     this.writeFields();
                     let hasFieldData = Object.keys(this.fieldData).length > 0;
                     if (!hasFieldData) {
@@ -18550,35 +18024,8 @@ class RememberMe {
                     }
                     else {
                         this.insertClearRememberMeLink();
-                        this.reapplyDonationAmtAfterSwap();
                     }
                 }
-            });
-        }
-        else if (this.encryptData) {
-            // Same flow as the unencrypted branch below, but the cookie payload is
-            // AES-GCM encrypted/decrypted (browser-native Web Crypto), so reading
-            // the cookie is asynchronous. A failed decrypt (foreign device or
-            // cleared localStorage) leaves fieldData empty and silently falls back
-            // to the standard, no-autofill experience.
-            this.readCookieEncrypted().then(() => {
-                let hasFieldData = Object.keys(this.fieldData).length > 0;
-                if (!hasFieldData) {
-                    this.insertRememberMeOptin();
-                }
-                else {
-                    this.insertClearRememberMeLink();
-                }
-                this.writeFields();
-                if (hasFieldData) {
-                    this.reapplyDonationAmtAfterSwap();
-                }
-                this._form.onSubmit.subscribe(() => {
-                    if (this.rememberMeOptIn) {
-                        this.readFields();
-                        this.saveCookieEncrypted();
-                    }
-                });
             });
         }
         else {
@@ -18591,9 +18038,6 @@ class RememberMe {
                 this.insertClearRememberMeLink();
             }
             this.writeFields();
-            if (hasFieldData) {
-                this.reapplyDonationAmtAfterSwap();
-            }
             this._form.onSubmit.subscribe(() => {
                 if (this.rememberMeOptIn) {
                     this.readFields();
@@ -18603,31 +18047,24 @@ class RememberMe {
         }
     }
     updateFieldData(jsonData) {
-        if (!jsonData)
-            return;
-        let data;
-        try {
-            data = JSON.parse(jsonData);
-        }
-        catch (e) {
-            // Payload is not valid JSON (e.g. corrupted or unexpected ciphertext).
-            // Fall back silently to the no-autofill experience.
-            return;
-        }
-        for (let i = 0; i < this.fieldNames.length; i++) {
-            if (data[this.fieldNames[i]] !== undefined) {
-                this.fieldData[this.fieldNames[i]] = decodeURIComponent(data[this.fieldNames[i]]);
+        if (jsonData) {
+            let data = JSON.parse(jsonData);
+            for (let i = 0; i < this.fieldNames.length; i++) {
+                if (data[this.fieldNames[i]] !== undefined) {
+                    this.fieldData[this.fieldNames[i]] = decodeURIComponent(data[this.fieldNames[i]]);
+                }
             }
         }
     }
     insertClearRememberMeLink() {
         let clearRememberMeField = document.getElementById("clear-autofill-data");
         if (!clearRememberMeField) {
+            const clearAutofillLabel = "clear autofill";
             clearRememberMeField = document.createElement("a");
             clearRememberMeField.setAttribute("id", "clear-autofill-data");
             clearRememberMeField.classList.add("label-tooltip");
             clearRememberMeField.setAttribute("style", "cursor: pointer;");
-            clearRememberMeField.innerHTML = this.fieldClearLabel;
+            clearRememberMeField.innerHTML = `(${clearAutofillLabel})`;
             const targetField = this.getElementByFirstSelector(this.fieldClearSelectorTarget);
             if (targetField) {
                 if (this.fieldClearSelectorTargetLocation === "after") {
@@ -18643,9 +18080,6 @@ class RememberMe {
             this.clearFields(["supporter.country" /*, 'supporter.emailAddress'*/]);
             if (this.useRemote()) {
                 this.clearCookieOnRemote();
-            }
-            else if (this.encryptData) {
-                this.clearCookieEncrypted();
             }
             else {
                 this.clearCookie();
@@ -18718,9 +18152,6 @@ class RememberMe {
                         }
                     });
                 }
-                if (this.hide) {
-                    rememberMeOptInField.classList.add("hide");
-                }
                 remember_me_tippy("#rememberme-learn-more-toggle", { content: rememberMeInfo });
             }
         }
@@ -18770,7 +18201,6 @@ class RememberMe {
                 value: this.fieldData,
                 operation: "write",
                 expires: this.cookieExpirationDays,
-                encryptData: this.encryptData,
             }), "*");
         }
     }
@@ -18782,142 +18212,6 @@ class RememberMe {
             expires: this.cookieExpirationDays,
         });
     }
-    /**
-     * Reads and decrypts the local (non-remote) Remember Me cookie using
-     * browser-native AES-GCM (Web Crypto), with the key held in localStorage
-     * on this device. If the key is absent (different device or cleared
-     * storage) or decryption otherwise fails, the field data is left empty
-     * and the component falls back to the normal, no-autofill experience.
-     */
-    readCookieEncrypted() {
-        return remember_me_awaiter(this, void 0, void 0, function* () {
-            const raw = get(this.cookieName);
-            if (!raw) {
-                return;
-            }
-            const decrypted = yield this.decryptPayload(raw);
-            if (decrypted) {
-                this.updateFieldData(decrypted);
-            }
-        });
-    }
-    /**
-     * Encrypts the current fieldData with AES-GCM (Web Crypto) and stores the
-     * base64-encoded result in the local cookie. If encryption isn't possible
-     * (e.g. Web Crypto unavailable), nothing is written.
-     */
-    saveCookieEncrypted() {
-        return remember_me_awaiter(this, void 0, void 0, function* () {
-            const encrypted = yield this.encryptPayload(JSON.stringify(this.fieldData));
-            if (encrypted) {
-                set(this.cookieName, encrypted, {
-                    expires: this.cookieExpirationDays,
-                });
-            }
-        });
-    }
-    clearCookieEncrypted() {
-        this.fieldData = {};
-        this.saveCookieEncrypted();
-    }
-    /**
-     * Retrieves the per-device AES-GCM encryption key. A random secret
-     * generated once per device and held in localStorage — never written
-     * to the cookie, so it never travels with the transported value.
-     */
-    getEncryptionKey() {
-        return remember_me_awaiter(this, void 0, void 0, function* () {
-            if (!window.crypto || !window.crypto.subtle) {
-                return null;
-            }
-            const storedKey = window.localStorage.getItem(RM_ENCRYPTION_KEY_STORAGE_NAME);
-            if (storedKey) {
-                try {
-                    return yield window.crypto.subtle.importKey("raw", this.base64ToArrayBuffer(storedKey), { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
-                }
-                catch (e) {
-                    return null;
-                }
-            }
-            try {
-                const key = yield window.crypto.subtle.generateKey({ name: "AES-GCM", length: 256 }, true, ["encrypt", "decrypt"]);
-                const exported = yield window.crypto.subtle.exportKey("raw", key);
-                window.localStorage.setItem(RM_ENCRYPTION_KEY_STORAGE_NAME, this.arrayBufferToBase64(exported));
-                return key;
-            }
-            catch (e) {
-                return null;
-            }
-        });
-    }
-    /**
-     * Encrypts a plaintext string with AES-GCM and returns the base64-encoded
-     * IV + ciphertext, ready for storage. Returns null if a key isn't
-     * available (e.g. Web Crypto unsupported).
-     */
-    encryptPayload(plaintext) {
-        return remember_me_awaiter(this, void 0, void 0, function* () {
-            const key = yield this.getEncryptionKey();
-            if (!key) {
-                return null;
-            }
-            const iv = window.crypto.getRandomValues(new Uint8Array(12));
-            const ciphertext = yield window.crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(plaintext));
-            const combined = new Uint8Array(iv.length + ciphertext.byteLength);
-            combined.set(iv);
-            combined.set(new Uint8Array(ciphertext), iv.length);
-            return this.arrayBufferToBase64(combined);
-        });
-    }
-    /**
-     * Decrypts a base64-encoded IV + ciphertext payload previously produced by
-     * encryptPayload. Returns null (rather than throwing) if the key is
-     * missing or decryption otherwise fails, so callers can gracefully fall
-     * back to the standard, no-autofill experience.
-     */
-    decryptPayload(encryptedBase64) {
-        return remember_me_awaiter(this, void 0, void 0, function* () {
-            const key = yield this.getEncryptionKey();
-            if (!key) {
-                return null;
-            }
-            let combined;
-            try {
-                combined = new Uint8Array(this.base64ToArrayBuffer(encryptedBase64));
-            }
-            catch (e) {
-                return null;
-            }
-            if (combined.length < 13) {
-                return null;
-            }
-            const iv = combined.slice(0, 12);
-            const ciphertext = combined.slice(12);
-            try {
-                const decrypted = yield window.crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ciphertext);
-                return new TextDecoder().decode(decrypted);
-            }
-            catch (e) {
-                return null;
-            }
-        });
-    }
-    arrayBufferToBase64(buffer) {
-        let binary = "";
-        const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
-        for (let i = 0; i < bytes.byteLength; i++) {
-            binary += String.fromCharCode(bytes[i]);
-        }
-        return window.btoa(binary);
-    }
-    base64ToArrayBuffer(base64) {
-        const binary = window.atob(base64);
-        const bytes = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i++) {
-            bytes[i] = binary.charCodeAt(i);
-        }
-        return bytes.buffer;
-    }
     readFields() {
         for (let i = 0; i < this.fieldNames.length; i++) {
             let fieldSelector = "[name='" + this.fieldNames[i] + "']";
@@ -18927,17 +18221,6 @@ class RememberMe {
                     let type = field.getAttribute("type");
                     if (type === "radio" || type === "checkbox") {
                         field = document.querySelector(fieldSelector + ":checked");
-                    }
-                    // When the donation amount radio is set to "Other", save the actual
-                    // custom value from the .other text input instead of "Other".
-                    if (this.fieldNames[i] === this.fieldDonationAmountRadioName &&
-                        field &&
-                        field.value.toLowerCase() === "other") {
-                        const otherField = document.querySelector("input[name='" + this.fieldDonationAmountOtherName + "']");
-                        if (otherField && otherField.value) {
-                            this.fieldData[this.fieldNames[i]] = encodeURIComponent(otherField.value);
-                            continue;
-                        }
                     }
                     this.fieldData[this.fieldNames[i]] = encodeURIComponent(field.value);
                 }
@@ -19022,36 +18305,17 @@ class RememberMe {
                             field.click();
                         }
                     }
-                    else if (this.fieldNames[i] === this.fieldDonationRecurrFreqRadioName) {
-                        // recurrfreq is a radio group — find the specific radio with the saved value and click it
-                        const savedValue = this.fieldData[this.fieldNames[i]];
-                        if (savedValue) {
-                            const freqRadio = document.querySelector(fieldSelector + "[value='" + CSS.escape(savedValue) + "']");
-                            if (freqRadio) {
-                                freqRadio.click();
-                            }
-                        }
-                    }
                     else if (this.fieldDonationAmountRadioName === this.fieldNames[i]) {
-                        const savedAmt = this.fieldData[this.fieldNames[i]];
-                        const escapedAmt = CSS.escape(savedAmt);
-                        field = document.querySelector(fieldSelector + "[value='" + escapedAmt + "']");
+                        field = document.querySelector(fieldSelector +
+                            "[value='" +
+                            this.fieldData[this.fieldNames[i]] +
+                            "']");
                         if (field) {
-                            // Saved value matches a predefined radio option — just click it
                             field.click();
                         }
                         else {
-                            // No matching radio: the value is a custom amount.
-                            // Click the "Other" radio first so the text input becomes active,
-                            // then fill in the numeric value.
-                            const otherRadio = document.querySelector(fieldSelector + "[value='Other'], " +
-                                fieldSelector + "[value='other'], " +
-                                fieldSelector + "[value='OTHER']");
-                            if (otherRadio) {
-                                otherRadio.click();
-                            }
-                            const otherField = document.querySelector("input[name='" + this.fieldDonationAmountOtherName + "']");
-                            this.setFieldValue(otherField, savedAmt, true);
+                            field = document.querySelector("input[name='" + this.fieldDonationAmountOtherName + "']");
+                            this.setFieldValue(field, this.fieldData[this.fieldNames[i]], true);
                         }
                     }
                     else {
@@ -19063,74 +18327,6 @@ class RememberMe {
                 }
             }
         }
-    }
-    /**
-     * SwapAmounts replaces the donationAmt radio DOM nodes ~1 second after page
-     * load (triggered by DonationFrequency.load() setTimeout). When that happens
-     * the selection the RememberMe just wrote gets wiped out.
-     *
-     * This method subscribes to the first onFrequencyChange event and, after a
-     * short delay to let SwapAmounts finish its DOM update, re-applies only the
-     * donation amount. It unsubscribes immediately so it only fires once.
-     *
-     * To avoid overwriting a manual donor interaction, the handler checks
-     * whether the current amount selection is empty/wiped (as SwapAmounts does)
-     * OR still matches what writeFields originally set. If the donor already
-     * picked a different amount, we skip re-application.
-     */
-    reapplyDonationAmtAfterSwap() {
-        const savedAmt = this.fieldData[this.fieldDonationAmountRadioName];
-        if (!savedAmt)
-            return;
-        // Capture the amount that writeFields just set so we can detect manual changes
-        const amountAtRegistration = this.getCurrentSelectedAmount();
-        const handler = () => {
-            // SwapAmounts calls _amount.load() after swapList — give it a tick to settle
-            window.setTimeout(() => {
-                const currentAmt = this.getCurrentSelectedAmount();
-                // Only re-apply if the selection is now empty (DOM was swapped out)
-                // or still matches what we originally wrote. If the donor manually
-                // selected a different amount, respect their choice.
-                const selectionWiped = currentAmt === null || currentAmt === "";
-                const selectionUnchanged = currentAmt === amountAtRegistration;
-                if (!selectionWiped && !selectionUnchanged) {
-                    return;
-                }
-                const fieldSelector = "[name='" + this.fieldDonationAmountRadioName + "']";
-                const escapedAmt = CSS.escape(savedAmt);
-                let radio = document.querySelector(fieldSelector + "[value='" + escapedAmt + "']");
-                if (radio) {
-                    radio.click();
-                }
-                else {
-                    // Custom amount: click "Other" radio then fill the text input
-                    const otherRadio = document.querySelector(fieldSelector + "[value='Other'], " +
-                        fieldSelector + "[value='other'], " +
-                        fieldSelector + "[value='OTHER']");
-                    if (otherRadio)
-                        otherRadio.click();
-                    const otherField = document.querySelector("input[name='" + this.fieldDonationAmountOtherName + "']");
-                    this.setFieldValue(otherField, savedAmt, true);
-                }
-            }, 200);
-        };
-        // Subscribe once: fires on the first frequency change then auto-unsubscribes
-        this._frequency.onFrequencyChange.one(handler);
-    }
-    /**
-     * Returns the currently selected donation amount value, or null if nothing
-     * is selected. Checks both predefined radio buttons and the "Other" text input.
-     */
-    getCurrentSelectedAmount() {
-        const fieldSelector = "[name='" + this.fieldDonationAmountRadioName + "']";
-        const checkedRadio = document.querySelector(fieldSelector + ":checked");
-        if (!checkedRadio)
-            return null;
-        if (checkedRadio.value.toLowerCase() === "other") {
-            const otherField = document.querySelector("input[name='" + this.fieldDonationAmountOtherName + "']");
-            return otherField ? otherField.value : null;
-        }
-        return checkedRadio.value;
     }
     isJson(str) {
         try {
@@ -23892,9 +23088,6 @@ class SupporterHub {
         this.watch();
         this.preventDuplicateSubmits();
         this.pageAltsAndArias();
-        if (engrid_ENGrid.getPageNumber() === 1) {
-            this.announceLoginResponses();
-        }
     }
     shoudRun() {
         return ("pageJson" in window &&
@@ -23913,10 +23106,9 @@ class SupporterHub {
                             if (overlay.classList.contains("en__hubOverlay") ||
                                 overlay.classList.contains("en__hubPledge__panels")) {
                                 this.logger.log("Overlay found");
-                                this.creditCardUpdate(overlay);
-                                this.amountLabelUpdate(overlay);
-                                this.dialogAltsAndArias(overlay);
-                                this.accessibilityScan(overlay);
+                                this.creditCardUpdate(node);
+                                this.amountLabelUpdate(node);
+                                this.dialogAltsAndArias(node);
                             }
                         }
                     });
@@ -23926,11 +23118,7 @@ class SupporterHub {
                             if (overlay.classList.contains("en__hubOverlay") ||
                                 overlay.classList.contains("en__hubPledge__panels")) {
                                 this.logger.log("Overlay removed");
-                                A11y.inertPage(false);
-                                const remainingOverlay = document.querySelector(".en__hubOverlay, .en__hubPledge__panels");
-                                if (remainingOverlay) {
-                                    A11y.inertPage(true, remainingOverlay);
-                                }
+                                this.inertPage(false);
                             }
                         }
                     });
@@ -23948,7 +23136,6 @@ class SupporterHub {
             this.creditCardUpdate(hubOverlay);
             this.amountLabelUpdate(hubOverlay);
             this.dialogAltsAndArias(hubOverlay);
-            this.accessibilityScan(hubOverlay);
         }
     }
     pageAltsAndArias() {
@@ -23977,208 +23164,6 @@ class SupporterHub {
                 });
             }
         });
-        const emailField = document.querySelector('.en__field--hublogin');
-        if (emailField) {
-            const label = emailField.querySelector('label');
-            const input = emailField.querySelector('input');
-            if (label && input) {
-                const slug = engrid_ENGrid.slugify(label.innerText);
-                const labelId = `hublogin-label-${slug}`;
-                label.setAttribute("id", labelId);
-                input.setAttribute("aria-labelledby", labelId);
-            }
-        }
-    }
-    /**
-     * The Supporter Hub login form shows success / failure / loading messages by
-     * toggling the inline `display` on static `.en__hubgadget__response` divs.
-     * Wire the login body up to the shared response announcer.
-     */
-    announceLoginResponses() {
-        const body = document.querySelector(".en__supporterHubLogin__body");
-        if (!body)
-            return;
-        const emailInput = body.querySelector(".en__field--hublogin input");
-        const emailField = emailInput === null || emailInput === void 0 ? void 0 : emailInput.closest(".en__field--hublogin");
-        // Login failures are about the email field: flag it invalid and point AT at
-        // the alert describing why. This is login-specific, so it lives here rather
-        // than in the shared announcer.
-        this.announceHubResponses(body, {
-            onResult: (isFailure, alertRegionId) => {
-                if (emailInput) {
-                    if (isFailure) {
-                        emailInput.setAttribute("aria-invalid", "true");
-                        emailInput.setAttribute("aria-describedby", alertRegionId);
-                    }
-                    else {
-                        emailInput.removeAttribute("aria-invalid");
-                        emailInput.removeAttribute("aria-describedby");
-                    }
-                }
-                emailField === null || emailField === void 0 ? void 0 : emailField.classList.toggle("en__field--validationFailed", isFailure);
-            },
-        });
-    }
-    /**
-     * Mirror `.en__hubgadget__response` messages within `container` into screen
-     * reader live regions. Engaging Networks owns these responses, and assistive
-     * tech doesn't reliably announce content that was already in the DOM and
-     * merely flipped to visible — and in hub overlays the responses don't even
-     * exist until a submit injects them.
-     *
-     * We append a polite (`role="status"`) and an assertive (`role="alert"`) live
-     * region, hide the originals from AT, then on any childList / display / class
-     * change we debounce and announce whichever response is currently visible,
-     * preferring a terminal result over the transient "Loading" so an instant
-     * failure isn't preceded by a stray "Loading". Failures (and, for overlays,
-     * all messages) use the assertive region; everything else uses the polite one.
-     *
-     * This is a form-agnostic engine: callers supply their own side effects via
-     * `onResult` rather than this method knowing about any specific form.
-     *
-     * @param container The element that holds (or will hold) the responses.
-     * @param options   `preferAssertive` announces success assertively too —
-     *                  overlays redraw their content (and shift focus) on success,
-     *                  which makes screen readers drop polite announcements, so
-     *                  assertive ones are used to survive that. `onResult` is fired
-     *                  with each settled result (and the assertive region's id) so
-     *                  callers can react — e.g. the login form flags its email
-     *                  field invalid — without baking that into the engine.
-     */
-    announceHubResponses(container, options = {}) {
-        var _a;
-        const { preferAssertive = false, onResult } = options;
-        // Guard against wiring the same container up twice.
-        if (container.dataset.engridResponseAnnounce === "true")
-            return;
-        container.dataset.engridResponseAnnounce = "true";
-        // The overlay popup is an `aria-modal="true"` dialog, which tells assistive
-        // tech to ignore everything outside it. Live regions appended to the outer
-        // .en__hubOverlay (a sibling of the dialog) are therefore never announced.
-        // Anchor the regions inside the dialog so they live within the modal scope.
-        // Falls back to the container itself for the non-modal login form.
-        const regionAnchor = (_a = container.querySelector(".en__hubOverlay__popup")) !== null && _a !== void 0 ? _a : container;
-        const makeRegion = (assertive) => {
-            const region = document.createElement("div");
-            region.setAttribute("role", assertive ? "alert" : "status");
-            region.setAttribute("aria-atomic", "true");
-            region.classList.add("engrid__sr-only");
-            return regionAnchor.appendChild(region);
-        };
-        const politeRegion = makeRegion(false);
-        const assertiveRegion = makeRegion(true);
-        assertiveRegion.id = `en__hubgadget__response--failure-alert-${Math.random()
-            .toString(36)
-            .slice(2, 7)}`;
-        const isVisible = (el) => window.getComputedStyle(el).display !== "none";
-        // The live regions own announcements; hide the originals so each message is
-        // read once rather than twice. Responses can be injected after the fact
-        // (overlays), so re-hide on every pass, but only write when needed to avoid
-        // retriggering our own observer.
-        const hideResponses = () => {
-            container
-                .querySelectorAll(".en__hubgadget__response")
-                .forEach((r) => {
-                if (r.getAttribute("aria-hidden") !== "true") {
-                    r.setAttribute("aria-hidden", "true");
-                }
-            });
-        };
-        // Clear then set on the next frame so the screen reader registers a fresh
-        // change even when the same message is re-stated after a content redraw.
-        const speak = (region, text) => {
-            region.textContent = "";
-            window.requestAnimationFrame(() => {
-                region.textContent = text;
-            });
-        };
-        let lastAnnounced = "";
-        // Set when a response node is added/removed (i.e. the overlay redrew its
-        // content). A polite announcement made mid-redraw gets dropped, so we must
-        // re-state the message once things settle even if the text is unchanged.
-        let forceReannounce = false;
-        const announce = () => {
-            var _a;
-            hideResponses();
-            const responses = Array.from(container.querySelectorAll(".en__hubgadget__response"));
-            const visible = responses.filter(isVisible);
-            const target = (_a = visible.find((r) => !r.classList.contains("en__hubgadget__response--loading"))) !== null && _a !== void 0 ? _a : visible[0];
-            const message = target ? (target.textContent || "").trim() : "";
-            const isFailure = !!(target === null || target === void 0 ? void 0 : target.classList.contains("en__hubgadget__response--failure"));
-            const reannounce = forceReannounce;
-            forceReannounce = false;
-            if (message === lastAnnounced && !reannounce)
-                return;
-            lastAnnounced = message;
-            if (!message) {
-                politeRegion.textContent = "";
-                assertiveRegion.textContent = "";
-                onResult === null || onResult === void 0 ? void 0 : onResult(false, assertiveRegion.id);
-                return;
-            }
-            this.logger.log(`Announcing hub response: ${message}`);
-            // Overlays must announce assertively (polite is dropped on their content
-            // redraw); the login form keeps polite for non-failures.
-            const useAssertive = isFailure || preferAssertive;
-            if (useAssertive) {
-                politeRegion.textContent = "";
-                speak(assertiveRegion, message);
-            }
-            else {
-                assertiveRegion.textContent = "";
-                speak(politeRegion, message);
-            }
-            onResult === null || onResult === void 0 ? void 0 : onResult(isFailure, assertiveRegion.id);
-        };
-        // Only react to mutations that actually involve a response. The container
-        // (especially an overlay) is full of unrelated churn — form fields, the
-        // loading spinner, the a11y error regions — and our own live-region writes
-        // are children of it too. Reacting to all of that would perpetually reset
-        // the debounce and drown out the real announcement.
-        const isResponse = (node) => node instanceof HTMLElement &&
-            (node.classList.contains("en__hubgadget__response") ||
-                !!node.querySelector(".en__hubgadget__response"));
-        const isRelevant = (record) => {
-            if (record.type === "childList") {
-                return (Array.from(record.addedNodes).some(isResponse) ||
-                    Array.from(record.removedNodes).some(isResponse));
-            }
-            // attribute (style/class) change directly on a response element
-            return (record.target instanceof HTMLElement &&
-                record.target.classList.contains("en__hubgadget__response"));
-        };
-        let debounce = 0;
-        new MutationObserver((records) => {
-            const relevant = records.filter(isRelevant);
-            if (!relevant.length)
-                return;
-            // A response node being added/removed means the content was redrawn;
-            // force a re-announcement so a message dropped mid-redraw is re-stated.
-            if (relevant.some((r) => r.type === "childList")) {
-                forceReannounce = true;
-            }
-            window.clearTimeout(debounce);
-            debounce = window.setTimeout(announce, 250);
-        }).observe(container, {
-            attributes: true,
-            attributeFilter: ["style", "class"],
-            childList: true,
-            subtree: true,
-        });
-        announce(); // catch any response already visible at setup
-    }
-    /**
-     * Run the field-level accessibility scan and response announcer against a
-     * freshly opened overlay. EN injects overlay markup (and its fields) when the
-     * gadget is clicked, so A11y's constructor-time sweep never sees them. The
-     * scan is idempotent and the announcer guards against double-wiring, so a
-     * delayed pass — matching the timing of the other overlay handlers — is safe.
-     */
-    accessibilityScan(overlay) {
-        window.setTimeout(() => {
-            A11y.scanFields(overlay);
-            this.announceHubResponses(overlay, { preferAssertive: true });
-        }, 300);
     }
     creditCardUpdate(overlay) {
         window.setTimeout(() => {
@@ -24208,22 +23193,12 @@ class SupporterHub {
     }
     dialogAltsAndArias(overlay) {
         window.setTimeout(() => {
-            const hubOverlay = overlay.classList.contains("en__hubOverlay")
-                ? overlay
-                : document.querySelector(".en__hubOverlay") ||
-                    overlay;
-            A11y.inertPage(true, hubOverlay);
+            this.inertPage(true, overlay);
             const header = overlay.querySelector(".en__hubOverlay__header"), closeButton = header.querySelector("a");
             // Tag close button
             if (header && closeButton) {
                 closeButton.setAttribute("role", "button");
                 closeButton.setAttribute("aria-label", "Close");
-                document.addEventListener("keydown", (e) => {
-                    if (e.key === "Escape") {
-                        this.logger.log("Escape key pressed, closing overlay");
-                        closeButton.click();
-                    }
-                }, { once: true });
             }
             // Tag header and label dialog
             const headerTitle = header.querySelector("h2");
@@ -24246,6 +23221,39 @@ class SupporterHub {
                 }
             }
         }, 300);
+    }
+    inertPage(inert, overlay) {
+        if (inert) {
+            const hubOverlay = overlay && overlay.classList.contains("en__hubOverlay")
+                ? overlay
+                : document.querySelector(".en__hubOverlay") ||
+                    overlay;
+            if (!hubOverlay)
+                return;
+            let element = hubOverlay;
+            while (element && element !== document.body) {
+                const parent = element.parentElement;
+                if (parent) {
+                    Array.from(parent.children).forEach((sibling) => {
+                        if (sibling !== element &&
+                            sibling instanceof HTMLElement &&
+                            !sibling.hasAttribute("inert")) {
+                            sibling.setAttribute("inert", "");
+                            sibling.dataset.engridInert = "true";
+                        }
+                    });
+                }
+                element = parent;
+            }
+        }
+        else if (!document.querySelector(".en__hubOverlay, .en__hubPledge__panels")) {
+            document
+                .querySelectorAll("[data-engrid-inert]")
+                .forEach((element) => {
+                element.removeAttribute("inert");
+                delete element.dataset.engridInert;
+            });
+        }
     }
     // The supporter hub does not properly handle or prevent duplicate submits, so we add a listener to prevent this.
     preventDuplicateSubmits() {
@@ -27134,7 +26142,7 @@ class PreferredPaymentMethod {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/version.js
-const AppVersion = "0.27.0";
+const AppVersion = "0.25.8";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
@@ -27694,7 +26702,6 @@ const customScript = function (App, DonationFrequency) {
           link.href = "#";
           link.id = "ccv-tooltip";
           link.className = "label-tooltip";
-          link.tabIndex = "-1";
           link.innerText = "What's this?";
           link.addEventListener("click", e => e.preventDefault());
           ccvvLabel.insertAdjacentElement("afterend", link);
@@ -28222,35 +27229,10 @@ const customScript = function (App, DonationFrequency) {
 
   if (window.wwfHeaderStyle && window.wwfHeaderStyle === "None") {
     const bodyTitle = document.querySelector(".body-title > .en__component");
-    bodyTitle?.insertAdjacentHTML("afterbegin", `<a class="minimal-header-logo" href="https://www.worldwildlife.org/" target="_blank"><img class="no-header-wwf-logo" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/wwf-logo-2026-theme.svg" alt="WWF Logo"></a>`);
+    bodyTitle?.insertAdjacentHTML("afterbegin", `<a class="minimal-header-logo" href="https://www.worldwildlife.org/" target="_blank"><img class="no-header-wwf-logo" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo-standalone.png?3" alt="WWF Logo"></a>`);
     const contentHeader = document.querySelector(".content-header");
-    contentHeader?.insertAdjacentHTML("afterbegin", `<a class="minimal-header-logo" href="https://www.worldwildlife.org/" target="_blank"><img class="no-header-wwf-logo" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/wwf-logo-2026-theme.svg" alt="WWF Logo"></a>`);
-  } // Upsell modal: remove trailing ".00" from dollar amounts in the Yes/No button labels
-
-
-  const stripUpsellLabelCents = () => {
-    const modal = document.getElementById("en__upsellModal");
-    if (!modal) return;
-    modal.querySelectorAll("#en__upsellModal__yes .label, #en__upsellModal__no .label").forEach(label => {
-      label.textContent = label.textContent.replace(/(\$[\d,]+)\.00\b/g, "$1");
-    });
-  }; // Run each time the modal is added to the page (it can close and re-open)
-
-
-  const upsellObserver = new MutationObserver(mutationsList => {
-    for (const mutation of mutationsList) {
-      for (const node of mutation.addedNodes) {
-        if (node.nodeType === Node.ELEMENT_NODE && (node.id === "en__upsellModal" || node.querySelector("#en__upsellModal"))) {
-          stripUpsellLabelCents();
-          return;
-        }
-      }
-    }
-  });
-  upsellObserver.observe(document.body, {
-    childList: true,
-    subtree: true
-  });
+    contentHeader?.insertAdjacentHTML("afterbegin", `<a class="minimal-header-logo" href="https://www.worldwildlife.org/" target="_blank"><img class="no-header-wwf-logo" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo-no-tab.png?3" alt="WWF Logo"></a>`);
+  }
 };
 ;// CONCATENATED MODULE: ./src/scripts/page-header-footer.js
 const pageHeaderFooter = function (App) {
@@ -30174,10 +29156,49 @@ class Quiz {
     this.handleQuizResults();
     this.setBgImage();
     this.addEventListeners();
+    this.altsAndArias();
   }
 
   shouldRun() {
     return engrid_ENGrid.getBodyData("subtheme") === "quiz";
+  }
+
+  altsAndArias() {
+    // Expose a default (valid) state on the survey group for assistive tech
+    // and inject a static hint that is shown once keyboard navigation is used.
+    const group = document.querySelector(".en__component--svblock .en__field--survey[role='group']");
+    if (!group) return;
+    group.setAttribute("aria-invalid", "false");
+
+    if (!document.getElementById("quiz-confirm-hint")) {
+      const hint = document.createElement("span");
+      hint.id = "quiz-confirm-hint";
+      hint.className = "quiz-confirm-hint";
+      hint.textContent = "Press Enter to confirm your choice.";
+      group.appendChild(hint);
+    } // Promote result headings (span style="font-size:26px;") to h2 semantics.
+
+
+    this.labelResultHeadings(); // Live region for announcing the revealed answer feedback text.
+
+    if (!document.getElementById("quiz-feedback-live")) {
+      const live = document.createElement("div");
+      live.id = "quiz-feedback-live";
+      live.className = "sr-only";
+      live.setAttribute("aria-live", "polite");
+      live.setAttribute("aria-atomic", "true");
+      document.body.appendChild(live);
+    } // Live region for announcing the keyboard confirmation instruction.
+
+
+    if (!document.getElementById("quiz-instruction-live")) {
+      const live = document.createElement("div");
+      live.id = "quiz-instruction-live";
+      live.className = "sr-only";
+      live.setAttribute("aria-live", "polite");
+      live.setAttribute("aria-atomic", "true");
+      document.body.appendChild(live);
+    }
   }
 
   setBgImage() {
@@ -30193,13 +29214,69 @@ class Quiz {
   addEventListeners() {
     // Handle check my answer button click
     const checkAnswerBtn = document.querySelector(".button-quiz-answer");
-    checkAnswerBtn?.addEventListener("click", () => this.checkAnswer()); // Clicking any answer hides the error message
+    checkAnswerBtn?.addEventListener("click", () => this.checkAnswer()); // Option selection: click or Enter checks the answer; arrow keys only move
+    // selection, so we don't auto-check from change events.
 
-    [...document.querySelectorAll(".en__component--svblock .en__field__input--radio, .en__component--svblock .en__field__input--imageSelectField")].forEach(el => {
-      el.addEventListener("change", () => {
-        if (el.classList.contains("quiz-input-disabled")) return;
-        this.toggleError(false); // If the button exists, we only check the answer on button click
+    const optionSelector = ".en__component--svblock .en__field__input--radio, .en__component--svblock .en__field__input--imageSelectField";
+    let keyboardJustUsed = false;
+    let instructionAnnounced = false;
+    const group = document.querySelector(".en__component--svblock .en__field--survey[role='group']");
 
+    const maybeAnnounceInstruction = () => {
+      if (instructionAnnounced) return;
+      if (engrid_ENGrid.getBodyData("quiz-answer")) return;
+      this.announceInstruction();
+      instructionAnnounced = true;
+    };
+
+    document.addEventListener("keydown", () => {
+      keyboardJustUsed = true;
+    }, {
+      capture: true
+    });
+    document.addEventListener("mousedown", () => {
+      keyboardJustUsed = false;
+    }, {
+      capture: true
+    });
+    document.querySelectorAll(optionSelector).forEach(el => {
+      const input = el; // If the user reached this option by keyboard, show the hint.
+
+      input.addEventListener("focus", () => {
+        if (!keyboardJustUsed) return;
+        group?.classList.add("keyboard-nav");
+        keyboardJustUsed = false;
+        maybeAnnounceInstruction();
+      }); // Change events (including arrow-key navigation) clear the error but
+      // do not submit the answer.
+
+      input.addEventListener("change", () => {
+        if (input.classList.contains("quiz-input-disabled")) return;
+        this.toggleError(false);
+      }); // Arrow keys move selection natively; Enter confirms.
+
+      input.addEventListener("keydown", event => {
+        const e = event; // Show the confirmation hint once the user starts navigating by keyboard.
+
+        group?.classList.add("keyboard-nav");
+        maybeAnnounceInstruction();
+        if (e.key !== "Enter") return;
+        if (input.classList.contains("quiz-input-disabled")) return;
+        e.preventDefault();
+        input.checked = true;
+        this.toggleError(false);
+
+        if (checkAnswerBtn) {
+          checkAnswerBtn.click();
+        } else {
+          this.checkAnswer();
+        }
+      }); // Real pointer clicks confirm; keyboard-generated clicks (Space, etc.) do not.
+
+      input.addEventListener("click", event => {
+        if (input.classList.contains("quiz-input-disabled")) return;
+        if (event.detail === 0) return;
+        this.toggleError(false);
         if (checkAnswerBtn) return;
         this.checkAnswer();
       });
@@ -30235,7 +29312,17 @@ class Quiz {
       selectedAnswer.closest(".en__field__item")?.classList.add("quiz-incorrect-answer");
     }
 
+    this.setAnswerAriaLabels();
     this.scrollToFeedback();
+    this.focusAfterAnswer();
+    this.announceFeedback(); // Hide the keyboard confirmation hint now that the answer is locked in.
+
+    const group = document.querySelector(".en__component--svblock .en__field--survey[role='group']");
+    group?.classList.remove("keyboard-nav");
+    const hint = document.getElementById("quiz-confirm-hint");
+    if (hint) hint.textContent = "";
+    const instructionLive = document.getElementById("quiz-instruction-live");
+    if (instructionLive) instructionLive.textContent = "";
   }
 
   toggleError(show) {
@@ -30244,6 +29331,97 @@ class Quiz {
     if (errorMessage) {
       errorMessage.style.display = show ? "block" : "none";
     }
+
+    const group = document.querySelector(".en__component--svblock .en__field--survey[role='group']");
+    group?.setAttribute("aria-invalid", String(show));
+  }
+
+  focusAfterAnswer() {
+    const submitBtn = document.querySelector(".en__submit button");
+
+    const isVisible = el => !!el && el.offsetParent !== null;
+
+    if (isVisible(submitBtn)) {
+      submitBtn.focus();
+      return;
+    } // Fallback: focus the quiz block itself without adding it to the tab order.
+
+
+    const svBlock = document.querySelector(".en__component--svblock");
+    if (!svBlock) return;
+    svBlock.setAttribute("tabindex", "-1");
+    svBlock.focus();
+  }
+
+  getOptionLabelText(input) {
+    if (input.hasAttribute("aria-label")) {
+      return input.getAttribute("aria-label") || undefined;
+    }
+
+    return this.getOptionLabelElementText(input);
+  }
+
+  getOptionLabelElementText(input) {
+    const label = input.closest(".en__field__item")?.querySelector(".en__field__label--item, .en__imageSelectField__label");
+    return label?.textContent?.trim() || undefined;
+  }
+
+  setAnswerAriaLabels() {
+    document.querySelectorAll(".en__component--svblock .en__field__input--radio, .en__component--svblock .en__field__input--imageSelectField").forEach(input => {
+      const labelText = this.getOptionLabelText(input);
+      if (!labelText) return;
+      const isCorrect = input.value === "1";
+
+      if (isCorrect && input.checked) {
+        input.setAttribute("aria-label", `${labelText}, your selection (correct)`);
+      } else if (isCorrect && !input.checked) {
+        input.setAttribute("aria-label", `${labelText} (correct)`);
+      } else if (!isCorrect && input.checked) {
+        input.setAttribute("aria-label", `${labelText}, your selection (incorrect)`);
+      }
+    });
+  }
+
+  announceFeedback() {
+    const live = document.getElementById("quiz-feedback-live");
+    if (!live) return;
+    const selectedAnswer = document.querySelector(".en__component--svblock input:checked");
+    const correctAnswer = document.querySelector('.en__component--svblock input[value="1"]');
+    const selectedLabel = selectedAnswer ? this.getOptionLabelElementText(selectedAnswer) : undefined;
+    const correctLabel = correctAnswer ? this.getOptionLabelElementText(correctAnswer) : undefined;
+    let summary = "";
+
+    if (selectedAnswer && correctAnswer && selectedLabel && correctLabel) {
+      if (selectedAnswer === correctAnswer) {
+        summary = `${correctLabel} was the correct answer.`;
+      } else {
+        summary = `${selectedLabel} was incorrect, ${correctLabel} is the correct answer.`;
+      }
+    }
+
+    const feedbackBlocks = document.querySelectorAll(".showif-correct, .showif-incorrect, .showif-answered");
+    const visibleText = Array.from(feedbackBlocks).filter(block => window.getComputedStyle(block).display !== "none").map(block => block.textContent?.trim()).filter(text => !!text).join(" ");
+    live.textContent = summary ? `${summary} ${visibleText}` : visibleText;
+  }
+
+  announceInstruction() {
+    if (engrid_ENGrid.getBodyData("quiz-answer")) return;
+    const live = document.getElementById("quiz-instruction-live");
+    if (!live) return; // Clear then set so screen readers reliably detect the change.
+
+    live.textContent = "";
+    window.setTimeout(() => {
+      if (engrid_ENGrid.getBodyData("quiz-answer")) return;
+      live.textContent = "Press Enter to confirm your choice.";
+    }, 100);
+  }
+
+  labelResultHeadings() {
+    document.querySelectorAll(".showif-correct span, .showif-incorrect span").forEach(span => {
+      if (span.style.fontSize !== "26px") return;
+      span.setAttribute("role", "heading");
+      span.setAttribute("aria-level", "2");
+    });
   }
 
   checkForFormSkip() {
@@ -30616,7 +29794,7 @@ class GiftHistory {
 
 class Accessibility {
   constructor() {
-    _defineProperty(this, "logger", new logger_EngridLogger("WWF Accessibility", "black", "pink", "👁️‍🗨️"));
+    _defineProperty(this, "logger", new logger_EngridLogger('WWF Accessibility', 'black', 'pink', '👁️‍🗨️'));
 
     _defineProperty(this, "_form", en_form_EnForm.getInstance());
 
@@ -30632,11 +29810,11 @@ class Accessibility {
   }
 
   otherAmountTabSelect() {
-    const otherAmountField = engrid_ENGrid.getField("transaction.donationAmt.other");
+    const otherAmountField = engrid_ENGrid.getField('transaction.donationAmt.other');
     const donationAmount = DonationAmount.getInstance();
 
     if (otherAmountField) {
-      this.logger.log("Adding tab button for other amount field"); // Behavior: Prevent the "Other Amount" field from being focused when tabbing beyond the "transaction.donationAmt" radio group
+      this.logger.log('Adding tab button for other amount field'); // Behavior: Prevent the "Other Amount" field from being focused when tabbing beyond the "transaction.donationAmt" radio group
       // The next tab past the radio group should be a button that when triggered, focuses the "transaction.donationAmt.other" field, and when tabbed, skips that input
 
       const tabButton = document.createElement("button");
@@ -30650,34 +29828,34 @@ class Accessibility {
       tabButton.style.width = `${otherAmountField.offsetWidth}px`;
       tabButton.style.height = `${otherAmountField.offsetHeight}px`;
       otherAmountField.parentNode?.insertBefore(tabButton, otherAmountField);
-      otherAmountField.setAttribute("tabindex", "-1");
+      otherAmountField.setAttribute('tabindex', '-1');
       donationAmount.onAmountChange.subscribe(() => {
         if (otherAmountField.value) {
-          otherAmountField.removeAttribute("tabindex");
-          tabButton.setAttribute("tabindex", "-1");
+          otherAmountField.removeAttribute('tabindex');
+          tabButton.setAttribute('tabindex', '-1');
         } else {
-          otherAmountField.setAttribute("tabindex", "-1");
-          tabButton.removeAttribute("tabindex");
+          otherAmountField.setAttribute('tabindex', '-1');
+          tabButton.removeAttribute('tabindex');
         }
       });
     }
   }
 
   otherAmountFieldLabel() {
-    const otherAmountField = engrid_ENGrid.getField("transaction.donationAmt.other");
+    const otherAmountField = engrid_ENGrid.getField('transaction.donationAmt.other');
 
     if (otherAmountField) {
-      this.logger.log("Adding screen reader label for other amount field");
-      const label = document.createElement("label");
-      label.setAttribute("id", "other-amount-label");
-      label.textContent = "Other Amount";
-      label.classList.add("sr-only");
+      this.logger.log('Adding screen reader label for other amount field');
+      const label = document.createElement('label');
+      label.setAttribute('id', 'other-amount-label');
+      label.textContent = 'Other Amount';
+      label.classList.add('sr-only');
       otherAmountField.parentNode?.insertBefore(label, otherAmountField);
-      otherAmountField.setAttribute("aria-labelledby", label.id);
-      otherAmountField.removeAttribute("aria-label");
+      otherAmountField.setAttribute('aria-labelledby', label.id);
+      otherAmountField.removeAttribute('aria-label');
 
       this._frequency.onFrequencyChange.subscribe(e => {
-        const frequencyText = this._frequency.frequency == "onetime" ? "one-time" : this._frequency.frequency;
+        const frequencyText = this._frequency.frequency == 'onetime' ? 'one-time' : this._frequency.frequency;
         label.textContent = `Other Amount (${frequencyText})`;
         this.logger.log(`Updated other amount label to: ${label.textContent}`);
       });
@@ -30685,63 +29863,63 @@ class Accessibility {
   }
 
   universalOptIns() {
-    const universalOptInBlock = document.querySelector(".universal-opt-in-copy, .general-opt-in-copy, .be-a-part-of-our-community");
-    const universalOptInInput = document.querySelector(".universal-opt-in .en__field");
+    const universalOptInBlock = document.querySelector('.universal-opt-in-copy, .general-opt-in-copy, .be-a-part-of-our-community');
+    const universalOptInInput = document.querySelector('.universal-opt-in .en__field');
 
     if (universalOptInBlock && universalOptInInput) {
-      const label = universalOptInBlock.querySelector(".label p, .label");
+      const label = universalOptInBlock.querySelector('.label p, .label');
 
       if (label) {
-        label.setAttribute("id", `en__field__label--${Math.random().toString(36).slice(2, 7)}`);
-        universalOptInInput.setAttribute("aria-labelledby", label.id);
-        this.logger.log("Added aria-labelledby to universal opt-in checkbox with label id: " + label.id);
+        label.setAttribute('id', `en__field__label--${Math.random().toString(36).slice(2, 7)}`);
+        universalOptInInput.setAttribute('aria-labelledby', label.id);
+        this.logger.log('Added aria-labelledby to universal opt-in checkbox with label id: ' + label.id);
       }
     }
   }
 
   multistepStepper() {
     // for every multistep-stepper element, run through the children and add aria-labels to each step
-    const multistepSteppers = document.querySelectorAll(".multistep-stepper");
+    const multistepSteppers = document.querySelectorAll('.multistep-stepper');
     this.logger.log(`Found ${multistepSteppers.length} multistep-stepper elements`);
     multistepSteppers.forEach((stepper, index) => {
-      stepper.setAttribute("role", "tablist");
-      stepper.setAttribute("aria-label", "Form Steps");
-      const steps = stepper.querySelectorAll(".multistep-stepper__step");
+      stepper.setAttribute('role', 'tablist');
+      stepper.setAttribute('aria-label', 'Form Steps');
+      const steps = stepper.querySelectorAll('.multistep-stepper__step');
       steps.forEach((step, stepIndex) => {
-        const isActive = step.classList.contains("multistep-stepper__step--active");
-        step.setAttribute("role", "tab");
-        step.setAttribute("aria-selected", isActive ? "true" : "false"); // Roving tabindex: only the active tab is in the tab order
+        const isActive = step.classList.contains('multistep-stepper__step--active');
+        step.setAttribute('role', 'tab');
+        step.setAttribute('aria-selected', isActive ? 'true' : 'false'); // Roving tabindex: only the active tab is in the tab order
 
-        step.setAttribute("tabindex", isActive ? "0" : "-1");
-        const label = step.querySelector(".multistep-stepper__label");
+        step.setAttribute('tabindex', isActive ? '0' : '-1');
+        const label = step.querySelector('.multistep-stepper__label');
 
         if (label) {
-          label.setAttribute("id", `multistep-step-label-${index}-${stepIndex}`);
-          step.setAttribute("aria-labelledby", label.id);
+          label.setAttribute('id', `multistep-step-label-${index}-${stepIndex}`);
+          step.setAttribute('aria-labelledby', label.id);
         }
 
-        step.addEventListener("keydown", e => {
+        step.addEventListener('keydown', e => {
           let nextIndex = null;
 
           switch (e.key) {
-            case "ArrowRight":
+            case 'ArrowRight':
               nextIndex = (stepIndex + 1) % steps.length;
               break;
 
-            case "ArrowLeft":
+            case 'ArrowLeft':
               nextIndex = (stepIndex - 1 + steps.length) % steps.length;
               break;
 
-            case "Home":
+            case 'Home':
               nextIndex = 0;
               break;
 
-            case "End":
+            case 'End':
               nextIndex = steps.length - 1;
               break;
 
-            case "Enter":
-            case " ":
+            case 'Enter':
+            case ' ':
               e.preventDefault();
               step.click();
               return;
@@ -30758,23 +29936,23 @@ class Accessibility {
   }
 
   otCookieSettings() {
-    const otCookies = document.querySelector(".ot-sdk-show-settings");
+    const otCookies = document.querySelector('.ot-sdk-show-settings');
 
     if (otCookies) {
-      otCookies.setAttribute("tabindex", "0");
-      otCookies.setAttribute("aria-label", "Cookie Settings");
-      otCookies.setAttribute("role", "button");
-      otCookies.setAttribute("aria-haspopup", "dialog");
-      otCookies.setAttribute("aria-expanded", "false");
-      otCookies.setAttribute("aria-controls", "onetrust-pc-sdk");
-      this.logger.log("Added aria-label and role to cookie settings button");
+      otCookies.setAttribute('tabindex', '0');
+      otCookies.setAttribute('aria-label', 'Cookie Settings');
+      otCookies.setAttribute('role', 'button');
+      otCookies.setAttribute('aria-haspopup', 'dialog');
+      otCookies.setAttribute('aria-expanded', 'false');
+      otCookies.setAttribute('aria-controls', 'onetrust-pc-sdk');
+      this.logger.log('Added aria-label and role to cookie settings button');
     }
   }
 
   thankYouTitle() {
-    if (engrid_ENGrid.isThankYouPage() && engrid_ENGrid.getPageNumber() > 1) {
+    if (engrid_ENGrid.isThankYouPage()) {
       // Add "Thank You | <original title>" to the document title for screen readers if the title does not already contain "Thank You"
-      if (document.title.includes("Thank You")) {
+      if (document.title.includes('Thank You')) {
         this.logger.log('Document title already contains "Thank You", skipping update');
         return;
       }
@@ -30787,14 +29965,14 @@ class Accessibility {
 
   relocateSupporterHubAlerts() {
     if (engrid_ENGrid.getPageType() === "SUPPORTERHUB" && engrid_ENGrid.getPageNumber() === 1) {
-      const emailField = document.querySelector(".en__supporterHubLogin__emailAddress");
-      const alerts = document.querySelectorAll(".en__hubgadget__response");
+      const emailField = document.querySelector('.en__supporterHubLogin__emailAddress');
+      const alerts = document.querySelectorAll('.en__hubgadget__response');
 
       if (emailField && alerts) {
         alerts.forEach(alert => {
-          emailField.insertAdjacentElement("afterend", alert);
+          emailField.insertAdjacentElement('afterend', alert);
         });
-        this.logger.log("Relocated supporter hub alerts to be after the email field");
+        this.logger.log('Relocated supporter hub alerts to be after the email field');
       }
     }
   }
@@ -30928,12 +30106,14 @@ const options = {
     } // Add ACH Tooltip to Submit Button
 
 
-    const submitButton = document.querySelector(".en__submit button");
+    if (App.getPageType() === "DONATION" || App.getPageType() === "EVENT") {
+      const submitButton = document.querySelector(".en__submit button");
 
-    if (submitButton) {
-      submitButton.setAttribute("data-balloon", `When you click the button below, a new window will appear.
+      if (submitButton) {
+        submitButton.setAttribute("data-balloon", `When you click the button below, a new window will appear.
         Follow the steps to securely donate from your bank account to WWF.`);
-      submitButton.setAttribute("data-balloon-pos", "up");
+        submitButton.setAttribute("data-balloon-pos", "up");
+      }
     } // If the page has a State field, and it is not required, make a mutation observer
     // to watch for changes to the field and hide/show it
 

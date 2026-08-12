@@ -498,7 +498,6 @@ export const customScript = function (App, DonationFrequency) {
           link.href = "#";
           link.id = "ccv-tooltip";
           link.className = "label-tooltip";
-          link.tabIndex = "-1";
           link.innerText = "What's this?";
           link.addEventListener("click", (e) => e.preventDefault());
           ccvvLabel.insertAdjacentElement("afterend", link);
