@@ -2570,8 +2570,6 @@ button[data-balloon] {
   }
 
   .body-title {
-    --h1_font-size: 80px;
-    --h1_line-height: 102%;
     margin-top: 0;
     margin-bottom: 0;
   }
@@ -2583,6 +2581,13 @@ button[data-balloon] {
 
   .body-main {
     border: none;
+  }
+
+  .radio-to-buttons_donationAmt
+    .en__field--donationAmt
+    div:not(.en__field__item--other)
+    .en__field__label--item::after {
+    opacity: 1;
   }
 
   @media screen and (max-width: 769px) {
