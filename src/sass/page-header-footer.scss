@@ -78,7 +78,6 @@
     padding: 0 80px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: 62px auto 168px;
     gap: 24px 40px;
     .footer-copy,
     .footer-links {
@@ -196,7 +195,7 @@
   margin-top: 0;
   margin-bottom: 0;
 }
-[data-engrid-layout="leftleft1col"] {
+[data-engrid-layout="leftleft1col"][data-engrid-subtheme="new-leftleft"] {
   #header {
     border-bottom: 0 !important;
     .container {
@@ -219,6 +218,11 @@
     }
     .footer-social-list {
       gap: 24px;
+    }
+  }
+  @media screen and (max-width: 767px) {
+    #footer .container {
+      grid-template-columns: 62px auto;
     }
   }
 }

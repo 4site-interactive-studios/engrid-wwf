@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, August 19, 2026 @ 11:39:58 ET
+ *  Date: Wednesday, August 19, 2026 @ 11:40:19 ET
  *  By: nick
  *  ENGrid styles: v0.27.3
  *  ENGrid scripts: v0.27.5
@@ -9881,9 +9881,9 @@ body[data-engrid-debug]:before{
   margin:0;
 }
 [data-engrid-theme=wwf][data-engrid-layout=leftleft1col][data-engrid-subtheme=new-leftleft]{
-  --engrid__page_background-color:#fff;
   --engrid__body-title_background-color:#fff;
   --engrid__body-top_background-color:#fff;
+  --engrid__body-banner_background-color:#fff;
   --engrid__body_margin:0;
   --engrid__body-top_padding:20px 40px;
   --engrid__body-banner_padding:0px 20px;
@@ -9921,9 +9921,6 @@ body[data-engrid-debug]:before{
   opacity:1;
 }
 @media screen and (max-width:769px){
-  [data-engrid-theme=wwf][data-engrid-layout=leftleft1col][data-engrid-subtheme=new-leftleft] .body-title{
-    --h1_font-size:46px;
-  }
   [data-engrid-theme=wwf][data-engrid-layout=leftleft1col][data-engrid-subtheme=new-leftleft] #footer{
     padding-top:20px;
   }
@@ -9941,15 +9938,22 @@ body[data-engrid-debug]:before{
     flex-direction:column !important;
   }
 }
-@media screen and (max-width:1024px) and (min-width:701px){
+@media screen and (max-width:1023px){
   [data-engrid-theme=wwf][data-engrid-layout=leftleft1col][data-engrid-subtheme=new-leftleft]{
-    --engrid__body-top_padding:20px 80px;
-    --engrid__body-banner_padding:0px 40px;
-    --engrid__body-title_padding:12px 80px;
-    --engrid__body-main_padding:0px 80px 20px;
+    --engrid__body-top_padding:20px 29px;
+    --engrid__body-title_padding:20px 29px 28px;
+    --engrid__body-main_padding:26px 29px 20px;
+    --engrid__content-footer_padding:0;
   }
-}
-@media screen and (max-width:1024px){
+  [data-engrid-theme=wwf][data-engrid-layout=leftleft1col][data-engrid-subtheme=new-leftleft] .en__component--advrow>div:not(.page-alert){
+    margin:0 auto;
+    max-width:700px;
+    width:100%;
+  }
+  [data-engrid-theme=wwf][data-engrid-layout=leftleft1col][data-engrid-subtheme=new-leftleft] #header .container{
+    justify-content:center;
+    padding:20px 32px;
+  }
   [data-engrid-theme=wwf][data-engrid-layout=leftleft1col][data-engrid-subtheme=new-leftleft][data-engrid-page-background=image] .page-backgroundImage{
     display:none;
   }
@@ -11322,7 +11326,6 @@ body[data-engrid-debug]:before{
 #footer .container{
   display:grid;
   gap:24px 40px;
-  grid-template-columns:62px auto 168px;
   margin:0 auto;
   max-width:1200px;
   padding:0 80px;
@@ -11431,29 +11434,34 @@ body[data-engrid-debug]:before{
   margin-top:0;
 }
 
-[data-engrid-layout=leftleft1col] #header{
+[data-engrid-layout=leftleft1col][data-engrid-subtheme=new-leftleft] #header{
   border-bottom:0 !important;
 }
-[data-engrid-layout=leftleft1col] #header .container{
+[data-engrid-layout=leftleft1col][data-engrid-subtheme=new-leftleft] #header .container{
   padding:32px 40px;
 }
-[data-engrid-layout=leftleft1col] #header .container .logo img{
+[data-engrid-layout=leftleft1col][data-engrid-subtheme=new-leftleft] #header .container .logo img{
   height:78px;
   width:54px;
 }
-[data-engrid-layout=leftleft1col] #footer{
+[data-engrid-layout=leftleft1col][data-engrid-subtheme=new-leftleft] #footer{
   border-top:1px solid #ccc;
 }
-[data-engrid-layout=leftleft1col] #footer .container{
+[data-engrid-layout=leftleft1col][data-engrid-subtheme=new-leftleft] #footer .container{
   gap:32px;
   grid-template-columns:62px auto 216px;
   padding:0 40px;
 }
-[data-engrid-layout=leftleft1col] #footer .footer-links>ul{
+[data-engrid-layout=leftleft1col][data-engrid-subtheme=new-leftleft] #footer .footer-links>ul{
   flex-wrap:wrap;
 }
-[data-engrid-layout=leftleft1col] #footer .footer-social-list{
+[data-engrid-layout=leftleft1col][data-engrid-subtheme=new-leftleft] #footer .footer-social-list{
   gap:24px;
+}
+@media screen and (max-width:767px){
+  [data-engrid-layout=leftleft1col][data-engrid-subtheme=new-leftleft] #footer .container{
+    grid-template-columns:62px auto;
+  }
 }
 
 [data-header-footer-layout=none] .content-header{

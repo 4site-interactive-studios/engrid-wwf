@@ -2532,9 +2532,9 @@ button[data-balloon] {
   }
 }
 &[data-engrid-layout="leftleft1col"][data-engrid-subtheme="new-leftleft"] {
-  --engrid__page_background-color: #ffffff;
   --engrid__body-title_background-color: #ffffff;
   --engrid__body-top_background-color: #ffffff;
+  --engrid__body-banner_background-color: #ffffff;
   --engrid__body_margin: 0;
   --engrid__body-top_padding: 20px 40px;
   --engrid__body-banner_padding: 0px 20px;
@@ -2591,9 +2591,6 @@ button[data-balloon] {
   }
 
   @media screen and (max-width: 769px) {
-    .body-title {
-      --h1_font-size: 46px;
-    }
     #footer {
       padding-top: 20px;
     }
@@ -2615,14 +2612,23 @@ button[data-balloon] {
     }
   }
 
-  @media screen and (max-width: 1024px) and (min-width: 701px) {
-    --engrid__body-top_padding: 20px 80px;
-    --engrid__body-banner_padding: 0px 40px;
-    --engrid__body-title_padding: 12px 80px;
-    --engrid__body-main_padding: 0px 80px 20px;
-  }
+  @media screen and (max-width: 1023px) {
+    --engrid__body-top_padding: 20px 29px;
+    --engrid__body-title_padding: 20px 29px 28px;
+    --engrid__body-main_padding: 26px 29px 20px;
+    --engrid__content-footer_padding: 0;
 
-  @media screen and (max-width: 1024px) {
+    .en__component--advrow > div:not(.page-alert) {
+      width: 100%;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    #header .container {
+      justify-content: center;
+      padding: 20px 32px;
+    }
+
     &[data-engrid-page-background="image"] .page-backgroundImage {
       display: none;
     }
