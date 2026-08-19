@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Monday, August 24, 2026 @ 16:50:53 ET
+ *  Date: Monday, August 24, 2026 @ 16:50:59 ET
  *  By: nick
  *  ENGrid styles: v0.27.3
  *  ENGrid scripts: v0.27.5
@@ -57637,7 +57637,8 @@ const options = {
     // treats that as its mobile breakpoint
 
     new PageBackgroundRotation({
-      mobileBreakpoint: "(max-width: 1200px)"
+      mobileBreakpoint: "(max-width: 1200px)",
+      initialDelay: 7000
     });
     new Bridger();
     new GiftHistory();
