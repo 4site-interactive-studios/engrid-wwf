@@ -143,16 +143,18 @@ const options: Options = {
       });
     }
     // Add ACH Tooltip to Submit Button
-    const submitButton = document.querySelector(
-      ".en__submit button"
-    ) as HTMLButtonElement;
-    if (submitButton) {
-      submitButton.setAttribute(
-        "data-balloon",
-        `When you click the button below, a new window will appear.
+    if (App.getPageType() === "DONATION" || App.getPageType() === "EVENT") {
+      const submitButton = document.querySelector(
+        ".en__submit button"
+      ) as HTMLButtonElement;
+      if (submitButton) {
+        submitButton.setAttribute(
+          "data-balloon",
+          `When you click the button below, a new window will appear.
         Follow the steps to securely donate from your bank account to WWF.`
-      );
-      submitButton.setAttribute("data-balloon-pos", "up");
+        );
+        submitButton.setAttribute("data-balloon-pos", "up");
+      }
     }
     // If the page has a State field, and it is not required, make a mutation observer
     // to watch for changes to the field and hide/show it
