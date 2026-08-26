@@ -237,6 +237,13 @@
     display: none !important;
   }
 
+  [data-engrid-layout="leftleft1col"][data-engrid-subtheme="new-leftleft"] {
+    .content-header,
+    .content-footer {
+      display: none !important;
+    }
+  }
+
   // Base styling
   font-family: "Open Sans", sans-serif;
   color: #1f2937;
@@ -2584,11 +2591,14 @@ button[data-balloon] {
     border: none;
   }
 
-  .radio-to-buttons_donationAmt
-    .en__field--donationAmt
-    div:not(.en__field__item--other)
-    .en__field__label--item::after {
-    opacity: 1;
+  .radio-to-buttons_donationAmt .en__field--donationAmt {
+    .en__field__element--radio {
+      --fields_spacing-inline: 0.6rem;
+      --fields_spacing-block: 0.6rem;
+    }
+    div:not(.en__field__item--other) .en__field__label--item::after {
+      opacity: 1;
+    }
   }
 
   @media screen and (max-width: 769px) {
