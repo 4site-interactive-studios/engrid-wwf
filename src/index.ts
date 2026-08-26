@@ -55,7 +55,6 @@ const options: Options = {
     "Syria",
     "Ukraine",
   ],
-  Plaid: true,
   PreferredPaymentMethod: {
     preferredPaymentMethodField: "supporter.NOT_TAGGED_150",
     defaultPaymentMethod: ["card"],
@@ -135,18 +134,19 @@ const options: Options = {
         section.classList.add("en__contact--open");
       });
     }
-    // Add Plaid Tooltip to Submit Button
-    const submitButton = document.querySelector(
-      ".en__submit button"
-    ) as HTMLButtonElement;
-    if (submitButton) {
-      submitButton.setAttribute(
-        "data-balloon",
-        `When you click the button below, a new window will appear.
-        Follow the steps to securely donate from your bank account to WWF
-        (through Engaging Networks and Plaid).`
-      );
-      submitButton.setAttribute("data-balloon-pos", "up");
+    // Add ACH Tooltip to Submit Button
+    if (App.getPageType() === "DONATION" || App.getPageType() === "EVENT") {
+      const submitButton = document.querySelector(
+        ".en__submit button"
+      ) as HTMLButtonElement;
+      if (submitButton) {
+        submitButton.setAttribute(
+          "data-balloon",
+          `When you click the button below, a new window will appear.
+        Follow the steps to securely donate from your bank account to WWF.`
+        );
+        submitButton.setAttribute("data-balloon-pos", "up");
+      }
     }
     // If the page has a State field, and it is not required, make a mutation observer
     // to watch for changes to the field and hide/show it
