@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, August 25, 2026 @ 15:41:11 ET
+ *  Date: Wednesday, August 26, 2026 @ 19:55:52 ET
  *  By: nick
  *  ENGrid styles: v0.27.3
- *  ENGrid scripts: v0.27.5
+ *  ENGrid scripts: v0.27.6
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -22023,8 +22023,17 @@ class SwapAmounts {
         this.hasRecurringNSG = !!(window.EngagingNetworks.suggestedGift &&
             window.EngagingNetworks.suggestedGift.recurring &&
             window.EngagingNetworks.suggestedGift.recurring.length > 0);
+        if (this.hasOneTimeNSG) {
+            engrid_ENGrid.setBodyData("en-nsg-onetime", true);
+        }
+        if (this.hasRecurringNSG) {
+            engrid_ENGrid.setBodyData("en-nsg-recurring", true);
+        }
         if (this.hasOneTimeNSG || this.hasRecurringNSG) {
-            this.logger.log("Detected NSG amounts", { suggestedGift: window.EngagingNetworks.suggestedGift });
+            engrid_ENGrid.setBodyData("en-nsg", true);
+            this.logger.log("Detected NSG amounts", {
+                suggestedGift: window.EngagingNetworks.suggestedGift,
+            });
         }
         if (!this.shouldRun())
             return;
@@ -22086,7 +22095,9 @@ class SwapAmounts {
         if (!config)
             return;
         if (this.shouldUseNSG(freq, config)) {
-            this.logger.log(`NSG present for ${freq}, using NSG amounts`, { suggestedGift: window.EngagingNetworks.suggestedGift });
+            this.logger.log(`NSG present for ${freq}, using NSG amounts`, {
+                suggestedGift: window.EngagingNetworks.suggestedGift,
+            });
             window.EngagingNetworks.require._defined.enjs.swapList("donationAmt", this.toEnAmountListNSG(window.EngagingNetworks.suggestedGift, freq), { ignoreCurrentValue: true });
             this._amount.load();
             this.swapped = true;
@@ -27366,7 +27377,7 @@ class PreferredPaymentMethod {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/version.js
-const AppVersion = "0.27.5";
+const AppVersion = "0.27.6";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
