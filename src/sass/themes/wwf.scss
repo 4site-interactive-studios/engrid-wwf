@@ -1593,10 +1593,18 @@
     order: 3;
   }
 
-  // Scale up the vanilla radio buttons on Firefox
+  // Use the custom ::before premium radio in Firefox too. Modern Gecko renders
+  // pseudo-elements on form controls once appearance is none; restoring
+  // position reactivates the off-screen input + ::before mechanism other
+  // browsers use. (Overrides ENgrid's Firefox native-radio hack.)
   @-moz-document url-prefix() {
-    .en__pg__select input {
-      transform: scale(1.5);
+    .en__pg__select input[type="radio"] {
+      appearance: none;
+      position: relative;
+
+      &:before {
+        position: relative;
+      }
     }
   }
 
