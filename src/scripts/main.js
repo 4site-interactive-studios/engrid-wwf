@@ -1,46 +1,77 @@
 export const customScript = function (App, DonationFrequency) {
   console.log("ENGrid client scripts are executing");
 
-  // Listen to the message PayPal sends to the parent window when Venmo is enabled
-  const VENMO_IDENTIFIER = "venmo";
+  // Venmo Detection
+  const paypalTouchContainer = document.getElementById(
+    "en__digitalWallet__paypalTouch__container"
+  );
+  if (paypalTouchContainer) {
+    App.log("Venmo Detection: Container found");
+    let isChecking = false;
+    const checkVenmo = (observer = null) => {
+      if (isChecking) return;
+      isChecking = true;
+      App.log("Venmo Detection: Checking...");
+      // Temporarily make the container visible to check its height
+      const originalDisplay = paypalTouchContainer.style.display;
+      const originalVisibility = paypalTouchContainer.style.visibility;
+      const originalPosition = paypalTouchContainer.style.position;
 
-  // Print to the console ALL messages from iFrames
-  window.addEventListener("message", function (event) {
-    // Check the origin of the message
-    if (event.origin === "https://www.paypal.com") {
-      const data = JSON.parse(event.data);
-      // Get the content from the first item of the data object
-      const firstKey = Object.keys(data)[0];
-      const content = data[firstKey][0];
-      const hasData = "data" in content;
-      const hasName = hasData && "name" in content.data;
-      const isRemember = hasName && content.data.name === "remember";
-      const hasArgs = isRemember && "args" in content.data;
-      const isVenmo =
-        hasArgs &&
-        Array.isArray(content.data.args) &&
-        content.data.args.length > 0 &&
-        Array.isArray(content.data.args[0]) &&
-        content.data.args[0].length > 0 &&
-        content.data.args[0][0] === VENMO_IDENTIFIER;
-      if (isVenmo) {
-        // Venmo is Enabled
-        // If you are on iPhone, only enable Venmo if using Safari
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-        const isSafari =
-          navigator.userAgent.includes("Safari") &&
-          !navigator.userAgent.includes("CriOS") &&
-          !navigator.userAgent.includes("FxiOS");
+      paypalTouchContainer.style.visibility = "hidden";
+      paypalTouchContainer.style.position = "absolute";
+      paypalTouchContainer.style.display = "block";
 
-        if (isIOS && !isSafari) {
-          App.log("Venmo is not enabled on non-Safari iOS");
-          return;
+      setTimeout(() => {
+        const height = paypalTouchContainer.offsetHeight;
+        App.log(`Venmo Detection: Height is ${height}`);
+
+        // Restore original styles
+        paypalTouchContainer.style.display = originalDisplay;
+        paypalTouchContainer.style.visibility = originalVisibility;
+        paypalTouchContainer.style.position = originalPosition;
+
+        if (height > 70) {
+          // Venmo is Enabled
+          // If you are on iPhone, only enable Venmo if using Safari
+          const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+          const isSafari =
+            navigator.userAgent.includes("Safari") &&
+            !navigator.userAgent.includes("CriOS") &&
+            !navigator.userAgent.includes("FxiOS");
+
+          if (isIOS && !isSafari) {
+            App.log("Venmo is not enabled on non-Safari iOS");
+          } else {
+            App.setBodyData("venmo-enabled", "true");
+            App.log("Venmo is enabled");
+          }
         }
-        App.setBodyData("venmo-enabled", "true");
-        App.log("Venmo is enabled");
+        // Stop observing once checked
+        if (observer) observer.disconnect();
+        isChecking = false;
+      }, 500);
+    };
+
+    const venmoObserver = new MutationObserver((mutationsList) => {
+      for (const mutation of mutationsList) {
+        if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
+          App.log("Venmo Detection: Mutation detected");
+          checkVenmo(venmoObserver);
+        }
       }
+    });
+
+    venmoObserver.observe(paypalTouchContainer, {
+      childList: true,
+      subtree: true,
+    });
+
+    // Check immediately in case it's already loaded
+    if (paypalTouchContainer.childNodes.length > 0) {
+      App.log("Venmo Detection: Immediate check triggered");
+      checkVenmo(venmoObserver);
     }
-  });
+  }
 
   // Add Images to the transaction.giveBySelect labels
   const paymentMethods = document.querySelectorAll(
@@ -285,17 +316,41 @@ export const customScript = function (App, DonationFrequency) {
         premiumTitle.removeAttribute("data-non-us-donor");
       }
     };
+    const countryNoticeMessage =
+      'Note: We are unable to mail thank-you gifts to donors outside the United States and its territories and have selected the "Maximize my gift" option for you.';
+    let _countryAnnouncer = null;
+    const getCountryAnnouncer = () => {
+      if (!_countryAnnouncer) {
+        _countryAnnouncer = document.createElement("div");
+        _countryAnnouncer.className = "sr-only";
+        _countryAnnouncer.setAttribute("role", "status");
+        _countryAnnouncer.setAttribute("aria-live", "polite");
+        _countryAnnouncer.setAttribute("aria-atomic", "true");
+        document.body.appendChild(_countryAnnouncer);
+      }
+      return _countryAnnouncer;
+    };
     const addCountryNotice = () => {
       if (!document.querySelector(".en__field--country .en__field__notice")) {
         App.addHtml(
-          '<div class="en__field__notice">Note: We are unable to mail thank-you gifts to donors outside the United States and its territories and have selected the "Mazimize my gift" option for you.</div>',
+          `<div class="en__field__notice">${countryNoticeMessage}</div>`,
           ".en__field--country .en__field__element",
           "after"
         );
       }
+      // Announce to screen readers via a persistent live region.
+      // A live region that enters the DOM already populated is unreliable in
+      // VoiceOver, so we clear first then set on a short delay so the AT
+      // registers the text change as a discrete mutation and announces it.
+      const announcer = getCountryAnnouncer();
+      announcer.textContent = "";
+      window.setTimeout(() => {
+        announcer.textContent = countryNoticeMessage;
+      }, 150);
     };
     const removeCountryNotice = () => {
       App.removeHtml(".en__field--country .en__field__notice");
+      getCountryAnnouncer().textContent = "";
     };
     if (
       !window.EngagingNetworks.require._defined.enjs.checkSubmissionFailed()
@@ -443,7 +498,6 @@ export const customScript = function (App, DonationFrequency) {
           link.href = "#";
           link.id = "ccv-tooltip";
           link.className = "label-tooltip";
-          link.tabIndex = "-1";
           link.innerText = "What's this?";
           link.addEventListener("click", (e) => e.preventDefault());
           ccvvLabel.insertAdjacentElement("afterend", link);
@@ -715,12 +769,75 @@ export const customScript = function (App, DonationFrequency) {
         "en__field--",
         ""
       )}-N`;
-
       App.addHtml(
         `<div style="display: none;" class="en__component en__component--copyblock grey-box email-subscription-nudge ${showHideClassName}"><p></p></div>`,
         ".universal-opt-in",
         "after"
       );
+
+      // Accessibility:
+      // 1. The nudge text used to be injected via CSS `::after`, which never
+      //    enters the DOM, so there was nothing for a screen reader to read.
+      // 2. The aria-live region originally lived inside this box, but the box is
+      //    toggled with `display: none`. VoiceOver does not reliably announce a
+      //    live region that only enters the accessibility tree at the moment its
+      //    text changes. So we use a separate, persistent, visually-hidden live
+      //    region that is always in the DOM/accessibility tree, and push the
+      //    message into it (on a short delay) when ENGrid reveals the box.
+      const nudge = document.querySelector(`.${showHideClassName}`);
+      if (nudge) {
+        const nudgeText = nudge.querySelector("p");
+
+        // Single source of truth: read the message from the CSS variable, with
+        // a hardcoded fallback in case it isn't defined.
+        const cssMessage = window
+          .getComputedStyle(nudge)
+          .getPropertyValue("--email-subscription-nudge")
+          .trim()
+          .replace(/^["']|["']$/g, "");
+        const message =
+          cssMessage ||
+          "Are you sure? We'd like to share how you're making a difference.";
+
+        // Visible text for sighted users (kept out of the a11y announcement
+        // flow so it isn't read twice).
+        nudgeText.textContent = message;
+        nudgeText.setAttribute("aria-hidden", "true");
+
+        // Persistent live region — always present, never display:none.
+        const announcer = document.createElement("div");
+        announcer.className = "sr-only";
+        announcer.setAttribute("role", "status");
+        announcer.setAttribute("aria-live", "polite");
+        announcer.setAttribute("aria-atomic", "true");
+        document.body.appendChild(announcer);
+
+        let wasVisible = window.getComputedStyle(nudge).display !== "none";
+
+        const syncAnnouncement = () => {
+          const isVisible = window.getComputedStyle(nudge).display !== "none";
+          if (isVisible === wasVisible) return;
+          wasVisible = isVisible;
+
+          if (isVisible) {
+            // Clear first, then set on a short delay so VoiceOver registers the
+            // text change as a discrete mutation and announces it.
+            announcer.textContent = "";
+            window.setTimeout(() => {
+              announcer.textContent = message;
+            }, 150);
+          } else {
+            announcer.textContent = "";
+          }
+        };
+
+        // ENGrid toggles visibility via the inline style / class attributes.
+        const nudgeObserver = new MutationObserver(syncAnnouncement);
+        nudgeObserver.observe(nudge, {
+          attributes: true,
+          attributeFilter: ["style", "class"],
+        });
+      }
     }
   }
 
@@ -1031,12 +1148,44 @@ export const customScript = function (App, DonationFrequency) {
     const bodyTitle = document.querySelector(".body-title > .en__component");
     bodyTitle?.insertAdjacentHTML(
       "afterbegin",
-      `<a class="minimal-header-logo" href="https://www.worldwildlife.org/" target="_blank"><img class="no-header-wwf-logo" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo-standalone.png?3" alt="WWF Logo"></a>`
+      `<a class="minimal-header-logo" href="https://www.worldwildlife.org/" target="_blank"><img class="no-header-wwf-logo" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/wwf-logo-2026-theme.svg" alt="WWF Logo"></a>`
     );
     const contentHeader = document.querySelector(".content-header");
     contentHeader?.insertAdjacentHTML(
       "afterbegin",
-      `<a class="minimal-header-logo" href="https://www.worldwildlife.org/" target="_blank"><img class="no-header-wwf-logo" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/logo-no-tab.png?3" alt="WWF Logo"></a>`
+      `<a class="minimal-header-logo" href="https://www.worldwildlife.org/" target="_blank"><img class="no-header-wwf-logo" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/wwf-logo-2026-theme.svg" alt="WWF Logo"></a>`
     );
   }
+
+  // Upsell modal: remove trailing ".00" from dollar amounts in the Yes/No button labels
+  const stripUpsellLabelCents = () => {
+    const modal = document.getElementById("en__upsellModal");
+    if (!modal) return;
+    modal
+      .querySelectorAll(
+        "#en__upsellModal__yes .label, #en__upsellModal__no .label"
+      )
+      .forEach((label) => {
+        label.textContent = label.textContent.replace(
+          /(\$[\d,]+)\.00\b/g,
+          "$1"
+        );
+      });
+  };
+  // Run each time the modal is added to the page (it can close and re-open)
+  const upsellObserver = new MutationObserver((mutationsList) => {
+    for (const mutation of mutationsList) {
+      for (const node of mutation.addedNodes) {
+        if (
+          node.nodeType === Node.ELEMENT_NODE &&
+          (node.id === "en__upsellModal" ||
+            node.querySelector("#en__upsellModal"))
+        ) {
+          stripUpsellLabelCents();
+          return;
+        }
+      }
+    }
+  });
+  upsellObserver.observe(document.body, { childList: true, subtree: true });
 };

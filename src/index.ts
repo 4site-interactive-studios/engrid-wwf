@@ -4,6 +4,7 @@ import {
   DonationFrequency,
   DonationAmount,
   EnForm,
+  Ecard
 } from "@4site/engrid-scripts"; // Uses ENGrid via NPM
 // import {
 //   Options,
@@ -11,6 +12,7 @@ import {
 //   DonationFrequency,
 //   DonationAmount,
 //   EnForm,
+//   Ecard
 // } from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
 
 import "./sass/main.scss";
@@ -22,6 +24,11 @@ import { AnnualLimit } from "./scripts/annual-limit";
 import { OnLoadModal } from "./scripts/on-load-modal";
 import MultistepForm from "./scripts/multistep-form";
 import { AddDAF } from "./scripts/add-daf";
+import { Bridger } from "./scripts/Bridger";
+
+import { Quiz } from "./scripts/quiz";
+import GiftHistory from "./scripts/gift-history";
+import Accessibility from "./scripts/accessibility";
 
 const options: Options = {
   AutoYear: true,
@@ -39,12 +46,17 @@ const options: Options = {
   SkipToMainContentLink: true,
   SrcDefer: true,
   ProgressBar: true,
+  PreferredPaymentMethod: {
+    preferredPaymentMethodField: "supporter.NOT_TAGGED_150",
+    defaultPaymentMethod: ["card"],
+  },
   RegionLongFormat: "supporter.NOT_TAGGED_97",
   FreshAddress: {
     // dateField: "supporter.NOT_TAGGED_XXX",
     // statusField: "supporter.NOT_TAGGED_YYY",
     // messageField: "supporter.NOT_TAGGED_ZZZ",
     dateFieldFormat: "YYYY-MM-DD",
+    proxyUrl: "https://validate.worldwildlife.org",
   },
   CountryDisable: [
     "Belarus",
@@ -55,10 +67,6 @@ const options: Options = {
     "Syria",
     "Ukraine",
   ],
-  PreferredPaymentMethod: {
-    preferredPaymentMethodField: "supporter.NOT_TAGGED_150",
-    defaultPaymentMethod: ["card"],
-  },
   PageLayouts: [
     "centerleft1col",
     "centercenter1col",
@@ -232,6 +240,11 @@ const options: Options = {
       // Hide the unsubscribe all radio button
       unsubscribeAllRadio.closest(".en__field")?.classList.add("hide");
     }
+    new Quiz();
+    new Bridger();
+    new GiftHistory();
+    new Accessibility();
+    new Ecard();
   },
   onResize: () => console.log("Starter Theme Window Resized"),
 
