@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, August 27, 2026 @ 13:42:38 ET
+ *  Date: Thursday, August 27, 2026 @ 13:49:58 ET
  *  By: nick
  *  ENGrid styles: v0.27.3
  *  ENGrid scripts: v0.27.6
@@ -9628,6 +9628,11 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf] .en__field__notice{
   order:3;
 }
+@-moz-document url-prefix(){
+  [data-engrid-theme=wwf] .en__pg__select input{
+    transform:scale(1.5);
+  }
+}
 [data-engrid-theme=wwf] .en__field__input{
   --fields_spacing-block:0.5rem;
 }
@@ -9658,12 +9663,6 @@ body[data-engrid-debug]:before{
   --radio_width:32px;
   --radio_box-shadow_selected:inset 0 0 0 3px #fff;
   --radio_border-width:1px;
-}
-@-moz-document url-prefix(){
-  [data-engrid-theme=wwf] .en__pgList .en__pg__select input[type=radio]{
-    height:var(--radio_height);
-    width:var(--radio_width);
-  }
 }
 [data-engrid-theme=wwf] .en__pgList[data-nogift]{
   display:grid;
