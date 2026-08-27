@@ -1636,6 +1636,15 @@
     --radio_box-shadow_selected: inset 0 0 0 3px #ffffff;
     --radio_border-width: 1px;
 
+    // Gecko renders the native radio input (engrid's Firefox hack) and only
+    // sets its width, so it scales out of proportion. Give it both dimensions.
+    @-moz-document url-prefix() {
+      .en__pg__select input[type="radio"] {
+        height: var(--radio_height);
+        width: var(--radio_width);
+      }
+    }
+
     // When the no gift option is present, move it from the last premium option to being the first premium option
     &[data-nogift] {
       display: grid;
