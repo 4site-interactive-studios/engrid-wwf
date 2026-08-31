@@ -4,6 +4,7 @@ import {
   DonationFrequency,
   DonationAmount,
   EnForm,
+  Ecard
 } from "@4site/engrid-scripts"; // Uses ENGrid via NPM
 // import {
 //   Options,
@@ -11,6 +12,7 @@ import {
 //   DonationFrequency,
 //   DonationAmount,
 //   EnForm,
+//   Ecard
 // } from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
 
 import "./sass/main.scss";
@@ -22,6 +24,11 @@ import { AnnualLimit } from "./scripts/annual-limit";
 import { OnLoadModal } from "./scripts/on-load-modal";
 import MultistepForm from "./scripts/multistep-form";
 import { AddDAF } from "./scripts/add-daf";
+import { Bridger } from "./scripts/Bridger";
+
+import { Quiz } from "./scripts/quiz";
+import GiftHistory from "./scripts/gift-history";
+import Accessibility from "./scripts/accessibility";
 
 const options: Options = {
   AutoYear: true,
@@ -39,12 +46,17 @@ const options: Options = {
   SkipToMainContentLink: true,
   SrcDefer: true,
   ProgressBar: true,
+  PreferredPaymentMethod: {
+    preferredPaymentMethodField: "supporter.NOT_TAGGED_150",
+    defaultPaymentMethod: ["card"],
+  },
   RegionLongFormat: "supporter.NOT_TAGGED_97",
   FreshAddress: {
     // dateField: "supporter.NOT_TAGGED_XXX",
     // statusField: "supporter.NOT_TAGGED_YYY",
     // messageField: "supporter.NOT_TAGGED_ZZZ",
     dateFieldFormat: "YYYY-MM-DD",
+    proxyUrl: "https://validate.worldwildlife.org",
   },
   CountryDisable: [
     "Belarus",
@@ -55,11 +67,6 @@ const options: Options = {
     "Syria",
     "Ukraine",
   ],
-  Plaid: true,
-  PreferredPaymentMethod: {
-    preferredPaymentMethodField: "supporter.NOT_TAGGED_150",
-    defaultPaymentMethod: ["card"],
-  },
   PageLayouts: [
     "centerleft1col",
     "centercenter1col",
@@ -135,18 +142,19 @@ const options: Options = {
         section.classList.add("en__contact--open");
       });
     }
-    // Add Plaid Tooltip to Submit Button
-    const submitButton = document.querySelector(
-      ".en__submit button"
-    ) as HTMLButtonElement;
-    if (submitButton) {
-      submitButton.setAttribute(
-        "data-balloon",
-        `When you click the button below, a new window will appear.
-        Follow the steps to securely donate from your bank account to WWF
-        (through Engaging Networks and Plaid).`
-      );
-      submitButton.setAttribute("data-balloon-pos", "up");
+    // Add ACH Tooltip to Submit Button
+    if (App.getPageType() === "DONATION" || App.getPageType() === "EVENT") {
+      const submitButton = document.querySelector(
+        ".en__submit button"
+      ) as HTMLButtonElement;
+      if (submitButton) {
+        submitButton.setAttribute(
+          "data-balloon",
+          `When you click the button below, a new window will appear.
+        Follow the steps to securely donate from your bank account to WWF.`
+        );
+        submitButton.setAttribute("data-balloon-pos", "up");
+      }
     }
     // If the page has a State field, and it is not required, make a mutation observer
     // to watch for changes to the field and hide/show it
@@ -232,6 +240,11 @@ const options: Options = {
       // Hide the unsubscribe all radio button
       unsubscribeAllRadio.closest(".en__field")?.classList.add("hide");
     }
+    new Quiz();
+    new Bridger();
+    new GiftHistory();
+    new Accessibility();
+    new Ecard();
   },
   onResize: () => console.log("Starter Theme Window Resized"),
 
