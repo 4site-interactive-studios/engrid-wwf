@@ -19,10 +19,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, August 20, 2026 @ 13:31:54 ET
- *  By: fernando
- *  ENGrid styles: v0.27.3
- *  ENGrid scripts: v0.27.4
+ *  Date: Wednesday, September 2, 2026 @ 11:15:42 ET
+ *  By: nick
+ *  ENGrid styles: v0.28.2
+ *  ENGrid scripts: v0.28.2
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -2599,6 +2599,9 @@ body[data-engrid-live-currency=active] .en__field--donationAmt .en__field__item:
   body:not(#en__pagebuilder)[data-engrid-apple-pay-available=false] .en__field__input.en__field__input--radio[value=applepay]+label,body:not(#en__pagebuilder)[data-engrid-apple-pay-available=true][data-engrid-payment-type=applepay] .en__submit{
     display:none;
   }
+}
+body:not(#en__pagebuilder):not([data-engrid-payment-type=applepay]) .showif-applepay-selected,body:not(#en__pagebuilder)[data-engrid-payment-type=applepay] .hideif-applepay-selected{
+  display:none;
 }
 input:-webkit-autofill,select:-webkit-autofill,textarea:-webkit-autofill{
   animation-name:onAutoFillStart;
