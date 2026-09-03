@@ -1,0 +1,111 @@
+// WWF-specific styles for the BackgroundRotation component. The generic
+// mechanics live in ../background-rotation.scss; this file holds everything
+// tied to the WWF theme's breakpoints and layout. This partial is imported
+// inside the [data-engrid-theme="wwf"] block (see page-template-styles.scss).
+
+// The WWF theme hides the page background at the 1200px breakpoint
+// (see non-embed-multistep.scss), the rotation layers should respect that too.
+// The component matches this breakpoint in JS via the mobileBreakpoint option
+// passed in index.ts and stops rotating below it.
+@media screen and (max-width: 1200px) {
+  &:not(#en__pagebuilder) {
+    &[data-engrid-page-background="image"][data-engrid-layout="centerleft1col"]
+      .page-backgroundImage
+      .background-rotation
+      .background-rotation-layer,
+    &[data-engrid-page-background="image"][data-engrid-layout="leftleft1col"]
+      .page-backgroundImage
+      .background-rotation
+      .background-rotation-layer {
+      display: none;
+    }
+
+    // The rotation backdrop is hidden here as well, so it can't put a
+    // full-bleed image back at a width where the theme wants none
+    &[data-engrid-page-background="image"][data-engrid-layout="centerleft1col"]
+      .page-backgroundImage:before,
+    &[data-engrid-page-background="image"][data-engrid-layout="leftleft1col"]
+      .page-backgroundImage:before {
+      background-image: none !important;
+    }
+
+    // The controls only make sense where the full-bleed background is visible
+    &[data-engrid-background-rotation="active"] .background-rotation-controls {
+      display: none;
+    }
+  }
+}
+
+// Each image item can set a theme="light" or theme="dark" (default) attribute,
+// which switches the .body-title h1 text color so it stays visible over the
+// current background image. Only applies to the >1200px layout.
+@media screen and (min-width: 1201px) {
+  &:not(#en__pagebuilder) {
+    // The theme repositions the page background to start right of the form
+    // column and center-crops it (see themes/wwf.scss). Every rotation layer
+    // must paint with that same geometry: the package default is full-viewport
+    // and top-right anchored, which was only being overridden for figure
+    // layers (via the theme's figure.media-with-attribution rule). Cross-fades
+    // between an unattributed item (img layer) and an attributed one (figure
+    // layer) were dissolving between two different crops, so the image
+    // visibly shifted as each fade settled — by half the cover-crop overflow,
+    // which grows with viewport width. Scoped to
+    // [data-engrid-background-rotation] so these only apply while the
+    // component has initialized and tagged the body.
+    &[data-engrid-background-rotation][data-engrid-layout="leftleft1col"]
+      .page-backgroundImage
+      .page-background-rotation
+      .background-rotation-layer {
+      left: $leftleft1col_body-column_max-width;
+      width: calc(100% - $leftleft1col_body-column_max-width);
+      background-position: center;
+      object-position: center;
+    }
+
+    &[data-engrid-background-rotation][data-engrid-layout="rightright1col"]
+      .page-backgroundImage
+      .page-background-rotation
+      .background-rotation-layer {
+      left: 0;
+      right: $rightright1col_body-column_max-width;
+      width: calc(100% - $rightright1col_body-column_max-width);
+      background-position: center;
+      object-position: center;
+    }
+
+    // The package repoints the :before backdrop at the incoming image at the
+    // start of every fade so it can wash through the cross-fading layers, but
+    // in this theme its box never quite matches the fixed, viewport-height
+    // layers (the multistep variant anchors it absolutely against the
+    // full-page-height section), so the same image washed through at a
+    // slightly different crop and the fade snapped into alignment only when it
+    // settled. The layers fully cover the backdrop except mid-fade, so drop it
+    // from the rotation entirely: fades then composite only the two layers,
+    // with a subtle dip toward the page background at the midpoint instead of
+    // a misaligned double image. Attributions are unaffected — they live in
+    // the figure layers, not the :before.
+    &[data-engrid-background-rotation] .page-backgroundImage:before {
+      background-image: none !important;
+    }
+
+    &[data-engrid-layout="centerleft1col"],
+    &[data-engrid-layout="leftleft1col"] {
+      &[data-engrid-background-rotation-theme] .body-title h1 {
+        transition: color var(--background-rotation-transition-duration, 500ms)
+          ease-in-out;
+      }
+
+      &[data-engrid-background-rotation-theme="light"] .body-title h1 {
+        color: #ffffff;
+      }
+    }
+  }
+}
+
+@media screen and (min-width: 500px) and (max-width: 1200px) {
+  &:not(#en__pagebuilder) {
+    &[data-engrid-background-rotation] .page-backgroundImage {
+      display: none;
+    }
+  }
+}

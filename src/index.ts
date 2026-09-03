@@ -4,7 +4,8 @@ import {
   DonationFrequency,
   DonationAmount,
   EnForm,
-  Ecard
+  Ecard,
+  PageBackgroundRotation,
 } from "@4site/engrid-scripts"; // Uses ENGrid via NPM
 // import {
 //   Options,
@@ -12,7 +13,8 @@ import {
 //   DonationFrequency,
 //   DonationAmount,
 //   EnForm,
-//   Ecard
+//   Ecard,
+//   PageBackgroundRotation,
 // } from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
 
 import "./sass/main.scss";
@@ -241,6 +243,13 @@ const options: Options = {
       unsubscribeAllRadio.closest(".en__field")?.classList.add("hide");
     }
     new Quiz();
+    // The WWF theme stops painting the full-bleed page background below
+    // 1200px (see sass/themes/wwf-background-rotation.scss), so the rotation
+    // treats that as its mobile breakpoint
+    new PageBackgroundRotation({
+      mobileBreakpoint: "(max-width: 1200px)",
+      initialDelay: 7000,
+    });
     new Bridger();
     new GiftHistory();
     new Accessibility();
@@ -294,7 +303,7 @@ const options: Options = {
       // If there is, sync the values
       donationHasPremium.value =
         transactionSelprodvariantid.value &&
-          transactionSelprodvariantid.value != maxTheirGift
+        transactionSelprodvariantid.value != maxTheirGift
           ? "Y"
           : "N";
     }
