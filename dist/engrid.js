@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, September 2, 2026 @ 13:55:27 ET
- *  By: nick
+ *  Date: Friday, September 4, 2026 @ 17:38:00 ET
+ *  By: fernando
  *  ENGrid styles: v0.28.3
- *  ENGrid scripts: v0.28.3
+ *  ENGrid scripts: v0.28.4
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -19585,16 +19585,26 @@ class RememberMe {
         }
     }
     insertClearRememberMeLink() {
+        var _a;
         let clearRememberMeField = document.getElementById("clear-autofill-data");
+        const { html, hasInnerLink } = this.buildClearLabelMarkup();
         if (!clearRememberMeField) {
-            clearRememberMeField = document.createElement("a");
+            clearRememberMeField = document.createElement(hasInnerLink ? "span" : "a");
             clearRememberMeField.setAttribute("id", "clear-autofill-data");
-            clearRememberMeField.classList.add("label-tooltip");
-            clearRememberMeField.setAttribute("style", "cursor: pointer;");
-            clearRememberMeField.innerHTML = this.fieldClearLabel;
+            if (hasInnerLink) {
+                clearRememberMeField.classList.add("clear-autofill-data-wrapper");
+            }
+            else {
+                clearRememberMeField.classList.add("label-tooltip");
+                clearRememberMeField.setAttribute("style", "cursor: pointer;");
+            }
+            clearRememberMeField.innerHTML = html;
             const targetField = this.getElementByFirstSelector(this.fieldClearSelectorTarget);
             if (targetField) {
-                if (this.fieldClearSelectorTargetLocation === "after") {
+                if (this.fieldClearSelectorTargetLocation === "rightSide") {
+                    this.placeOnRightSide(targetField, clearRememberMeField);
+                }
+                else if (this.fieldClearSelectorTargetLocation === "after") {
                     targetField.appendChild(clearRememberMeField);
                 }
                 else {
@@ -19602,7 +19612,10 @@ class RememberMe {
                 }
             }
         }
-        clearRememberMeField.addEventListener("click", (e) => {
+        const clickTarget = hasInnerLink
+            ? (_a = clearRememberMeField.querySelector("#clear-autofill-data-link")) !== null && _a !== void 0 ? _a : clearRememberMeField
+            : clearRememberMeField;
+        const onClear = (e) => {
             e.preventDefault();
             this.clearFields(["supporter.country" /*, 'supporter.emailAddress'*/]);
             if (this.useRemote()) {
@@ -19621,9 +19634,53 @@ class RememberMe {
             this.rememberMeOptIn = false;
             this._events.dispatchClear();
             window.dispatchEvent(new CustomEvent("RememberMe_Cleared"));
-        });
+        };
+        clickTarget.addEventListener("click", onClear);
         this._events.dispatchLoad(true);
         window.dispatchEvent(new CustomEvent("RememberMe_Loaded", { detail: { withData: true } }));
+    }
+    escapeHtml(value) {
+        const map = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;",
+        };
+        return value.replace(/[&<>"']/g, (c) => map[c]);
+    }
+    buildClearLabelMarkup() {
+        var _a;
+        const username = this.getUsernameFromFieldData();
+        const label = username
+            ? this.fieldClearLabel.replace(/\$username/g, () => this.escapeHtml(username))
+            : this.fieldClearLabel.replace(/[^\S\r\n]?\$username/g, "");
+        // Only the first non-empty {...} segment becomes the clickable clear link.
+        // Any additional {...} segments remain as literal text (braces included),
+        // and empty {} braces are left as-is. When no non-empty braces are present,
+        // the entire element is clickable (legacy behaviour).
+        const match = label.match(/\{([^}]+)\}/);
+        if (!match) {
+            return { html: label, hasInnerLink: false };
+        }
+        const before = label.slice(0, match.index);
+        const linkText = match[1];
+        const after = label.slice(((_a = match.index) !== null && _a !== void 0 ? _a : 0) + match[0].length);
+        const html = before +
+            `<a id="clear-autofill-data-link" class="label-tooltip" style="cursor: pointer;">${linkText}</a>` +
+            after;
+        return { html, hasInnerLink: true };
+    }
+    getUsernameFromFieldData() {
+        const value = this.fieldData["supporter.firstName"];
+        return value ? value.trim() : "";
+    }
+    getClearLabelPlainText() {
+        const username = this.getUsernameFromFieldData();
+        const label = username
+            ? this.fieldClearLabel.replace(/\$username/g, () => username)
+            : this.fieldClearLabel.replace(/[^\S\r\n]?\$username/g, "");
+        return label.replace(/\{([^}]*)\}/g, "$1");
     }
     getElementByFirstSelector(selectorsString) {
         // iterate through the selectors until we find one that exists
@@ -19637,13 +19694,76 @@ class RememberMe {
         }
         return targetField;
     }
+    placeOnRightSide(targetField, elementToPlace) {
+        const wrapperClass = "rememberme-right-side-wrapper";
+        let wrapper;
+        if (targetField.parentElement &&
+            targetField.parentElement.classList.contains(wrapperClass)) {
+            wrapper = targetField.parentElement;
+        }
+        else {
+            // Read the target's computed styles BEFORE moving it into the flex
+            // wrapper. Once inside a flex container, margin collapsing no longer
+            // applies and the reported values can change. We transfer the original
+            // margin-top to the wrapper itself so the block retains its vertical
+            // spacing in the document flow, and zero out the target's own margin-top
+            // so it doesn't double-apply inside the flex row.
+            const targetStyle = window.getComputedStyle(targetField);
+            const targetMarginTop = targetStyle.marginTop;
+            const targetMarginBottom = targetStyle.marginBottom;
+            wrapper = document.createElement("div");
+            wrapper.classList.add(wrapperClass);
+            wrapper.style.display = "flex";
+            wrapper.style.alignItems = "center";
+            wrapper.style.gap = "8px";
+            wrapper.style.flexWrap = "wrap";
+            // Transfer vertical margins from the target to the wrapper so the
+            // surrounding layout is unchanged after the DOM move.
+            wrapper.style.marginTop = targetMarginTop;
+            wrapper.style.marginBottom = targetMarginBottom;
+            if (targetField.parentNode) {
+                targetField.parentNode.insertBefore(wrapper, targetField);
+            }
+            // Zero out the target's own margin-top/-bottom now that the wrapper
+            // owns them, so they don't double-apply inside the flex row.
+            targetField.style.marginTop = "0px";
+            targetField.style.marginBottom = "0px";
+            wrapper.appendChild(targetField);
+        }
+        // Read padding-left AFTER the wrapper exists but before any alignment
+        // logic, so it reflects the current computed value.
+        const targetPaddingLeft = window.getComputedStyle(targetField).paddingLeft;
+        wrapper.appendChild(elementToPlace);
+        const applyAlignment = () => {
+            const wrapped = elementToPlace.offsetTop > targetField.offsetTop;
+            if (wrapped) {
+                // When wrapped below, left-align with the target's content area.
+                elementToPlace.style.marginTop = "0px";
+                elementToPlace.style.marginLeft = targetPaddingLeft;
+            }
+            else {
+                // When side-by-side, both items are already vertically centred by the
+                // flex container — no extra margin-top needed on elementToPlace.
+                elementToPlace.style.marginTop = "0px";
+                elementToPlace.style.marginLeft = "0px";
+            }
+        };
+        // Defer the first alignment check to the next animation frame so the
+        // browser has had a chance to perform layout. Without this, offsetTop on
+        // both elements is still 0 (or stale) at call time.
+        requestAnimationFrame(applyAlignment);
+        if (typeof window.ResizeObserver === "function") {
+            const observer = new window.ResizeObserver(() => applyAlignment());
+            observer.observe(wrapper);
+        }
+    }
     insertRememberMeOptin() {
         let rememberMeOptInField = document.getElementById("remember-me-opt-in");
         if (!rememberMeOptInField) {
             const rememberMeLabel = this.rememberMeLabel;
             const rememberMeInfo = engrid_ENGrid.t("rememberMe.tooltip", {
                 label: rememberMeLabel,
-                clearLabel: this.fieldClearLabel,
+                clearLabel: this.getClearLabelPlainText(),
             });
             const rememberMeOptInFieldChecked = this.rememberMeOptIn ? "checked" : "";
             const rememberMeOptInField = document.createElement("div");
@@ -19667,9 +19787,14 @@ class RememberMe {
 			`;
             const targetField = this.getElementByFirstSelector(this.fieldOptInSelectorTarget);
             if (targetField && targetField.parentNode) {
-                targetField.parentNode.insertBefore(rememberMeOptInField, this.fieldOptInSelectorTargetLocation == "before"
-                    ? targetField
-                    : targetField.nextSibling);
+                if (this.fieldOptInSelectorTargetLocation === "rightSide") {
+                    this.placeOnRightSide(targetField, rememberMeOptInField);
+                }
+                else {
+                    targetField.parentNode.insertBefore(rememberMeOptInField, this.fieldOptInSelectorTargetLocation == "before"
+                        ? targetField
+                        : targetField.nextSibling);
+                }
                 const rememberMeCheckbox = document.getElementById("remember-me-checkbox");
                 if (rememberMeCheckbox) {
                     rememberMeCheckbox.addEventListener("change", () => {
@@ -28053,7 +28178,7 @@ class PreferredPaymentMethod {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/version.js
-const AppVersion = "0.28.3";
+const AppVersion = "0.28.4";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
@@ -31156,7 +31281,15 @@ class Quiz {
     // selection, so we don't auto-check from change events.
 
     const optionSelector = ".en__component--svblock .en__field__input--radio, .en__component--svblock .en__field__input--imageSelectField";
-    let keyboardJustUsed = false;
+    let keyboardJustUsed = false; // Tracks whether the most recent user input came from the keyboard. This
+    // is what decides if a click on an option confirms the answer. We can't
+    // use MouseEvent.detail for that: WebKit (Safari and every iOS browser)
+    // forwards a label click to its hidden radio with detail === 0, exactly
+    // like a keyboard-generated click, so real taps would be ignored.
+    // (keyboardJustUsed can't be reused here because the focus handler below
+    // resets it before the arrow-key click event fires.)
+
+    let lastInputWasKeyboard = false;
     let instructionAnnounced = false;
     const group = document.querySelector(".en__component--svblock .en__field--survey[role='group']");
 
@@ -31169,11 +31302,18 @@ class Quiz {
 
     document.addEventListener("keydown", () => {
       keyboardJustUsed = true;
+      lastInputWasKeyboard = true;
+    }, {
+      capture: true
+    });
+    document.addEventListener("pointerdown", () => {
+      lastInputWasKeyboard = false;
     }, {
       capture: true
     });
     document.addEventListener("mousedown", () => {
       keyboardJustUsed = false;
+      lastInputWasKeyboard = false;
     }, {
       capture: true
     });
@@ -31209,11 +31349,13 @@ class Quiz {
         } else {
           this.checkAnswer();
         }
-      }); // Real pointer clicks confirm; keyboard-generated clicks (Space, etc.) do not.
+      }); // Pointer clicks (mouse or touch, on the input or its label) confirm.
+      // Keyboard-generated clicks (Space, Arrow keys) only select; Enter
+      // confirms through the keydown handler above.
 
-      input.addEventListener("click", event => {
+      input.addEventListener("click", () => {
         if (input.classList.contains("quiz-input-disabled")) return;
-        if (event.detail === 0) return;
+        if (lastInputWasKeyboard) return;
         this.toggleError(false);
         if (checkAnswerBtn) return;
         this.checkAnswer();
