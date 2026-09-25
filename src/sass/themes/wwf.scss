@@ -40,11 +40,11 @@
   --engrid__body-title_padding: 0px 0px 32px 0px;
   --engrid__body-top_padding: 0px;
 
-  --engrid__page_background-color: #fefcf9;
+  --engrid__page_background-color: #f9f3eb;
   --engrid__body-title_background-color: transparent;
   --engrid__body-banner_background-color: transparent;
   --engrid__body-top_background-color: transparent;
-  --engrid__body-main_background-color: #f9f3eb;
+  --engrid__body-main_background-color: #fefcf9;
 
   --engrid__content-header_background-color: #000000;
   --engrid__content-footer_background-color: #ffffff;
@@ -99,7 +99,7 @@
   // TYPOGRAPHY INPUT
   // --input_font-family: var(--default_font-family);
   --input_color: var(--color_punaluu_500);
-  --input_font-size: 16px;
+  --input_font-size: 18px;
   // --input_font-weight: initial;
   --input_line-height: 23px;
   --input_letter-spacing: 0.16px;
@@ -127,12 +127,14 @@
   --color_punaluu_300: #727272;
   --color_punaluu_400: #4b4b4b;
   --color_punaluu_500: #0f0f0f;
+  --color_sedona_200: #FFAF97;
   --color_yellowstone: #ffcc66;
+  --color_sandstone: #ffeeeb;
 
   // TYPOGRAPHY BUTTON
   // --button_font-family: var(--default_font-family);
   --button_color: var(--color_acadia_400);
-  --button_font-size: 18px;
+  --button_font-size: 22px;
   --button_font-weight: 700;
   --button_line-height: 100%;
   --button_background-color: #ffffff;
@@ -151,8 +153,8 @@
   --button_background-color_checked: var(--color_acadia_400);
   --button_border-color_checked: var(--color_acadia_400);
 
-  --recurring-frequency__button_padding: 14px 0px;
-  --recurring-frequency__button_font-size: 18px;
+  --recurring-frequency__button_padding: 17px 0px;
+  --recurring-frequency__button_font-size: 22px;
   --recurring-frequency__button_font-weight: 600;
   // --recurring-frequency__button_line-height: 36px;
 
@@ -170,7 +172,7 @@
 
   --submit__button_padding-top: 1rem;
   --submit__button_padding-bottom: 1rem;
-  --submit__button_font-size: 24px;
+  --submit__button_font-size: 22px;
 
   // DONATION PAGE
   --premium__image_max-width: 134px;
@@ -541,7 +543,7 @@
       --fields_spacing-block: 0rem;
       display: grid;
       gap: 0.5rem;
-      grid-template-columns: auto auto;
+      grid-template-columns: auto;
     }
   }
 
@@ -605,8 +607,9 @@
 
   .give-by-select input[type="radio"] + label {
     padding: 11px 32px;
-    height: 48px;
-    max-height: 48px;
+    height: 54px;
+    max-height: 54px;
+    font-size: 22px;
   }
 
   .give-by-select .en__field__label {
@@ -1332,6 +1335,16 @@
     margin-bottom: var(--fields_spacing-block);
   }
 
+  .white-box {
+      background-color: #fefcf9;
+      border: 1px solid #ccc;
+      display: flex;
+      flex-direction: column;
+      margin: 2rem 0;
+      padding: 0 3rem 1.75rem;
+      align-items: center;
+  }
+  
   .grey-box {
     background-color: #f3e7d9;
     color: var(--color_punaluu_400);
@@ -1339,7 +1352,7 @@
     --p_font-size: 16px;
     --p_line-height: 146%;
     letter-spacing: 0.16px;
-    margin-top: 24px;
+    margin-top: 0px;
 
     p {
       margin: 0;
@@ -1439,24 +1452,24 @@
 
   /* Used to highlight an upsell message */
   .inline-upsell-box {
-    ::before {
-      background-color: var(--color_yellowstone);
-      content: " ";
-      display: inline-block;
-      position: absolute;
-      top: 0px;
-      right: 20%;
-      height: 10px;
-      width: 10px;
-      border-radius: 2px;
-      transform: rotate(45deg);
-    }
+    // ::before {
+    //   background-color: var(--color_sedona_200);
+    //   content: " ";
+    //   display: inline-block;
+    //   position: absolute;
+    //   top: 0px;
+    //   right: 20%;
+    //   height: 10px;
+    //   width: 10px;
+    //   border-radius: 2px;
+    //   transform: rotate(45deg);
+    // }
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     padding: 0.75rem 1rem;
-    background-color: var(--color_yellowstone);
+    background-color: var(--color_sedona_200);
     color: var(--color_punaluu_500);
     // margin-bottom: 1.25rem;
     --p_font-size: var(--inline-upsell-box_font-size);
@@ -1510,16 +1523,16 @@
 
   .en__field--recurrfreq {
     .en__field__element--radio {
-      --fields_spacing-inline: 0.25rem;
-      --fields_spacing-block: 0.25rem;
+      --fields_spacing-inline: 0.5rem;
+      --fields_spacing-block: 0.5rem;
     }
   }
 
   .radio-to-buttons_donationAmt .en__field--donationAmt {
     .en__field__element--radio {
-      --fields_spacing-inline: 0.25rem;
-      --fields_spacing-block: 0.25rem;
-      --donation-amount__button_padding: 14px 0;
+      --fields_spacing-inline: 0.5rem;
+      --fields_spacing-block: 0.5rem;
+      --donation-amount__button_padding: 20px 0;
     }
 
     input[type="radio"]+label {
@@ -1530,7 +1543,7 @@
       ::before {
         color: red;
       }
-      --input_padding: 12.5px 0;
+      --input_padding: 17px 0;
       font-size: var(--donation-amount__button_font-size);
       font-weight: 700;
       justify-content: center;
@@ -1609,7 +1622,7 @@
   }
 
   .en__field__input {
-    --fields_spacing-block: 0.5rem;
+    --fields_spacing-block: 0rem;
   }
 
   #ccv-tooltip {
@@ -1661,7 +1674,7 @@
         .en__pg__display {
           background-image: var(--maximize_my_donation_image);
           // background-image: url("https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-gift_maximize-my-gift-placeholder.jpg?v=1680364148000");
-          background-size: cover;
+          background-size: contain;
           // min-width: 100%; // Causing this overlay issue on Safari https://cln.sh/mGf3gcGc
           background-position: center;
           background-repeat: no-repeat;
@@ -2183,6 +2196,10 @@
     font-size: 48px;
     line-height: var(--h2_line-height);
   }
+  
+  small {
+    font-size: 90%;
+  }
 }
 
 // Adds a tiny close button on the Tippy Tooltip when the primary input device does not support hover
@@ -2330,26 +2347,22 @@
     --a_font-size: 18px;
     --input_font-size: 16px;
     --default_line-height: 24px;
-    --h1_font-size: 52px;
+    --h1_font-size: 34px;
     --h2_font-size: 21px;
     --engrid__body_margin: 0px;
-
-    --engrid__page_background-color: var(--engrid__body-main_background-color);
 
     --engrid__content-footer_background-color: transparent;
     --engrid__body-main_padding: 13px;
     --engrid__body-banner_padding: 0 0;
-    --engrid__body-title_padding: 0 24px;
+    --engrid__body-title_padding: 0 14px;
     --engrid__body-title_margin: 0 0 16px 0;
     --engrid__body-top_padding: 0 13px;
 
-    --button_font-size: 18px;
-    --submit__button_font-size: 18px;
-    --button_line-height: 140%;
 
-    --donation-amount__button_font-size: 18px;
+    --donation-amount__button_font-size: 20px;
+    --donation-amount__button_font-weight: 700;
 
-    --recurring-frequency__button_font-size: 16px;
+    --recurring-frequency__button_font-size: 18px;
     --recurring-frequency__button_line-height: 24px;
 
     --click-to-expand__cta-image_width: 96px;
@@ -2391,8 +2404,9 @@
   .radio-to-buttons_donationAmt
     .en__field--donationAmt
     .en__field__element--radio {
-    --fields_spacing-inline: 0.25rem;
-    --fields_spacing-block: 5.33px;
+    --fields_spacing-inline: 0.5rem;
+    --fields_spacing-block: 7px;
+    --donation-amount__button_padding: 16px 0;
   }
 
   &[data-engrid-transaction-recurring-frequency]
@@ -2448,7 +2462,7 @@
     }
 
     svg {
-      --inline-upsell-box-svg_margin-left: 30px;
+      --inline-upsell-box-svg_margin-left: 0px;
     }
   }
 

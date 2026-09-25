@@ -80,7 +80,7 @@ export const customScript = function (App, DonationFrequency) {
   paymentMethods.forEach((label) => {
     switch (label.getAttribute("for")) {
       case "give-by-select-card":
-        label.innerHTML = `<img class="credit-card-logos" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-payment-type_credit-cards.png" alt="Credit Card Logos" />`;
+        label.innerHTML = `<img class="credit-card-logos" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-payment-type_credit-cards.png" alt="Credit Cards: Visa, Mastercard, Discover, American Express" />`;
         break;
       case "give-by-select-apple-google":
         label.innerHTML = `<img class="apple-pay-google-pay" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-payment-type_apple-pay-google-pay.png" alt="Apple Pay and Google Pay Logos" />`;

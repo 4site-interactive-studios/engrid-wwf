@@ -19,10 +19,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, August 27, 2026 @ 15:04:03 ET
+ *  Date: Friday, September 25, 2026 @ 11:24:02 ET
  *  By: nick
- *  ENGrid styles: v0.27.3
- *  ENGrid scripts: v0.27.6
+ *  ENGrid styles: v0.28.3
+ *  ENGrid scripts: v0.28.5
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -2600,6 +2600,9 @@ body[data-engrid-live-currency=active] .en__field--donationAmt .en__field__item:
     display:none;
   }
 }
+body:not(#en__pagebuilder):not([data-engrid-payment-type=applepay]) .showif-applepay-selected,body:not(#en__pagebuilder)[data-engrid-payment-type=applepay] .hideif-applepay-selected{
+  display:none;
+}
 input:-webkit-autofill,select:-webkit-autofill,textarea:-webkit-autofill{
   animation-name:onAutoFillStart;
   -webkit-transition:background-color 50000s ease-in-out 0s;
@@ -5060,6 +5063,140 @@ div[id^=nb-field-].nb-success input{
   display:none !important;
 }
 
+body:not(#en__pagebuilder) .page-backgroundImage .page-background-rotation .background-rotation-layer{
+  background-position:100% 0;
+  background-repeat:no-repeat;
+  background-size:cover;
+  height:100vh;
+  left:0;
+  object-position:top right;
+  opacity:0;
+  pointer-events:none;
+  position:fixed;
+  top:0;
+  transition:opacity var(--background-rotation-transition-duration, .5s) ease-in-out;
+  width:100vw;
+  z-index:0;
+}
+body:not(#en__pagebuilder) .page-backgroundImage .page-background-rotation .background-rotation-layer.active{
+  opacity:1;
+}
+body:not(#en__pagebuilder) .page-backgroundImage .page-background-rotation .background-rotation-layer.active:not(.background-rotation-outgoing){
+  z-index:1;
+}
+body:not(#en__pagebuilder) .page-backgroundImage .page-background-rotation.background-rotation-transition .background-rotation-layer{
+  will-change:opacity;
+}
+body:not(#en__pagebuilder) .page-backgroundImage .page-background-rotation img.background-rotation-layer{
+  display:block;
+  object-fit:cover;
+}
+body:not(#en__pagebuilder) .page-backgroundImage .page-background-rotation figure.background-rotation-layer.active{
+  pointer-events:auto;
+}
+body:not(#en__pagebuilder) .page-backgroundImage .page-background-rotation figure.media-with-attribution:not(.background-rotation-layer){
+  background-image:none;
+  display:block;
+  position:static;
+}
+body:not(#en__pagebuilder)[data-engrid-background-rotation] .page-backgroundImage:before{
+  background-image:var(--background-rotation-image, none);
+}
+body:not(#en__pagebuilder)[data-engrid-layout=centercenter1col] .page-backgroundImage .page-background-rotation .background-rotation-layer,body:not(#en__pagebuilder)[data-engrid-layout=centercenter2col] .page-backgroundImage .page-background-rotation .background-rotation-layer{
+  background-position:top;
+  object-position:top center;
+}
+body:not(#en__pagebuilder)[data-engrid-layout=centerright1col] .page-backgroundImage .page-background-rotation .background-rotation-layer,body:not(#en__pagebuilder)[data-engrid-layout=rightright1col] .page-backgroundImage .page-background-rotation .background-rotation-layer{
+  background-position:0 0;
+  object-position:top left;
+}
+
+@media screen and (max-width:499px){
+  body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-background-image] .page-backgroundImage .page-background-rotation,body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-banner-empty][data-engrid-body-banner=empty] .page-backgroundImage .page-background-rotation{
+    overflow:hidden;
+    position:relative;
+  }
+  body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-background-image] .page-backgroundImage .page-background-rotation .background-rotation-layer,body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-banner-empty][data-engrid-body-banner=empty] .page-backgroundImage .page-background-rotation .background-rotation-layer{
+    display:none !important;
+  }
+  body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-background-image] .page-backgroundImage .page-background-rotation .background-rotation-layer.active,body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-banner-empty][data-engrid-body-banner=empty] .page-backgroundImage .page-background-rotation .background-rotation-layer.active{
+    background-image:none !important;
+    display:block !important;
+    height:auto;
+    left:0;
+    opacity:1;
+    position:absolute;
+    top:0;
+    width:100%;
+  }
+  body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-background-image] .page-backgroundImage .page-background-rotation .background-rotation-layer.background-rotation-flow,body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-banner-empty][data-engrid-body-banner=empty] .page-backgroundImage .page-background-rotation .background-rotation-layer.background-rotation-flow{
+    position:static;
+  }
+  body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-background-image] .page-backgroundImage .page-background-rotation .background-rotation-layer.background-rotation-outgoing,body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-banner-empty][data-engrid-body-banner=empty] .page-backgroundImage .page-background-rotation .background-rotation-layer.background-rotation-outgoing{
+    z-index:0;
+  }
+  body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-background-image] .page-backgroundImage .page-background-rotation figure.background-rotation-layer.active,body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-banner-empty][data-engrid-body-banner=empty] .page-backgroundImage .page-background-rotation figure.background-rotation-layer.active{
+    height:auto !important;
+    transform:none !important;
+    width:100% !important;
+  }
+  body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-background-image] .page-backgroundImage .page-background-rotation figure.background-rotation-layer.background-rotation-flow,body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-banner-empty][data-engrid-body-banner=empty] .page-backgroundImage .page-background-rotation figure.background-rotation-layer.background-rotation-flow{
+    position:relative !important;
+  }
+  body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-background-image] .page-backgroundImage .page-background-rotation img.background-rotation-layer.active,body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-banner-empty][data-engrid-body-banner=empty] .page-backgroundImage .page-background-rotation img.background-rotation-layer.active{
+    object-fit:fill;
+  }
+}
+.background-rotation-controls{
+  display:none;
+}
+
+body:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls{
+  display:flex;
+  gap:.5rem;
+  position:fixed;
+  right:1rem;
+  top:1rem;
+  z-index:8;
+}
+body:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls button{
+  align-items:center;
+  background-color:#000000bf;
+  border:none;
+  border-radius:50%;
+  color:#fff;
+  cursor:pointer;
+  display:flex;
+  height:40px;
+  justify-content:center;
+  padding:0;
+  transition:background-color .15s ease-in-out;
+  width:40px;
+}
+body:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls button:focus-visible,body:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls button:hover{
+  background-color:#000000bf;
+}
+body:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls button:focus-visible{
+  outline:2px solid #fff;
+  outline-offset:2px;
+}
+body:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls button:disabled{
+  cursor:default;
+  opacity:.4;
+}
+body:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls button:disabled:focus-visible,body:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls button:disabled:hover{
+  background-color:#00000080;
+}
+body:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls button svg{
+  height:20px;
+  width:20px;
+}
+
+@media (prefers-reduced-motion:reduce){
+  body:not(#en__pagebuilder) .page-backgroundImage .page-background-rotation .background-rotation-layer{
+    transition:none;
+  }
+}
 [data-engrid-theme]{
   --premium__border-width:0;
   --premium__border-color:none;
@@ -8609,11 +8746,11 @@ body[data-engrid-debug]:before{
   --engrid__body-main_padding:40px 32px;
   --engrid__body-title_padding:0px 0px 32px 0px;
   --engrid__body-top_padding:0px;
-  --engrid__page_background-color:#fefcf9;
+  --engrid__page_background-color:#f9f3eb;
   --engrid__body-title_background-color:#0000;
   --engrid__body-banner_background-color:#0000;
   --engrid__body-top_background-color:#0000;
-  --engrid__body-main_background-color:#f9f3eb;
+  --engrid__body-main_background-color:#fefcf9;
   --engrid__content-header_background-color:#000;
   --engrid__content-footer_background-color:#fff;
   --engrid__body_box-shadow:none;
@@ -8639,7 +8776,7 @@ body[data-engrid-debug]:before{
   --a_text-decoration_hover:underline;
   --a_color_hover:var(--color_acadia_500);
   --input_color:var(--color_punaluu_500);
-  --input_font-size:16px;
+  --input_font-size:18px;
   --input_line-height:23px;
   --input_letter-spacing:0.16px;
   --input_background-color:var(--color_punaluu_50);
@@ -8655,9 +8792,11 @@ body[data-engrid-debug]:before{
   --color_punaluu_300:#727272;
   --color_punaluu_400:#4b4b4b;
   --color_punaluu_500:#0f0f0f;
+  --color_sedona_200:#ffaf97;
   --color_yellowstone:#fc6;
+  --color_sandstone:#ffeeeb;
   --button_color:var(--color_acadia_400);
-  --button_font-size:18px;
+  --button_font-size:22px;
   --button_font-weight:700;
   --button_line-height:100%;
   --button_background-color:#fff;
@@ -8670,8 +8809,8 @@ body[data-engrid-debug]:before{
   --button_color_checked:#fff;
   --button_background-color_checked:var(--color_acadia_400);
   --button_border-color_checked:var(--color_acadia_400);
-  --recurring-frequency__button_padding:14px 0px;
-  --recurring-frequency__button_font-size:18px;
+  --recurring-frequency__button_padding:17px 0px;
+  --recurring-frequency__button_font-size:22px;
   --recurring-frequency__button_font-weight:600;
   --submit__button_color:#fff;
   --submit__button_border-color:var(--color_primary);
@@ -8684,7 +8823,7 @@ body[data-engrid-debug]:before{
   --submit__button_border-color_checked:#000;
   --submit__button_padding-top:1rem;
   --submit__button_padding-bottom:1rem;
-  --submit__button_font-size:24px;
+  --submit__button_font-size:22px;
   --premium__image_max-width:134px;
   --give-quarterly-donation-amount-appended-label:"/qtr";
   --recurring-frequency__button_count:2;
@@ -8922,7 +9061,7 @@ body[data-engrid-debug]:before{
   --fields_spacing-block:0rem;
   display:grid;
   gap:.5rem;
-  grid-template-columns:auto auto;
+  grid-template-columns:auto;
 }
 [data-engrid-theme=wwf] .en__field--make_annual{
   background-color:var(--color_yellowstone);
@@ -8963,8 +9102,9 @@ body[data-engrid-debug]:before{
   align-items:stretch;
 }
 [data-engrid-theme=wwf] .give-by-select input[type=radio]+label{
-  height:48px;
-  max-height:48px;
+  font-size:22px;
+  height:54px;
+  max-height:54px;
   padding:11px 32px;
 }
 [data-engrid-theme=wwf] .give-by-select .en__field__label{
@@ -9429,13 +9569,22 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf] .en__field--checkbox.en__field--question>.en__field__label,[data-engrid-theme=wwf] .en__field--radio.en__field--question>.en__field__label,[data-engrid-theme=wwf] .en__field--radio.en__field--survey>.en__field__label{
   margin-bottom:var(--fields_spacing-block);
 }
+[data-engrid-theme=wwf] .white-box{
+  align-items:center;
+  background-color:#fefcf9;
+  border:1px solid #ccc;
+  display:flex;
+  flex-direction:column;
+  margin:2rem 0;
+  padding:0 3rem 1.75rem;
+}
 [data-engrid-theme=wwf] .grey-box{
   --p_font-size:16px;
   --p_line-height:146%;
   background-color:#f3e7d9;
   color:var(--color_punaluu_400);
   letter-spacing:.16px;
-  margin-top:24px;
+  margin-top:0;
   padding:1rem;
 }
 [data-engrid-theme=wwf] .grey-box p{
@@ -9511,7 +9660,7 @@ body[data-engrid-debug]:before{
   --p_line-height:var(--inline-upsell-box_line-height);
   --p_font-weight:700;
   align-items:center;
-  background-color:var(--color_yellowstone);
+  background-color:var(--color_sedona_200);
   border-radius:4px;
   color:var(--color_punaluu_500);
   display:flex;
@@ -9520,18 +9669,6 @@ body[data-engrid-debug]:before{
   min-height:48px;
   padding:.75rem 1rem;
   text-align:center;
-}
-[data-engrid-theme=wwf] .inline-upsell-box :before{
-  background-color:var(--color_yellowstone);
-  border-radius:2px;
-  content:" ";
-  display:inline-block;
-  height:10px;
-  position:absolute;
-  right:20%;
-  top:0;
-  transform:rotate(45deg);
-  width:10px;
 }
 [data-engrid-theme=wwf] .inline-upsell-box>:first-child{
   margin-top:0;
@@ -9563,19 +9700,19 @@ body[data-engrid-debug]:before{
   top:100%;
 }
 [data-engrid-theme=wwf] .en__field--recurrfreq .en__field__element--radio{
-  --fields_spacing-inline:0.25rem;
-  --fields_spacing-block:0.25rem;
+  --fields_spacing-inline:0.5rem;
+  --fields_spacing-block:0.5rem;
 }
 [data-engrid-theme=wwf] .radio-to-buttons_donationAmt .en__field--donationAmt .en__field__element--radio{
-  --fields_spacing-inline:0.25rem;
-  --fields_spacing-block:0.25rem;
-  --donation-amount__button_padding:14px 0;
+  --fields_spacing-inline:0.5rem;
+  --fields_spacing-block:0.5rem;
+  --donation-amount__button_padding:20px 0;
 }
 [data-engrid-theme=wwf] .radio-to-buttons_donationAmt .en__field--donationAmt input[type=radio]+label{
   outline:none;
 }
 [data-engrid-theme=wwf] .radio-to-buttons_donationAmt .en__field--donationAmt .en__field__input--other{
-  --input_padding:12.5px 0;
+  --input_padding:17px 0;
   font-size:var(--donation-amount__button_font-size);
   font-weight:700;
   justify-content:center;
@@ -9638,7 +9775,7 @@ body[data-engrid-debug]:before{
   }
 }
 [data-engrid-theme=wwf] .en__field__input{
-  --fields_spacing-block:0.5rem;
+  --fields_spacing-block:0rem;
 }
 [data-engrid-theme=wwf] #ccv-tooltip{
   color:var(--color_punaluu_400);
@@ -9678,7 +9815,7 @@ body[data-engrid-debug]:before{
   background-image:var(--maximize_my_donation_image);
   background-position:50%;
   background-repeat:no-repeat;
-  background-size:cover;
+  background-size:contain;
   height:100px;
 }
 @media screen and (max-width:628px){
@@ -10038,6 +10175,9 @@ body[data-engrid-debug]:before{
   font-size:48px;
   line-height:var(--h2_line-height);
 }
+[data-engrid-theme=wwf] small{
+  font-size:90%;
+}
 @media (hover:none){
   [data-engrid-theme=wwf] .tippy-box:after{
     content:"x";
@@ -10129,21 +10269,18 @@ body[data-engrid-debug]:before{
     --a_font-size:18px;
     --input_font-size:16px;
     --default_line-height:24px;
-    --h1_font-size:52px;
+    --h1_font-size:34px;
     --h2_font-size:21px;
     --engrid__body_margin:0px;
-    --engrid__page_background-color:var(--engrid__body-main_background-color);
     --engrid__content-footer_background-color:#0000;
     --engrid__body-main_padding:13px;
     --engrid__body-banner_padding:0 0;
-    --engrid__body-title_padding:0 24px;
+    --engrid__body-title_padding:0 14px;
     --engrid__body-title_margin:0 0 16px 0;
     --engrid__body-top_padding:0 13px;
-    --button_font-size:18px;
-    --submit__button_font-size:18px;
-    --button_line-height:140%;
-    --donation-amount__button_font-size:18px;
-    --recurring-frequency__button_font-size:16px;
+    --donation-amount__button_font-size:20px;
+    --donation-amount__button_font-weight:700;
+    --recurring-frequency__button_font-size:18px;
     --recurring-frequency__button_line-height:24px;
     --click-to-expand__cta-image_width:96px;
     --click-to-expand__cta-image_height:13px;
@@ -10171,8 +10308,9 @@ body[data-engrid-debug]:before{
     margin-bottom:0;
   }
   [data-engrid-theme=wwf] .radio-to-buttons_donationAmt .en__field--donationAmt .en__field__element--radio{
-    --fields_spacing-inline:0.25rem;
-    --fields_spacing-block:5.33px;
+    --fields_spacing-inline:0.5rem;
+    --fields_spacing-block:7px;
+    --donation-amount__button_padding:16px 0;
   }
   [data-engrid-theme=wwf][data-engrid-transaction-recurring-frequency] .radio-to-buttons_donationAmt .en__field--donationAmt div:not(.en__field__item--other) .en__field__label--item:after{
     font-size:15px !important;
@@ -10216,7 +10354,7 @@ body[data-engrid-debug]:before{
     --inline-upsell-box_strong_line-height:24px;
   }
   [data-engrid-theme=wwf] .inline-upsell-box svg{
-    --inline-upsell-box-svg_margin-left:30px;
+    --inline-upsell-box-svg_margin-left:0px;
   }
   [data-engrid-theme=wwf] .grey-box{
     --p_font-size:14px;
@@ -11865,7 +12003,7 @@ body[data-engrid-debug]:before{
 #footer .footer-links>ul li>a{
   color:var(--label_color);
   font-size:18px;
-  font-weight:600;
+  font-weight:700;
   text-decoration:underline;
   text-decoration-thickness:2px;
   text-underline-offset:8px;
