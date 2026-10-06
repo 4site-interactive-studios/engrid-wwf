@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, September 4, 2026 @ 17:38:00 ET
- *  By: fernando
+ *  Date: Thursday, October 1, 2026 @ 10:13:30 ET
+ *  By: nick
  *  ENGrid styles: v0.28.3
- *  ENGrid scripts: v0.28.4
+ *  ENGrid scripts: v0.28.5
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -11724,12 +11724,14 @@ class DonationAmount {
         // Load the current amount
         this.load();
     }
-    // The "other" radio is the one whose value isn't a numeric amount
-    // (EN renders it as value="other"), so it cleans to 0
+    // EN may render the "other" radio with a non-numeric or non-positive value
     isOtherAmountSelected() {
         const selectedAmount = document.querySelector(`input[name="${this._radios}"]:checked`);
-        return (selectedAmount !== null &&
-            engrid_ENGrid.cleanAmount(selectedAmount.value) === 0);
+        if (!selectedAmount) {
+            return false;
+        }
+        const amount = Number(selectedAmount.value);
+        return !Number.isFinite(amount) || amount <= 0;
     }
     syncOtherAmount(field, formatValue = false) {
         const otherIsSelected = this.isOtherAmountSelected();
@@ -28178,7 +28180,7 @@ class PreferredPaymentMethod {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/version.js
-const AppVersion = "0.28.4";
+const AppVersion = "0.28.5";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
