@@ -67,6 +67,13 @@
   --h1_font-weight: 700;
   --h1_line-height: 110%;
 
+  &[data-engrid-layout="centerleft1col"],
+  &[data-engrid-layout="leftleft1col"],
+  .en__hubPledge__panel {
+    --h1_font-size: 46px;
+    --h1_line-height: 55.2px;
+  }
+
   // TYPOGRAPHY H2
   // --h2_font-family: var(--default_font-family);
   // --h2_color: initial;
@@ -381,6 +388,13 @@
       background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjEiIHZpZXdCb3g9IjAgMCAyMCAyMSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgY2xpcC1wYXRoPSJ1cmwoI2NsaXAwXzI3OTUxXzE0ODA3NykiPgo8cGF0aCBkPSJNMTUuODMzMyA5LjQxNjk5SDQuMTY2NjdDMy4yNDYxOSA5LjQxNjk5IDIuNSAxMC4xNjMyIDIuNSAxMS4wODM3VjE2LjkxN0MyLjUgMTcuODM3NSAzLjI0NjE5IDE4LjU4MzcgNC4xNjY2NyAxOC41ODM3SDE1LjgzMzNDMTYuNzUzOCAxOC41ODM3IDE3LjUgMTcuODM3NSAxNy41IDE2LjkxN1YxMS4wODM3QzE3LjUgMTAuMTYzMiAxNi43NTM4IDkuNDE2OTkgMTUuODMzMyA5LjQxNjk5WiIgc3Ryb2tlPSIjNEI0QjRCIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8cGF0aCBkPSJNNS44MzM5OCA5LjQxNjk5VjYuMDgzNjZDNS44MzM5OCA0Ljk3ODU5IDYuMjcyOTcgMy45MTg3OCA3LjA1NDM3IDMuMTM3MzhDNy44MzU3NyAyLjM1NTk4IDguODk1NTggMS45MTY5OSAxMC4wMDA3IDEuOTE2OTlDMTEuMTA1NyAxLjkxNjk5IDEyLjE2NTUgMi4zNTU5OCAxMi45NDY5IDMuMTM3MzhDMTMuNzI4MyAzLjkxODc4IDE0LjE2NzMgNC45Nzg1OSAxNC4xNjczIDYuMDgzNjZWOS40MTY5OSIgc3Ryb2tlPSIjNEI0QjRCIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L2c+CjxkZWZzPgo8Y2xpcFBhdGggaWQ9ImNsaXAwXzI3OTUxXzE0ODA3NyI+CjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0id2hpdGUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAgMC4yNSkiLz4KPC9jbGlwUGF0aD4KPC9kZWZzPgo8L3N2Zz4K");
     }
   }
+  // Legacy selector for the secure padlock icon. In the event the Payment Method block has not been swapped out for the new padlock text version.
+  .payment-method:has(.section-header + div img.emailImage[alt="Secure Padlock Icon"]) {
+    align-items: baseline;
+    display: flex;
+    justify-content: space-between;
+  }
+
 
   /* Click to Expand */
   --click-to-expand__copy-area_height: 210px;
@@ -666,7 +680,7 @@
 
   .body-main .en__component--widgetblock:first-child {
     .enWidget--progressBar {
-      margin-top: -27px;
+      margin-top: -40px;
       padding-top: 26px;
     }
   }
@@ -786,9 +800,10 @@
     padding-bottom: 20px;
 
     @media screen and (min-width: 600px) {
-      margin-right: -30px;
-      margin-left: -30px;
-      width: calc(100% + 60px);
+      margin-left: -32px;
+      margin-right: -32px;
+      width: calc(100% + 64px);
+      border-radius: 3px 3px 0px 0px;
       // border-bottom: none;
     }
 
@@ -2200,6 +2215,13 @@
   small {
     font-size: 90%;
   }
+}
+
+/**
+ * PANDA AMBASSADOR Supporter Hub specific styles
+ */
+&[data-engrid-page-type="supporterhub"][data-engrid-pa="true"] {
+  --button_line-height: 36px;
 }
 
 // Adds a tiny close button on the Tippy Tooltip when the primary input device does not support hover

@@ -54,18 +54,20 @@
 .radio-to-buttons_recurrfreq.radio-to-buttons_recurrfreq_to-tabs
   .en__field--recurrfreq {
   --recurring-frequency__button_color: #222222;
-  --recurring-frequency__button_border-color: #cccccc;
+  --recurring-frequency__button_border-color: var(--color_punaluu_500);
   --recurring-frequency__button_background-color: #faf9f7;
   --recurring-frequency__button_color_hover: #222222;
-  --recurring-frequency__button_border-color_hover: #cccccc;
+  --recurring-frequency__button_border-color_hover: var(--color_punaluu_500);
   --recurring-frequency__button_background-color_hover: #faf9f7;
   --recurring-frequency__button_color_checked: #222222;
-  --recurring-frequency__button_border-color_checked: #cccccc;
+  --recurring-frequency__button_border-color_checked: var(--color_punaluu_500);
   --recurring-frequency__button_background-color_checked: var(
     --engrid__body-main_background-color
   );
   --fields_spacing-block: 0;
+  --recurring-frequency__button_border-width: 1px;
   --recurring-frequency__button_padding: 1.5ch 1.2ch;
+  --recurring-frequency__button_border-radius: 0px;
   margin-left: -12px;
   margin-right: -12px; // Was -12px but left a 1px gap on the rigth edge and couldn't figure out why
   flex-basis: calc(100% + 44px);
@@ -84,8 +86,8 @@
 
   @media screen and (min-width: 601px) {
     .en__field__element--radio {
-      margin-left: -21px;
-      margin-right: -21px;
+      margin-left: -24px;
+      margin-right: -24px;
     }
   }
 
@@ -125,6 +127,9 @@
 
   .en__field__element.en__field__element--radio {
     align-items: stretch;
+    margin-top: -14px;
+    --fields_spacing-inline: 0rem;
+    --fields_spacing-block: 0rem;
 
     .en__field__item {
       display: flex;

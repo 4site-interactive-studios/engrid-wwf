@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Friday, September 25, 2026 @ 11:24:02 ET
+ *  Date: Wednesday, October 7, 2026 @ 16:15:07 ET
  *  By: nick
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.5
@@ -8880,6 +8880,10 @@ body[data-engrid-debug]:before{
   -webkit-text-decoration-skip-ink:none;
           text-decoration-skip-ink:none;
 }
+[data-engrid-theme=wwf] .en__hubPledge__panel,[data-engrid-theme=wwf][data-engrid-layout=centerleft1col],[data-engrid-theme=wwf][data-engrid-layout=leftleft1col]{
+  --h1_font-size:46px;
+  --h1_line-height:55.2px;
+}
 [data-engrid-theme=wwf] .body-bannerOverlay,[data-engrid-theme=wwf] .body-bottom,[data-engrid-theme=wwf] .body-footer,[data-engrid-theme=wwf] .body-footerOutside,[data-engrid-theme=wwf] .body-header,[data-engrid-theme=wwf] .body-headerOutside,[data-engrid-theme=wwf] .content-footerSpacer,[data-engrid-theme=wwf] .content-preFooter,[data-engrid-theme=wwf] .page-alert,[data-engrid-theme=wwf] .page-backgroundImageOverlay{
   display:none !important;
 }
@@ -8957,6 +8961,11 @@ body[data-engrid-debug]:before{
   position:relative;
   top:4px;
   width:20px;
+}
+[data-engrid-theme=wwf] .payment-method:has(.section-header+div img.emailImage[alt="Secure Padlock Icon"]){
+  align-items:baseline;
+  display:flex;
+  justify-content:space-between;
 }
 [data-engrid-theme=wwf]:not(#en__pagebuilder) .click-to-expand:not(.expanded){
   margin-block-end:1em;
@@ -9147,7 +9156,7 @@ body[data-engrid-debug]:before{
   margin-block-end:1em;
 }
 [data-engrid-theme=wwf] .body-main .en__component--widgetblock:first-child .enWidget--progressBar{
-  margin-top:-27px;
+  margin-top:-40px;
   padding-top:26px;
 }
 [data-engrid-theme=wwf] .en__field input:invalid{
@@ -9223,9 +9232,10 @@ body[data-engrid-debug]:before{
 }
 @media screen and (min-width:600px){
   [data-engrid-theme=wwf] .en__component--widgetblock .enWidget--progressBar{
-    margin-left:-30px;
-    margin-right:-30px;
-    width:calc(100% + 60px);
+    border-radius:3px 3px 0 0;
+    margin-left:-32px;
+    margin-right:-32px;
+    width:calc(100% + 64px);
   }
 }
 [data-engrid-theme=wwf] .en__component--widgetblock .enWidget--progressBar .enWidget__copy--below{
@@ -10177,6 +10187,9 @@ body[data-engrid-debug]:before{
 }
 [data-engrid-theme=wwf] small{
   font-size:90%;
+}
+[data-engrid-theme=wwf][data-engrid-page-type=supporterhub][data-engrid-pa=true]{
+  --button_line-height:36px;
 }
 @media (hover:none){
   [data-engrid-theme=wwf] .tippy-box:after{
@@ -11454,18 +11467,20 @@ body[data-engrid-debug]:before{
 }
 [data-engrid-theme=wwf]:not([data-engrid-subtheme]) .radio-to-buttons_recurrfreq.radio-to-buttons_recurrfreq_to-tabs .en__field--recurrfreq{
   --recurring-frequency__button_color:#222;
-  --recurring-frequency__button_border-color:#ccc;
+  --recurring-frequency__button_border-color:var(--color_punaluu_500);
   --recurring-frequency__button_background-color:#faf9f7;
   --recurring-frequency__button_color_hover:#222;
-  --recurring-frequency__button_border-color_hover:#ccc;
+  --recurring-frequency__button_border-color_hover:var(--color_punaluu_500);
   --recurring-frequency__button_background-color_hover:#faf9f7;
   --recurring-frequency__button_color_checked:#222;
-  --recurring-frequency__button_border-color_checked:#ccc;
+  --recurring-frequency__button_border-color_checked:var(--color_punaluu_500);
   --recurring-frequency__button_background-color_checked:var(
     --engrid__body-main_background-color
   );
   --fields_spacing-block:0;
+  --recurring-frequency__button_border-width:1px;
   --recurring-frequency__button_padding:1.5ch 1.2ch;
+  --recurring-frequency__button_border-radius:0px;
   flex-basis:calc(100% + 44px);
   margin-bottom:18px;
   margin-left:-12px;
@@ -11479,8 +11494,8 @@ body[data-engrid-debug]:before{
 }
 @media screen and (min-width:601px){
   [data-engrid-theme=wwf]:not([data-engrid-subtheme]) .radio-to-buttons_recurrfreq.radio-to-buttons_recurrfreq_to-tabs .en__field--recurrfreq .en__field__element--radio{
-    margin-left:-21px;
-    margin-right:-21px;
+    margin-left:-24px;
+    margin-right:-24px;
   }
 }
 [data-engrid-theme=wwf]:not([data-engrid-subtheme]) .radio-to-buttons_recurrfreq.radio-to-buttons_recurrfreq_to-tabs .en__field--recurrfreq .inline-upsell-box{
@@ -11509,7 +11524,10 @@ body[data-engrid-debug]:before{
   outline:none;
 }
 [data-engrid-theme=wwf]:not([data-engrid-subtheme]) .radio-to-buttons_recurrfreq.radio-to-buttons_recurrfreq_to-tabs .en__field--recurrfreq .en__field__element.en__field__element--radio{
+  --fields_spacing-inline:0rem;
+  --fields_spacing-block:0rem;
   align-items:stretch;
+  margin-top:-14px;
 }
 [data-engrid-theme=wwf]:not([data-engrid-subtheme]) .radio-to-buttons_recurrfreq.radio-to-buttons_recurrfreq_to-tabs .en__field--recurrfreq .en__field__element.en__field__element--radio .en__field__item{
   display:flex;
@@ -12027,6 +12045,82 @@ body[data-engrid-debug]:before{
   }
   #footer .footer-copy{
     margin-top:0;
+  }
+}
+
+.no-header-wwf-logo{
+  height:100px;
+  max-width:80px;
+  width:80px;
+}
+
+.minimal-header-logo{
+  display:none;
+}
+
+.body-title .en__component .minimal-header-logo+h1{
+  --h1_font-size:46px;
+  margin-bottom:0;
+  margin-top:0;
+}
+
+[data-header-footer-layout=none] .content-header{
+  margin-bottom:50px;
+}
+[data-header-footer-layout=none] form>.en__component--row.en__component--advrow>.content-header>*{
+  display:none;
+}
+@media screen and (min-width:600px){
+  [data-header-footer-layout=none] .body-title .en__component{
+    align-items:center;
+    display:flex;
+    gap:1rem;
+  }
+  [data-header-footer-layout=none] .body-title .en__component:before{
+    align-items:center;
+    background:#fff url(https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/wwf-logo-2026-theme.svg) no-repeat;
+    background-position:50%;
+    background-size:65%;
+    border:1px solid #ccc;
+    content:"WWF Logo";
+    display:flex;
+    flex-shrink:0;
+    height:100px;
+    justify-content:center;
+    margin:0;
+    max-width:80px;
+    text-indent:-9999px;
+    width:100%;
+    z-index:3;
+  }
+}
+@media screen and (max-width:960px){
+  [data-header-footer-layout=none] .body-title .en__component:before{
+    border:none;
+  }
+}
+@media screen and (max-width:599px){
+  [data-header-footer-layout=none] .content-header{
+    --engrid__content-header_background-color:#fff;
+    justify-items:center;
+    margin-top:10px;
+  }
+  [data-header-footer-layout=none] .content-header:before{
+    align-items:center;
+    background:#fff url(https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/wwf-logo-2026-theme.svg) no-repeat;
+    background-position:50%;
+    background-size:65%;
+    content:"WWF Logo";
+    display:flex;
+    flex-shrink:0;
+    grid-column:pc;
+    height:100px;
+    justify-content:center;
+    margin:0;
+    max-width:80px;
+    text-indent:-9999px;
+    width:100%;
+    z-index:3;
   }
 }
 
