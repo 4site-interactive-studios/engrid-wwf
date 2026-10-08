@@ -48,6 +48,9 @@
   .en__field--recurrfreq {
   @media screen and (min-width: 601px) {
     margin-top: -27px;
+    .en__field__element {
+      padding-bottom: 8px;
+    }
   }
 }
 
