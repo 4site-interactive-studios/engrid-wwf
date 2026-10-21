@@ -32,6 +32,8 @@ import { Quiz } from "./scripts/quiz";
 import GiftHistory from "./scripts/gift-history";
 import Accessibility from "./scripts/accessibility";
 
+declare const monthlyAsk: string | undefined;
+
 const options: Options = {
   AutoYear: true,
   applePay: false,
@@ -295,12 +297,83 @@ const options: Options = {
         if (symbol.style.top !== top) symbol.style.top = top;
         if (symbol.style.height !== height) symbol.style.height = height;
       };
+      // Replace the fixed amount buttons with the donor's monthly ask string,
+      // defined by the page's code block (const monthlyAsk = "{user_data~Monthly ask string}")
+      const applyMonthlyAsk = (overlay: Element) => {
+        if (typeof monthlyAsk !== "string") return;
+        const amounts = monthlyAsk
+          .split(",")
+          .map((amount) => parseFloat(amount.trim()))
+          .filter((amount) => !isNaN(amount) && amount > 0);
+        if (!amounts.length) return;
+        const container = overlay.querySelector<HTMLElement>(
+          ".en__field--donationAmt .en__field__element--radio"
+        );
+        if (!container || container.hasAttribute("data-engrid-ask-applied"))
+          return;
+        const items = Array.from(
+          container.querySelectorAll<HTMLElement>(
+            ".en__field__item:not(.en__field__item--other)"
+          )
+        );
+        if (!items.length) return;
+        container.setAttribute("data-engrid-ask-applied", "true");
+        const checked = container.querySelector<HTMLInputElement>(
+          "input[type='radio']:checked"
+        );
+        const checkedValue = checked ? parseFloat(checked.value) : null;
+        const symbol =
+          (items[0].querySelector("label")?.textContent || "")
+            .replace(/[\d.,\s]/g, "") || "$";
+        const template = items[0];
+        // Reuse the existing items, cloning the first one if more are needed
+        // and removing the extra ones
+        amounts.forEach((amount, index) => {
+          let item = items[index];
+          if (!item) {
+            item = template.cloneNode(true) as HTMLElement;
+            items[items.length - 1].after(item);
+            items.push(item);
+          }
+          const input = item.querySelector<HTMLInputElement>("input");
+          const label = item.querySelector<HTMLLabelElement>("label");
+          if (!input || !label) return;
+          const id = `en__hubPledge__field--donationAmt--${amount}`;
+          input.value = String(amount);
+          input.id = id;
+          input.checked = amount === checkedValue;
+          label.htmlFor = id;
+          label.textContent = `${symbol}${amount.toLocaleString("en-US")}`;
+        });
+        items.slice(amounts.length).forEach((item) => item.remove());
+        // EN and ENgrid expect the item right before the "Other" text input
+        // to be a (hidden) "Other" radio. Without it, the last real amount
+        // gets treated as "Other" (and hidden/activating the input)
+        const otherRadio = items[amounts.length - 1].cloneNode(
+          true
+        ) as HTMLElement;
+        const otherRadioInput = otherRadio.querySelector<HTMLInputElement>(
+          "input"
+        );
+        const otherRadioLabel = otherRadio.querySelector<HTMLLabelElement>(
+          "label"
+        );
+        if (otherRadioInput && otherRadioLabel) {
+          otherRadioInput.value = "other";
+          otherRadioInput.id = "en__hubPledge__field--donationAmt--other";
+          otherRadioInput.checked = false;
+          otherRadioLabel.htmlFor = otherRadioInput.id;
+          otherRadioLabel.textContent = "Other";
+          items[amounts.length - 1].after(otherRadio);
+        }
+      };
       const updateOverlay = () => {
         const overlay = document.querySelector(
           "#huboverlay-manage-my-recurring-gift"
         );
         if (!overlay) return;
         stripGiftCurrency(overlay);
+        applyMonthlyAsk(overlay);
         addOtherCurrencySymbol(overlay);
       };
       // The overlay is injected/re-rendered by EN after load, so watch for it
