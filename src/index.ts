@@ -367,6 +367,26 @@ const options: Options = {
           items[amounts.length - 1].after(otherRadio);
         }
       };
+      // The pencil icon that reveals the card fields becomes a text link. The
+      // element and its class are kept, since EN binds the click to it
+      const setUpdateCardLink = (overlay: Element) => {
+        const toggle = overlay.querySelector<HTMLElement>(
+          ".en__hubUpdateCC__toggle"
+        );
+        if (!toggle) return;
+        const text = "Update your credit card information";
+        if (toggle.textContent !== text) toggle.textContent = text;
+        if (toggle.hasAttribute("data-engrid-link")) return;
+        toggle.setAttribute("data-engrid-link", "true");
+        toggle.setAttribute("role", "button");
+        toggle.setAttribute("tabindex", "0");
+        toggle.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            toggle.click();
+          }
+        });
+      };
       const updateOverlay = () => {
         const overlay = document.querySelector(
           "#huboverlay-manage-my-recurring-gift"
@@ -375,6 +395,7 @@ const options: Options = {
         stripGiftCurrency(overlay);
         applyMonthlyAsk(overlay);
         addOtherCurrencySymbol(overlay);
+        setUpdateCardLink(overlay);
       };
       // The overlay is injected/re-rendered by EN after load, so watch for it
       new MutationObserver(updateOverlay).observe(document.body, {

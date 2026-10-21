@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, October 21, 2026 @ 12:40:54 ET
+ *  Date: Wednesday, October 21, 2026 @ 12:45:34 ET
  *  By: pedroluan
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.5
@@ -32376,6 +32376,25 @@ const options = {
           otherRadioLabel.textContent = "Other";
           items[amounts.length - 1].after(otherRadio);
         }
+      }; // The pencil icon that reveals the card fields becomes a text link. The
+      // element and its class are kept, since EN binds the click to it
+
+
+      const setUpdateCardLink = overlay => {
+        const toggle = overlay.querySelector(".en__hubUpdateCC__toggle");
+        if (!toggle) return;
+        const text = "Update your credit card information";
+        if (toggle.textContent !== text) toggle.textContent = text;
+        if (toggle.hasAttribute("data-engrid-link")) return;
+        toggle.setAttribute("data-engrid-link", "true");
+        toggle.setAttribute("role", "button");
+        toggle.setAttribute("tabindex", "0");
+        toggle.addEventListener("keydown", e => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            toggle.click();
+          }
+        });
       };
 
       const updateOverlay = () => {
@@ -32384,6 +32403,7 @@ const options = {
         stripGiftCurrency(overlay);
         applyMonthlyAsk(overlay);
         addOtherCurrencySymbol(overlay);
+        setUpdateCardLink(overlay);
       }; // The overlay is injected/re-rendered by EN after load, so watch for it
 
 

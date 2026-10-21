@@ -2166,9 +2166,24 @@
   background: none;
 }
 
+// The toggle was a pencil icon, it is now a text link (text set in src/index.ts)
 .en__hubUpdateCC__toggle {
-  aspect-ratio: 1 / 1;
   margin-bottom: 0;
+  width: auto;
+  background: none !important;
+  color: var(--link_color, currentColor);
+  text-decoration: underline;
+  cursor: pointer;
+
+  &::before,
+  &::after {
+    content: none;
+  }
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: none;
+  }
 }
 
 @media screen and (max-width: 1024px) {
