@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, October 21, 2026 @ 08:44:24 ET
+ *  Date: Wednesday, October 21, 2026 @ 09:29:53 ET
  *  By: pedroluan
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.5
@@ -32285,7 +32285,7 @@ const options = {
     new Bridger();
     new GiftHistory();
     new Accessibility();
-    new Ecard(); // Remove currency from Supporter Hub "Manage my recurring gift" Gadget
+    new Ecard(); // Supporter Hub customizations
 
     if (App.getPageType() === "SUPPORTERHUB") {
       // The heading is rendered as "Manage your $5 USD recurring gift". Drop
@@ -32300,11 +32300,35 @@ const options = {
         if (!match) return;
         const updated = `${match[1]}${match[2]}`;
         if (updated !== text) heading.textContent = updated;
+      }; // Prefix a "$" on the "Other" amount field. A separate element is used
+      // so the input value stays numeric
+
+
+      const addOtherCurrencySymbol = overlay => {
+        const otherItem = overlay.querySelector(".en__field--donationAmt .en__field__item--other");
+        const input = otherItem?.querySelector("input");
+        if (!otherItem || !input) return;
+        let symbol = otherItem.querySelector(".engrid-hub-currency-symbol");
+
+        if (!symbol) {
+          symbol = document.createElement("span");
+          symbol.className = "engrid-hub-currency-symbol";
+          symbol.setAttribute("aria-hidden", "true");
+          symbol.textContent = "$";
+          otherItem.insertBefore(symbol, otherItem.firstChild);
+        }
+
+        const top = `${input.offsetTop}px`;
+        const height = `${input.offsetHeight}px`;
+        if (symbol.style.top !== top) symbol.style.top = top;
+        if (symbol.style.height !== height) symbol.style.height = height;
       };
 
       const updateOverlay = () => {
         const overlay = document.querySelector("#huboverlay-manage-my-recurring-gift");
-        if (overlay) stripGiftCurrency(overlay);
+        if (!overlay) return;
+        stripGiftCurrency(overlay);
+        addOtherCurrencySymbol(overlay);
       }; // The overlay is injected/re-rendered by EN after load, so watch for it
 
 

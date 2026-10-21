@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, October 21, 2026 @ 08:44:24 ET
+ *  Date: Wednesday, October 21, 2026 @ 09:29:53 ET
  *  By: pedroluan
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.5
@@ -9698,6 +9698,27 @@ body[data-engrid-debug]:before{
 }
 [data-engrid-theme=wwf] .en__hubPledge__icon{
   display:none;
+}
+[data-engrid-theme=wwf] .en__hubPledge .en__field--donationAmt .en__field__item--other{
+  position:relative;
+}
+[data-engrid-theme=wwf] .en__hubPledge .en__field--donationAmt .en__field__item--other input.en__field__input--other{
+  padding-left:22px !important;
+}
+[data-engrid-theme=wwf] .en__hubPledge .en__field--donationAmt .en__field__item--other .engrid-hub-currency-symbol{
+  align-items:center;
+  color:var(--donation-amount__button_color, currentColor);
+  display:flex;
+  font-family:var(--donation-amount__button_font-family, inherit);
+  font-size:var(--donation-amount__button_font-size, inherit);
+  font-weight:var(--donation-amount__button_font-weight, 400);
+  left:18px;
+  line-height:1;
+  pointer-events:none;
+  position:absolute;
+}
+[data-engrid-theme=wwf] .en__hubPledge .en__field--donationAmt.en__field--withOther--active .engrid-hub-currency-symbol{
+  color:#fff;
 }
 [data-engrid-theme=wwf] .en__hubOverlay__impact .en__hubOverlay__content>div{
   background:none;

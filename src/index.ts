@@ -255,7 +255,7 @@ const options: Options = {
     new Accessibility();
     new Ecard();
 
-    // Remove currency from Supporter Hub "Manage my recurring gift" Gadget
+    // Supporter Hub customizations
     if (App.getPageType() === "SUPPORTERHUB") {
       // The heading is rendered as "Manage your $5 USD recurring gift". Drop
       // the currency code right before "recurring" (e.g. "USD", "EUR")
@@ -272,11 +272,36 @@ const options: Options = {
         const updated = `${match[1]}${match[2]}`;
         if (updated !== text) heading.textContent = updated;
       };
+      // Prefix a "$" on the "Other" amount field. A separate element is used
+      // so the input value stays numeric
+      const addOtherCurrencySymbol = (overlay: Element) => {
+        const otherItem = overlay.querySelector<HTMLElement>(
+          ".en__field--donationAmt .en__field__item--other"
+        );
+        const input = otherItem?.querySelector<HTMLElement>("input");
+        if (!otherItem || !input) return;
+        let symbol = otherItem.querySelector<HTMLElement>(
+          ".engrid-hub-currency-symbol"
+        );
+        if (!symbol) {
+          symbol = document.createElement("span");
+          symbol.className = "engrid-hub-currency-symbol";
+          symbol.setAttribute("aria-hidden", "true");
+          symbol.textContent = "$";
+          otherItem.insertBefore(symbol, otherItem.firstChild);
+        }
+        const top = `${input.offsetTop}px`;
+        const height = `${input.offsetHeight}px`;
+        if (symbol.style.top !== top) symbol.style.top = top;
+        if (symbol.style.height !== height) symbol.style.height = height;
+      };
       const updateOverlay = () => {
         const overlay = document.querySelector(
           "#huboverlay-manage-my-recurring-gift"
         );
-        if (overlay) stripGiftCurrency(overlay);
+        if (!overlay) return;
+        stripGiftCurrency(overlay);
+        addOtherCurrencySymbol(overlay);
       };
       // The overlay is injected/re-rendered by EN after load, so watch for it
       new MutationObserver(updateOverlay).observe(document.body, {
