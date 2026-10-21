@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, October 1, 2026 @ 10:13:30 ET
- *  By: nick
+ *  Date: Wednesday, October 21, 2026 @ 08:44:24 ET
+ *  By: pedroluan
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.5
  *
@@ -32285,7 +32285,35 @@ const options = {
     new Bridger();
     new GiftHistory();
     new Accessibility();
-    new Ecard();
+    new Ecard(); // Remove currency from Supporter Hub "Manage my recurring gift" Gadget
+
+    if (App.getPageType() === "SUPPORTERHUB") {
+      // The heading is rendered as "Manage your $5 USD recurring gift". Drop
+      // the currency code right before "recurring" (e.g. "USD", "EUR")
+      const stripGiftCurrency = overlay => {
+        const heading = overlay.querySelector(".en__hubPledge__panel--copy h2");
+        if (!heading || !heading.textContent) return;
+        const text = heading.textContent; // Keep the amount ("$5"), drop only the currency code ("USD") that
+        // sits right before "recurring"
+
+        const match = text.match(/^(.*\byour\s+\S+)\s+\S+(\s+recurring\b.*)$/i);
+        if (!match) return;
+        const updated = `${match[1]}${match[2]}`;
+        if (updated !== text) heading.textContent = updated;
+      };
+
+      const updateOverlay = () => {
+        const overlay = document.querySelector("#huboverlay-manage-my-recurring-gift");
+        if (overlay) stripGiftCurrency(overlay);
+      }; // The overlay is injected/re-rendered by EN after load, so watch for it
+
+
+      new MutationObserver(updateOverlay).observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+      updateOverlay();
+    }
   },
   onResize: () => console.log("Starter Theme Window Resized"),
   onSubmit: () => {
