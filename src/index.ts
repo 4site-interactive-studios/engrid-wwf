@@ -318,10 +318,26 @@ const options: Options = {
         );
         if (!items.length) return;
         container.setAttribute("data-engrid-ask-applied", "true");
+        // The donor's current amount: the "Other" input when it is the active
+        // one (EN puts it there when the amount is not in the default list),
+        // otherwise the checked radio
+        const field = container.closest<HTMLElement>(".en__field--donationAmt");
+        const otherInput = container.querySelector<HTMLInputElement>(
+          "input.en__field__input--other"
+        );
         const checked = container.querySelector<HTMLInputElement>(
           "input[type='radio']:checked"
         );
-        const checkedValue = checked ? parseFloat(checked.value) : null;
+        const otherAmount = otherInput
+          ? parseFloat(otherInput.value.replace(/[^\d.]/g, ""))
+          : NaN;
+        const currentAmount =
+          field?.classList.contains("en__field--withOther--active") &&
+          !isNaN(otherAmount)
+            ? otherAmount
+            : checked
+            ? parseFloat(checked.value)
+            : null;
         const symbol =
           (items[0].querySelector("label")?.textContent || "")
             .replace(/[\d.,\s]/g, "") || "$";
@@ -341,7 +357,7 @@ const options: Options = {
           const id = `en__hubPledge__field--donationAmt--${amount}`;
           input.value = String(amount);
           input.id = id;
-          input.checked = amount === checkedValue;
+          input.checked = amount === currentAmount;
           label.htmlFor = id;
           label.textContent = `${symbol}${amount.toLocaleString("en-US")}`;
         });
@@ -365,6 +381,16 @@ const options: Options = {
           otherRadioLabel.htmlFor = otherRadioInput.id;
           otherRadioLabel.textContent = "Other";
           items[amounts.length - 1].after(otherRadio);
+        }
+        // The current amount is in the new list: it must be a selected button,
+        // not the "Other" input
+        const selected = container.querySelector<HTMLInputElement>(
+          "input[type='radio']:checked"
+        );
+        if (selected && selected.value !== "other" && otherInput) {
+          otherInput.value = "";
+          field?.classList.remove("en__field--withOther--active");
+          selected.dispatchEvent(new Event("change", { bubbles: true }));
         }
       };
       // The pencil icon that reveals the card fields becomes a text link. The
