@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, October 21, 2026 @ 12:49:21 ET
+ *  Date: Thursday, October 22, 2026 @ 11:06:33 ET
  *  By: pedroluan
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.5
@@ -9703,7 +9703,7 @@ body[data-engrid-debug]:before{
   position:relative;
 }
 [data-engrid-theme=wwf] .en__hubPledge .en__field--donationAmt .en__field__item--other input.en__field__input--other{
-  padding-left:22px !important;
+  padding-left:24px !important;
 }
 [data-engrid-theme=wwf] .en__hubPledge .en__field--donationAmt .en__field__item--other .engrid-hub-currency-symbol{
   align-items:center;
