@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, October 22, 2026 @ 13:24:01 ET
+ *  Date: Thursday, October 22, 2026 @ 16:32:28 ET
  *  By: nick
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.5
@@ -9677,9 +9677,9 @@ body[data-engrid-debug]:before{
   --p_line-height:var(--inline-upsell-box_line-height);
   --p_font-weight:700;
   align-items:center;
-  background-color:var(--color_sedona_200);
+  background-color:#ffeeeb;
   border-radius:4px;
-  color:var(--color_punaluu_500);
+  color:#c63012;
   display:flex;
   justify-content:center;
   margin-top:5px;
