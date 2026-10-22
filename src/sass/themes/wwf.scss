@@ -2133,15 +2133,57 @@
   display: none;
 }
 
+.en__hubPledge .en__field--donationAmt .en__field__item--other {
+  position: relative;
+
+  input.en__field__input--other {
+    padding-left: 24px !important;
+  }
+
+  .engrid-hub-currency-symbol {
+    position: absolute;
+    left: 18px;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    line-height: 1;
+    font-size: var(--donation-amount__button_font-size, inherit);
+    font-family: var(--donation-amount__button_font-family, inherit);
+    font-weight: var(--donation-amount__button_font-weight, 400);
+    color: var(--donation-amount__button_color, currentColor);
+  }
+}
+
+.en__hubPledge
+  .en__field--donationAmt.en__field--withOther--active
+  .engrid-hub-currency-symbol {
+  color: #ffffff;
+}
+
 // Remove Impact Icon from Supporter Hub widget
 .en__hubOverlay__impact .en__hubOverlay__content > div {
   padding: 0;
   background: none;
 }
 
+// The toggle was a pencil icon, it is now a text link (text set in src/index.ts)
 .en__hubUpdateCC__toggle {
-  aspect-ratio: 1 / 1;
   margin-bottom: 0;
+  width: auto;
+  background: none !important;
+  color: var(--link_color, currentColor);
+  text-decoration: underline;
+  cursor: pointer;
+
+  &::before,
+  &::after {
+    content: none;
+  }
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: none;
+  }
 }
 
 @media screen and (max-width: 1024px) {
