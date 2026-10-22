@@ -4,7 +4,7 @@ import {
   DonationFrequency,
   DonationAmount,
   EnForm,
-  Ecard
+  Ecard,
 } from "@4site/engrid-scripts"; // Uses ENGrid via NPM
 // import {
 //   Options,
@@ -294,7 +294,7 @@ const options: Options = {
       // If there is, sync the values
       donationHasPremium.value =
         transactionSelprodvariantid.value &&
-          transactionSelprodvariantid.value != maxTheirGift
+        transactionSelprodvariantid.value != maxTheirGift
           ? "Y"
           : "N";
     }

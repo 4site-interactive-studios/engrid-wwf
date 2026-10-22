@@ -64,17 +64,14 @@
   // TYPOGRAPHY H1
   // --h1_font-family: var(--default_font-family);
   --h1_color: #060606;
-  --h1_font-size: 80px;
+  --h1_font-size: 46px;
   --h1_font-weight: 700;
-  --h1_line-height: 110%;
+  --h1_line-height: 55.2px;
 
-  &[data-engrid-layout="centerleft1col"],
-  &[data-engrid-layout="leftleft1col"],
-  .en__hubPledge__panel {
-    --h1_font-size: 46px;
-    --h1_line-height: 55.2px;
+  .big {
+    --h1_font-size: 80px;
+    --h1_line-height: 110%;
   }
-
   // TYPOGRAPHY H2
   // --h2_font-family: var(--default_font-family);
   // --h2_color: initial;
@@ -243,7 +240,7 @@
   --inline-upsell-box_margin-right: 8px;
   --inline-upsell-box_font-size: 16px;
   --inline-upsell-box_line-height: 150%;
-  --inline-upsell-box-svg_margin-left: 53px;
+  --inline-upsell-box-svg_margin-left: 15px;
   --inline-upsell-box_strong_font-size: 20px;
   --inline-upsell-box_strong_line-height: 28px;
 
@@ -568,15 +565,12 @@
     border: 0;
     color: var(--color_punaluu_500);
     border-radius: 4px;
-    margin: 0;
-    padding: 10px 16px;
+    margin: 0px -10px;
+    padding: 10px 10px;
   }
 
   .en__field--feeCover {
     margin: 0;
-    .en__field__element--checkbox {
-      padding: 8px 16px 0px 16px;
-    }
   }
 
   /* In Honor or Memorium Inform Radio Select */
@@ -694,7 +688,6 @@
 
   &[data-engrid-page-type="supporterhub"] .en__captcha,
   &[data-engrid-page-type="supporterhub"] .en__field {
-    margin: 0 auto !important;
     width: 100%;
   }
 
@@ -1288,13 +1281,19 @@
   //     grid-area: ecardrecipients__email_input;
   //   }
   // }
-
+  .lightbox-wrapper {
+    padding: 14px;
+    #openBtn {
+      --button_background-color: var(--engrid__body-main_background-color);
+    }
+  }
+  
   .donation-summary {
     --p_font-size: 16px;
     --p_line-height: 146%;
     --p_font-weight: 700;
     letter-spacing: 0.16px;
-    margin-top: 8px;
+    margin-top: 14px;
     border-top: 1px solid var(--color_punaluu_500);
     border-bottom: 1px solid var(--color_punaluu_500);
 
@@ -1508,7 +1507,7 @@
     }
 
     svg {
-      height: 80px;
+      height: 60px;
       position: absolute;
       top: 1px;
       // transform: scaleX(-1);
