@@ -2378,6 +2378,11 @@
     --input_font-size: 16px;
     --default_line-height: 24px;
     --h1_font-size: 34px;
+    --h1_line-height: 42px;
+    .big {
+      --h1_font-size: 34px;
+      --h1_line-height: 42px;
+    }
     --h2_font-size: 21px;
     --engrid__body_margin: 0px;
 
@@ -2544,9 +2549,23 @@
     p:first-child {
       margin: 1rem 0rem 2rem;
     }
-    p:last-child {
+    // Must match the specificity of the base `p:has(img.cn-bbb)` rule so this override applies
+    p:has(img.cn-bbb) {
       gap: 12.34px;
       grid-template-columns: 1fr 77px 146.5px 77px 1fr;
+    }
+  }
+}
+
+// The fixed 77px/146.5px/77px badge columns above stop fitting at ~376px
+// (300.5px columns + 49.4px gaps + 26px body-main padding). Below that, switch
+// to proportional fluid tracks sized by each badge's intrinsic width
+// (101px / 190px / 101px) so the badges shrink together, preserving aspect
+// ratio and relative scale. Selector must keep matching base specificity.
+@media screen and (max-width: 375px) {
+  .alternative-donation-methods {
+    p:has(img.cn-bbb) {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 101fr) minmax(0, 190fr) minmax(0, 101fr) minmax(0, 1fr);
     }
   }
 }
