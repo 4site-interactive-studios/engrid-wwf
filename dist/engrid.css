@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, October 22, 2026 @ 17:11:53 ET
+ *  Date: Thursday, October 22, 2026 @ 16:50:13 ET
  *  By: nick
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.5
@@ -10302,6 +10302,7 @@ body[data-engrid-debug]:before{
     --engrid__body-title_padding:0 14px;
     --engrid__body-title_margin:16px 0;
     --engrid__body-top_padding:0 13px;
+    --engrid__body-top_margin:0 0 40px 0;
     --donation-amount__button_font-size:20px;
     --donation-amount__button_font-weight:700;
     --recurring-frequency__button_font-size:18px;
