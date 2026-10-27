@@ -19,10 +19,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, August 27, 2026 @ 15:04:03 ET
+ *  Date: Tuesday, October 27, 2026 @ 14:56:17 ET
  *  By: nick
- *  ENGrid styles: v0.27.3
- *  ENGrid scripts: v0.27.6
+ *  ENGrid styles: v0.28.3
+ *  ENGrid scripts: v0.28.6
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -2600,6 +2600,9 @@ body[data-engrid-live-currency=active] .en__field--donationAmt .en__field__item:
     display:none;
   }
 }
+body:not(#en__pagebuilder):not([data-engrid-payment-type=applepay]) .showif-applepay-selected,body:not(#en__pagebuilder)[data-engrid-payment-type=applepay] .hideif-applepay-selected{
+  display:none;
+}
 input:-webkit-autofill,select:-webkit-autofill,textarea:-webkit-autofill{
   animation-name:onAutoFillStart;
   -webkit-transition:background-color 50000s ease-in-out 0s;
@@ -5060,6 +5063,140 @@ div[id^=nb-field-].nb-success input{
   display:none !important;
 }
 
+body:not(#en__pagebuilder) .page-backgroundImage .page-background-rotation .background-rotation-layer{
+  background-position:100% 0;
+  background-repeat:no-repeat;
+  background-size:cover;
+  height:100vh;
+  left:0;
+  object-position:top right;
+  opacity:0;
+  pointer-events:none;
+  position:fixed;
+  top:0;
+  transition:opacity var(--background-rotation-transition-duration, .5s) ease-in-out;
+  width:100vw;
+  z-index:0;
+}
+body:not(#en__pagebuilder) .page-backgroundImage .page-background-rotation .background-rotation-layer.active{
+  opacity:1;
+}
+body:not(#en__pagebuilder) .page-backgroundImage .page-background-rotation .background-rotation-layer.active:not(.background-rotation-outgoing){
+  z-index:1;
+}
+body:not(#en__pagebuilder) .page-backgroundImage .page-background-rotation.background-rotation-transition .background-rotation-layer{
+  will-change:opacity;
+}
+body:not(#en__pagebuilder) .page-backgroundImage .page-background-rotation img.background-rotation-layer{
+  display:block;
+  object-fit:cover;
+}
+body:not(#en__pagebuilder) .page-backgroundImage .page-background-rotation figure.background-rotation-layer.active{
+  pointer-events:auto;
+}
+body:not(#en__pagebuilder) .page-backgroundImage .page-background-rotation figure.media-with-attribution:not(.background-rotation-layer){
+  background-image:none;
+  display:block;
+  position:static;
+}
+body:not(#en__pagebuilder)[data-engrid-background-rotation] .page-backgroundImage:before{
+  background-image:var(--background-rotation-image, none);
+}
+body:not(#en__pagebuilder)[data-engrid-layout=centercenter1col] .page-backgroundImage .page-background-rotation .background-rotation-layer,body:not(#en__pagebuilder)[data-engrid-layout=centercenter2col] .page-backgroundImage .page-background-rotation .background-rotation-layer{
+  background-position:top;
+  object-position:top center;
+}
+body:not(#en__pagebuilder)[data-engrid-layout=centerright1col] .page-backgroundImage .page-background-rotation .background-rotation-layer,body:not(#en__pagebuilder)[data-engrid-layout=rightright1col] .page-backgroundImage .page-background-rotation .background-rotation-layer{
+  background-position:0 0;
+  object-position:top left;
+}
+
+@media screen and (max-width:499px){
+  body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-background-image] .page-backgroundImage .page-background-rotation,body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-banner-empty][data-engrid-body-banner=empty] .page-backgroundImage .page-background-rotation{
+    overflow:hidden;
+    position:relative;
+  }
+  body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-background-image] .page-backgroundImage .page-background-rotation .background-rotation-layer,body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-banner-empty][data-engrid-body-banner=empty] .page-backgroundImage .page-background-rotation .background-rotation-layer{
+    display:none !important;
+  }
+  body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-background-image] .page-backgroundImage .page-background-rotation .background-rotation-layer.active,body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-banner-empty][data-engrid-body-banner=empty] .page-backgroundImage .page-background-rotation .background-rotation-layer.active{
+    background-image:none !important;
+    display:block !important;
+    height:auto;
+    left:0;
+    opacity:1;
+    position:absolute;
+    top:0;
+    width:100%;
+  }
+  body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-background-image] .page-backgroundImage .page-background-rotation .background-rotation-layer.background-rotation-flow,body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-banner-empty][data-engrid-body-banner=empty] .page-backgroundImage .page-background-rotation .background-rotation-layer.background-rotation-flow{
+    position:static;
+  }
+  body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-background-image] .page-backgroundImage .page-background-rotation .background-rotation-layer.background-rotation-outgoing,body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-banner-empty][data-engrid-body-banner=empty] .page-backgroundImage .page-background-rotation .background-rotation-layer.background-rotation-outgoing{
+    z-index:0;
+  }
+  body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-background-image] .page-backgroundImage .page-background-rotation figure.background-rotation-layer.active,body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-banner-empty][data-engrid-body-banner=empty] .page-backgroundImage .page-background-rotation figure.background-rotation-layer.active{
+    height:auto !important;
+    transform:none !important;
+    width:100% !important;
+  }
+  body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-background-image] .page-backgroundImage .page-background-rotation figure.background-rotation-layer.background-rotation-flow,body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-banner-empty][data-engrid-body-banner=empty] .page-backgroundImage .page-background-rotation figure.background-rotation-layer.background-rotation-flow{
+    position:relative !important;
+  }
+  body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-background-image] .page-backgroundImage .page-background-rotation img.background-rotation-layer.active,body:not(#en__pagebuilder)[data-engrid-page-background=image][data-replace-banner-with-background=if-banner-empty][data-engrid-body-banner=empty] .page-backgroundImage .page-background-rotation img.background-rotation-layer.active{
+    object-fit:fill;
+  }
+}
+.background-rotation-controls{
+  display:none;
+}
+
+body:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls{
+  display:flex;
+  gap:.5rem;
+  position:fixed;
+  right:1rem;
+  top:1rem;
+  z-index:8;
+}
+body:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls button{
+  align-items:center;
+  background-color:#000000bf;
+  border:none;
+  border-radius:50%;
+  color:#fff;
+  cursor:pointer;
+  display:flex;
+  height:40px;
+  justify-content:center;
+  padding:0;
+  transition:background-color .15s ease-in-out;
+  width:40px;
+}
+body:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls button:focus-visible,body:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls button:hover{
+  background-color:#000000bf;
+}
+body:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls button:focus-visible{
+  outline:2px solid #fff;
+  outline-offset:2px;
+}
+body:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls button:disabled{
+  cursor:default;
+  opacity:.4;
+}
+body:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls button:disabled:focus-visible,body:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls button:disabled:hover{
+  background-color:#00000080;
+}
+body:not(#en__pagebuilder)[data-engrid-background-rotation=active] .background-rotation-controls button svg{
+  height:20px;
+  width:20px;
+}
+
+@media (prefers-reduced-motion:reduce){
+  body:not(#en__pagebuilder) .page-backgroundImage .page-background-rotation .background-rotation-layer{
+    transition:none;
+  }
+}
 [data-engrid-theme]{
   --premium__border-width:0;
   --premium__border-color:none;
@@ -8609,11 +8746,12 @@ body[data-engrid-debug]:before{
   --engrid__body-main_padding:40px 32px;
   --engrid__body-title_padding:0px 0px 32px 0px;
   --engrid__body-top_padding:0px;
-  --engrid__page_background-color:#fefcf9;
+  --engrid__body-top_margin:0 22px 40px 22px;
+  --engrid__page_background-color:#f9f3eb;
   --engrid__body-title_background-color:#0000;
   --engrid__body-banner_background-color:#0000;
   --engrid__body-top_background-color:#0000;
-  --engrid__body-main_background-color:#f9f3eb;
+  --engrid__body-main_background-color:#fefcf9;
   --engrid__content-header_background-color:#000;
   --engrid__content-footer_background-color:#fff;
   --engrid__body_box-shadow:none;
@@ -8623,9 +8761,9 @@ body[data-engrid-debug]:before{
   --default_font-size:18px;
   --default_line-height:26.28px;
   --h1_color:#060606;
-  --h1_font-size:80px;
+  --h1_font-size:46px;
   --h1_font-weight:700;
-  --h1_line-height:110%;
+  --h1_line-height:55.2px;
   --h2_font-size:24px;
   --h2_font-weight:700;
   --h2_line-height:140%;
@@ -8639,7 +8777,7 @@ body[data-engrid-debug]:before{
   --a_text-decoration_hover:underline;
   --a_color_hover:var(--color_acadia_500);
   --input_color:var(--color_punaluu_500);
-  --input_font-size:16px;
+  --input_font-size:18px;
   --input_line-height:23px;
   --input_letter-spacing:0.16px;
   --input_background-color:var(--color_punaluu_50);
@@ -8655,9 +8793,11 @@ body[data-engrid-debug]:before{
   --color_punaluu_300:#727272;
   --color_punaluu_400:#4b4b4b;
   --color_punaluu_500:#0f0f0f;
+  --color_sedona_200:#ffaf97;
   --color_yellowstone:#fc6;
+  --color_sandstone:#ffeeeb;
   --button_color:var(--color_acadia_400);
-  --button_font-size:18px;
+  --button_font-size:22px;
   --button_font-weight:700;
   --button_line-height:100%;
   --button_background-color:#fff;
@@ -8670,8 +8810,8 @@ body[data-engrid-debug]:before{
   --button_color_checked:#fff;
   --button_background-color_checked:var(--color_acadia_400);
   --button_border-color_checked:var(--color_acadia_400);
-  --recurring-frequency__button_padding:14px 0px;
-  --recurring-frequency__button_font-size:18px;
+  --recurring-frequency__button_padding:17px 0px;
+  --recurring-frequency__button_font-size:22px;
   --recurring-frequency__button_font-weight:600;
   --submit__button_color:#fff;
   --submit__button_border-color:var(--color_primary);
@@ -8684,7 +8824,7 @@ body[data-engrid-debug]:before{
   --submit__button_border-color_checked:#000;
   --submit__button_padding-top:1rem;
   --submit__button_padding-bottom:1rem;
-  --submit__button_font-size:24px;
+  --submit__button_font-size:22px;
   --premium__image_max-width:134px;
   --give-quarterly-donation-amount-appended-label:"/qtr";
   --recurring-frequency__button_count:2;
@@ -8725,7 +8865,7 @@ body[data-engrid-debug]:before{
   --inline-upsell-box_margin-right:8px;
   --inline-upsell-box_font-size:16px;
   --inline-upsell-box_line-height:150%;
-  --inline-upsell-box-svg_margin-left:53px;
+  --inline-upsell-box-svg_margin-left:15px;
   --inline-upsell-box_strong_font-size:20px;
   --inline-upsell-box_strong_line-height:28px;
   --en-vgs-height:48px;
@@ -8740,6 +8880,10 @@ body[data-engrid-debug]:before{
   line-height:32px;
   -webkit-text-decoration-skip-ink:none;
           text-decoration-skip-ink:none;
+}
+[data-engrid-theme=wwf] .big{
+  --h1_font-size:80px;
+  --h1_line-height:110%;
 }
 [data-engrid-theme=wwf] .body-bannerOverlay,[data-engrid-theme=wwf] .body-bottom,[data-engrid-theme=wwf] .body-footer,[data-engrid-theme=wwf] .body-footerOutside,[data-engrid-theme=wwf] .body-header,[data-engrid-theme=wwf] .body-headerOutside,[data-engrid-theme=wwf] .content-footerSpacer,[data-engrid-theme=wwf] .content-preFooter,[data-engrid-theme=wwf] .page-alert,[data-engrid-theme=wwf] .page-backgroundImageOverlay{
   display:none !important;
@@ -8819,8 +8963,14 @@ body[data-engrid-debug]:before{
   top:4px;
   width:20px;
 }
+[data-engrid-theme=wwf] .payment-method:has(.section-header+div img.emailImage[alt="Secure Padlock Icon"]){
+  align-items:baseline;
+  display:flex;
+  justify-content:space-between;
+}
 [data-engrid-theme=wwf]:not(#en__pagebuilder) .click-to-expand:not(.expanded){
   margin-block-end:1em;
+  padding-bottom:16px;
 }
 [data-engrid-theme=wwf]:not(#en__pagebuilder) .click-to-expand:not(.expanded) .click-to-expand-cta{
   margin-left:var(--fields_spacing-inline);
@@ -8922,21 +9072,18 @@ body[data-engrid-debug]:before{
   --fields_spacing-block:0rem;
   display:grid;
   gap:.5rem;
-  grid-template-columns:auto auto;
+  grid-template-columns:auto;
 }
 [data-engrid-theme=wwf] .en__field--make_annual{
   background-color:var(--color_yellowstone);
   border:0;
   border-radius:4px;
   color:var(--color_punaluu_500);
-  margin:0;
-  padding:10px 16px;
+  margin:0 -10px;
+  padding:10px;
 }
 [data-engrid-theme=wwf] .en__field--feeCover{
   margin:0;
-}
-[data-engrid-theme=wwf] .en__field--feeCover .en__field__element--checkbox{
-  padding:8px 16px 0;
 }
 [data-engrid-theme=wwf] input[type=checkbox]+label{
   --checkbox_top:2px;
@@ -8963,8 +9110,9 @@ body[data-engrid-debug]:before{
   align-items:stretch;
 }
 [data-engrid-theme=wwf] .give-by-select input[type=radio]+label{
-  height:48px;
-  max-height:48px;
+  font-size:22px;
+  height:54px;
+  max-height:54px;
   padding:11px 32px;
 }
 [data-engrid-theme=wwf] .give-by-select .en__field__label{
@@ -9007,7 +9155,7 @@ body[data-engrid-debug]:before{
   margin-block-end:1em;
 }
 [data-engrid-theme=wwf] .body-main .en__component--widgetblock:first-child .enWidget--progressBar{
-  margin-top:-27px;
+  margin-top:-40px;
   padding-top:26px;
 }
 [data-engrid-theme=wwf] .en__field input:invalid{
@@ -9015,7 +9163,6 @@ body[data-engrid-debug]:before{
   border-color:var(--error__color);
 }
 [data-engrid-theme=wwf][data-engrid-page-type=supporterhub] .en__captcha,[data-engrid-theme=wwf][data-engrid-page-type=supporterhub] .en__field{
-  margin:0 auto !important;
   width:100%;
 }
 [data-engrid-theme=wwf][data-engrid-page-type=supporterhub] .en__component--hublogin{
@@ -9083,9 +9230,10 @@ body[data-engrid-debug]:before{
 }
 @media screen and (min-width:600px){
   [data-engrid-theme=wwf] .en__component--widgetblock .enWidget--progressBar{
-    margin-left:-30px;
-    margin-right:-30px;
-    width:calc(100% + 60px);
+    border-radius:3px 3px 0 0;
+    margin-left:-32px;
+    margin-right:-32px;
+    width:calc(100% + 64px);
   }
 }
 [data-engrid-theme=wwf] .en__component--widgetblock .enWidget--progressBar .enWidget__copy--below{
@@ -9378,6 +9526,12 @@ body[data-engrid-debug]:before{
   outline:none;
   padding-right:1rem;
 }
+[data-engrid-theme=wwf] .lightbox-wrapper{
+  padding:14px;
+}
+[data-engrid-theme=wwf] .lightbox-wrapper #openBtn{
+  --button_background-color:var(--engrid__body-main_background-color);
+}
 [data-engrid-theme=wwf] .donation-summary{
   --p_font-size:16px;
   --p_line-height:146%;
@@ -9385,7 +9539,7 @@ body[data-engrid-debug]:before{
   border-bottom:1px solid var(--color_punaluu_500);
   border-top:1px solid var(--color_punaluu_500);
   letter-spacing:.16px;
-  margin-top:8px;
+  margin-top:14px;
 }
 [data-engrid-theme=wwf] .donation-summary p{
   margin:0 auto;
@@ -9409,17 +9563,17 @@ body[data-engrid-debug]:before{
   font-weight:400;
   text-underline-offset:20%;
 }
-[data-engrid-theme=wwf] .alternative-donation-methods p:last-child{
+[data-engrid-theme=wwf] .alternative-donation-methods p:has(img.cn-bbb){
   display:grid;
   gap:1rem;
   grid-template-columns:1fr 101px 190px 101px 1fr;
   height:101px;
   place-items:center;
 }
-[data-engrid-theme=wwf] .alternative-donation-methods p:last-child:after,[data-engrid-theme=wwf] .alternative-donation-methods p:last-child:before{
+[data-engrid-theme=wwf] .alternative-donation-methods p:has(img.cn-bbb):after,[data-engrid-theme=wwf] .alternative-donation-methods p:has(img.cn-bbb):before{
   content:"";
 }
-[data-engrid-theme=wwf] .alternative-donation-methods p:last-child a,[data-engrid-theme=wwf] .alternative-donation-methods p:last-child img{
+[data-engrid-theme=wwf] .alternative-donation-methods p:has(img.cn-bbb) a,[data-engrid-theme=wwf] .alternative-donation-methods p:has(img.cn-bbb) img{
   height:auto;
   width:100%;
 }
@@ -9429,13 +9583,25 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf] .en__field--checkbox.en__field--question>.en__field__label,[data-engrid-theme=wwf] .en__field--radio.en__field--question>.en__field__label,[data-engrid-theme=wwf] .en__field--radio.en__field--survey>.en__field__label{
   margin-bottom:var(--fields_spacing-block);
 }
+[data-engrid-theme=wwf] .white-box{
+  align-items:center;
+  background-color:#fefcf9;
+  border:1px solid #ccc;
+  display:flex;
+  flex-direction:column;
+  margin:2rem 0;
+  padding:0 3rem 1.75rem;
+}
+[data-engrid-theme=wwf] .white-box.letter-format{
+  align-items:flex-start;
+}
 [data-engrid-theme=wwf] .grey-box{
   --p_font-size:16px;
   --p_line-height:146%;
   background-color:#f3e7d9;
   color:var(--color_punaluu_400);
   letter-spacing:.16px;
-  margin-top:24px;
+  margin-top:0;
   padding:1rem;
 }
 [data-engrid-theme=wwf] .grey-box p{
@@ -9511,27 +9677,15 @@ body[data-engrid-debug]:before{
   --p_line-height:var(--inline-upsell-box_line-height);
   --p_font-weight:700;
   align-items:center;
-  background-color:var(--color_yellowstone);
+  background-color:#ffeeeb;
   border-radius:4px;
-  color:var(--color_punaluu_500);
+  color:#c63012;
   display:flex;
   justify-content:center;
   margin-top:5px;
   min-height:48px;
   padding:.75rem 1rem;
   text-align:center;
-}
-[data-engrid-theme=wwf] .inline-upsell-box :before{
-  background-color:var(--color_yellowstone);
-  border-radius:2px;
-  content:" ";
-  display:inline-block;
-  height:10px;
-  position:absolute;
-  right:20%;
-  top:0;
-  transform:rotate(45deg);
-  width:10px;
 }
 [data-engrid-theme=wwf] .inline-upsell-box>:first-child{
   margin-top:0;
@@ -9540,7 +9694,7 @@ body[data-engrid-debug]:before{
   margin-bottom:0;
 }
 [data-engrid-theme=wwf] .inline-upsell-box svg{
-  height:80px;
+  height:60px;
   margin-left:var(--inline-upsell-box-svg_margin-left);
   position:absolute;
   top:1px;
@@ -9563,19 +9717,19 @@ body[data-engrid-debug]:before{
   top:100%;
 }
 [data-engrid-theme=wwf] .en__field--recurrfreq .en__field__element--radio{
-  --fields_spacing-inline:0.25rem;
-  --fields_spacing-block:0.25rem;
+  --fields_spacing-inline:0.5rem;
+  --fields_spacing-block:0.5rem;
 }
 [data-engrid-theme=wwf] .radio-to-buttons_donationAmt .en__field--donationAmt .en__field__element--radio{
-  --fields_spacing-inline:0.25rem;
-  --fields_spacing-block:0.25rem;
-  --donation-amount__button_padding:14px 0;
+  --fields_spacing-inline:0.5rem;
+  --fields_spacing-block:0.5rem;
+  --donation-amount__button_padding:20px 0;
 }
 [data-engrid-theme=wwf] .radio-to-buttons_donationAmt .en__field--donationAmt input[type=radio]+label{
   outline:none;
 }
 [data-engrid-theme=wwf] .radio-to-buttons_donationAmt .en__field--donationAmt .en__field__input--other{
-  --input_padding:12.5px 0;
+  --input_padding:17px 0;
   font-size:var(--donation-amount__button_font-size);
   font-weight:700;
   justify-content:center;
@@ -9638,7 +9792,7 @@ body[data-engrid-debug]:before{
   }
 }
 [data-engrid-theme=wwf] .en__field__input{
-  --fields_spacing-block:0.5rem;
+  --fields_spacing-block:0rem;
 }
 [data-engrid-theme=wwf] #ccv-tooltip{
   color:var(--color_punaluu_400);
@@ -9678,7 +9832,7 @@ body[data-engrid-debug]:before{
   background-image:var(--maximize_my_donation_image);
   background-position:50%;
   background-repeat:no-repeat;
-  background-size:cover;
+  background-size:contain;
   height:100px;
 }
 @media screen and (max-width:628px){
@@ -9751,6 +9905,9 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf] a.label-tooltip{
   --a_color:#006ea5;
   --a_text-decoration:none;
+}
+[data-engrid-theme=wwf] .loader-wrapper{
+  align-items:center;
 }
 [data-engrid-theme=wwf]#en__pagebuilder>footer,[data-engrid-theme=wwf]#en__pagebuilder>header{
   pointer-events:none;
@@ -10038,6 +10195,12 @@ body[data-engrid-debug]:before{
   font-size:48px;
   line-height:var(--h2_line-height);
 }
+[data-engrid-theme=wwf] small{
+  font-size:90%;
+}
+[data-engrid-theme=wwf][data-engrid-page-type=supporterhub][data-engrid-pa=true]{
+  --button_line-height:36px;
+}
 @media (hover:none){
   [data-engrid-theme=wwf] .tippy-box:after{
     content:"x";
@@ -10129,21 +10292,20 @@ body[data-engrid-debug]:before{
     --a_font-size:18px;
     --input_font-size:16px;
     --default_line-height:24px;
-    --h1_font-size:52px;
+    --h1_font-size:34px;
+    --h1_line-height:42px;
     --h2_font-size:21px;
     --engrid__body_margin:0px;
-    --engrid__page_background-color:var(--engrid__body-main_background-color);
     --engrid__content-footer_background-color:#0000;
     --engrid__body-main_padding:13px;
     --engrid__body-banner_padding:0 0;
-    --engrid__body-title_padding:0 24px;
-    --engrid__body-title_margin:0 0 16px 0;
+    --engrid__body-title_padding:0 14px;
+    --engrid__body-title_margin:16px 0;
     --engrid__body-top_padding:0 13px;
-    --button_font-size:18px;
-    --submit__button_font-size:18px;
-    --button_line-height:140%;
-    --donation-amount__button_font-size:18px;
-    --recurring-frequency__button_font-size:16px;
+    --engrid__body-top_margin:0 0 40px 0;
+    --donation-amount__button_font-size:20px;
+    --donation-amount__button_font-weight:700;
+    --recurring-frequency__button_font-size:18px;
     --recurring-frequency__button_line-height:24px;
     --click-to-expand__cta-image_width:96px;
     --click-to-expand__cta-image_height:13px;
@@ -10153,6 +10315,10 @@ body[data-engrid-debug]:before{
     --radio_box-shadow_selected:inset 0 0 0 3px #fff;
     --radio_border-width:1px;
     --checkbox_content_checked:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='11' viewBox='0 0 20 15'%3E%3Cpath style='stroke:none;fill-rule:nonzero;fill:%23fff;fill-opacity:1' d='m12.75 6.117-5.914 6.117-5.5-5.687L0 7.93l3.418 3.535 3.418 3.539 6.582-6.813L20 1.383 18.664 0Zm0 0'/%3E%3C/svg%3E");
+  }
+  [data-engrid-theme=wwf] .big{
+    --h1_font-size:34px;
+    --h1_line-height:42px;
   }
   [data-engrid-theme=wwf] .body-main a{
     text-underline-offset:4px;
@@ -10171,8 +10337,9 @@ body[data-engrid-debug]:before{
     margin-bottom:0;
   }
   [data-engrid-theme=wwf] .radio-to-buttons_donationAmt .en__field--donationAmt .en__field__element--radio{
-    --fields_spacing-inline:0.25rem;
-    --fields_spacing-block:5.33px;
+    --fields_spacing-inline:0.5rem;
+    --fields_spacing-block:7px;
+    --donation-amount__button_padding:16px 0;
   }
   [data-engrid-theme=wwf][data-engrid-transaction-recurring-frequency] .radio-to-buttons_donationAmt .en__field--donationAmt div:not(.en__field__item--other) .en__field__label--item:after{
     font-size:15px !important;
@@ -10207,6 +10374,10 @@ body[data-engrid-debug]:before{
     position:static;
     transform:none;
   }
+  [data-engrid-theme=wwf] .white-box{
+    padding-left:1.5rem;
+    padding-right:1.5rem;
+  }
   [data-engrid-theme=wwf] .inline-upsell-box{
     border-radius:0;
     padding:1rem .5rem;
@@ -10216,7 +10387,7 @@ body[data-engrid-debug]:before{
     --inline-upsell-box_strong_line-height:24px;
   }
   [data-engrid-theme=wwf] .inline-upsell-box svg{
-    --inline-upsell-box-svg_margin-left:30px;
+    --inline-upsell-box-svg_margin-left:0px;
   }
   [data-engrid-theme=wwf] .grey-box{
     --p_font-size:14px;
@@ -10238,9 +10409,14 @@ body[data-engrid-debug]:before{
   [data-engrid-theme=wwf] .alternative-donation-methods p:first-child{
     margin:1rem 0 2rem;
   }
-  [data-engrid-theme=wwf] .alternative-donation-methods p:last-child{
+  [data-engrid-theme=wwf] .alternative-donation-methods p:has(img.cn-bbb){
     gap:12.34px;
     grid-template-columns:1fr 77px 146.5px 77px 1fr;
+  }
+}
+@media screen and (max-width:375px){
+  [data-engrid-theme=wwf] .alternative-donation-methods p:has(img.cn-bbb){
+    grid-template-columns:minmax(0, 1fr) minmax(0, 101fr) minmax(0, 190fr) minmax(0, 101fr) minmax(0, 1fr);
   }
 }
 [data-engrid-theme=wwf][data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements][data-engrid-transaction-recurring=n][data-engrid-payment-type-option-paypal-one-touch=true] .en__field--giveBySelect.paypal.force-paypal-visibility{
@@ -11313,21 +11489,26 @@ body[data-engrid-debug]:before{
   [data-engrid-theme=wwf]:not([data-engrid-subtheme]):not(#en__pagebuilder):not([data-engrid-debug]) .radio-to-buttons_recurrfreq.radio-to-buttons_recurrfreq_to-tabs .en__field--recurrfreq{
     margin-top:-27px;
   }
+  [data-engrid-theme=wwf]:not([data-engrid-subtheme]):not(#en__pagebuilder):not([data-engrid-debug]) .radio-to-buttons_recurrfreq.radio-to-buttons_recurrfreq_to-tabs .en__field--recurrfreq .en__field__element{
+    padding-bottom:8px;
+  }
 }
 [data-engrid-theme=wwf]:not([data-engrid-subtheme]) .radio-to-buttons_recurrfreq.radio-to-buttons_recurrfreq_to-tabs .en__field--recurrfreq{
   --recurring-frequency__button_color:#222;
-  --recurring-frequency__button_border-color:#ccc;
+  --recurring-frequency__button_border-color:var(--color_punaluu_500);
   --recurring-frequency__button_background-color:#faf9f7;
   --recurring-frequency__button_color_hover:#222;
-  --recurring-frequency__button_border-color_hover:#ccc;
+  --recurring-frequency__button_border-color_hover:var(--color_punaluu_500);
   --recurring-frequency__button_background-color_hover:#faf9f7;
   --recurring-frequency__button_color_checked:#222;
-  --recurring-frequency__button_border-color_checked:#ccc;
+  --recurring-frequency__button_border-color_checked:var(--color_punaluu_500);
   --recurring-frequency__button_background-color_checked:var(
     --engrid__body-main_background-color
   );
   --fields_spacing-block:0;
+  --recurring-frequency__button_border-width:1px;
   --recurring-frequency__button_padding:1.5ch 1.2ch;
+  --recurring-frequency__button_border-radius:0px;
   flex-basis:calc(100% + 44px);
   margin-bottom:18px;
   margin-left:-12px;
@@ -11341,8 +11522,8 @@ body[data-engrid-debug]:before{
 }
 @media screen and (min-width:601px){
   [data-engrid-theme=wwf]:not([data-engrid-subtheme]) .radio-to-buttons_recurrfreq.radio-to-buttons_recurrfreq_to-tabs .en__field--recurrfreq .en__field__element--radio{
-    margin-left:-21px;
-    margin-right:-21px;
+    margin-left:-24px;
+    margin-right:-24px;
   }
 }
 [data-engrid-theme=wwf]:not([data-engrid-subtheme]) .radio-to-buttons_recurrfreq.radio-to-buttons_recurrfreq_to-tabs .en__field--recurrfreq .inline-upsell-box{
@@ -11371,7 +11552,10 @@ body[data-engrid-debug]:before{
   outline:none;
 }
 [data-engrid-theme=wwf]:not([data-engrid-subtheme]) .radio-to-buttons_recurrfreq.radio-to-buttons_recurrfreq_to-tabs .en__field--recurrfreq .en__field__element.en__field__element--radio{
+  --fields_spacing-inline:0rem;
+  --fields_spacing-block:0rem;
   align-items:stretch;
+  margin-top:-14px;
 }
 [data-engrid-theme=wwf]:not([data-engrid-subtheme]) .radio-to-buttons_recurrfreq.radio-to-buttons_recurrfreq_to-tabs .en__field--recurrfreq .en__field__element.en__field__element--radio .en__field__item{
   display:flex;
@@ -11817,7 +12001,7 @@ body[data-engrid-debug]:before{
 #footer .container{
   display:grid;
   gap:24px 40px;
-  grid-template-columns:62px auto 168px;
+  grid-template-columns:62px auto 216px;
   margin:0 auto;
   max-width:1200px;
   padding:0 80px;
@@ -11865,7 +12049,7 @@ body[data-engrid-debug]:before{
 #footer .footer-links>ul li>a{
   color:var(--label_color);
   font-size:18px;
-  font-weight:600;
+  font-weight:700;
   text-decoration:underline;
   text-decoration-thickness:2px;
   text-underline-offset:8px;
@@ -11889,6 +12073,82 @@ body[data-engrid-debug]:before{
   }
   #footer .footer-copy{
     margin-top:0;
+  }
+}
+
+.no-header-wwf-logo{
+  height:100px;
+  max-width:80px;
+  width:80px;
+}
+
+.minimal-header-logo{
+  display:none;
+}
+
+.body-title .en__component .minimal-header-logo+h1{
+  --h1_font-size:46px;
+  margin-bottom:0;
+  margin-top:0;
+}
+
+[data-header-footer-layout=none] .content-header{
+  margin-bottom:50px;
+}
+[data-header-footer-layout=none] form>.en__component--row.en__component--advrow>.content-header>*{
+  display:none;
+}
+@media screen and (min-width:600px){
+  [data-header-footer-layout=none] .body-title .en__component{
+    align-items:center;
+    display:flex;
+    gap:1rem;
+  }
+  [data-header-footer-layout=none] .body-title .en__component:before{
+    align-items:center;
+    background:#fff url(https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/wwf-logo-2026-theme.svg) no-repeat;
+    background-position:50%;
+    background-size:65%;
+    border:1px solid #ccc;
+    content:"WWF Logo";
+    display:flex;
+    flex-shrink:0;
+    height:100px;
+    justify-content:center;
+    margin:0;
+    max-width:80px;
+    text-indent:-9999px;
+    width:100%;
+    z-index:3;
+  }
+}
+@media screen and (max-width:960px){
+  [data-header-footer-layout=none] .body-title .en__component:before{
+    border:none;
+  }
+}
+@media screen and (max-width:599px){
+  [data-header-footer-layout=none] .content-header{
+    --engrid__content-header_background-color:#fff;
+    justify-items:center;
+    margin-top:10px;
+  }
+  [data-header-footer-layout=none] .content-header:before{
+    align-items:center;
+    background:#fff url(https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/wwf-logo-2026-theme.svg) no-repeat;
+    background-position:50%;
+    background-size:65%;
+    content:"WWF Logo";
+    display:flex;
+    flex-shrink:0;
+    grid-column:pc;
+    height:100px;
+    justify-content:center;
+    margin:0;
+    max-width:80px;
+    text-indent:-9999px;
+    width:100%;
+    z-index:3;
   }
 }
 
