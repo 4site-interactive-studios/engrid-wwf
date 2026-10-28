@@ -23,6 +23,15 @@
     max-width: none;
     margin: 0;
     box-shadow: none;
+    // EN only paints the content white. The loading layer covers the whole
+    // popup, so without this its 0.8 opacity shows the page behind it
+    background: #fff;
+  }
+
+  // While the gifts load, the content is almost empty (only its 24px padding)
+  // and EN's 64px loading GIF gets cramped against the edges. Give it room.
+  > .en__hubOverlay__popup:has(> .en__hubOverlay__loading--active) {
+    min-height: 10rem;
   }
 
   // Closing doesn't apply inline: the header only holds the title and the X,
