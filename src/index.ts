@@ -30,6 +30,7 @@ import { Bridger } from "./scripts/Bridger";
 
 import { Quiz } from "./scripts/quiz";
 import GiftHistory from "./scripts/gift-history";
+import { SupporterHubAutoOpen } from "./scripts/supporter-hub-auto-open";
 import Accessibility from "./scripts/accessibility";
 
 const options: Options = {
@@ -252,6 +253,7 @@ const options: Options = {
     });
     new Bridger();
     new GiftHistory();
+    new SupporterHubAutoOpen();
     new Accessibility();
     new Ecard();
   },

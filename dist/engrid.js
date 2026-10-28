@@ -17,8 +17,8 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, October 1, 2026 @ 10:13:30 ET
- *  By: nick
+ *  Date: Wednesday, October 28, 2026 @ 08:11:09 ET
+ *  By: pedroluan
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.5
  *
@@ -31871,6 +31871,78 @@ class GiftHistory {
   }
 
 }
+;// CONCATENATED MODULE: ./src/scripts/supporter-hub-auto-open.ts
+
+// Opens a Supporter Hub gadget (e.g. "Manage my recurring gift") as soon as
+// the hub loads, so supporters coming from an email land on the open widget.
+//
+// Opt-in per page with a Code Block on the Supporter Hub page:
+//
+//   <script>
+//     window.EngridSupporterHubAutoOpen = "PLEDGE";
+//   </script>
+//
+// The value is the gadget's data-componenttype ("PLEDGE" for "Manage my
+// recurring gift").
+//
+// Engaging Networks routes hub gadgets through the URL hash
+// (#gadget/{componentId}/{type}): setting the hash opens the gadget, and
+// closing it clears the hash. We reuse that router instead of faking a click.
+
+class SupporterHubAutoOpen {
+  // How long to wait for EN's hash router before falling back to a click
+  constructor() {
+    _defineProperty(this, "logger", new logger_EngridLogger("SupporterHubAutoOpen", "black", "pink", "🎁"));
+
+    _defineProperty(this, "fallbackDelay", 1500);
+
+    if (!this.shouldRun()) return;
+    this.open();
+  }
+
+  shouldRun() {
+    if (engrid_ENGrid.getPageType() !== "SUPPORTERHUB") return false;
+    if (!this.getGadgetType()) return false; // A gadget is already being opened from the URL, let EN handle it
+
+    if (window.location.hash.startsWith("#gadget/")) {
+      this.logger.log("Gadget hash already present, skipping");
+      return false;
+    }
+
+    return true;
+  }
+
+  getGadgetType() {
+    const setting = window.EngridSupporterHubAutoOpen;
+
+    if (typeof setting === "string" && setting.trim() !== "") {
+      return setting.trim().toUpperCase();
+    }
+
+    return null;
+  }
+
+  open() {
+    const gadgetType = this.getGadgetType();
+    const gadget = document.querySelector(`.en__component--hubgadget[data-componenttype="${gadgetType}"]:not(.en__component--hubgadget--inactive)`);
+    const componentId = gadget?.dataset.componentid;
+
+    if (!gadget || !componentId) {
+      this.logger.log(`No active ${gadgetType} gadget found on this page`);
+      return;
+    }
+
+    this.logger.log(`Opening ${gadgetType} gadget ${componentId}`);
+    window.location.hash = `gadget/${componentId}/${gadgetType.toLowerCase()}`; // Safety net: if EN's router didn't pick up the hash, open it with a click
+
+    window.setTimeout(() => {
+      if (document.querySelector(".en__hubOverlay")) return;
+      this.logger.log("Overlay not found after setting the hash, clicking gadget");
+      gadget.click();
+    }, this.fallbackDelay);
+  }
+
+}
 ;// CONCATENATED MODULE: ./src/scripts/accessibility.ts
 
 
@@ -32085,6 +32157,7 @@ class Accessibility {
 
 
 
+
 const options = {
   AutoYear: true,
   applePay: false,
@@ -32284,6 +32357,7 @@ const options = {
     });
     new Bridger();
     new GiftHistory();
+    new SupporterHubAutoOpen();
     new Accessibility();
     new Ecard();
   },
