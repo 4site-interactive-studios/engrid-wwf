@@ -164,7 +164,12 @@ export class SupporterHubAutoOpen {
           if (this.containsOrMatches(node, ".en__hubPledge__list--list")) {
             this.onListShown(overlay);
           }
-          const state = this.findOrMatch(node, ".en__hubPledge__state");
+          // After saving, EN re-renders the panels inside the same state
+          // ("Your recurring gift has been updated"), which removes the
+          // back button, so also look for the state around the node
+          const state =
+            this.findOrMatch(node, ".en__hubPledge__state") ??
+            (node.closest(".en__hubPledge__state") as HTMLElement | null);
           if (state) this.addBackButton(state);
         });
         record.removedNodes.forEach((node) => {

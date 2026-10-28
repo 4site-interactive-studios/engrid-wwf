@@ -40,6 +40,30 @@ const addOtherCurrencySymbol = (overlay: Element) => {
   if (symbol.style.height !== height) symbol.style.height = height;
 };
 
+// The amount selected in the donation amount field: the "Other" input when
+// it is the active one (EN puts the donor's current amount there when it is
+// not in the default list), otherwise the checked radio
+const getSelectedAmount = (field: Element): number | null => {
+  const otherInput = field.querySelector<HTMLInputElement>(
+    "input.en__field__input--other"
+  );
+  const checked = field.querySelector<HTMLInputElement>(
+    "input[type='radio']:checked"
+  );
+  const otherAmount = otherInput
+    ? parseFloat(otherInput.value.replace(/[^\d.]/g, ""))
+    : NaN;
+  if (
+    (field.classList.contains("en__field--withOther--active") ||
+      checked?.value === "other") &&
+    !isNaN(otherAmount)
+  ) {
+    return otherAmount;
+  }
+  const checkedAmount = checked ? parseFloat(checked.value) : NaN;
+  return isNaN(checkedAmount) ? null : checkedAmount;
+};
+
 // Replace the fixed amount buttons with the donor's Sustainer Upgrade Ask String,
 // defined by the page's code block (const sustainerUpgradeAsk = "{user_data~Sustainer Upgrade Ask String}")
 const applySustainerUpgradeAsk = (overlay: Element) => {
@@ -60,26 +84,11 @@ const applySustainerUpgradeAsk = (overlay: Element) => {
   );
   if (!items.length) return;
   container.setAttribute("data-engrid-ask-applied", "true");
-  // The donor's current amount: the "Other" input when it is the active
-  // one (EN puts it there when the amount is not in the default list),
-  // otherwise the checked radio
   const field = container.closest<HTMLElement>(".en__field--donationAmt");
   const otherInput = container.querySelector<HTMLInputElement>(
     "input.en__field__input--other"
   );
-  const checked = container.querySelector<HTMLInputElement>(
-    "input[type='radio']:checked"
-  );
-  const otherAmount = otherInput
-    ? parseFloat(otherInput.value.replace(/[^\d.]/g, ""))
-    : NaN;
-  const currentAmount =
-    field?.classList.contains("en__field--withOther--active") &&
-    !isNaN(otherAmount)
-      ? otherAmount
-      : checked
-      ? parseFloat(checked.value)
-      : null;
+  const currentAmount = field ? getSelectedAmount(field) : null;
   const symbol =
     (items[0].querySelector("label")?.textContent || "").replace(
       /[\d.,\s]/g,
@@ -164,9 +173,68 @@ const setUpdateCardLink = (overlay: Element) => {
   });
 };
 
+// Log an event when a recurring gift amount is changed. The amounts are kept
+// on EN's edit view (.en__hubPledge__state), which stays on the page when
+// the gift is saved: EN re-renders it with the "Your recurring gift has been
+// updated" copy and no fields. A failed save adds
+// en__hubPledge__state--failed and keeps the fields.
+// Only sent from hubs that open the gadget inline, with
+// window.EngridSupporterHubAutoOpen (see supporter-hub-auto-open.ts)
+const isAutoOpenHub = () =>
+  typeof window.EngridSupporterHubAutoOpen === "string" &&
+  window.EngridSupporterHubAutoOpen.trim() !== "";
+
+const trackRecurringUpgrade = (overlay: Element) => {
+  const state = overlay.querySelector<HTMLElement>(
+    ".en__hubPledge__state--activeRecurring"
+  );
+  if (!state) return;
+  const field = state.querySelector(".en__field--donationAmt");
+  if (field) {
+    // EN prefills the field with the gift's current amount when it renders
+    // the edit view, before the donor changes it
+    if (state.dataset.engridPreviousAmount === undefined) {
+      const amount = getSelectedAmount(field);
+      if (amount !== null) state.dataset.engridPreviousAmount = String(amount);
+    }
+    return;
+  }
+  if (state.classList.contains("en__hubPledge__state--failed")) return;
+  const previousAmount = parseFloat(state.dataset.engridPreviousAmount ?? "");
+  const newAmount = parseFloat(state.dataset.engridNewAmount ?? "");
+  delete state.dataset.engridPreviousAmount;
+  delete state.dataset.engridNewAmount;
+  if (isNaN(previousAmount) || isNaN(newAmount)) return;
+  if (newAmount === previousAmount) return;
+  console.log({
+    event: "en_recurring_donation_upgraded",
+    previous_amount: previousAmount,
+    new_amount: newAmount,
+    amount_increase: newAmount - previousAmount,
+  });
+};
+
+// The fields are gone once EN shows the result, so the new amount is read
+// when "Update and save" is clicked (capture phase, before EN's handler)
+const storeNewAmountOnSubmit = (event: Event) => {
+  const button = (event.target as Element | null)?.closest?.(
+    ".en__hubPledge__state--activeRecurring .en__submit button"
+  );
+  const state = button?.closest<HTMLElement>(".en__hubPledge__state");
+  const field = state?.querySelector(".en__field--donationAmt");
+  if (!state || !field) return;
+  const amount = getSelectedAmount(field);
+  if (amount === null) {
+    delete state.dataset.engridNewAmount;
+  } else {
+    state.dataset.engridNewAmount = String(amount);
+  }
+};
+
 const updateOverlay = () => {
   const overlay = document.querySelector("#huboverlay-manage-my-recurring-gift");
   if (!overlay) return;
+  if (isAutoOpenHub()) trackRecurringUpgrade(overlay);
   stripGiftCurrency(overlay);
   applySustainerUpgradeAsk(overlay);
   addOtherCurrencySymbol(overlay);
@@ -174,6 +242,9 @@ const updateOverlay = () => {
 };
 
 export const supporterHubImprovements = () => {
+  if (isAutoOpenHub()) {
+    document.addEventListener("click", storeNewAmountOnSubmit, true);
+  }
   // The overlay is injected/re-rendered by EN after load, so watch for it
   new MutationObserver(updateOverlay).observe(document.body, {
     childList: true,
