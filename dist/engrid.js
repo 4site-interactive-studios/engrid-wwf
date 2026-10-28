@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, October 28, 2026 @ 16:10:00 ET
+ *  Date: Wednesday, October 28, 2026 @ 16:42:48 ET
  *  By: nick
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.5
@@ -32326,6 +32326,7 @@ const options = {
     }
   }
 };
+const isSpanish = window.pageJson?.locale?.toLowerCase().startsWith("es");
 window.EngridTranslate = {
   es: [{
     field: "supporter.postcode",
@@ -32337,7 +32338,7 @@ window.EngridTranslate = {
     field: "transaction.infpostcd",
     translation: "Código Postal del Destinatario"
   }],
-  US: [{
+  US: isSpanish ? [] : [{
     field: "supporter.postcode",
     translation: "ZIP Code"
   }, {

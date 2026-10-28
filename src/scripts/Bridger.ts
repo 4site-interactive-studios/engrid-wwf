@@ -5,6 +5,7 @@ declare global {
       giftProcess: boolean;
       amount: number;
       currency: string;
+      locale: string;
     };
     BridgerAmountThreshold: number;
   }

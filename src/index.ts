@@ -309,6 +309,8 @@ const options: Options = {
     }
   },
 };
+const isSpanish = window.pageJson?.locale?.toLowerCase().startsWith("es");
+
 (window as any).EngridTranslate = {
   es: [
     { field: "supporter.postcode", translation: "Código Postal" },
@@ -321,11 +323,19 @@ const options: Options = {
       translation: "Código Postal del Destinatario",
     },
   ],
-  US: [
-    { field: "supporter.postcode", translation: "ZIP Code" },
-    { field: "transaction.shippostcode", translation: "Shipping ZIP Code" },
-    { field: "transaction.infpostcd", translation: "Recipient ZIP Code" },
-  ],
+  US: isSpanish
+    ? []
+    : [
+        { field: "supporter.postcode", translation: "ZIP Code" },
+        {
+          field: "transaction.shippostcode",
+          translation: "Shipping ZIP Code",
+        },
+        {
+          field: "transaction.infpostcd",
+          translation: "Recipient ZIP Code",
+        },
+      ],
 };
 // Trying to fix the issue of EN not running the onSubmit & onValidate functions
 // when you use digital wallets
