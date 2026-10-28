@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, October 28, 2026 @ 08:11:09 ET
+ *  Date: Wednesday, October 28, 2026 @ 08:23:14 ET
  *  By: pedroluan
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.5
@@ -12109,8 +12109,48 @@ body[data-engrid-debug]:before{
   background-color:#ff00001a !important;
 }
 
-body:not(#en__pagebuilder):not([data-engrid-debug]) .i1-force-hide-label .en__field:not(.en__field--validationFailed):first-of-type>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i10-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(10)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i11-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(11)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i2-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(2)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i3-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(3)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i4-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(4)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i5-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(5)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i6-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(6)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i7-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(7)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i8-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(8)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i9-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(9)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) div:not(.en__field--validationFailed) label.force-hide-label{
+.en__component--hubgadget.engrid-hub-inline__gadget,body:not(#en__pagebuilder):not([data-engrid-debug]) .i1-force-hide-label .en__field:not(.en__field--validationFailed):first-of-type>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i10-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(10)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i11-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(11)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i2-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(2)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i3-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(3)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i4-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(4)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i5-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(5)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i6-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(6)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i7-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(7)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i8-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(8)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) .i9-force-hide-label .en__field:not(.en__field--validationFailed):nth-of-type(9)>label,body:not(#en__pagebuilder):not([data-engrid-debug]) div:not(.en__field--validationFailed) label.force-hide-label{
   display:none;
+}
+
+.en__hubOverlay.engrid-hub-inline{
+  background:#0000;
+  bottom:auto;
+  left:auto;
+  overflow:visible;
+  padding:0;
+  position:static;
+  right:auto;
+  top:auto;
+  z-index:auto;
+}
+.en__hubOverlay.engrid-hub-inline>.en__hubOverlay__popup{
+  box-shadow:none;
+  margin:0;
+  max-width:none;
+  width:100%;
+}
+.en__hubOverlay.engrid-hub-inline .en__hubOverlay__header,.en__hubOverlay.engrid-hub-inline .en__hubPledge__list__actions .en__button--close{
+  display:none;
+}
+.en__hubOverlay.engrid-hub-inline .engrid-hub-inline__back{
+  background:none;
+  border:none;
+  color:var(--a_color, inherit);
+  cursor:pointer;
+  display:inline-block;
+  font:inherit;
+  font-weight:700;
+  margin:0 0 1rem;
+  padding:0;
+  text-decoration:underline;
+}
+.en__hubOverlay.engrid-hub-inline .engrid-hub-inline__back:focus-visible,.en__hubOverlay.engrid-hub-inline .engrid-hub-inline__back:hover{
+  text-decoration:none;
+}
+
+body:has(.engrid-hub-inline),html:has(.engrid-hub-inline){
+  overflow-y:visible !important;
 }
 body{
   opacity:1;

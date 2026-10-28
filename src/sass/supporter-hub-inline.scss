@@ -1,0 +1,59 @@
+// Supporter Hub gadget shown inline, as part of the page, instead of as a
+// lightbox. The classes are added by src/scripts/supporter-hub-auto-open.ts
+// when the page sets window.EngridSupporterHubAutoOpen in a Code Block.
+
+// The gadget tile is replaced by the open widget
+.en__component--hubgadget.engrid-hub-inline__gadget {
+  display: none;
+}
+
+.en__hubOverlay.engrid-hub-inline {
+  position: static;
+  top: auto;
+  right: auto;
+  bottom: auto;
+  left: auto;
+  z-index: auto;
+  overflow: visible;
+  padding: 0;
+  background: transparent;
+
+  > .en__hubOverlay__popup {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    box-shadow: none;
+  }
+
+  // Closing doesn't apply inline: the header only holds the title and the X,
+  // and the list's "Close" button would remove the widget from the page
+  .en__hubOverlay__header,
+  .en__hubPledge__list__actions .en__button--close {
+    display: none;
+  }
+
+  .engrid-hub-inline__back {
+    display: inline-block;
+    margin: 0 0 1rem;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--a_color, inherit);
+    font: inherit;
+    font-weight: 700;
+    text-decoration: underline;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: none;
+    }
+  }
+}
+
+// EN locks page scrolling while a hub overlay is open, with an inline
+// overflow-y: hidden on html and body. Inline, the page must scroll.
+html:has(.engrid-hub-inline),
+body:has(.engrid-hub-inline) {
+  overflow-y: visible !important;
+}
