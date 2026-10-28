@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, October 28, 2026 @ 08:51:39 ET
+ *  Date: Wednesday, October 28, 2026 @ 08:54:42 ET
  *  By: pedroluan
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.5
@@ -12134,7 +12134,7 @@ body[data-engrid-debug]:before{
 .en__hubOverlay.engrid-hub-inline>.en__hubOverlay__popup:has(>.en__hubOverlay__loading--active){
   min-height:10rem;
 }
-.en__hubOverlay.engrid-hub-inline .en__hubOverlay__header,.en__hubOverlay.engrid-hub-inline .en__hubPledge__list__actions .en__button--close{
+.en__hubOverlay.engrid-hub-inline .en__field--ccexpire,.en__hubOverlay.engrid-hub-inline .en__hubOverlay__header,.en__hubOverlay.engrid-hub-inline .en__hubPledge__list__actions .en__button--close,.en__hubOverlay.engrid-hub-inline .en__hubUpdateCC{
   display:none;
 }
 .en__hubOverlay.engrid-hub-inline .engrid-hub-inline__back{

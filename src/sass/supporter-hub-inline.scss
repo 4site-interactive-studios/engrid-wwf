@@ -41,6 +41,15 @@
     display: none;
   }
 
+  // Supporters can't change their payment method in this experience: hide the
+  // expiration date and the card number block (static number, edit pencil and
+  // the collapsed new card + billing address fields). The fields stay in the
+  // DOM, so EN still submits the current card details unchanged.
+  .en__field--ccexpire,
+  .en__hubUpdateCC {
+    display: none;
+  }
+
   .engrid-hub-inline__back {
     display: inline-block;
     margin: 0 0 1rem;
