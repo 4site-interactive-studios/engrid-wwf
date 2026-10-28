@@ -1,4 +1,4 @@
-declare const monthlyAsk: string | undefined;
+declare const sustainerUpgradeAsk: string | undefined;
 
 // The heading is rendered as "Manage your $5 USD recurring gift". Drop
 // the currency code right before "recurring" (e.g. "USD", "EUR")
@@ -40,11 +40,11 @@ const addOtherCurrencySymbol = (overlay: Element) => {
   if (symbol.style.height !== height) symbol.style.height = height;
 };
 
-// Replace the fixed amount buttons with the donor's monthly ask string,
-// defined by the page's code block (const monthlyAsk = "{user_data~Monthly ask string}")
-const applyMonthlyAsk = (overlay: Element) => {
-  if (typeof monthlyAsk !== "string") return;
-  const amounts = monthlyAsk
+// Replace the fixed amount buttons with the donor's Sustainer Upgrade Ask String,
+// defined by the page's code block (const sustainerUpgradeAsk = "{user_data~Sustainer Upgrade Ask String}")
+const applySustainerUpgradeAsk = (overlay: Element) => {
+  if (typeof sustainerUpgradeAsk !== "string") return;
+  const amounts = sustainerUpgradeAsk
     .split(",")
     .map((amount) => parseFloat(amount.trim()))
     .filter((amount) => !isNaN(amount) && amount > 0);
@@ -168,7 +168,7 @@ const updateOverlay = () => {
   const overlay = document.querySelector("#huboverlay-manage-my-recurring-gift");
   if (!overlay) return;
   stripGiftCurrency(overlay);
-  applyMonthlyAsk(overlay);
+  applySustainerUpgradeAsk(overlay);
   addOtherCurrencySymbol(overlay);
   setUpdateCardLink(overlay);
 };
