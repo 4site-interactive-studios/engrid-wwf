@@ -310,6 +310,17 @@ const options: Options = {
   },
 };
 (window as any).EngridTranslate = {
+  es: [
+    { field: "supporter.postcode", translation: "Código Postal" },
+    {
+      field: "transaction.shippostcode",
+      translation: "Código Postal de envío",
+    },
+    {
+      field: "transaction.infpostcd",
+      translation: "Código Postal del Destinatario",
+    },
+  ],
   US: [
     { field: "supporter.postcode", translation: "ZIP Code" },
     { field: "transaction.shippostcode", translation: "Shipping ZIP Code" },
