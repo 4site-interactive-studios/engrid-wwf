@@ -179,7 +179,27 @@
   margin-bottom: 0;
   --h1_font-size: 46px;
 }
-
+[data-engrid-layout="leftleft1col"][data-engrid-subtheme="new-leftleft"] {
+  #footer {
+    border-top: 1px solid #ccc;
+    .container {
+      grid-template-columns: 62px auto 216px;
+      padding: 0 40px;
+      gap: 32px;
+    }
+    .footer-links > ul {
+      flex-wrap: wrap;
+    }
+    .footer-social-list {
+      gap: 24px;
+    }
+  }
+  @media screen and (max-width: 767px) {
+    #footer .container {
+      grid-template-columns: 62px auto;
+    }
+  }
+}
 [data-header-footer-layout="none"] {
   .content-header {
     margin-bottom: 50px;

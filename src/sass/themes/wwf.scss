@@ -2621,10 +2621,9 @@
 @media screen and (max-width: 375px) {
   .alternative-donation-methods {
     p:has(img.cn-bbb) {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 101fr) minmax(0, 190fr) minmax(
-          0,
-          101fr
-        ) minmax(0, 1fr);
+      grid-template-columns:
+        minmax(0, 1fr) minmax(0, 101fr) minmax(0, 190fr) minmax(0, 101fr)
+        minmax(0, 1fr);
     }
   }
 }
@@ -2878,9 +2877,16 @@ button[data-balloon] {
   }
 }
 &[data-engrid-layout="leftleft1col"][data-engrid-subtheme="new-leftleft"] {
-  --engrid__body-title_background-color: #ffffff;
-  --engrid__body-top_background-color: #ffffff;
-  --engrid__body-banner_background-color: #ffffff;
+  --engrid__page_background-color: var(--engrid__body-main_background-color);
+  --engrid__body-title_background-color: var(
+    --engrid__body-main_background-color
+  );
+  --engrid__body-top_background-color: var(
+    --engrid__body-main_background-color
+  );
+  --engrid__body-banner_background-color: var(
+    --engrid__body-main_background-color
+  );
   --engrid__body_margin: 0;
   --engrid__body-top_padding: 20px 40px;
   --engrid__body-banner_padding: 0px 20px;
