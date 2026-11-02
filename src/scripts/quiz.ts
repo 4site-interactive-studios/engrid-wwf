@@ -96,6 +96,14 @@ export class Quiz {
       ".en__component--svblock .en__field__input--radio, .en__component--svblock .en__field__input--imageSelectField";
 
     let keyboardJustUsed = false;
+    // Tracks whether the most recent user input came from the keyboard. This
+    // is what decides if a click on an option confirms the answer. We can't
+    // use MouseEvent.detail for that: WebKit (Safari and every iOS browser)
+    // forwards a label click to its hidden radio with detail === 0, exactly
+    // like a keyboard-generated click, so real taps would be ignored.
+    // (keyboardJustUsed can't be reused here because the focus handler below
+    // resets it before the arrow-key click event fires.)
+    let lastInputWasKeyboard = false;
     let instructionAnnounced = false;
     const group = document.querySelector<HTMLElement>(
       ".en__component--svblock .en__field--survey[role='group']"
@@ -112,6 +120,14 @@ export class Quiz {
       "keydown",
       () => {
         keyboardJustUsed = true;
+        lastInputWasKeyboard = true;
+      },
+      { capture: true }
+    );
+    document.addEventListener(
+      "pointerdown",
+      () => {
+        lastInputWasKeyboard = false;
       },
       { capture: true }
     );
@@ -119,6 +135,7 @@ export class Quiz {
       "mousedown",
       () => {
         keyboardJustUsed = false;
+        lastInputWasKeyboard = false;
       },
       { capture: true }
     );
@@ -160,10 +177,12 @@ export class Quiz {
         }
       });
 
-      // Real pointer clicks confirm; keyboard-generated clicks (Space, etc.) do not.
-      input.addEventListener("click", (event) => {
+      // Pointer clicks (mouse or touch, on the input or its label) confirm.
+      // Keyboard-generated clicks (Space, Arrow keys) only select; Enter
+      // confirms through the keydown handler above.
+      input.addEventListener("click", () => {
         if (input.classList.contains("quiz-input-disabled")) return;
-        if ((event as MouseEvent).detail === 0) return;
+        if (lastInputWasKeyboard) return;
         this.toggleError(false);
         if (checkAnswerBtn) return;
         this.checkAnswer();

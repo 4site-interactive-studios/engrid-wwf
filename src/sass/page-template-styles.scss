@@ -1,5 +1,6 @@
 [data-engrid-theme="wwf"] {
   @import "./themes/wwf";
+  @import "./themes/wwf-background-rotation";
   &[data-engrid-subtheme="multistep"] {
     @import "./themes/wwf-multistep";
   }

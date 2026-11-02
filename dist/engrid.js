@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, October 27, 2026 @ 14:56:17 ET
+ *  Date: Monday, November 2, 2026 @ 12:31:43 ET
  *  By: nick
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.6
@@ -14823,7 +14823,6 @@ class DataAttributes {
 class iFrame {
     constructor() {
         this._form = en_form_EnForm.getInstance();
-        this.resizeObserver = null;
         this.logger = new logger_EngridLogger("iFrame", "brown", "gray", "📡");
         if (this.inIframe()) {
             // Add the data-engrid-embedded attribute when inside an iFrame if it wasn't already added by a script in the Page Template
@@ -14916,7 +14915,6 @@ class iFrame {
                 if (iframe) {
                     if (event.data.hasOwnProperty("frameHeight")) {
                         iframe.style.height = event.data.frameHeight + "px";
-                        this.logger.log(`iFrame Event - Resized iframe element to ${event.data.frameHeight}px`);
                         if (event.data.frameHeight > 0) {
                             iframe.classList.add("loaded");
                         }
@@ -14956,8 +14954,6 @@ class iFrame {
         // Scroll to top of iFrame
         this.logger.log("iFrame Event - window.onload");
         this.sendIframeHeight();
-        // Continuously re-send the height whenever the body size changes
-        this.observeHeightChanges();
         window.parent.postMessage({
             scroll: this.shouldScroll(),
         }, "*");
@@ -14966,39 +14962,15 @@ class iFrame {
         // matches it by Page ID to advance to the next queued iframe. Fires
         // exactly once per Thank-You-page load. See iframe-queue.ts.
         this.sendIframeQueueThankYouPing();
+        // On click fire the resize event
+        document.addEventListener("click", (e) => {
+            this.logger.log("iFrame Event - click");
+            setTimeout(() => {
+                this.sendIframeHeight();
+            }, 100);
+        });
         // Watch for errors and send the height
         engrid_ENGrid.watchForError(this.sendIframeHeight.bind(this));
-    }
-    /**
-     * Observes document.body for size changes (DOM mutations, font/image
-     * loads, CSS transitions) and re-sends the iframe height to the parent.
-     *
-     * Uses a leading + trailing throttle via debounceWithImmediate: the
-     * first change is sent immediately, and the settled height is always
-     * re-sent once changes stop for 120ms. Animated transitions therefore
-     * don't flood the parent page with one message per frame, but the
-     * parent always ends up matching the final resolved height.
-     */
-    observeHeightChanges() {
-        if (typeof ResizeObserver === "undefined") {
-            this.logger.log("ResizeObserver not supported in this browser");
-            return;
-        }
-        let lastSent = -1;
-        const throttledSend = this.debounceWithImmediate((_entries, _observer, immediate) => {
-            const height = document.body.offsetHeight;
-            // Skip redundant sends when the settled height is unchanged
-            if (height === lastSent) {
-                this.logger.log(`iFrame Event - ResizeObserver settled at unchanged height ${height}px, skipping send`);
-                return;
-            }
-            lastSent = height;
-            this.logger.log(`iFrame Event - ResizeObserver ${immediate ? "leading" : "trailing"} resize: sending height ${height}px`);
-            this.sendIframeHeight();
-        }, 120);
-        this.resizeObserver = new ResizeObserver(throttledSend);
-        this.resizeObserver.observe(document.body);
-        this.logger.log("iFrame Event - Observing body resize");
     }
     /**
      * Posts a `engrid-iframe-queue:thank-you` message to the parent window
@@ -15147,11 +15119,11 @@ class iFrame {
         return (...args) => {
             clearTimeout(timer);
             if (firstEvent) {
-                func.apply(this, [...args, true]);
+                func.apply(this, args);
                 firstEvent = false;
             }
             timer = setTimeout(() => {
-                func.apply(this, [...args, false]);
+                func.apply(this, args);
                 firstEvent = true;
             }, timeout);
         };
@@ -18275,7 +18247,7 @@ class PageBackground {
 class PageBackgroundRotation {
     constructor(options = {}) {
         var _a;
-        this.logger = new EngridLogger("PageBackgroundRotation", "white", "rebeccapurple", "🌄");
+        this.logger = new logger_EngridLogger("PageBackgroundRotation", "white", "rebeccapurple", "🌄");
         this.defaultOptions = {
             enabled: true,
             interval: 5000,
@@ -18471,7 +18443,7 @@ class PageBackgroundRotation {
                 this.showStaticImage();
             }
             else {
-                ENGrid.setBodyData("background-rotation", "static");
+                engrid_ENGrid.setBodyData("background-rotation", "static");
             }
             this.logger.log("Static background image mode");
             return;
@@ -18503,7 +18475,7 @@ class PageBackgroundRotation {
         this.preloadFirstImage(startIndex);
         this.setActiveItem(startIndex);
         this.scheduleImageWarming(startIndex);
-        ENGrid.setBodyData("background-rotation", "active");
+        engrid_ENGrid.setBodyData("background-rotation", "active");
         if (this.canRotate())
             this.startRotationTimer();
         this.logger.log(`Rotating ${this.items.length} background images every ${this.options.interval}ms`);
@@ -18564,7 +18536,7 @@ class PageBackgroundRotation {
         const index = this.options.randomStart ? this.getRandomIndex() : 0;
         this.preloadFirstImage(index);
         this.setActiveItem(index);
-        ENGrid.setBodyData("background-rotation", "static");
+        engrid_ENGrid.setBodyData("background-rotation", "static");
     }
     setActiveItem(index, moveFlow = true) {
         var _a;
@@ -18582,7 +18554,7 @@ class PageBackgroundRotation {
             document.body.style.setProperty("--background-rotation-image", `url('${imageUrl}')`);
         }
         setTimeout(() => {
-            ENGrid.setBodyData("background-rotation-theme", this.getItemTheme(this.items[index]));
+            engrid_ENGrid.setBodyData("background-rotation-theme", this.getItemTheme(this.items[index]));
         }, 300);
         this.logger.log("Active background image", index + 1, "of", this.items.length, (_a = this.getItemAttribution(this.items[index])) !== null && _a !== void 0 ? _a : "");
     }
@@ -28208,7 +28180,7 @@ class PreferredPaymentMethod {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/version.js
-const AppVersion = "0.28.6";
+const AppVersion = "0.28.5";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
@@ -31020,7 +30992,15 @@ class Quiz {
     // selection, so we don't auto-check from change events.
 
     const optionSelector = ".en__component--svblock .en__field__input--radio, .en__component--svblock .en__field__input--imageSelectField";
-    let keyboardJustUsed = false;
+    let keyboardJustUsed = false; // Tracks whether the most recent user input came from the keyboard. This
+    // is what decides if a click on an option confirms the answer. We can't
+    // use MouseEvent.detail for that: WebKit (Safari and every iOS browser)
+    // forwards a label click to its hidden radio with detail === 0, exactly
+    // like a keyboard-generated click, so real taps would be ignored.
+    // (keyboardJustUsed can't be reused here because the focus handler below
+    // resets it before the arrow-key click event fires.)
+
+    let lastInputWasKeyboard = false;
     let instructionAnnounced = false;
     const group = document.querySelector(".en__component--svblock .en__field--survey[role='group']");
 
@@ -31033,11 +31013,18 @@ class Quiz {
 
     document.addEventListener("keydown", () => {
       keyboardJustUsed = true;
+      lastInputWasKeyboard = true;
+    }, {
+      capture: true
+    });
+    document.addEventListener("pointerdown", () => {
+      lastInputWasKeyboard = false;
     }, {
       capture: true
     });
     document.addEventListener("mousedown", () => {
       keyboardJustUsed = false;
+      lastInputWasKeyboard = false;
     }, {
       capture: true
     });
@@ -31073,11 +31060,13 @@ class Quiz {
         } else {
           this.checkAnswer();
         }
-      }); // Real pointer clicks confirm; keyboard-generated clicks (Space, etc.) do not.
+      }); // Pointer clicks (mouse or touch, on the input or its label) confirm.
+      // Keyboard-generated clicks (Space, Arrow keys) only select; Enter
+      // confirms through the keydown handler above.
 
-      input.addEventListener("click", event => {
+      input.addEventListener("click", () => {
         if (input.classList.contains("quiz-input-disabled")) return;
-        if (event.detail === 0) return;
+        if (lastInputWasKeyboard) return;
         this.toggleError(false);
         if (checkAnswerBtn) return;
         this.checkAnswer();
@@ -31788,7 +31777,8 @@ class Accessibility {
 //   DonationFrequency,
 //   DonationAmount,
 //   EnForm,
-//   Ecard
+//   Ecard,
+//   PageBackgroundRotation,
 // } from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
 
 
@@ -31992,7 +31982,14 @@ const options = {
       unsubscribeAllRadio.closest(".en__field")?.classList.add("hide");
     }
 
-    new Quiz();
+    new Quiz(); // The WWF theme stops painting the full-bleed page background below
+    // 1200px (see sass/themes/wwf-background-rotation.scss), so the rotation
+    // treats that as its mobile breakpoint
+
+    new PageBackgroundRotation({
+      mobileBreakpoint: "(max-width: 1200px)",
+      initialDelay: 7000
+    });
     new Bridger();
     new GiftHistory();
     new Accessibility();
@@ -32037,8 +32034,19 @@ const options = {
     }
   }
 };
+const isSpanish = window.pageJson?.locale?.toLowerCase().startsWith("es");
 window.EngridTranslate = {
-  US: [{
+  es: [{
+    field: "supporter.postcode",
+    translation: "Código Postal"
+  }, {
+    field: "transaction.shippostcode",
+    translation: "Código Postal de envío"
+  }, {
+    field: "transaction.infpostcd",
+    translation: "Código Postal del Destinatario"
+  }],
+  US: isSpanish ? [] : [{
     field: "supporter.postcode",
     translation: "ZIP Code"
   }, {

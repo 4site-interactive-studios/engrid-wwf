@@ -5,6 +5,7 @@ import {
   DonationAmount,
   EnForm,
   Ecard,
+  PageBackgroundRotation,
 } from "@4site/engrid-scripts"; // Uses ENGrid via NPM
 // import {
 //   Options,
@@ -12,7 +13,8 @@ import {
 //   DonationFrequency,
 //   DonationAmount,
 //   EnForm,
-//   Ecard
+//   Ecard,
+//   PageBackgroundRotation,
 // } from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
 
 import "./sass/main.scss";
@@ -241,6 +243,13 @@ const options: Options = {
       unsubscribeAllRadio.closest(".en__field")?.classList.add("hide");
     }
     new Quiz();
+    // The WWF theme stops painting the full-bleed page background below
+    // 1200px (see sass/themes/wwf-background-rotation.scss), so the rotation
+    // treats that as its mobile breakpoint
+    new PageBackgroundRotation({
+      mobileBreakpoint: "(max-width: 1200px)",
+      initialDelay: 7000,
+    });
     new Bridger();
     new GiftHistory();
     new Accessibility();
@@ -300,12 +309,33 @@ const options: Options = {
     }
   },
 };
+const isSpanish = window.pageJson?.locale?.toLowerCase().startsWith("es");
+
 (window as any).EngridTranslate = {
-  US: [
-    { field: "supporter.postcode", translation: "ZIP Code" },
-    { field: "transaction.shippostcode", translation: "Shipping ZIP Code" },
-    { field: "transaction.infpostcd", translation: "Recipient ZIP Code" },
+  es: [
+    { field: "supporter.postcode", translation: "Código Postal" },
+    {
+      field: "transaction.shippostcode",
+      translation: "Código Postal de envío",
+    },
+    {
+      field: "transaction.infpostcd",
+      translation: "Código Postal del Destinatario",
+    },
   ],
+  US: isSpanish
+    ? []
+    : [
+        { field: "supporter.postcode", translation: "ZIP Code" },
+        {
+          field: "transaction.shippostcode",
+          translation: "Shipping ZIP Code",
+        },
+        {
+          field: "transaction.infpostcd",
+          translation: "Recipient ZIP Code",
+        },
+      ],
 };
 // Trying to fix the issue of EN not running the onSubmit & onValidate functions
 // when you use digital wallets
