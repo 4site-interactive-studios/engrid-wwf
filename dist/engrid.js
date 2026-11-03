@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, November 3, 2026 @ 13:02:47 ET
+ *  Date: Tuesday, November 3, 2026 @ 14:51:38 ET
  *  By: pedroluan
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.7
@@ -32020,24 +32020,156 @@ const setUpdateCardLink = overlay => {
       toggle.click();
     }
   });
+}; // EN's recurring gift data has no frequency, but the giving history does
+// (recurringFrequency on each transaction). When every active recurring
+// gift has the same frequency, "recurring gift" becomes "monthly gift"
+// (or quarterly, semi-annual, annual) in the gadget label, the list header
+// and the edit screen heading. Mixed frequencies, or a gift we can't find
+// in the history, keep "recurring" there. The edit screen is for a single
+// gift, so its heading uses that gift's own frequency even when they're
+// mixed
+
+
+const giftFrequencyLabels = {
+  MONTHLY: "monthly",
+  QUARTERLY: "quarterly",
+  SEMI_ANNUAL: "semi-annual",
+  ANNUAL: "annual"
+}; // Frequency shared by all active gifts (null when mixed or unknown)
+
+let giftFrequency = null; // Frequency of each gift we could identify, by gift id
+
+const giftFrequencies = {}; // Gift opened in the edit screen (data-recurringtxnid of the clicked item)
+
+let selectedGiftId = null;
+
+const replaceRecurringGift = function (element) {
+  let label = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : giftFrequency;
+  if (!element || !label) return;
+  const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+  let node;
+
+  while (node = walker.nextNode()) {
+    const text = node.nodeValue || "";
+
+    if (text.includes("recurring gift")) {
+      node.nodeValue = text.replace(/recurring gift/g, `${label} gift`);
+    }
+  }
+}; // EN copies the gadget label into the overlay title when it opens, so the
+// title changes too (and ENgrid's overlay id, built from it)
+
+
+const applyGiftFrequency = () => {
+  replaceRecurringGift(document.querySelector('.en__component--hubgadget[data-componenttype="PLEDGE"] span')); // The overlay may already be open when the frequency arrives
+
+  updateOverlay();
+};
+
+const fetchJson = async url => {
+  const response = await fetch(url, {
+    credentials: "same-origin"
+  });
+  return response.json();
+}; // The donor's active recurring gifts, the same request EN makes when the
+// "Manage my recurring gift" gadget opens
+
+
+const fetchActiveGifts = async baseUrl => {
+  const json = await fetchJson(`${baseUrl}/pledge`);
+  const gifts = json?.data?.recurringTxns ?? [];
+  return gifts.filter(gift => gift.status === "ACTIVE");
+}; // The donor's giving history, the same request EN makes for the "My giving
+// summary" gadget. It only returns 10 rows per request (larger pages don't
+// return the usual response), so after the first one we fetch the rest at
+// once, up to 100 transactions
+
+
+const fetchTransactions = async baseUrl => {
+  const pageUrl = start => `${baseUrl}/txngiving/transaction?rows=10&start=${start}&inmem=true&nd=true&ev=true&p2p=true`;
+
+  const first = await fetchJson(pageUrl(0));
+  const total = Math.min(first?.pagination?.total ?? 0, 100);
+  const starts = [];
+
+  for (let start = 10; start < total; start += 10) starts.push(start);
+
+  const rest = await Promise.all(starts.map(start => fetchJson(pageUrl(start))));
+  return [first, ...rest].flatMap(json => json?.data ?? []);
+};
+
+const loadGiftFrequency = async () => {
+  const gadget = document.querySelector('.en__component--hubgadget[data-componenttype="PLEDGE"]');
+  const componentId = gadget?.dataset.componentid;
+  const pageId = window.location.pathname.match(/\/page\/(\d+)/)?.[1];
+  if (!componentId || !pageId) return;
+  const baseUrl = `/page/${pageId}/hubgadget/${componentId}`;
+  let gifts;
+  let transactions;
+
+  try {
+    [gifts, transactions] = await Promise.all([fetchActiveGifts(baseUrl), fetchTransactions(baseUrl)]);
+  } catch (error) {
+    return;
+  }
+
+  if (!gifts.length) return; // Gifts and transactions share no ID, so each gift is matched to the
+  // active recurring transactions charged on the same day of the month
+
+  const labels = new Set();
+  let hasUnknownGift = false;
+
+  for (const gift of gifts) {
+    const frequencies = new Set(transactions.filter(txn => txn.recurringPayment === "Y" && txn.recurringStatus === "ACTIVE" && Number(txn.recurringDay) === Number(gift.frequencyDay) && txn.recurringFrequency).map(txn => txn.recurringFrequency)); // Not in the history yet (new gift, or set up outside EN), or two gifts
+    // with different frequencies charged on the same day: unknown
+
+    const label = frequencies.size === 1 ? giftFrequencyLabels[[...frequencies][0]] : null;
+
+    if (!label) {
+      hasUnknownGift = true;
+      continue;
+    }
+
+    giftFrequencies[String(gift.id)] = label;
+    labels.add(label);
+  }
+
+  if (!hasUnknownGift && labels.size === 1) giftFrequency = [...labels][0];
+  applyGiftFrequency();
 };
 
 const updateOverlay = () => {
-  const overlay = document.querySelector("#huboverlay-manage-my-recurring-gift");
+  // Not the "#huboverlay-manage-my-recurring-gift" id: ENgrid builds it from
+  // the title, which changes to "monthly" (see applyGiftFrequency)
+  const overlay = document.querySelector(".en__hubOverlay--pledge .en__hubOverlay__popup");
   if (!overlay) return;
   stripGiftCurrency(overlay);
   applyDynamicMonthlyAskString(overlay);
   addOtherCurrencySymbol(overlay);
   setUpdateCardLink(overlay);
+  replaceRecurringGift(overlay.querySelector(".en__hubPledge__list__header")); // "Manage your $50 recurring gift", for the gift being edited. Runs after
+  // stripGiftCurrency, which looks for "recurring" to find the currency code
+
+  replaceRecurringGift(overlay.querySelector(".en__hubPledge__panel--copy h2"), selectedGiftId && giftFrequencies[selectedGiftId] || giftFrequency);
 };
 
 const supporterHubImprovements = () => {
-  // The overlay is injected/re-rendered by EN after load, so watch for it
+  // Remember which gift opens in the edit screen. Capture phase, so it runs
+  // before EN swaps the list for the edit screen
+  document.addEventListener("click", event => {
+    const item = event.target?.closest(".en__hubPledge__list__item");
+
+    if (item?.dataset.recurringtxnid) {
+      selectedGiftId = item.dataset.recurringtxnid;
+    }
+  }, true); // The overlay is injected/re-rendered by EN after load, so watch for it
+
   new MutationObserver(updateOverlay).observe(document.body, {
     childList: true,
     subtree: true
   });
   updateOverlay();
+  loadGiftFrequency();
 };
 ;// CONCATENATED MODULE: ./src/index.ts
  // Uses ENGrid via NPM
