@@ -19,7 +19,7 @@ import {
 
 import "./sass/main.scss";
 import { customScript } from "./scripts/main";
-import { pageHeaderFooter } from "./scripts/page-header-footer";
+// import { pageHeaderFooter } from "./scripts/page-header-footer";
 import DonationLightboxForm from "./scripts/donation-lightbox-form";
 import TweetToTarget from "./scripts/tweet-to-target";
 import { AnnualLimit } from "./scripts/annual-limit";
@@ -133,7 +133,7 @@ const options: Options = {
     (<any>window).DonationLightboxForm = DonationLightboxForm;
     new DonationLightboxForm(DonationAmount, DonationFrequency, App);
     customScript(App, DonationFrequency);
-    pageHeaderFooter(App); // Added this line to trigger pageHeaderFooter
+    // pageHeaderFooter(App); // Added this line to trigger pageHeaderFooter
     new TweetToTarget(App, EnForm);
     // Expand all contact sections on EMAILTOTARGET pages
     if (App.getPageType() === "EMAILTOTARGET") {
@@ -315,12 +315,33 @@ const options: Options = {
     }
   },
 };
+const isSpanish = window.pageJson?.locale?.toLowerCase().startsWith("es");
+
 (window as any).EngridTranslate = {
-  US: [
-    { field: "supporter.postcode", translation: "ZIP Code" },
-    { field: "transaction.shippostcode", translation: "Shipping ZIP Code" },
-    { field: "transaction.infpostcd", translation: "Recipient ZIP Code" },
+  es: [
+    { field: "supporter.postcode", translation: "Código Postal" },
+    {
+      field: "transaction.shippostcode",
+      translation: "Código Postal de envío",
+    },
+    {
+      field: "transaction.infpostcd",
+      translation: "Código Postal del Destinatario",
+    },
   ],
+  US: isSpanish
+    ? []
+    : [
+        { field: "supporter.postcode", translation: "ZIP Code" },
+        {
+          field: "transaction.shippostcode",
+          translation: "Shipping ZIP Code",
+        },
+        {
+          field: "transaction.infpostcd",
+          translation: "Recipient ZIP Code",
+        },
+      ],
 };
 // Trying to fix the issue of EN not running the onSubmit & onValidate functions
 // when you use digital wallets

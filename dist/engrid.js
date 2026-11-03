@@ -17,10 +17,10 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, October 28, 2026 @ 10:46:57 ET
+ *  Date: Tuesday, November 3, 2026 @ 12:56:52 ET
  *  By: pedroluan
  *  ENGrid styles: v0.28.3
- *  ENGrid scripts: v0.28.5
+ *  ENGrid scripts: v0.28.7
  *
  *  Created by 4Site Studios
  *  Come work with us or join our team, we would love to hear from you
@@ -11187,6 +11187,7 @@ const OptionsDefaults = {
     Debug: false,
     RememberMe: false,
     TidyContact: false,
+    TidyContactEmail: false,
     RegionLongFormat: "",
     CountryDisable: [],
     Placeholders: false,
@@ -13203,6 +13204,10 @@ class App extends engrid_ENGrid {
         // FreshAddress
         if (this.options.FreshAddress)
             new FreshAddress();
+        // TidyContact Email. Must stay below the window.enOnValidate assignment,
+        // so the TC Email bundle wraps ENgrid's hook instead of being overwritten by it.
+        if (this.options.TidyContactEmail)
+            new TidyContactEmail();
         new ShowIfAmount();
         new OtherAmount();
         new MinMaxAmount();
@@ -14823,6 +14828,7 @@ class DataAttributes {
 class iFrame {
     constructor() {
         this._form = en_form_EnForm.getInstance();
+        this.resizeObserver = null;
         this.logger = new logger_EngridLogger("iFrame", "brown", "gray", "📡");
         if (this.inIframe()) {
             // Add the data-engrid-embedded attribute when inside an iFrame if it wasn't already added by a script in the Page Template
@@ -14915,6 +14921,7 @@ class iFrame {
                 if (iframe) {
                     if (event.data.hasOwnProperty("frameHeight")) {
                         iframe.style.height = event.data.frameHeight + "px";
+                        this.logger.log(`iFrame Event - Resized iframe element to ${event.data.frameHeight}px`);
                         if (event.data.frameHeight > 0) {
                             iframe.classList.add("loaded");
                         }
@@ -14954,6 +14961,8 @@ class iFrame {
         // Scroll to top of iFrame
         this.logger.log("iFrame Event - window.onload");
         this.sendIframeHeight();
+        // Continuously re-send the height whenever the body size changes
+        this.observeHeightChanges();
         window.parent.postMessage({
             scroll: this.shouldScroll(),
         }, "*");
@@ -14962,15 +14971,39 @@ class iFrame {
         // matches it by Page ID to advance to the next queued iframe. Fires
         // exactly once per Thank-You-page load. See iframe-queue.ts.
         this.sendIframeQueueThankYouPing();
-        // On click fire the resize event
-        document.addEventListener("click", (e) => {
-            this.logger.log("iFrame Event - click");
-            setTimeout(() => {
-                this.sendIframeHeight();
-            }, 100);
-        });
         // Watch for errors and send the height
         engrid_ENGrid.watchForError(this.sendIframeHeight.bind(this));
+    }
+    /**
+     * Observes document.body for size changes (DOM mutations, font/image
+     * loads, CSS transitions) and re-sends the iframe height to the parent.
+     *
+     * Uses a leading + trailing throttle via debounceWithImmediate: the
+     * first change is sent immediately, and the settled height is always
+     * re-sent once changes stop for 120ms. Animated transitions therefore
+     * don't flood the parent page with one message per frame, but the
+     * parent always ends up matching the final resolved height.
+     */
+    observeHeightChanges() {
+        if (typeof ResizeObserver === "undefined") {
+            this.logger.log("ResizeObserver not supported in this browser");
+            return;
+        }
+        let lastSent = -1;
+        const throttledSend = this.debounceWithImmediate((_entries, _observer, immediate) => {
+            const height = document.body.offsetHeight;
+            // Skip redundant sends when the settled height is unchanged
+            if (height === lastSent) {
+                this.logger.log(`iFrame Event - ResizeObserver settled at unchanged height ${height}px, skipping send`);
+                return;
+            }
+            lastSent = height;
+            this.logger.log(`iFrame Event - ResizeObserver ${immediate ? "leading" : "trailing"} resize: sending height ${height}px`);
+            this.sendIframeHeight();
+        }, 120);
+        this.resizeObserver = new ResizeObserver(throttledSend);
+        this.resizeObserver.observe(document.body);
+        this.logger.log("iFrame Event - Observing body resize");
     }
     /**
      * Posts a `engrid-iframe-queue:thank-you` message to the parent window
@@ -15119,11 +15152,11 @@ class iFrame {
         return (...args) => {
             clearTimeout(timer);
             if (firstEvent) {
-                func.apply(this, args);
+                func.apply(this, [...args, true]);
                 firstEvent = false;
             }
             timer = setTimeout(() => {
-                func.apply(this, args);
+                func.apply(this, [...args, false]);
                 firstEvent = true;
             }, timeout);
         };
@@ -22476,6 +22509,91 @@ class TidyContact {
     }
 }
 
+;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/tidycontact-email.js
+
+// Same selector the TC Email bundle uses to find its own tag (script-config.ts)
+const TC_EMAIL_SCRIPT = "script[src*='raisemore-email'], script[data-raisemore-email]";
+const DEFAULT_RELAY_URL = "https://email-validator.4sitestudios.com";
+const DEFAULT_VERSION = "v1";
+class TidyContactEmail {
+    constructor() {
+        this.logger = new logger_EngridLogger("TidyContactEmail", "#FFFFFF", "#4d9068", "📧");
+        this.options = null;
+        const options = engrid_ENGrid.getOption("TidyContactEmail");
+        if (!options)
+            return;
+        this.options = options;
+        if (!this.shouldRun())
+            return;
+        this.loadScript();
+    }
+    shouldRun() {
+        var _a, _b;
+        if (!((_a = this.options) === null || _a === void 0 ? void 0 : _a.clientKey)) {
+            this.logger.danger("clientKey not set. TidyContact Email will not load.");
+            return false;
+        }
+        const searchParams = new URLSearchParams(window.location.search);
+        if (searchParams.has("bypassemailvalidation")) {
+            this.logger.log("Bypass Email Validation Enabled - not loading TidyContact Email");
+            return false;
+        }
+        const pageTypes = (_b = this.options.pageTypes) !== null && _b !== void 0 ? _b : [];
+        if (pageTypes.length > 0 &&
+            pageTypes.indexOf(engrid_ENGrid.getPageType()) === -1) {
+            this.logger.log("TidyContact Email is disabled on this page type");
+            return false;
+        }
+        if (!engrid_ENGrid.getField("supporter.emailAddress")) {
+            this.logger.log("E-mail Field Not Found");
+            return false;
+        }
+        if (engrid_ENGrid.getOption("NeverBounceAPI") ||
+            engrid_ENGrid.getOption("FreshAddress")) {
+            this.logger.danger("NeverBounce or FreshAddress is also enabled. Two email validators on one field is not supported, so TidyContact Email will not load.");
+            return false;
+        }
+        if (document.querySelector(TC_EMAIL_SCRIPT)) {
+            this.logger.log("TidyContact Email script already on the page (manual install). Not loading it again.");
+            return false;
+        }
+        return true;
+    }
+    loadScript() {
+        const options = this.options;
+        const relayUrl = (options.relayUrl || DEFAULT_RELAY_URL).replace(/\/+$/, "");
+        const script = document.createElement("script");
+        script.src =
+            options.scriptUrl ||
+                `${relayUrl}/embed/engrid/${options.version || DEFAULT_VERSION}/raisemore-email.js`;
+        script.setAttribute("data-raisemore-email", "");
+        script.setAttribute("data-relay-url", relayUrl);
+        script.setAttribute("data-client-key", options.clientKey);
+        // Only what the client set; everything else keeps TC Email's own defaults
+        const optional = [
+            ["timeout-ms", options.timeoutMs],
+            ["hard-block", options.hardBlock],
+            ["prefill-skip", options.prefillSkip],
+            ["en-recognition", options.enRecognition],
+        ];
+        optional.forEach(([name, value]) => {
+            if (value !== undefined && value !== null) {
+                script.setAttribute(`data-${name}`, String(value));
+            }
+        });
+        script.onload = () => {
+            engrid_ENGrid.setBodyData("tidycontact-email", "loaded");
+            this.logger.success(`Loaded ${script.src}`);
+        };
+        script.onerror = () => {
+            engrid_ENGrid.setBodyData("tidycontact-email", "error");
+            this.logger.danger(`Could not load ${script.src}. The form keeps working without email validation.`);
+        };
+        engrid_ENGrid.setBodyData("tidycontact-email", "loading");
+        document.body.appendChild(script);
+    }
+}
+
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/live-currency.js
 // This script enables live currency symbol and code to the page.
 
@@ -28180,10 +28298,11 @@ class PreferredPaymentMethod {
 }
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/version.js
-const AppVersion = "0.28.5";
+const AppVersion = "0.28.7";
 
 ;// CONCATENATED MODULE: ./node_modules/@4site/engrid-scripts/dist/index.js
  // Runs first so it can change the DOM markup before any markup dependent code fires
+
 
 
 
@@ -28357,7 +28476,7 @@ const customScript = function (App, DonationFrequency) {
   paymentMethods.forEach(label => {
     switch (label.getAttribute("for")) {
       case "give-by-select-card":
-        label.innerHTML = `<img class="credit-card-logos" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-payment-type_credit-cards.png" alt="Credit Card Logos" />`;
+        label.innerHTML = `<img class="credit-card-logos" src="https://acb0a5d73b67fccd4bbe-c2d8138f0ea10a18dd4c43ec3aa4240a.ssl.cf5.rackcdn.com/10114/donation-payment-type_credit-cards.png" alt="Credit Cards: Visa, Mastercard, Discover, American Express" />`;
         break;
 
       case "give-by-select-apple-google":
@@ -29298,297 +29417,6 @@ const customScript = function (App, DonationFrequency) {
     childList: true,
     subtree: true
   });
-};
-;// CONCATENATED MODULE: ./src/scripts/page-header-footer.js
-const pageHeaderFooter = function (App) {
-  // 4Site Code Start
-  const searchBtn = document.querySelector(".search-btn");
-
-  if (searchBtn) {
-    searchBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      window.location.href = "https://www.worldwildlife.org/search";
-    });
-  } // Converted to Vanilla JS and moved into Page Template
-  // if ("wwfHeader" in window) {
-  //   let wwfHeader = window.wwfHeader;
-  //   const contentHeader = document.querySelector(".content-header");
-  //   if (contentHeader) {
-  //     const shadedLight = document.createElement("div");
-  //     shadedLight.classList.add("shaded-light-pattern");
-  //     if (wwfHeader.toLowerCase().includes("panda")) {
-  //       shadedLight.classList.add("panda-nation");
-  //       wwfHeader = `Panda<span class='h2-orange'>Nation</span>`;
-  //     }
-  //     shadedLight.innerHTML = `
-  //     <div class="section-parts wrapper">
-  //       <div id="panda-nation-banner-header" class="row">
-  //         <div id="panda-nation-title" class="span5">
-  //           <h2>${wwfHeader}</h2>
-  //         </div>
-  //       </div>
-  //     </div>
-  //     `;
-  //     contentHeader.appendChild(shadedLight);
-  //     App.setBodyData("no-content-header", false);
-  //   }
-  // } else if (
-  //   "pageJson" in window &&
-  //   ["tweetpage", "advocacypetition", "emailtotarget"].includes(
-  //     window.pageJson.pageType
-  //   )
-  // ) {
-  //   const contentHeader = document.querySelector(".content-header");
-  //   if (contentHeader) {
-  //     const shadedLight = document.createElement("div");
-  //     shadedLight.classList.add("shaded-light-pattern");
-  //     shadedLight.innerHTML = `
-  //     <div class="section-parts wrapper">
-  //       <div id="panda-nation-banner-header" class="row">
-  //         <div id="panda-nation-title" class="span5">
-  //           <h2>Action Center</h2>
-  //         </div>
-  //       </div>
-  //     </div>
-  //     `;
-  //     contentHeader.appendChild(shadedLight);
-  //     App.setBodyData("no-content-header", false);
-  //   }
-  // }
-  // 4Site Code End
-
-
-  ((window, document) => {
-    var _self = {
-      headerNav: {
-        init: function () {
-          var _this = this;
-
-          _this.setVars();
-
-          _this.bindEvents();
-        },
-        setVars: function () {
-          const _this = _self.headerNav;
-          _this.$header = document.getElementById("header");
-          if (!_this.$header) return;
-          _this.$dropdown = _this.$header.querySelector("div.dropdown");
-          _this.$control = _this.$header.querySelectorAll(".control-expand");
-          _this.$accordionControls = _this.$header.querySelectorAll(".control-accordion");
-          _this.$actionNavControls = [..._this.$accordionControls].filter(el => /^action-nav.*/.test(el.getAttribute("aria-controls")));
-          _this.mobileHeaderMq = window.matchMedia("(max-width: 767px)");
-          _this.searchControls = _this.$header.querySelectorAll(".search-btn");
-        },
-        bindEvents: function () {
-          const _this = _self.headerNav;
-          if (!_this.$header) return;
-
-          _this.$control.forEach(control => {
-            control.addEventListener("click", _this.handleDropdownClick);
-          });
-
-          _this.$accordionControls.forEach(el => {
-            el.addEventListener("click", _this.handleAccordionClick);
-            el.addEventListener("mouseenter", _this.handleAccordionHover);
-            el.addEventListener("mouseleave", _this.handleAccordionHover);
-
-            _this.getPanel(el.getAttribute("aria-controls")).addEventListener("mouseleave", _this.handleDropdownHover);
-          });
-
-          document.addEventListener("click", _this.handleDocumentClick);
-
-          _this.searchControls.forEach(el => {
-            el.addEventListener("click", _this.handleAccordionClick);
-          });
-        },
-        handleDropdownClick: function (e) {
-          const _this = _self.headerNav;
-          const $target = e.currentTarget;
-
-          const $panel = _this.getPanel($target.getAttribute("aria-controls"));
-
-          if (!_this.$control[0].classList.contains("expanded") && _this.$control[0] === document.querySelector("#header .control.control-expand") || !_this.isPanelExpanded($panel) || !document.querySelector(".nav-content .dropdown.dropdown-expanded")) {
-            _this.$dropdown.classList.add("dropdown-expanded");
-
-            _this.$control.forEach(control => {
-              control.classList.add("expanded");
-            });
-          } else {
-            _this.$dropdown.classList.remove("dropdown-expanded");
-
-            _this.$control.forEach(control => {
-              control.classList.remove("expanded");
-            });
-          }
-
-          if (!_this.panelScrollTops) {
-            setTimeout(_this.setPanelScrollTops, 250);
-          }
-
-          document.querySelector("body").classList.toggle("freeze");
-          e.preventDefault();
-        },
-        handleAccordionClick: function (e) {
-          const _this = _self.headerNav;
-          const $target = e.currentTarget;
-
-          const $panel = _this.getPanel($target.getAttribute("aria-controls"));
-
-          if (_this.mobileHeaderMq.matches) {
-            const panelScrollTop = _this.getPanelScrollTop($panel);
-          }
-
-          if (_this.isPanelExpanded($panel)) {
-            _this.closePanel($panel, $target);
-
-            _this.setPanelHeight($panel, 0);
-
-            $target.classList.remove("expanded");
-          } else {
-            _this.closeExpandedPanels();
-
-            _this.expandPanel($panel, $target);
-
-            _this.setPanelHeight($panel, _this.getPanelHeight($panel.querySelectorAll(".nav-item-accordion-inner")));
-
-            $target.classList.add("expanded");
-
-            if (_this.mobileHeaderMq.matches && !$target === _this.$actionNavControls) {
-              _this.scrollToPanel(panelScrollTop);
-            }
-          }
-
-          e.preventDefault();
-        },
-        handleAccordionHover: function (e) {
-          const _this = _self.headerNav;
-          const $target = e.currentTarget;
-
-          const $panel = _this.getPanel($target.getAttribute("aria-controls"));
-
-          const isMouseenterClick = e.type === "mouseenter" && !_this.isPanelExpanded($panel);
-          const isMouseleaveClick = e.type === "mouseleave" && e.relatedTarget !== undefined && e.relatedTarget !== null && $panel.contains(e.relatedTarget) && !e.relatedTarget.classList.contains("nav-item") && !e.relatedTarget.classList.contains("action-link") && e.relatedTarget !== document.querySelectorAll("ul.nav.primary-nav")[0];
-
-          if ((isMouseenterClick || isMouseleaveClick) && _this.shouldHoverWork()) {
-            $target.click();
-          }
-        },
-        handleDropdownHover: function (e) {
-          const _this = _self.headerNav;
-          const $target = e.target;
-          const $control = document.querySelector(`[aria-controls=${$target.getAttribute("id")}]`);
-          const isMouseleaveClick = e.relatedTarget !== undefined && e.relatedTarget !== null && !($control === e.relatedTarget) && !e.relatedTarget.classList.contains("nav-item") && !e.relatedTarget.classList.contains("action-link") && !$control.contains(e.relatedTarget);
-
-          if (isMouseleaveClick && _this.shouldHoverWork()) {
-            $control.click();
-          }
-        },
-        handleDocumentClick: function (e) {
-          if (_self.headerNav.mobileHeaderMq.matches) {
-            // close any open menus (on mobile) with search click
-            const _this = _self.headerNav;
-            const clickFromInsideSearch = e.target.closest(".search")?.length === 1;
-
-            if (clickFromInsideSearch) {
-              _this.closeExpandedPanels();
-            }
-          } else {
-            // close any open menus (on desktop) with off-nav or off-search clicks
-            const _this = _self.headerNav;
-            const clickFromOutsideNavItem = e.target.closest(".nav-items") === null;
-            const clickFromOutsideSearch = e.target.closest(".search") === null;
-
-            if (clickFromOutsideNavItem && clickFromOutsideSearch) {
-              _this.closeExpandedPanels();
-            }
-          }
-        },
-        getPanel: function (id) {
-          return document.getElementById(id);
-        },
-        getPanelHeight: function ($el) {
-          return $el[0].getBoundingClientRect().height;
-        },
-        setPanelHeight: function ($el, height) {
-          const maxHeight = height + "px";
-          $el.style.maxHeight = maxHeight;
-        },
-        setPanelScrollTops: function () {
-          const _this = _self.headerNav;
-          _this.panelScrollTops = [];
-
-          _this.$accordionControls.forEach((el, index) => {
-            const $target = el;
-
-            const $panel = _this.getPanel($target.getAttribute("aria-controls"));
-
-            _this.panelScrollTops[index] = $panel.parentNode.getBoundingClientRect().top + window.scrollY;
-          });
-        },
-        getPanelScrollTop: function ($currentPanel) {
-          const _this = _self.headerNav;
-
-          _this.$accordionControls.forEach((el, index) => {
-            const $target = el;
-
-            const $panel = _this.getPanel($target.getAttribute("aria-controls"));
-
-            if ($panel[0] === $currentPanel[0]) {
-              _this.currentPanelScrollTop = _this.panelScrollTops[index];
-            }
-          });
-
-          return _this.currentPanelScrollTop;
-        },
-        scrollToPanel: function (panelScrollTop) {
-          const _this = _self.headerNav;
-
-          _this.$dropdown.scrollTop(panelScrollTop);
-        },
-        isPanelExpanded: function ($el) {
-          if ($el) {
-            const hiddenAttr = $el.getAttribute("hidden");
-            return hiddenAttr !== "" && hiddenAttr !== true && hiddenAttr === null;
-          } else {
-            return true;
-          }
-        },
-        shouldHoverWork: function () {
-          // only hover for desktop header on non-touch devices
-          // removing modenizr to simplify code
-          return !_self.headerNav.mobileHeaderMq.matches;
-        },
-        expandPanel: function ($el, $trigger) {
-          $trigger.setAttribute("aria-expanded", true);
-          $el.removeAttribute("hidden");
-        },
-        closePanel: function ($el, $trigger) {
-          // use delay to all for css fade-out
-          $trigger.setAttribute("aria-expanded", false);
-          $el.setAttribute("hidden", true);
-        },
-        closeExpandedPanels: function () {
-          const _this = _self.headerNav;
-
-          _this.$accordionControls.forEach(el => {
-            const $target = el;
-
-            const $panel = _this.getPanel($target.getAttribute("aria-controls"));
-
-            if (_this.isPanelExpanded($panel)) {
-              _this.closePanel($panel, $target);
-
-              _this.setPanelHeight($panel, 0);
-
-              $target.classList.toggle("expanded");
-            }
-          });
-        }
-      }
-    };
-
-    _self.headerNav.init();
-  })(window, document);
 };
 // EXTERNAL MODULE: ./node_modules/smoothscroll-polyfill/dist/smoothscroll.js
 var smoothscroll = __webpack_require__(523);
@@ -31908,7 +31736,7 @@ class Accessibility {
       });
       tabButton.classList.add("other-amount-tab-button");
       tabButton.style.width = `${otherAmountField.offsetWidth}px`;
-      tabButton.style.height = `${otherAmountField.offsetHeight}px`;
+      tabButton.style.height = `${otherAmountField.offsetHeight + 6}px`;
       otherAmountField.parentNode?.insertBefore(tabButton, otherAmountField);
       otherAmountField.setAttribute("tabindex", "-1");
       donationAmount.onAmountChange.subscribe(() => {
@@ -32224,7 +32052,7 @@ const supporterHubImprovements = () => {
 // } from "../../engrid/packages/scripts"; // Uses ENGrid via Visual Studio Workspace
 
 
-
+ // import { pageHeaderFooter } from "./scripts/page-header-footer";
 
 
 
@@ -32327,8 +32155,7 @@ const options = {
     new AnnualLimit();
     window.DonationLightboxForm = DonationLightboxForm;
     new DonationLightboxForm(DonationAmount, DonationFrequency, App);
-    customScript(App, DonationFrequency);
-    pageHeaderFooter(App); // Added this line to trigger pageHeaderFooter
+    customScript(App, DonationFrequency); // pageHeaderFooter(App); // Added this line to trigger pageHeaderFooter
 
     new TweetToTarget(App, en_form_EnForm); // Expand all contact sections on EMAILTOTARGET pages
 
@@ -32482,8 +32309,19 @@ const options = {
     }
   }
 };
+const isSpanish = window.pageJson?.locale?.toLowerCase().startsWith("es");
 window.EngridTranslate = {
-  US: [{
+  es: [{
+    field: "supporter.postcode",
+    translation: "Código Postal"
+  }, {
+    field: "transaction.shippostcode",
+    translation: "Código Postal de envío"
+  }, {
+    field: "transaction.infpostcd",
+    translation: "Código Postal del Destinatario"
+  }],
+  US: isSpanish ? [] : [{
     field: "supporter.postcode",
     translation: "ZIP Code"
   }, {

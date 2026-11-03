@@ -39,7 +39,7 @@ export default class Accessibility {
       });
       tabButton.classList.add("other-amount-tab-button");
       tabButton.style.width = `${otherAmountField.offsetWidth}px`;
-      tabButton.style.height = `${otherAmountField.offsetHeight}px`;
+      tabButton.style.height = `${otherAmountField.offsetHeight + 6}px`;
       otherAmountField.parentNode?.insertBefore(tabButton, otherAmountField);
       otherAmountField.setAttribute("tabindex", "-1");
       donationAmount.onAmountChange.subscribe(() => {
