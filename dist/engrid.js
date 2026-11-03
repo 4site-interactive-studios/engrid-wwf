@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, November 3, 2026 @ 12:57:39 ET
+ *  Date: Tuesday, November 3, 2026 @ 13:04:02 ET
  *  By: pedroluan
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.7
@@ -32245,12 +32245,12 @@ const getSelectedAmount = field => {
   const checkedAmount = checked ? parseFloat(checked.value) : NaN;
   return isNaN(checkedAmount) ? null : checkedAmount;
 }; // Replace the fixed amount buttons with the donor's Sustainer Upgrade Ask String,
-// defined by the page's code block (const sustainerUpgradeAsk = "{user_data~Sustainer Upgrade Ask String}")
+// defined by the page's code block (const dynamicMonthlyAskString = "{user_data~Sustainer Upgrade Ask String}")
 
 
-const applySustainerUpgradeAsk = overlay => {
-  if (typeof sustainerUpgradeAsk !== "string") return;
-  const amounts = sustainerUpgradeAsk.split(",").map(amount => parseFloat(amount.trim())).filter(amount => !isNaN(amount) && amount > 0);
+const applyDynamicMonthlyAskString = overlay => {
+  if (typeof dynamicMonthlyAskString !== "string") return;
+  const amounts = dynamicMonthlyAskString.split(",").map(amount => parseFloat(amount.trim())).filter(amount => !isNaN(amount) && amount > 0);
   if (!amounts.length) return;
   const container = overlay.querySelector(".en__field--donationAmt .en__field__element--radio");
   if (!container || container.hasAttribute("data-engrid-ask-applied")) return;
@@ -32399,7 +32399,7 @@ const updateOverlay = () => {
   if (!overlay) return;
   if (isAutoOpenHub()) trackRecurringUpgrade(overlay);
   stripGiftCurrency(overlay);
-  applySustainerUpgradeAsk(overlay);
+  applyDynamicMonthlyAskString(overlay);
   addOtherCurrencySymbol(overlay);
   setUpdateCardLink(overlay);
 };

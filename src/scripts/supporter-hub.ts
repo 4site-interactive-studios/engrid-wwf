@@ -1,4 +1,4 @@
-declare const sustainerUpgradeAsk: string | undefined;
+declare const dynamicMonthlyAskString: string | undefined;
 
 // The heading is rendered as "Manage your $5 USD recurring gift". Drop
 // the currency code right before "recurring" (e.g. "USD", "EUR")
@@ -65,10 +65,10 @@ const getSelectedAmount = (field: Element): number | null => {
 };
 
 // Replace the fixed amount buttons with the donor's Sustainer Upgrade Ask String,
-// defined by the page's code block (const sustainerUpgradeAsk = "{user_data~Sustainer Upgrade Ask String}")
-const applySustainerUpgradeAsk = (overlay: Element) => {
-  if (typeof sustainerUpgradeAsk !== "string") return;
-  const amounts = sustainerUpgradeAsk
+// defined by the page's code block (const dynamicMonthlyAskString = "{user_data~Sustainer Upgrade Ask String}")
+const applyDynamicMonthlyAskString = (overlay: Element) => {
+  if (typeof dynamicMonthlyAskString !== "string") return;
+  const amounts = dynamicMonthlyAskString
     .split(",")
     .map((amount) => parseFloat(amount.trim()))
     .filter((amount) => !isNaN(amount) && amount > 0);
@@ -236,7 +236,7 @@ const updateOverlay = () => {
   if (!overlay) return;
   if (isAutoOpenHub()) trackRecurringUpgrade(overlay);
   stripGiftCurrency(overlay);
-  applySustainerUpgradeAsk(overlay);
+  applyDynamicMonthlyAskString(overlay);
   addOtherCurrencySymbol(overlay);
   setUpdateCardLink(overlay);
 };
