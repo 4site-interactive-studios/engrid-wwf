@@ -197,6 +197,7 @@
 }
 [data-engrid-layout="leftleft1col"][data-engrid-subtheme="new-leftleft"] {
   #header {
+    background: var(--engrid__body-main_background-color);
     border-bottom: 0 !important;
     .container {
       padding: 32px 40px;
