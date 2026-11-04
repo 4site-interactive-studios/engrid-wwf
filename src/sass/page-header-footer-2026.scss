@@ -180,6 +180,11 @@
   --h1_font-size: 46px;
 }
 [data-engrid-layout="leftleft1col"][data-engrid-subtheme="new-leftleft"] {
+  #header {
+    background: var(--engrid__body-main_background-color);
+    border-bottom: 0px;
+    padding: var(--engrid__body-title_padding);
+  }
   #footer {
     border-top: 1px solid #ccc;
     .container {
