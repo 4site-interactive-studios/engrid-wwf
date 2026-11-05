@@ -30,7 +30,9 @@ import { Bridger } from "./scripts/Bridger";
 
 import { Quiz } from "./scripts/quiz";
 import GiftHistory from "./scripts/gift-history";
+import { SupporterHubAutoOpen } from "./scripts/supporter-hub-auto-open";
 import Accessibility from "./scripts/accessibility";
+import { supporterHubImprovements } from "./scripts/supporter-hub";
 
 const options: Options = {
   AutoYear: true,
@@ -252,8 +254,14 @@ const options: Options = {
     });
     new Bridger();
     new GiftHistory();
+    new SupporterHubAutoOpen();
     new Accessibility();
     new Ecard();
+
+    // Supporter Hub customizations
+    if (App.getPageType() === "SUPPORTERHUB") {
+      supporterHubImprovements();
+    }
   },
   onResize: () => console.log("Starter Theme Window Resized"),
 
