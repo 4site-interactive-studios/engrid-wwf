@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, November 4, 2026 @ 14:44:57 ET
+ *  Date: Thursday, November 5, 2026 @ 09:10:50 ET
  *  By: pedroluan
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.7
@@ -31829,6 +31829,13 @@ class SupporterHubAutoOpen {
   }
 
   reopen() {
+    // "Back to my gifts" closes the overlay on purpose, so it isn't a loop
+    // and doesn't count towards the reopen limit
+    if (this.isReturningToList) {
+      this.open();
+      return;
+    }
+
     const now = Date.now();
     this.reopenTimestamps = this.reopenTimestamps.filter(time => now - time < this.reopenWindow);
 
@@ -32407,11 +32414,23 @@ const giftFrequencyLabels = {
   QUARTERLY: "quarterly",
   SEMI_ANNUAL: "semi-annual",
   ANNUAL: "annual"
+}; // Months between two payments, to tell apart gifts charged on the same day
+
+const giftFrequencyMonths = {
+  MONTHLY: 1,
+  QUARTERLY: 3,
+  SEMI_ANNUAL: 6,
+  ANNUAL: 12
 }; // Frequency shared by all active gifts (null when mixed or unknown)
 
 let giftFrequency = null; // Frequency of each gift we could identify, by gift id
 
-const giftFrequencies = {}; // Gift opened in the edit screen (data-recurringtxnid of the clicked item)
+let giftFrequencies = {}; // Gift ids the frequencies above were computed for, and the last list of
+// ids we refreshed for (see refreshGiftFrequency)
+
+let loadedGiftIds = "";
+let refreshedGiftIds = "";
+let isLoadingGiftFrequency = false; // Gift opened in the edit screen (data-recurringtxnid of the clicked item)
 
 let selectedGiftId = null;
 
@@ -32468,9 +32487,37 @@ const fetchTransactions = async baseUrl => {
 
   const rest = await Promise.all(starts.map(start => fetchJson(pageUrl(start))));
   return [first, ...rest].flatMap(json => json?.data ?? []);
+}; // Months since year 0, to compare dates by month (UTC, like EN's dates)
+
+
+const monthIndex = time => {
+  const date = new Date(time);
+  return date.getUTCFullYear() * 12 + date.getUTCMonth();
+}; // The frequencies charged on the gift's day of the month. When there's more
+// than one (e.g. a monthly and an annual gift both charged on the 3rd), keep
+// the one whose last payment plus its interval falls in the month of the
+// gift's next payment
+
+
+const findGiftFrequencies = (gift, transactions) => {
+  const sameDay = transactions.filter(txn => txn.recurringPayment === "Y" && txn.recurringStatus === "ACTIVE" && Number(txn.recurringDay) === Number(gift.frequencyDay) && txn.recurringFrequency);
+  const frequencies = new Set(sameDay.map(txn => txn.recurringFrequency));
+  if (frequencies.size <= 1 || !gift.nextPaymentDate) return frequencies;
+  const nextMonth = monthIndex(gift.nextPaymentDate);
+  return new Set([...frequencies].filter(frequency => sameDay.some(txn => txn.recurringFrequency === frequency && monthIndex(txn.createdOn) + (giftFrequencyMonths[frequency] ?? 0) === nextMonth)));
 };
 
 const loadGiftFrequency = async () => {
+  isLoadingGiftFrequency = true;
+
+  try {
+    await computeGiftFrequency();
+  } finally {
+    isLoadingGiftFrequency = false;
+  }
+};
+
+const computeGiftFrequency = async () => {
   const gadget = document.querySelector('.en__component--hubgadget[data-componenttype="PLEDGE"]');
   const componentId = gadget?.dataset.componentid;
   const pageId = window.location.pathname.match(/\/page\/(\d+)/)?.[1];
@@ -32485,15 +32532,18 @@ const loadGiftFrequency = async () => {
     return;
   }
 
-  if (!gifts.length) return; // Gifts and transactions share no ID, so each gift is matched to the
+  if (!gifts.length) return;
+  giftFrequency = null;
+  giftFrequencies = {};
+  loadedGiftIds = gifts.map(gift => String(gift.id)).sort().join(","); // Gifts and transactions share no ID, so each gift is matched to the
   // active recurring transactions charged on the same day of the month
 
   const labels = new Set();
   let hasUnknownGift = false;
 
   for (const gift of gifts) {
-    const frequencies = new Set(transactions.filter(txn => txn.recurringPayment === "Y" && txn.recurringStatus === "ACTIVE" && Number(txn.recurringDay) === Number(gift.frequencyDay) && txn.recurringFrequency).map(txn => txn.recurringFrequency)); // Not in the history yet (new gift, or set up outside EN), or two gifts
-    // with different frequencies charged on the same day: unknown
+    const frequencies = findGiftFrequencies(gift, transactions); // Not in the history yet (new gift, or set up outside EN), or same-day
+    // gifts we couldn't tell apart: unknown
 
     const label = frequencies.size === 1 ? giftFrequencyLabels[[...frequencies][0]] : null;
 
@@ -32508,6 +32558,21 @@ const loadGiftFrequency = async () => {
 
   if (!hasUnknownGift && labels.size === 1) giftFrequency = [...labels][0];
   applyGiftFrequency();
+}; // The frequencies are computed when the page loads. If the list of gifts
+// changes after that (e.g. the donor cancels one), compute them again, so
+// "recurring" can become "monthly" once the annual gift is gone. Each new
+// list is refreshed only once, so a mismatch can't cause a request loop
+
+
+const refreshGiftFrequency = overlay => {
+  const listedGiftIds = Array.from(overlay.querySelectorAll(".en__hubPledge__list__item[data-recurringtxnid]")).map(item => item.dataset.recurringtxnid).sort().join(",");
+
+  if (!listedGiftIds || !loadedGiftIds || isLoadingGiftFrequency || listedGiftIds === loadedGiftIds || listedGiftIds === refreshedGiftIds) {
+    return;
+  }
+
+  refreshedGiftIds = listedGiftIds;
+  loadGiftFrequency();
 };
 
 const updateOverlay = () => {
@@ -32520,6 +32585,7 @@ const updateOverlay = () => {
   applyDynamicMonthlyAskString(overlay);
   addOtherCurrencySymbol(overlay);
   setUpdateCardLink(overlay);
+  refreshGiftFrequency(overlay);
   replaceRecurringGift(overlay.querySelector(".en__hubPledge__list__header")); // "Manage your $50 recurring gift", for the gift being edited. Runs after
   // stripGiftCurrency, which looks for "recurring" to find the currency code
 

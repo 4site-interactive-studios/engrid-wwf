@@ -131,6 +131,12 @@ export class SupporterHubAutoOpen {
   }
 
   private reopen() {
+    // "Back to my gifts" closes the overlay on purpose, so it isn't a loop
+    // and doesn't count towards the reopen limit
+    if (this.isReturningToList) {
+      this.open();
+      return;
+    }
     const now = Date.now();
     this.reopenTimestamps = this.reopenTimestamps.filter(
       (time) => now - time < this.reopenWindow
