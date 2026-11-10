@@ -1,4 +1,9 @@
+import { EngridLogger } from "@4site/engrid-scripts";
+
 declare const dynamicMonthlyAskString: string | undefined;
+
+// Shown in the console with ?debug=true
+const logger = new EngridLogger("SupporterHub", "black", "pink", "🛖");
 
 // The heading is rendered as "Manage your $5 USD recurring gift". Drop
 // the currency code right before "recurring" (e.g. "USD", "EUR")
@@ -307,18 +312,35 @@ const fetchActiveGifts = async (baseUrl: string) => {
 };
 
 // The donor's giving history, the same request EN makes for the "My giving
-// summary" gadget. It only returns 10 rows per request (larger pages don't
-// return the usual response), so after the first one we fetch the rest at
-// once, up to 100 transactions
+// summary" gadget. Only the last 13 months are needed: every active gift
+// (annual at most) was charged in that window, unless it's brand new. EN
+// returns at most 10 rows per request (more is a 400), so after the first
+// one we fetch the rest 5 at a time, up to 50 requests (500 transactions).
+// A failed page is skipped instead of failing the whole history
 const fetchTransactions = async (baseUrl: string) => {
+  const since = new Date();
+  since.setMonth(since.getMonth() - 13);
+  const startDate = `${since.getFullYear()}${String(
+    since.getMonth() + 1
+  ).padStart(2, "0")}${String(since.getDate()).padStart(2, "0")}`;
   const pageUrl = (start: number) =>
-    `${baseUrl}/txngiving/transaction?rows=10&start=${start}&inmem=true&nd=true&ev=true&p2p=true`;
+    `${baseUrl}/txngiving/transaction?rows=10&start=${start}&startDate=${startDate}&inmem=true&nd=true&ev=true&p2p=true`;
   const first = await fetchJson(pageUrl(0));
-  const total = Math.min(first?.pagination?.total ?? 0, 100);
-  const starts: number[] = [];
-  for (let start = 10; start < total; start += 10) starts.push(start);
-  const rest = await Promise.all(starts.map((start) => fetchJson(pageUrl(start))));
-  return [first, ...rest].flatMap((json) => json?.data ?? []) as any[];
+  const total = Math.min(first?.pagination?.total ?? 0, 500);
+  const pages = [first];
+  for (let start = 10; start < total; start += 50) {
+    const batch: number[] = [];
+    for (let i = start; i < Math.min(start + 50, total); i += 10) batch.push(i);
+    const results = await Promise.all(
+      batch.map((i) => fetchJson(pageUrl(i)).catch(() => null))
+    );
+    pages.push(...results);
+  }
+  const transactions = pages.flatMap((json) => json?.data ?? []) as any[];
+  logger.log(
+    `Giving history: ${transactions.length} of ${first?.pagination?.total} transactions since ${startDate}`
+  );
+  return transactions;
 };
 
 // Months since year 0, to compare dates by month (UTC, like EN's dates)
@@ -330,7 +352,10 @@ const monthIndex = (time: number) => {
 // The frequencies charged on the gift's day of the month. When there's more
 // than one (e.g. a monthly and an annual gift both charged on the 3rd), keep
 // the one whose last payment plus its interval falls in the month of the
-// gift's next payment
+// gift's next payment. If that still leaves more than one, keep the one
+// whose last payment has the gift's amount.
+// Note: EN keeps recurringStatus "ACTIVE" on the history of canceled gifts,
+// so canceled gifts on the same day also show up here
 const findGiftFrequencies = (gift: any, transactions: any[]) => {
   const sameDay = transactions.filter(
     (txn) =>
@@ -343,8 +368,9 @@ const findGiftFrequencies = (gift: any, transactions: any[]) => {
     sameDay.map((txn) => txn.recurringFrequency)
   );
   if (frequencies.size <= 1 || !gift.nextPaymentDate) return frequencies;
+
   const nextMonth = monthIndex(gift.nextPaymentDate);
-  return new Set<string>(
+  const byInterval = new Set<string>(
     [...frequencies].filter((frequency) =>
       sameDay.some(
         (txn) =>
@@ -352,6 +378,18 @@ const findGiftFrequencies = (gift: any, transactions: any[]) => {
           monthIndex(txn.createdOn) + (giftFrequencyMonths[frequency] ?? 0) ===
             nextMonth
       )
+    )
+  );
+  if (byInterval.size <= 1) return byInterval;
+
+  const lastPayment = (frequency: string) =>
+    sameDay
+      .filter((txn) => txn.recurringFrequency === frequency)
+      .sort((a, b) => b.createdOn - a.createdOn)[0];
+  return new Set<string>(
+    [...byInterval].filter(
+      (frequency) =>
+        parseFloat(lastPayment(frequency)?.amount) === parseFloat(gift.amount)
     )
   );
 };
@@ -403,6 +441,15 @@ const computeGiftFrequency = async () => {
     // gifts we couldn't tell apart: unknown
     const label =
       frequencies.size === 1 ? giftFrequencyLabels[[...frequencies][0]] : null;
+    logger.log(
+      `Gift ${gift.id} ($${gift.amount}, day ${gift.frequencyDay}, next ${
+        gift.nextPaymentDate
+          ? new Date(gift.nextPaymentDate).toISOString().slice(0, 10)
+          : "-"
+      }): ${frequencies.size ? [...frequencies].join("/") : "no match"} -> ${
+        label ?? "recurring"
+      }`
+    );
     if (!label) {
       hasUnknownGift = true;
       continue;
@@ -441,6 +488,26 @@ const refreshGiftFrequency = (overlay: Element) => {
   loadGiftFrequency();
 };
 
+// The overlay title ("Manage my recurring gift") comes from the gadget label.
+// On the edit screen it shows the frequency of the gift being edited, and on
+// the list it goes back to the label for all gifts
+const updateOverlayTitle = (overlay: Element) => {
+  const title = overlay.querySelector<HTMLElement>(".en__hubOverlay__header h2");
+  if (!title) return;
+  if (title.dataset.engridTitle === undefined) {
+    title.dataset.engridTitle = title.textContent || "";
+  }
+  const isEditing = !!overlay.querySelector(".en__hubPledge__state");
+  const label =
+    (isEditing && selectedGiftId && giftFrequencies[selectedGiftId]) ||
+    giftFrequency;
+  const original = title.dataset.engridTitle;
+  const text = label
+    ? original.replace(/recurring gift/g, `${label} gift`)
+    : original;
+  if (title.textContent !== text) title.textContent = text;
+};
+
 const updateOverlay = () => {
   // Not the "#huboverlay-manage-my-recurring-gift" id: ENgrid builds it from
   // the title, which changes to "monthly" (see applyGiftFrequency)
@@ -454,6 +521,7 @@ const updateOverlay = () => {
   addOtherCurrencySymbol(overlay);
   setUpdateCardLink(overlay);
   refreshGiftFrequency(overlay);
+  updateOverlayTitle(overlay);
   replaceRecurringGift(overlay.querySelector(".en__hubPledge__list__header"));
   // "Manage your $50 recurring gift", for the gift being edited. Runs after
   // stripGiftCurrency, which looks for "recurring" to find the currency code
