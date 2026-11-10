@@ -1631,7 +1631,14 @@
       ::before {
         color: red;
       }
-      --input_padding: 17px 0;
+      // Inputs can't shrink below line-height: normal, so padding alone made
+      // "Other" taller than the amount buttons. Fixed height = button height.
+      --input_padding: 0;
+      height: 66px;
+
+      @media screen and (max-width: 600px) {
+        height: 56px;
+      }
       font-size: var(--donation-amount__button_font-size);
       font-weight: 700;
       justify-content: center;
@@ -2987,6 +2994,45 @@ button[data-balloon] {
 
   .body-main {
     border: none;
+  }
+
+  // The body-main grid track was growing to the min-content width of wide
+  // children (e.g. the alternative payment badges), pushing the form off-center
+  // and past the right edge on phones
+  .body-main > * {
+    min-width: 0;
+  }
+
+  // body-main has 29px side padding here, so the fixed badge columns stop
+  // fitting before 375px; use the fluid columns earlier
+  @media screen and (max-width: 410px) {
+    .alternative-donation-methods p:has(img.cn-bbb) {
+      grid-template-columns:
+        minmax(0, 1fr) minmax(0, 101fr) minmax(0, 190fr) minmax(0, 101fr)
+        minmax(0, 1fr);
+    }
+  }
+
+  // Monthly upsell arrow: pin it to the right edge (pointing at "Give monthly")
+  // instead of following where the last text line ends
+  @media screen and (max-width: 500px) {
+    .inline-upsell-box {
+      padding-left: 2rem;
+      padding-right: 2rem;
+
+      svg {
+        left: auto;
+        right: 0;
+        margin-left: 0;
+      }
+    }
+  }
+
+  @media screen and (max-width: 400px) {
+    .inline-upsell-box svg {
+      width: 32px;
+      height: 48px;
+    }
   }
 
   #footer {

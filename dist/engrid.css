@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, November 10, 2026 @ 15:18:31 ET
+ *  Date: Tuesday, November 10, 2026 @ 15:32:23 ET
  *  By: pedroluan
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.7
@@ -9746,15 +9746,21 @@ body[data-engrid-debug]:before{
   outline:none;
 }
 [data-engrid-theme=wwf] .radio-to-buttons_donationAmt .en__field--donationAmt .en__field__input--other{
-  --input_padding:17px 0;
+  --input_padding:0;
   font-size:var(--donation-amount__button_font-size);
   font-weight:700;
+  height:66px;
   justify-content:center;
   line-height:var(--donation-amount__button_line-height);
   outline:none;
 }
 [data-engrid-theme=wwf] .radio-to-buttons_donationAmt .en__field--donationAmt .en__field__input--other :before{
   color:red;
+}
+@media screen and (max-width:600px){
+  [data-engrid-theme=wwf] .radio-to-buttons_donationAmt .en__field--donationAmt .en__field__input--other{
+    height:56px;
+  }
 }
 [data-engrid-theme=wwf] .radio-to-buttons_donationAmt .en__field--donationAmt .en__field__item--other{
   position:relative;
@@ -10725,6 +10731,31 @@ body[data-engrid-debug]:before{
 }
 [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .body-main{
   border:none;
+}
+[data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .body-main>*{
+  min-width:0;
+}
+@media screen and (max-width:410px){
+  [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .alternative-donation-methods p:has(img.cn-bbb){
+    grid-template-columns:minmax(0, 1fr) minmax(0, 101fr) minmax(0, 190fr) minmax(0, 101fr) minmax(0, 1fr);
+  }
+}
+@media screen and (max-width:500px){
+  [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .inline-upsell-box{
+    padding-left:2rem;
+    padding-right:2rem;
+  }
+  [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .inline-upsell-box svg{
+    left:auto;
+    margin-left:0;
+    right:0;
+  }
+}
+@media screen and (max-width:400px){
+  [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .inline-upsell-box svg{
+    height:48px;
+    width:32px;
+  }
 }
 [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] #footer{
   border-top:1px solid #ccc;
