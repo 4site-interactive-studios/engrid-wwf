@@ -371,6 +371,18 @@
     background-color: transparent; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
   }
 
+  // "Give once" and "Give monthly" always share the same height
+  // (the heart icon + text wrapping made "Give monthly" taller on phones)
+  .radio-to-buttons_recurrfreq
+    .en__field--recurrfreq.en__field--radio
+    > .en__field__element--radio {
+    align-items: stretch;
+
+    > .en__field__item > .en__field__label--item {
+      height: 100%;
+    }
+  }
+
   .en__component--dd360search p {
     color: var(--label_color);
     font-size: var(--label_font-size);
@@ -1653,6 +1665,13 @@
         padding-left: 34px;
         font-weight: 400;
         border-color: var(--donation-amount__button_border-color);
+
+        // Match the amount buttons: no inset shadow / grey fill, which made the
+        // rounded corners look different from the buttons
+        &:not(:focus) {
+          background-color: #ffffff;
+          box-shadow: none;
+        }
       }
 
       &:before {

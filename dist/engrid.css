@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, November 10, 2026 @ 15:32:23 ET
+ *  Date: Tuesday, November 10, 2026 @ 15:37:53 ET
  *  By: pedroluan
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.7
@@ -8944,6 +8944,12 @@ body[data-engrid-debug]:before{
   margin-right:.5rem;
   min-width:0;
   width:20px;
+}
+[data-engrid-theme=wwf] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio>.en__field__element--radio{
+  align-items:stretch;
+}
+[data-engrid-theme=wwf] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio>.en__field__element--radio>.en__field__item>.en__field__label--item{
+  height:100%;
 }
 [data-engrid-theme=wwf] .en__component--dd360search p{
   color:var(--label_color);
