@@ -47,7 +47,7 @@
   --engrid__body-top_background-color: transparent;
   --engrid__body-main_background-color: #fefcf9;
 
-  --engrid__content-header_background-color: #000000;
+  --engrid__content-header_background-color: #f9f3eb;
   --engrid__content-footer_background-color: #ffffff;
 
   --engrid__body_box-shadow: none;
@@ -283,6 +283,10 @@
   font-size: 20px;
   line-height: 32px;
 
+  .shaded-light-pattern { 
+    margin-left: 22px;
+  }
+  
   .body-main {
     --p_font-size: var(--default_font-size);
     --p_line-height: var(--default_line-height);
