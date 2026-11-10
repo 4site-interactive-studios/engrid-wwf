@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, November 10, 2026 @ 15:06:28 ET
+ *  Date: Tuesday, November 10, 2026 @ 15:18:31 ET
  *  By: pedroluan
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.7
@@ -8889,8 +8889,21 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf] .body-bannerOverlay,[data-engrid-theme=wwf] .body-bottom,[data-engrid-theme=wwf] .body-footer,[data-engrid-theme=wwf] .body-footerOutside,[data-engrid-theme=wwf] .body-header,[data-engrid-theme=wwf] .body-headerOutside,[data-engrid-theme=wwf] .content-footerSpacer,[data-engrid-theme=wwf] .content-preFooter,[data-engrid-theme=wwf] .page-alert,[data-engrid-theme=wwf] .page-backgroundImageOverlay,[data-engrid-theme=wwf] [data-engrid-layout=leftleft1col][data-engrid-subtheme=new-leftleft] .content-footer,[data-engrid-theme=wwf] [data-engrid-layout=leftleft1col][data-engrid-subtheme=new-leftleft] .content-header{
   display:none !important;
 }
+[data-engrid-theme=wwf] form>.en__component--advrow>.content-header:has(>.shaded-light-pattern){
+  grid-template-columns:subgrid;
+}
 [data-engrid-theme=wwf] .shaded-light-pattern{
-  margin-left:22px;
+  display:grid;
+  grid-template-columns:subgrid;
+}
+[data-engrid-theme=wwf] .shaded-light-pattern>.wrapper{
+  grid-column:bc;
+  margin:var(--engrid__body_margin);
+}
+@media screen and (max-width:600px){
+  [data-engrid-theme=wwf] .shaded-light-pattern>.wrapper{
+    padding:var(--engrid__body-title_padding);
+  }
 }
 [data-engrid-theme=wwf] .body-main{
   --p_font-size:var(--default_font-size);
