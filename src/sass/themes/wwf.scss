@@ -283,24 +283,9 @@
   font-size: 20px;
   line-height: 32px;
 
-  // Action Center bar: uses the page row's columns (subgrid) so the title
-  // always lines up with the body content ("Pledge to be a Steward..." column)
-  form > .en__component--advrow > .content-header:has(> .shaded-light-pattern) {
-    grid-template-columns: subgrid;
-  }
-
+  // Remove Action Center bar
   .shaded-light-pattern {
-    display: grid;
-    grid-template-columns: subgrid;
-
-    > .wrapper {
-      grid-column: bc;
-      margin: var(--engrid__body_margin);
-
-      @media screen and (max-width: 600px) {
-        padding: var(--engrid__body-title_padding);
-      }
-    }
+    display: none;
   }
 
   .body-main {
