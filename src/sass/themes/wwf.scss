@@ -2715,6 +2715,21 @@
     }
   }
 }
+// reCAPTCHA is a fixed 304px widget inside a 320px box. Below ~345px it
+// overflowed the page (horizontal scroll), so the layout stopped looking centered
+.en__captcha {
+  width: auto;
+  max-width: 100%;
+}
+
+@media screen and (max-width: 345px) {
+  .en__captcha .g-recaptcha {
+    transform: scale(0.9);
+    transform-origin: left top;
+    margin-bottom: -8px;
+  }
+}
+
 @media screen and (max-width: 400px) {
   // .body-main .en__component {
   //   max-width: calc(100vw - 48px);
