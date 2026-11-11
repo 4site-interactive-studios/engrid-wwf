@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Wednesday, November 11, 2026 @ 06:45:01 ET
+ *  Date: Wednesday, November 11, 2026 @ 14:14:47 ET
  *  By: pedroluan
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.7
@@ -10750,8 +10750,8 @@ body[data-engrid-debug]:before{
 }
 @media screen and (max-width:500px){
   [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .inline-upsell-box{
-    padding-left:2rem;
-    padding-right:2rem;
+    padding-left:1.5rem;
+    padding-right:1.5rem;
   }
   [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .inline-upsell-box svg{
     left:auto;
@@ -10759,10 +10759,27 @@ body[data-engrid-debug]:before{
     right:0;
   }
 }
+@media screen and (max-width:430px){
+  [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .inline-upsell-box p{
+    text-wrap:balance;
+  }
+  [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .inline-upsell-box p br{
+    display:none;
+  }
+}
 @media screen and (max-width:400px){
+  [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .inline-upsell-box{
+    --inline-upsell-box_font-size:14px;
+    --inline-upsell-box_line-height:20px;
+  }
   [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .inline-upsell-box svg{
     height:48px;
     width:32px;
+  }
+}
+@media screen and (max-width:360px){
+  [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio .en__field__label--item{
+    font-size:16px;
   }
 }
 [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] #footer{

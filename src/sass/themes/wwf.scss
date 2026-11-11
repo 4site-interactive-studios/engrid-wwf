@@ -3036,8 +3036,8 @@ button[data-balloon] {
   // instead of following where the last text line ends
   @media screen and (max-width: 500px) {
     .inline-upsell-box {
-      padding-left: 2rem;
-      padding-right: 2rem;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
 
       svg {
         left: auto;
@@ -3047,10 +3047,36 @@ button[data-balloon] {
     }
   }
 
+  // Small phones: the manual <br> in the nudge (needed on desktop/larger phones)
+  // creates awkward breaks, so let the text flow and balance the lines instead
+  @media screen and (max-width: 430px) {
+    .inline-upsell-box p {
+      text-wrap: balance;
+
+      br {
+        display: none;
+      }
+    }
+  }
+
   @media screen and (max-width: 400px) {
-    .inline-upsell-box svg {
-      width: 32px;
-      height: 48px;
+    .inline-upsell-box {
+      --inline-upsell-box_font-size: 14px;
+      --inline-upsell-box_line-height: 20px;
+
+      svg {
+        width: 32px;
+        height: 48px;
+      }
+    }
+  }
+
+  // Below ~345px "Give monthly" wrapped to 2 lines (97px tall buttons)
+  @media screen and (max-width: 360px) {
+    .radio-to-buttons_recurrfreq
+      .en__field--recurrfreq.en__field--radio
+      .en__field__label--item {
+      font-size: 16px;
     }
   }
 
