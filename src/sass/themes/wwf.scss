@@ -3071,12 +3071,32 @@ button[data-balloon] {
     }
   }
 
-  // Below ~345px "Give monthly" wrapped to 2 lines (97px tall buttons)
-  @media screen and (max-width: 360px) {
-    .radio-to-buttons_recurrfreq
-      .en__field--recurrfreq.en__field--radio
+  // Heart + "Give monthly" always on one line. When the buttons row gets
+  // narrow, the button text shrinks with the available width instead of
+  // wrapping (cqi = 1% of the buttons row width)
+  .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio {
+    > .en__field__element--radio {
+      container-type: inline-size;
+    }
+
+    .en__field__label--item {
+      flex-wrap: nowrap;
+      white-space: nowrap;
+    }
+
+    @container (max-width: 360px) {
       .en__field__label--item {
-      font-size: 16px;
+        --recurring-frequency__button_font-size: clamp(12px, 7.55cqi - 6.95px, 18px);
+        font-size: var(--recurring-frequency__button_font-size);
+        padding-left: 4px;
+        padding-right: 4px;
+      }
+
+      input[type="radio"][value="MONTHLY"] + label:before,
+      input[type="radio"][value="ANNUAL"] + label:before {
+        width: 14px;
+        margin-right: 4px;
+      }
     }
   }
 
