@@ -47,7 +47,7 @@
   --engrid__body-top_background-color: transparent;
   --engrid__body-main_background-color: #fefcf9;
 
-  --engrid__content-header_background-color: #000000;
+  --engrid__content-header_background-color: #f9f3eb;
   --engrid__content-footer_background-color: #ffffff;
 
   --engrid__body_box-shadow: none;
@@ -283,6 +283,11 @@
   font-size: 20px;
   line-height: 32px;
 
+  // Remove Action Center bar
+  .shaded-light-pattern {
+    display: none;
+  }
+
   .body-main {
     --p_font-size: var(--default_font-size);
     --p_line-height: var(--default_line-height);
@@ -349,6 +354,18 @@
     border-radius: 0; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
     box-shadow: none; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
     background-color: transparent; // Override https://github.com/4site-interactive-studios/engrid-scripts/blob/000e05650575bbe447c40011ba0fc4d6c8e3e284/packages/styles/src/_engrid-donations.scss#L146
+  }
+
+  // "Give once" and "Give monthly" always share the same height
+  // (the heart icon + text wrapping made "Give monthly" taller on phones)
+  .radio-to-buttons_recurrfreq
+    .en__field--recurrfreq.en__field--radio
+    > .en__field__element--radio {
+    align-items: stretch;
+
+    > .en__field__item > .en__field__label--item {
+      height: 100%;
+    }
   }
 
   .en__component--dd360search p {
@@ -1611,7 +1628,14 @@
       ::before {
         color: red;
       }
-      --input_padding: 17px 0;
+      // Inputs can't shrink below line-height: normal, so padding alone made
+      // "Other" taller than the amount buttons. Fixed height = button height.
+      --input_padding: 0;
+      height: 66px;
+
+      @media screen and (max-width: 600px) {
+        height: 56px;
+      }
       font-size: var(--donation-amount__button_font-size);
       font-weight: 700;
       justify-content: center;
@@ -1626,6 +1650,13 @@
         padding-left: 34px;
         font-weight: 400;
         border-color: var(--donation-amount__button_border-color);
+
+        // Match the amount buttons: no inset shadow / grey fill, which made the
+        // rounded corners look different from the buttons
+        &:not(:focus) {
+          background-color: #ffffff;
+          box-shadow: none;
+        }
       }
 
       &:before {
@@ -2669,6 +2700,21 @@
     }
   }
 }
+// reCAPTCHA is a fixed 304px widget inside a 320px box. Below ~345px it
+// overflowed the page (horizontal scroll), so the layout stopped looking centered
+.en__captcha {
+  width: auto;
+  max-width: 100%;
+}
+
+@media screen and (max-width: 345px) {
+  .en__captcha .g-recaptcha {
+    transform: scale(0.9);
+    transform-origin: left top;
+    margin-bottom: -8px;
+  }
+}
+
 @media screen and (max-width: 400px) {
   // .body-main .en__component {
   //   max-width: calc(100vw - 48px);
@@ -2967,6 +3013,91 @@ button[data-balloon] {
 
   .body-main {
     border: none;
+  }
+
+  // The body-main grid track was growing to the min-content width of wide
+  // children (e.g. the alternative payment badges), pushing the form off-center
+  // and past the right edge on phones
+  .body-main > * {
+    min-width: 0;
+  }
+
+  // body-main has 29px side padding here, so the fixed badge columns stop
+  // fitting before 375px; use the fluid columns earlier
+  @media screen and (max-width: 410px) {
+    .alternative-donation-methods p:has(img.cn-bbb) {
+      grid-template-columns:
+        minmax(0, 1fr) minmax(0, 101fr) minmax(0, 190fr) minmax(0, 101fr)
+        minmax(0, 1fr);
+    }
+  }
+
+  // Monthly upsell arrow: pin it to the right edge (pointing at "Give monthly")
+  // instead of following where the last text line ends
+  @media screen and (max-width: 500px) {
+    .inline-upsell-box {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+
+      svg {
+        left: auto;
+        right: 0;
+        margin-left: 0;
+      }
+    }
+  }
+
+  // Small phones: the manual <br> in the nudge (needed on desktop/larger phones)
+  // creates awkward breaks, so let the text flow and balance the lines instead
+  @media screen and (max-width: 430px) {
+    .inline-upsell-box p {
+      text-wrap: balance;
+
+      br {
+        display: none;
+      }
+    }
+  }
+
+  @media screen and (max-width: 400px) {
+    .inline-upsell-box {
+      --inline-upsell-box_font-size: 14px;
+      --inline-upsell-box_line-height: 20px;
+
+      svg {
+        width: 32px;
+        height: 48px;
+      }
+    }
+  }
+
+  // Heart + "Give monthly" always on one line. When the buttons row gets
+  // narrow, the button text shrinks with the available width instead of
+  // wrapping (cqi = 1% of the buttons row width)
+  .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio {
+    > .en__field__element--radio {
+      container-type: inline-size;
+    }
+
+    .en__field__label--item {
+      flex-wrap: nowrap;
+      white-space: nowrap;
+    }
+
+    @container (max-width: 360px) {
+      .en__field__label--item {
+        --recurring-frequency__button_font-size: clamp(12px, 7.55cqi - 6.95px, 18px);
+        font-size: var(--recurring-frequency__button_font-size);
+        padding-left: 4px;
+        padding-right: 4px;
+      }
+
+      input[type="radio"][value="MONTHLY"] + label:before,
+      input[type="radio"][value="ANNUAL"] + label:before {
+        width: 14px;
+        margin-right: 4px;
+      }
+    }
   }
 
   #footer {
