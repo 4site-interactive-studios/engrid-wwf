@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, November 10, 2026 @ 12:42:42 ET
+ *  Date: Thursday, November 12, 2026 @ 05:38:32 ET
  *  By: pedroluan
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.7
@@ -8752,7 +8752,7 @@ body[data-engrid-debug]:before{
   --engrid__body-banner_background-color:#0000;
   --engrid__body-top_background-color:#0000;
   --engrid__body-main_background-color:#fefcf9;
-  --engrid__content-header_background-color:#000;
+  --engrid__content-header_background-color:#f9f3eb;
   --engrid__content-footer_background-color:#fff;
   --engrid__body_box-shadow:none;
   --error__color:#cf2300;
@@ -8889,6 +8889,9 @@ body[data-engrid-debug]:before{
 [data-engrid-theme=wwf] .body-bannerOverlay,[data-engrid-theme=wwf] .body-bottom,[data-engrid-theme=wwf] .body-footer,[data-engrid-theme=wwf] .body-footerOutside,[data-engrid-theme=wwf] .body-header,[data-engrid-theme=wwf] .body-headerOutside,[data-engrid-theme=wwf] .content-footerSpacer,[data-engrid-theme=wwf] .content-preFooter,[data-engrid-theme=wwf] .page-alert,[data-engrid-theme=wwf] .page-backgroundImageOverlay,[data-engrid-theme=wwf] [data-engrid-layout=leftleft1col][data-engrid-subtheme=new-leftleft] .content-footer,[data-engrid-theme=wwf] [data-engrid-layout=leftleft1col][data-engrid-subtheme=new-leftleft] .content-header{
   display:none !important;
 }
+[data-engrid-theme=wwf] .shaded-light-pattern{
+  display:none;
+}
 [data-engrid-theme=wwf] .body-main{
   --p_font-size:var(--default_font-size);
   --p_line-height:var(--default_line-height);
@@ -8928,6 +8931,12 @@ body[data-engrid-debug]:before{
   margin-right:.5rem;
   min-width:0;
   width:20px;
+}
+[data-engrid-theme=wwf] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio>.en__field__element--radio{
+  align-items:stretch;
+}
+[data-engrid-theme=wwf] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio>.en__field__element--radio>.en__field__item>.en__field__label--item{
+  height:100%;
 }
 [data-engrid-theme=wwf] .en__component--dd360search p{
   color:var(--label_color);
@@ -9730,15 +9739,21 @@ body[data-engrid-debug]:before{
   outline:none;
 }
 [data-engrid-theme=wwf] .radio-to-buttons_donationAmt .en__field--donationAmt .en__field__input--other{
-  --input_padding:17px 0;
+  --input_padding:0;
   font-size:var(--donation-amount__button_font-size);
   font-weight:700;
+  height:66px;
   justify-content:center;
   line-height:var(--donation-amount__button_line-height);
   outline:none;
 }
 [data-engrid-theme=wwf] .radio-to-buttons_donationAmt .en__field--donationAmt .en__field__input--other :before{
   color:red;
+}
+@media screen and (max-width:600px){
+  [data-engrid-theme=wwf] .radio-to-buttons_donationAmt .en__field--donationAmt .en__field__input--other{
+    height:56px;
+  }
 }
 [data-engrid-theme=wwf] .radio-to-buttons_donationAmt .en__field--donationAmt .en__field__item--other{
   position:relative;
@@ -9747,6 +9762,10 @@ body[data-engrid-debug]:before{
   border-color:var(--donation-amount__button_border-color);
   font-weight:400;
   padding-left:34px;
+}
+[data-engrid-theme=wwf] .radio-to-buttons_donationAmt .en__field--donationAmt .en__field__item--other input:not(:focus){
+  background-color:#fff;
+  box-shadow:none;
 }
 [data-engrid-theme=wwf] .radio-to-buttons_donationAmt .en__field--donationAmt .en__field__item--other:before{
   color:var(--donation-amount__button_color);
@@ -10451,6 +10470,17 @@ body[data-engrid-debug]:before{
     grid-template-columns:minmax(0, 1fr) minmax(0, 101fr) minmax(0, 190fr) minmax(0, 101fr) minmax(0, 1fr);
   }
 }
+[data-engrid-theme=wwf] .en__captcha{
+  max-width:100%;
+  width:auto;
+}
+@media screen and (max-width:345px){
+  [data-engrid-theme=wwf] .en__captcha .g-recaptcha{
+    margin-bottom:-8px;
+    transform:scale(.9);
+    transform-origin:left top;
+  }
+}
 [data-engrid-theme=wwf][data-engrid-theme]:not(#en__pagebuilder):not([data-engrid-debug])[data-conditonally-hide-show-digital-wallet-elements][data-engrid-transaction-recurring=n][data-engrid-payment-type-option-paypal-one-touch=true] .en__field--giveBySelect.paypal.force-paypal-visibility{
   display:inline-block !important;
 }
@@ -10709,6 +10739,62 @@ body[data-engrid-debug]:before{
 }
 [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .body-main{
   border:none;
+}
+[data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .body-main>*{
+  min-width:0;
+}
+@media screen and (max-width:410px){
+  [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .alternative-donation-methods p:has(img.cn-bbb){
+    grid-template-columns:minmax(0, 1fr) minmax(0, 101fr) minmax(0, 190fr) minmax(0, 101fr) minmax(0, 1fr);
+  }
+}
+@media screen and (max-width:500px){
+  [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .inline-upsell-box{
+    padding-left:1.5rem;
+    padding-right:1.5rem;
+  }
+  [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .inline-upsell-box svg{
+    left:auto;
+    margin-left:0;
+    right:0;
+  }
+}
+@media screen and (max-width:430px){
+  [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .inline-upsell-box p{
+    text-wrap:balance;
+  }
+  [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .inline-upsell-box p br{
+    display:none;
+  }
+}
+@media screen and (max-width:400px){
+  [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .inline-upsell-box{
+    --inline-upsell-box_font-size:14px;
+    --inline-upsell-box_line-height:20px;
+  }
+  [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .inline-upsell-box svg{
+    height:48px;
+    width:32px;
+  }
+}
+[data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio>.en__field__element--radio{
+  container-type:inline-size;
+}
+[data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio .en__field__label--item{
+  flex-wrap:nowrap;
+  white-space:nowrap;
+}
+@container (max-width: 360px){
+  [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio .en__field__label--item{
+    --recurring-frequency__button_font-size:clamp(12px, 7.55cqi - 6.95px, 18px);
+    font-size:var(--recurring-frequency__button_font-size);
+    padding-left:4px;
+    padding-right:4px;
+  }
+  [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio input[type=radio][value=ANNUAL]+label:before,[data-engrid-theme=wwf][data-engrid-layout=leftleft1col] .radio-to-buttons_recurrfreq .en__field--recurrfreq.en__field--radio input[type=radio][value=MONTHLY]+label:before{
+    margin-right:4px;
+    width:14px;
+  }
 }
 [data-engrid-theme=wwf][data-engrid-layout=leftleft1col] #footer{
   border-top:1px solid #ccc;
