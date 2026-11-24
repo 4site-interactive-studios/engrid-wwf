@@ -19,7 +19,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, November 24, 2026 @ 13:13:43 ET
+ *  Date: Tuesday, November 24, 2026 @ 13:18:29 ET
  *  By: pedroluan
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.7
@@ -12791,6 +12791,9 @@ body[data-engrid-debug]:before{
 .en__hubOverlay.engrid-hub-inline .engrid-hub-amount-change{
   font-weight:700;
   margin:0 0 .75rem;
+}
+.en__hubOverlay.engrid-hub-inline .engrid-hub-amount-change:not([hidden])+.en__hubPledge__panel--buttons .en__submit button{
+  margin-top:0;
 }
 .en__hubOverlay.engrid-hub-inline .engrid-hub-inline__back{
   background:none;
