@@ -31,6 +31,7 @@ import { Bridger } from "./scripts/Bridger";
 import { Quiz } from "./scripts/quiz";
 import GiftHistory from "./scripts/gift-history";
 import { SupporterHubAutoOpen } from "./scripts/supporter-hub-auto-open";
+import { SupporterHubUpgradeTracking } from "./scripts/supporter-hub-upgrade-tracking";
 import Accessibility from "./scripts/accessibility";
 import { supporterHubImprovements } from "./scripts/supporter-hub";
 
@@ -255,6 +256,7 @@ const options: Options = {
     new Bridger();
     new GiftHistory();
     new SupporterHubAutoOpen();
+    new SupporterHubUpgradeTracking();
     new Accessibility();
     new Ecard();
 

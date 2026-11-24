@@ -178,62 +178,97 @@ const setUpdateCardLink = (overlay: Element) => {
   });
 };
 
-// Log an event when a recurring gift amount is changed. The amounts are kept
-// on EN's edit view (.en__hubPledge__state), which stays on the page when
-// the gift is saved: EN re-renders it with the "Your recurring gift has been
-// updated" copy and no fields. A failed save adds
-// en__hubPledge__state--failed and keeps the fields.
-// Only sent from hubs that open the gadget inline, with
-// window.EngridSupporterHubAutoOpen (see supporter-hub-auto-open.ts)
+// Upgrade Hub (window.EngridSupporterHubAutoOpen, see
+// supporter-hub-auto-open.ts): make it clear that the amounts are the new
+// gift amount, not an increase on top of the current one
 const isAutoOpenHub = () =>
   typeof window.EngridSupporterHubAutoOpen === "string" &&
   window.EngridSupporterHubAutoOpen.trim() !== "";
 
-const trackRecurringUpgrade = (overlay: Element) => {
+// Suffix for the amounts, by gift frequency ("$20/month")
+const giftFrequencyUnits: Record<string, string> = {
+  monthly: "/month",
+  quarterly: "/quarter",
+  "semi-annual": " every 6 months",
+  annual: "/year",
+};
+
+const formatAmount = (amount: number) =>
+  `$${amount.toLocaleString("en-US", {
+    minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
+    maximumFractionDigits: 2,
+  })}`;
+
+// On the edit screen:
+// - "Your current gift is $15/month." above the amounts
+// - the "Donation Amount" label becomes "Choose your new monthly gift amount"
+// - "Update and save" becomes "Update my gift to $20/month" once a different
+//   amount is selected
+// The frequency is the gift's own one when known (see giftFrequencies)
+const clarifyNewAmount = (overlay: Element) => {
   const state = overlay.querySelector<HTMLElement>(
     ".en__hubPledge__state--activeRecurring"
   );
-  if (!state) return;
-  const field = state.querySelector(".en__field--donationAmt");
-  if (field) {
-    // EN prefills the field with the gift's current amount when it renders
-    // the edit view, before the donor changes it
-    if (state.dataset.engridPreviousAmount === undefined) {
-      const amount = getSelectedAmount(field);
-      if (amount !== null) state.dataset.engridPreviousAmount = String(amount);
-    }
-    return;
+  const field = state?.querySelector<HTMLElement>(".en__field--donationAmt");
+  if (!state || !field) return;
+
+  // EN prefills the field with the gift's current amount when it renders the
+  // edit screen. Read it once, before the donor (or the ask string) changes it
+  if (state.dataset.engridCurrentAmount === undefined) {
+    const amount = getSelectedAmount(field);
+    state.dataset.engridCurrentAmount = amount === null ? "" : String(amount);
   }
-  if (state.classList.contains("en__hubPledge__state--failed")) return;
-  const previousAmount = parseFloat(state.dataset.engridPreviousAmount ?? "");
-  const newAmount = parseFloat(state.dataset.engridNewAmount ?? "");
-  delete state.dataset.engridPreviousAmount;
-  delete state.dataset.engridNewAmount;
-  if (isNaN(previousAmount) || isNaN(newAmount)) return;
-  if (newAmount === previousAmount) return;
-  console.log({
-    event: "en_recurring_donation_upgraded",
-    previous_amount: previousAmount,
-    new_amount: newAmount,
-    amount_increase: newAmount - previousAmount,
-  });
+  const currentAmount = parseFloat(state.dataset.engridCurrentAmount);
+  const frequency =
+    (selectedGiftId && giftFrequencies[selectedGiftId]) || giftFrequency;
+  const unit = (frequency && giftFrequencyUnits[frequency]) || "";
+
+  if (!isNaN(currentAmount)) {
+    let current = state.querySelector<HTMLElement>(".engrid-hub-current-gift");
+    if (!current) {
+      current = document.createElement("p");
+      current.className = "engrid-hub-current-gift";
+      field.insertAdjacentElement("beforebegin", current);
+    }
+    const text = `Your current gift is ${formatAmount(currentAmount)}${unit}.`;
+    if (current.textContent !== text) current.textContent = text;
+  }
+
+  const label = field.querySelector<HTMLElement>(":scope > .en__field__label");
+  const labelText = frequency
+    ? `Choose your new ${frequency} gift amount`
+    : "Choose your new gift amount";
+  if (label && label.textContent !== labelText) label.textContent = labelText;
+
+  const button = state.querySelector<HTMLElement>(
+    ".en__hubPledge__panel--buttons button"
+  );
+  if (!button) return;
+  // Keep EN's text once it has one ("Update and save"), to go back to it
+  if (!button.dataset.engridLabel) {
+    if (!button.textContent?.trim()) return;
+    button.dataset.engridLabel = button.textContent.trim();
+  }
+  const selectedAmount = getSelectedAmount(field);
+  const buttonText =
+    selectedAmount !== null &&
+    selectedAmount > 0 &&
+    selectedAmount !== currentAmount
+      ? `Update my gift to ${formatAmount(selectedAmount)}${unit}`
+      : button.dataset.engridLabel;
+  if (button.textContent !== buttonText) button.textContent = buttonText;
 };
 
-// The fields are gone once EN shows the result, so the new amount is read
-// when "Update and save" is clicked (capture phase, before EN's handler)
-const storeNewAmountOnSubmit = (event: Event) => {
-  const button = (event.target as Element | null)?.closest?.(
-    ".en__hubPledge__state--activeRecurring .en__submit button"
-  );
-  const state = button?.closest<HTMLElement>(".en__hubPledge__state");
-  const field = state?.querySelector(".en__field--donationAmt");
-  if (!state || !field) return;
-  const amount = getSelectedAmount(field);
-  if (amount === null) {
-    delete state.dataset.engridNewAmount;
-  } else {
-    state.dataset.engridNewAmount = String(amount);
+// The button text follows the selected amount
+const onAmountChange = (event: Event) => {
+  const target = event.target as Element | null;
+  if (!target?.closest?.(".en__hubPledge__state .en__field--donationAmt")) {
+    return;
   }
+  const overlay = document.querySelector(
+    ".en__hubOverlay--pledge .en__hubOverlay__popup"
+  );
+  if (overlay) clarifyNewAmount(overlay);
 };
 
 // EN's recurring gift data has no frequency, but the giving history does
@@ -494,8 +529,11 @@ const refreshGiftFrequency = (overlay: Element) => {
 const updateOverlayTitle = (overlay: Element) => {
   const title = overlay.querySelector<HTMLElement>(".en__hubOverlay__header h2");
   if (!title) return;
-  if (title.dataset.engridTitle === undefined) {
-    title.dataset.engridTitle = title.textContent || "";
+  // EN adds the h2 empty and fills it right after. Only keep the original
+  // title once it has text, or the empty one would be written back for good
+  if (!title.dataset.engridTitle) {
+    if (!title.textContent) return;
+    title.dataset.engridTitle = title.textContent;
   }
   const isEditing = !!overlay.querySelector(".en__hubPledge__state");
   const label =
@@ -515,7 +553,8 @@ const updateOverlay = () => {
     ".en__hubOverlay--pledge .en__hubOverlay__popup"
   );
   if (!overlay) return;
-  if (isAutoOpenHub()) trackRecurringUpgrade(overlay);
+  // Before the ask string, which can change the prefilled current amount
+  if (isAutoOpenHub()) clarifyNewAmount(overlay);
   stripGiftCurrency(overlay);
   applyDynamicMonthlyAskString(overlay);
   addOtherCurrencySymbol(overlay);
@@ -533,7 +572,8 @@ const updateOverlay = () => {
 
 export const supporterHubImprovements = () => {
   if (isAutoOpenHub()) {
-    document.addEventListener("click", storeNewAmountOnSubmit, true);
+    document.addEventListener("change", onAmountChange);
+    document.addEventListener("input", onAmountChange);
   }
   // Remember which gift opens in the edit screen. Capture phase, so it runs
   // before EN swaps the list for the edit screen

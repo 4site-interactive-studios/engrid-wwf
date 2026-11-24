@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, November 24, 2026 @ 12:32:50 ET
+ *  Date: Tuesday, November 24, 2026 @ 12:42:11 ET
  *  By: pedroluan
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.7
@@ -32011,6 +32011,161 @@ class SupporterHubAutoOpen {
   }
 
 }
+;// CONCATENATED MODULE: ./src/scripts/supporter-hub-upgrade-tracking.ts
+
+// Sends a GA4 "purchase" event to the dataLayer when a supporter changes the
+// amount of a recurring gift in the Upgrade Hub (increase or decrease).
+//
+// Runs on the same pages as SupporterHubAutoOpen (window.EngridSupporterHubAutoOpen
+// set in a Code Block on a Supporter Hub page).
+//
+// How it works:
+// - EN saves a recurring gift with a PUT to
+//   /page/{pageId}/hubgadget/{gadgetId}/pledge/recurring/{recurringId}, with
+//   the new amount in the JSON body ({ recurring: { amount } }), only when the
+//   amount changed. We watch those requests and push the event once EN gets
+//   a successful response.
+// - The body doesn't have the previous amount, so we load the donor's gifts
+//   when the page loads (same request EN makes for the gadget) and keep each
+//   gift's current amount, updated after every save.
+// - Increases and decreases are sent (amount_increase is negative for a
+//   decrease). The same amount, or a save that only changes the card or the
+//   payment day, sends nothing.
+
+class SupporterHubUpgradeTracking {
+  // Current amount of each recurring gift, by recurring id
+  constructor() {
+    _defineProperty(this, "logger", new logger_EngridLogger("SupporterHubUpgradeTracking", "black", "pink", "📈"));
+
+    _defineProperty(this, "updateUrlPattern", /\/hubgadget\/\d+\/pledge\/recurring\/(\d+)/);
+
+    _defineProperty(this, "giftAmounts", {});
+
+    if (!this.shouldRun()) return;
+    this.loadGiftAmounts();
+    this.watchGiftUpdates();
+  }
+
+  shouldRun() {
+    const setting = window.EngridSupporterHubAutoOpen;
+    return engrid_ENGrid.getPageType() === "SUPPORTERHUB" && typeof setting === "string" && setting.trim().toUpperCase() === "PLEDGE" && !!this.getGadgetId();
+  }
+
+  getGadgetId() {
+    const gadget = document.querySelector('.en__component--hubgadget[data-componenttype="PLEDGE"]');
+    return gadget?.dataset.componentid;
+  }
+
+  async loadGiftAmounts() {
+    const pageId = window.location.pathname.match(/\/page\/(\d+)/)?.[1];
+    if (!pageId) return;
+
+    try {
+      const response = await fetch(`/page/${pageId}/hubgadget/${this.getGadgetId()}/pledge`, {
+        credentials: "same-origin"
+      });
+      const json = await response.json();
+      (json?.data?.recurringTxns ?? []).forEach(gift => {
+        const amount = parseFloat(gift.amount);
+        if (!isNaN(amount)) this.giftAmounts[String(gift.id)] = amount;
+      });
+      this.logger.log(`Loaded ${Object.keys(this.giftAmounts).length} gifts`);
+    } catch (error) {
+      this.logger.log("Couldn't load the gifts, upgrades won't be tracked");
+    }
+  } // EN sends the update with XMLHttpRequest. We tag the PUT requests to the
+  // recurring gift endpoint in open() and listen for their response in send()
+
+
+  watchGiftUpdates() {
+    const tracking = this;
+    const open = XMLHttpRequest.prototype.open;
+    const send = XMLHttpRequest.prototype.send;
+
+    XMLHttpRequest.prototype.open = function (method, url) {
+      this.engridRecurringId = method.toUpperCase() === "PUT" ? String(url).match(tracking.updateUrlPattern)?.[1] : undefined;
+
+      for (var _len = arguments.length, rest = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+        rest[_key - 2] = arguments[_key];
+      }
+
+      return open.call(this, method, url, ...rest);
+    };
+
+    XMLHttpRequest.prototype.send = function (body) {
+      const recurringId = this.engridRecurringId;
+
+      if (recurringId) {
+        this.addEventListener("load", () => {
+          if (this.status >= 200 && this.status < 300) {
+            tracking.onGiftUpdated(recurringId, body);
+          }
+        });
+      }
+
+      return send.call(this, body);
+    };
+  }
+
+  onGiftUpdated(recurringId, body) {
+    let newAmount = NaN;
+
+    try {
+      newAmount = parseFloat(JSON.parse(String(body))?.recurring?.amount);
+    } catch (error) {
+      return;
+    } // No amount in the body: only the card or payment day changed
+
+
+    if (isNaN(newAmount)) return;
+    const previousAmount = this.giftAmounts[recurringId];
+    this.giftAmounts[recurringId] = newAmount;
+
+    if (previousAmount === undefined) {
+      this.logger.log(`Gift ${recurringId} updated, but its previous amount is unknown`);
+      return;
+    }
+
+    if (newAmount === previousAmount) return;
+    this.pushPurchase(recurringId, previousAmount, newAmount);
+  }
+
+  pushPurchase(recurringId, previousAmount, newAmount) {
+    const event = {
+      event: "purchase",
+      ecommerce: {
+        transaction_id: `upg_${recurringId}_${this.timestamp()}`,
+        value: newAmount,
+        currency: "USD",
+        previous_amount: previousAmount,
+        amount_increase: this.round(newAmount - previousAmount),
+        items: [{
+          item_name: "recurring-upsell",
+          price: newAmount,
+          quantity: 1
+        }]
+      }
+    };
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push(event);
+    this.logger.log(`Pushed purchase event ${event.ecommerce.transaction_id}`);
+  } // yyyymmddhhmm in UTC, so the id doesn't depend on the donor's time zone
+
+
+  timestamp() {
+    const now = new Date();
+
+    const pad = value => String(value).padStart(2, "0");
+
+    return `${now.getUTCFullYear()}${pad(now.getUTCMonth() + 1)}${pad(now.getUTCDate())}` + `${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}`;
+  } // Avoids results like 5.000000000000001
+
+
+  round(value) {
+    return Math.round(value * 100) / 100;
+  }
+
+}
 ;// CONCATENATED MODULE: ./src/scripts/accessibility.ts
 
 
@@ -32346,62 +32501,86 @@ const setUpdateCardLink = overlay => {
       toggle.click();
     }
   });
-}; // Log an event when a recurring gift amount is changed. The amounts are kept
-// on EN's edit view (.en__hubPledge__state), which stays on the page when
-// the gift is saved: EN re-renders it with the "Your recurring gift has been
-// updated" copy and no fields. A failed save adds
-// en__hubPledge__state--failed and keeps the fields.
-// Only sent from hubs that open the gadget inline, with
-// window.EngridSupporterHubAutoOpen (see supporter-hub-auto-open.ts)
+}; // Upgrade Hub (window.EngridSupporterHubAutoOpen, see
+// supporter-hub-auto-open.ts): make it clear that the amounts are the new
+// gift amount, not an increase on top of the current one
 
 
-const isAutoOpenHub = () => typeof window.EngridSupporterHubAutoOpen === "string" && window.EngridSupporterHubAutoOpen.trim() !== "";
+const isAutoOpenHub = () => typeof window.EngridSupporterHubAutoOpen === "string" && window.EngridSupporterHubAutoOpen.trim() !== ""; // Suffix for the amounts, by gift frequency ("$20/month")
 
-const trackRecurringUpgrade = overlay => {
+
+const giftFrequencyUnits = {
+  monthly: "/month",
+  quarterly: "/quarter",
+  "semi-annual": " every 6 months",
+  annual: "/year"
+};
+
+const formatAmount = amount => `$${amount.toLocaleString("en-US", {
+  minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
+  maximumFractionDigits: 2
+})}`; // On the edit screen:
+// - "Your current gift is $15/month." above the amounts
+// - the "Donation Amount" label becomes "Choose your new monthly gift amount"
+// - "Update and save" becomes "Update my gift to $20/month" once a different
+//   amount is selected
+// The frequency is the gift's own one when known (see giftFrequencies)
+
+
+const clarifyNewAmount = overlay => {
   const state = overlay.querySelector(".en__hubPledge__state--activeRecurring");
-  if (!state) return;
-  const field = state.querySelector(".en__field--donationAmt");
+  const field = state?.querySelector(".en__field--donationAmt");
+  if (!state || !field) return; // EN prefills the field with the gift's current amount when it renders the
+  // edit screen. Read it once, before the donor (or the ask string) changes it
 
-  if (field) {
-    // EN prefills the field with the gift's current amount when it renders
-    // the edit view, before the donor changes it
-    if (state.dataset.engridPreviousAmount === undefined) {
-      const amount = getSelectedAmount(field);
-      if (amount !== null) state.dataset.engridPreviousAmount = String(amount);
+  if (state.dataset.engridCurrentAmount === undefined) {
+    const amount = getSelectedAmount(field);
+    state.dataset.engridCurrentAmount = amount === null ? "" : String(amount);
+  }
+
+  const currentAmount = parseFloat(state.dataset.engridCurrentAmount);
+  const frequency = selectedGiftId && giftFrequencies[selectedGiftId] || giftFrequency;
+  const unit = frequency && giftFrequencyUnits[frequency] || "";
+
+  if (!isNaN(currentAmount)) {
+    let current = state.querySelector(".engrid-hub-current-gift");
+
+    if (!current) {
+      current = document.createElement("p");
+      current.className = "engrid-hub-current-gift";
+      field.insertAdjacentElement("beforebegin", current);
     }
 
+    const text = `Your current gift is ${formatAmount(currentAmount)}${unit}.`;
+    if (current.textContent !== text) current.textContent = text;
+  }
+
+  const label = field.querySelector(":scope > .en__field__label");
+  const labelText = frequency ? `Choose your new ${frequency} gift amount` : "Choose your new gift amount";
+  if (label && label.textContent !== labelText) label.textContent = labelText;
+  const button = state.querySelector(".en__hubPledge__panel--buttons button");
+  if (!button) return; // Keep EN's text once it has one ("Update and save"), to go back to it
+
+  if (!button.dataset.engridLabel) {
+    if (!button.textContent?.trim()) return;
+    button.dataset.engridLabel = button.textContent.trim();
+  }
+
+  const selectedAmount = getSelectedAmount(field);
+  const buttonText = selectedAmount !== null && selectedAmount > 0 && selectedAmount !== currentAmount ? `Update my gift to ${formatAmount(selectedAmount)}${unit}` : button.dataset.engridLabel;
+  if (button.textContent !== buttonText) button.textContent = buttonText;
+}; // The button text follows the selected amount
+
+
+const onAmountChange = event => {
+  const target = event.target;
+
+  if (!target?.closest?.(".en__hubPledge__state .en__field--donationAmt")) {
     return;
   }
 
-  if (state.classList.contains("en__hubPledge__state--failed")) return;
-  const previousAmount = parseFloat(state.dataset.engridPreviousAmount ?? "");
-  const newAmount = parseFloat(state.dataset.engridNewAmount ?? "");
-  delete state.dataset.engridPreviousAmount;
-  delete state.dataset.engridNewAmount;
-  if (isNaN(previousAmount) || isNaN(newAmount)) return;
-  if (newAmount === previousAmount) return;
-  console.log({
-    event: "en_recurring_donation_upgraded",
-    previous_amount: previousAmount,
-    new_amount: newAmount,
-    amount_increase: newAmount - previousAmount
-  });
-}; // The fields are gone once EN shows the result, so the new amount is read
-// when "Update and save" is clicked (capture phase, before EN's handler)
-
-
-const storeNewAmountOnSubmit = event => {
-  const button = event.target?.closest?.(".en__hubPledge__state--activeRecurring .en__submit button");
-  const state = button?.closest(".en__hubPledge__state");
-  const field = state?.querySelector(".en__field--donationAmt");
-  if (!state || !field) return;
-  const amount = getSelectedAmount(field);
-
-  if (amount === null) {
-    delete state.dataset.engridNewAmount;
-  } else {
-    state.dataset.engridNewAmount = String(amount);
-  }
+  const overlay = document.querySelector(".en__hubOverlay--pledge .en__hubOverlay__popup");
+  if (overlay) clarifyNewAmount(overlay);
 }; // EN's recurring gift data has no frequency, but the giving history does
 // (recurringFrequency on each transaction). When every active recurring
 // gift has the same frequency, "recurring gift" becomes "monthly gift"
@@ -32606,10 +32785,12 @@ const refreshGiftFrequency = overlay => {
 
 const updateOverlayTitle = overlay => {
   const title = overlay.querySelector(".en__hubOverlay__header h2");
-  if (!title) return;
+  if (!title) return; // EN adds the h2 empty and fills it right after. Only keep the original
+  // title once it has text, or the empty one would be written back for good
 
-  if (title.dataset.engridTitle === undefined) {
-    title.dataset.engridTitle = title.textContent || "";
+  if (!title.dataset.engridTitle) {
+    if (!title.textContent) return;
+    title.dataset.engridTitle = title.textContent;
   }
 
   const isEditing = !!overlay.querySelector(".en__hubPledge__state");
@@ -32623,8 +32804,9 @@ const updateOverlay = () => {
   // Not the "#huboverlay-manage-my-recurring-gift" id: ENgrid builds it from
   // the title, which changes to "monthly" (see applyGiftFrequency)
   const overlay = document.querySelector(".en__hubOverlay--pledge .en__hubOverlay__popup");
-  if (!overlay) return;
-  if (isAutoOpenHub()) trackRecurringUpgrade(overlay);
+  if (!overlay) return; // Before the ask string, which can change the prefilled current amount
+
+  if (isAutoOpenHub()) clarifyNewAmount(overlay);
   stripGiftCurrency(overlay);
   applyDynamicMonthlyAskString(overlay);
   addOtherCurrencySymbol(overlay);
@@ -32639,7 +32821,8 @@ const updateOverlay = () => {
 
 const supporterHubImprovements = () => {
   if (isAutoOpenHub()) {
-    document.addEventListener("click", storeNewAmountOnSubmit, true);
+    document.addEventListener("change", onAmountChange);
+    document.addEventListener("input", onAmountChange);
   } // Remember which gift opens in the edit screen. Capture phase, so it runs
   // before EN swaps the list for the edit screen
 
@@ -32673,6 +32856,7 @@ const supporterHubImprovements = () => {
 
 
  // import { pageHeaderFooter } from "./scripts/page-header-footer";
+
 
 
 
@@ -32885,6 +33069,7 @@ const options = {
     new Bridger();
     new GiftHistory();
     new SupporterHubAutoOpen();
+    new SupporterHubUpgradeTracking();
     new Accessibility();
     new Ecard(); // Supporter Hub customizations
 
