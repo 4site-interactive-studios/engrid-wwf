@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Thursday, November 12, 2026 @ 05:38:32 ET
+ *  Date: Tuesday, November 24, 2026 @ 13:18:29 ET
  *  By: pedroluan
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.7
@@ -31699,6 +31699,473 @@ class GiftHistory {
   }
 
 }
+;// CONCATENATED MODULE: ./src/scripts/supporter-hub-auto-open.ts
+
+// Opens a Supporter Hub gadget (e.g. "Manage my recurring gift") as soon as
+// the hub loads and shows it inline, as part of the page, instead of as a
+// lightbox. Supporters coming from an email land on the open widget.
+//
+// Opt-in per page with a Code Block on the Supporter Hub page:
+//
+//   <script>
+//     window.EngridSupporterHubAutoOpen = "PLEDGE";
+//   </script>
+//
+// The value is the gadget's data-componenttype ("PLEDGE" for "Manage my
+// recurring gift"). Only PLEDGE has been validated.
+//
+// How it works:
+// - Engaging Networks routes hub gadgets through the URL hash
+//   (#gadget/{componentId}/{type}): setting the hash opens the gadget and
+//   clearing it closes it. We reuse that router instead of faking clicks.
+// - EN appends the overlay to the form when it opens. We move it right after
+//   the gadget tile, hide the tile, and restyle the overlay
+//   (src/sass/supporter-hub-inline.scss).
+// - ENgrid's SupporterHub component treats the overlay as a modal (inert page,
+//   aria-modal, Escape closes it). We undo that while the overlay is inline.
+// - If the overlay is closed for any reason, we open it again, so the widget
+//   is always on the page.
+
+class SupporterHubAutoOpen {
+  // How long to wait for EN's hash router before falling back to a click
+  // Guard against reopening in a loop if EN keeps closing the overlay
+  constructor() {
+    _defineProperty(this, "logger", new logger_EngridLogger("SupporterHubAutoOpen", "black", "pink", "🎁"));
+
+    _defineProperty(this, "fallbackDelay", 1500);
+
+    _defineProperty(this, "maxReopens", 3);
+
+    _defineProperty(this, "reopenWindow", 10000);
+
+    _defineProperty(this, "reopenTimestamps", []);
+
+    _defineProperty(this, "inlineClass", "engrid-hub-inline");
+
+    _defineProperty(this, "hiddenGadgetClass", "engrid-hub-inline__gadget");
+
+    _defineProperty(this, "backButtonClass", "engrid-hub-inline__back");
+
+    _defineProperty(this, "gadgetType", "");
+
+    _defineProperty(this, "gadget", null);
+
+    _defineProperty(this, "componentId", "");
+
+    _defineProperty(this, "hasShownList", false);
+
+    _defineProperty(this, "isReturningToList", false);
+
+    if (!this.shouldRun()) return;
+    this.watchOverlay();
+    this.watchModalAttributes();
+    this.blockEscape();
+    const overlay = this.getOverlay();
+
+    if (overlay) {
+      this.makeInline(overlay);
+    } else if (!window.location.hash.startsWith("#gadget/")) {
+      this.open();
+    } else {
+      // Another gadget is being opened from the URL, let EN handle it
+      this.logger.log("Another gadget hash is present, not opening");
+    }
+  }
+
+  shouldRun() {
+    if (engrid_ENGrid.getPageType() !== "SUPPORTERHUB") return false;
+    const setting = window.EngridSupporterHubAutoOpen;
+    if (typeof setting !== "string" || setting.trim() === "") return false;
+    this.gadgetType = setting.trim().toUpperCase();
+    this.gadget = document.querySelector(`.en__component--hubgadget[data-componenttype="${this.gadgetType}"]:not(.en__component--hubgadget--inactive)`);
+    this.componentId = this.gadget?.dataset.componentid ?? "";
+
+    if (!this.gadget || !this.componentId) {
+      this.logger.log(`No active ${this.gadgetType} gadget found on this page`);
+      return false;
+    }
+
+    return true;
+  }
+
+  getOverlaySelector() {
+    return `.en__hubOverlay.en__hubOverlay--${this.gadgetType.toLowerCase()}`;
+  }
+
+  getOverlay() {
+    return document.querySelector(this.getOverlaySelector());
+  }
+
+  getGadgetHash() {
+    return `#gadget/${this.componentId}/${this.gadgetType.toLowerCase()}`;
+  }
+
+  open() {
+    const gadget = this.gadget;
+    gadget.classList.add(this.hiddenGadgetClass);
+    this.logger.log(`Opening ${this.gadgetType} gadget ${this.componentId}`);
+
+    if (window.location.hash === this.getGadgetHash()) {
+      // Same hash means no hashchange event, so EN won't react to it
+      gadget.click();
+    } else {
+      // replace() doesn't add a history entry, so the browser Back button
+      // leaves the page instead of closing the widget
+      window.location.replace(this.getGadgetHash());
+    }
+
+    window.setTimeout(() => {
+      if (this.getOverlay()) return;
+      this.logger.log("Overlay not found after setting the hash, clicking gadget");
+      gadget.click(); // Still nothing: show the tile again so the supporter can open it
+
+      window.setTimeout(() => {
+        if (!this.getOverlay()) {
+          this.logger.log("Overlay didn't open, showing the gadget tile");
+          gadget.classList.remove(this.hiddenGadgetClass);
+        }
+      }, this.fallbackDelay);
+    }, this.fallbackDelay);
+  }
+
+  reopen() {
+    // "Back to my gifts" closes the overlay on purpose, so it isn't a loop
+    // and doesn't count towards the reopen limit
+    if (this.isReturningToList) {
+      this.open();
+      return;
+    }
+
+    const now = Date.now();
+    this.reopenTimestamps = this.reopenTimestamps.filter(time => now - time < this.reopenWindow);
+
+    if (this.reopenTimestamps.length >= this.maxReopens) {
+      this.logger.log("Overlay closed too many times, not reopening");
+      this.gadget?.classList.remove(this.hiddenGadgetClass);
+      return;
+    }
+
+    this.reopenTimestamps.push(now);
+    this.open();
+  } // EN adds and removes the overlay (and swaps the list and edit views inside
+  // it) as the supporter navigates, so we watch the whole form.
+
+
+  watchOverlay() {
+    const form = document.querySelector(".en__component--page");
+    if (!form) return;
+    const overlaySelector = this.getOverlaySelector();
+    new MutationObserver(records => {
+      records.forEach(record => {
+        record.addedNodes.forEach(node => {
+          if (!(node instanceof HTMLElement)) return;
+
+          if (node.matches(overlaySelector)) {
+            this.makeInline(node);
+            return;
+          }
+
+          const overlay = node.closest(overlaySelector);
+          if (!overlay) return;
+
+          if (this.containsOrMatches(node, ".en__hubPledge__list--list")) {
+            this.onListShown(overlay);
+          } // After saving, EN re-renders the panels inside the same state
+          // ("Your recurring gift has been updated"), which removes the
+          // back button, so also look for the state around the node
+
+
+          const state = this.findOrMatch(node, ".en__hubPledge__state") ?? node.closest(".en__hubPledge__state");
+          if (state) this.addBackButton(state);
+        });
+        record.removedNodes.forEach(node => {
+          if (!(node instanceof HTMLElement)) return; // Moving the overlay also fires a removal; skip it while it's
+          // still in the document
+
+          if (node.matches(overlaySelector) && !node.isConnected) {
+            this.logger.log("Overlay closed, opening it again");
+            this.reopen();
+          }
+        });
+      });
+    }).observe(form, {
+      childList: true,
+      subtree: true
+    });
+  }
+
+  makeInline(overlay) {
+    const gadget = this.gadget;
+    overlay.classList.add(this.inlineClass);
+    gadget.classList.add(this.hiddenGadgetClass);
+
+    if (overlay.previousElementSibling !== gadget) {
+      this.logger.log("Moving overlay inline");
+      gadget.insertAdjacentElement("afterend", overlay);
+    }
+
+    this.removeModalBehavior(overlay);
+
+    if (overlay.querySelector(".en__hubPledge__list--list")) {
+      this.onListShown(overlay);
+    }
+
+    const state = overlay.querySelector(".en__hubPledge__state");
+    if (state) this.addBackButton(state);
+  } // Undo what ENgrid's SupporterHub does to treat the overlay as a modal
+
+
+  removeModalBehavior(overlay) {
+    const popup = overlay.querySelector(".en__hubOverlay__popup");
+
+    if (popup) {
+      if (popup.getAttribute("role") !== "region") {
+        popup.setAttribute("role", "region");
+      }
+
+      if (popup.hasAttribute("aria-modal")) {
+        popup.removeAttribute("aria-modal");
+      }
+    }
+
+    if (document.querySelector("[data-engrid-inert]")) {
+      A11y.inertPage(false);
+    }
+  } // ENgrid re-applies the modal attributes on a timer each time the overlay
+  // or its edit view renders, so we keep removing them while inline
+
+
+  watchModalAttributes() {
+    new MutationObserver(() => {
+      const overlay = this.getOverlay();
+      if (!overlay || !overlay.classList.contains(this.inlineClass)) return;
+      this.removeModalBehavior(overlay);
+    }).observe(document.body, {
+      attributes: true,
+      attributeFilter: ["inert", "aria-modal", "role"],
+      subtree: true
+    });
+  } // ENgrid closes the overlay on Escape. Inline, Escape shouldn't remove the
+  // widget from the page.
+
+
+  blockEscape() {
+    window.addEventListener("keydown", event => {
+      if (event.key !== "Escape") return;
+      if (!this.getOverlay()?.classList.contains(this.inlineClass)) return;
+      event.stopImmediatePropagation();
+    }, true);
+  }
+
+  onListShown(overlay) {
+    this.hasShownList = true;
+    if (!this.isReturningToList) return;
+    this.isReturningToList = false;
+    const heading = overlay.querySelector(".en__hubPledge__list__header h3");
+
+    if (heading) {
+      heading.setAttribute("tabindex", "-1");
+      heading.focus({
+        preventScroll: true
+      });
+    }
+
+    if (overlay.getBoundingClientRect().top < 0) {
+      overlay.scrollIntoView({
+        block: "start"
+      });
+    }
+  } // EN's edit view has no way back to the list of gifts other than closing
+  // the overlay, which is hidden inline
+
+
+  addBackButton(state) {
+    if (!this.hasShownList) return;
+    if (state.querySelector(`.${this.backButtonClass}`)) return;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = this.backButtonClass;
+    button.textContent = "Back to my gifts";
+    button.addEventListener("click", () => this.returnToList()); // The state is a flex row (icon + panels), so the button goes on top of
+    // the panels column
+
+    const panels = state.querySelector(".en__hubPledge__panels") ?? state;
+    panels.insertAdjacentElement("afterbegin", button);
+  } // Clearing the hash makes EN close the overlay; watchOverlay() then opens
+  // it again, which starts on the list of gifts
+
+
+  returnToList() {
+    this.logger.log("Returning to the list of gifts");
+    this.isReturningToList = true;
+    window.location.replace("#");
+  }
+
+  containsOrMatches(node, selector) {
+    return node.matches(selector) || !!node.querySelector(selector);
+  }
+
+  findOrMatch(node, selector) {
+    if (node.matches(selector)) return node;
+    return node.querySelector(selector);
+  }
+
+}
+;// CONCATENATED MODULE: ./src/scripts/supporter-hub-upgrade-tracking.ts
+
+// Sends a GA4 "purchase" event to the dataLayer when a supporter changes the
+// amount of a recurring gift in the Upgrade Hub (increase or decrease).
+//
+// Runs on the same pages as SupporterHubAutoOpen (window.EngridSupporterHubAutoOpen
+// set in a Code Block on a Supporter Hub page).
+//
+// How it works:
+// - EN saves a recurring gift with a PUT to
+//   /page/{pageId}/hubgadget/{gadgetId}/pledge/recurring/{recurringId}, with
+//   the new amount in the JSON body ({ recurring: { amount } }), only when the
+//   amount changed. We watch those requests and push the event once EN gets
+//   a successful response.
+// - The body doesn't have the previous amount, so we load the donor's gifts
+//   when the page loads (same request EN makes for the gadget) and keep each
+//   gift's current amount, updated after every save.
+// - Increases and decreases are sent (amount_increase is negative for a
+//   decrease). The same amount, or a save that only changes the card or the
+//   payment day, sends nothing.
+
+class SupporterHubUpgradeTracking {
+  // Current amount of each recurring gift, by recurring id
+  constructor() {
+    _defineProperty(this, "logger", new logger_EngridLogger("SupporterHubUpgradeTracking", "black", "pink", "📈"));
+
+    _defineProperty(this, "updateUrlPattern", /\/hubgadget\/\d+\/pledge\/recurring\/(\d+)/);
+
+    _defineProperty(this, "giftAmounts", {});
+
+    if (!this.shouldRun()) return;
+    this.loadGiftAmounts();
+    this.watchGiftUpdates();
+  }
+
+  shouldRun() {
+    const setting = window.EngridSupporterHubAutoOpen;
+    return engrid_ENGrid.getPageType() === "SUPPORTERHUB" && typeof setting === "string" && setting.trim().toUpperCase() === "PLEDGE" && !!this.getGadgetId();
+  }
+
+  getGadgetId() {
+    const gadget = document.querySelector('.en__component--hubgadget[data-componenttype="PLEDGE"]');
+    return gadget?.dataset.componentid;
+  }
+
+  async loadGiftAmounts() {
+    const pageId = window.location.pathname.match(/\/page\/(\d+)/)?.[1];
+    if (!pageId) return;
+
+    try {
+      const response = await fetch(`/page/${pageId}/hubgadget/${this.getGadgetId()}/pledge`, {
+        credentials: "same-origin"
+      });
+      const json = await response.json();
+      (json?.data?.recurringTxns ?? []).forEach(gift => {
+        const amount = parseFloat(gift.amount);
+        if (!isNaN(amount)) this.giftAmounts[String(gift.id)] = amount;
+      });
+      this.logger.log(`Loaded ${Object.keys(this.giftAmounts).length} gifts`);
+    } catch (error) {
+      this.logger.log("Couldn't load the gifts, upgrades won't be tracked");
+    }
+  } // EN sends the update with XMLHttpRequest. We tag the PUT requests to the
+  // recurring gift endpoint in open() and listen for their response in send()
+
+
+  watchGiftUpdates() {
+    const tracking = this;
+    const open = XMLHttpRequest.prototype.open;
+    const send = XMLHttpRequest.prototype.send;
+
+    XMLHttpRequest.prototype.open = function (method, url) {
+      this.engridRecurringId = method.toUpperCase() === "PUT" ? String(url).match(tracking.updateUrlPattern)?.[1] : undefined;
+
+      for (var _len = arguments.length, rest = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+        rest[_key - 2] = arguments[_key];
+      }
+
+      return open.call(this, method, url, ...rest);
+    };
+
+    XMLHttpRequest.prototype.send = function (body) {
+      const recurringId = this.engridRecurringId;
+
+      if (recurringId) {
+        this.addEventListener("load", () => {
+          if (this.status >= 200 && this.status < 300) {
+            tracking.onGiftUpdated(recurringId, body);
+          }
+        });
+      }
+
+      return send.call(this, body);
+    };
+  }
+
+  onGiftUpdated(recurringId, body) {
+    let newAmount = NaN;
+
+    try {
+      newAmount = parseFloat(JSON.parse(String(body))?.recurring?.amount);
+    } catch (error) {
+      return;
+    } // No amount in the body: only the card or payment day changed
+
+
+    if (isNaN(newAmount)) return;
+    const previousAmount = this.giftAmounts[recurringId];
+    this.giftAmounts[recurringId] = newAmount;
+
+    if (previousAmount === undefined) {
+      this.logger.log(`Gift ${recurringId} updated, but its previous amount is unknown`);
+      return;
+    }
+
+    if (newAmount === previousAmount) return;
+    this.pushPurchase(recurringId, previousAmount, newAmount);
+  }
+
+  pushPurchase(recurringId, previousAmount, newAmount) {
+    const event = {
+      event: "purchase",
+      ecommerce: {
+        transaction_id: `upg_${recurringId}_${this.timestamp()}`,
+        value: newAmount,
+        currency: "USD",
+        previous_amount: previousAmount,
+        amount_increase: this.round(newAmount - previousAmount),
+        items: [{
+          item_name: "recurring-upsell",
+          price: newAmount,
+          quantity: 1
+        }]
+      }
+    };
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push(event);
+    this.logger.log(`Pushed purchase event ${event.ecommerce.transaction_id}`);
+  } // yyyymmddhhmm in UTC, so the id doesn't depend on the donor's time zone
+
+
+  timestamp() {
+    const now = new Date();
+
+    const pad = value => String(value).padStart(2, "0");
+
+    return `${now.getUTCFullYear()}${pad(now.getUTCMonth() + 1)}${pad(now.getUTCDate())}` + `${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}`;
+  } // Avoids results like 5.000000000000001
+
+
+  round(value) {
+    return Math.round(value * 100) / 100;
+  }
+
+}
 ;// CONCATENATED MODULE: ./src/scripts/accessibility.ts
 
 
@@ -31926,6 +32393,22 @@ const addOtherCurrencySymbol = overlay => {
   const height = `${input.offsetHeight}px`;
   if (symbol.style.top !== top) symbol.style.top = top;
   if (symbol.style.height !== height) symbol.style.height = height;
+}; // The amount selected in the donation amount field: the "Other" input when
+// it is the active one (EN puts the donor's current amount there when it is
+// not in the default list), otherwise the checked radio
+
+
+const getSelectedAmount = field => {
+  const otherInput = field.querySelector("input.en__field__input--other");
+  const checked = field.querySelector("input[type='radio']:checked");
+  const otherAmount = otherInput ? parseFloat(otherInput.value.replace(/[^\d.]/g, "")) : NaN;
+
+  if ((field.classList.contains("en__field--withOther--active") || checked?.value === "other") && !isNaN(otherAmount)) {
+    return otherAmount;
+  }
+
+  const checkedAmount = checked ? parseFloat(checked.value) : NaN;
+  return isNaN(checkedAmount) ? null : checkedAmount;
 }; // Replace the fixed amount buttons with the donor's Sustainer Upgrade Ask String,
 // defined by the page's code block (const dynamicMonthlyAskString = "{user_data~Sustainer Upgrade Ask String}")
 
@@ -31938,15 +32421,10 @@ const applyDynamicMonthlyAskString = overlay => {
   if (!container || container.hasAttribute("data-engrid-ask-applied")) return;
   const items = Array.from(container.querySelectorAll(".en__field__item:not(.en__field__item--other)"));
   if (!items.length) return;
-  container.setAttribute("data-engrid-ask-applied", "true"); // The donor's current amount: the "Other" input when it is the active
-  // one (EN puts it there when the amount is not in the default list),
-  // otherwise the checked radio
-
+  container.setAttribute("data-engrid-ask-applied", "true");
   const field = container.closest(".en__field--donationAmt");
   const otherInput = container.querySelector("input.en__field__input--other");
-  const checked = container.querySelector("input[type='radio']:checked");
-  const otherAmount = otherInput ? parseFloat(otherInput.value.replace(/[^\d.]/g, "")) : NaN;
-  const currentAmount = field?.classList.contains("en__field--withOther--active") && !isNaN(otherAmount) ? otherAmount : checked ? parseFloat(checked.value) : null;
+  const currentAmount = field ? getSelectedAmount(field) : null;
   const symbol = (items[0].querySelector("label")?.textContent || "").replace(/[\d.,\s]/g, "") || "$";
   const template = items[0]; // Reuse the existing items, cloning the first one if more are needed
   // and removing the extra ones
@@ -32023,6 +32501,106 @@ const setUpdateCardLink = overlay => {
       toggle.click();
     }
   });
+}; // Upgrade Hub (window.EngridSupporterHubAutoOpen, see
+// supporter-hub-auto-open.ts): make it clear that the amounts are the new
+// gift amount, not an increase on top of the current one
+
+
+const isAutoOpenHub = () => typeof window.EngridSupporterHubAutoOpen === "string" && window.EngridSupporterHubAutoOpen.trim() !== ""; // Suffix for the button ("Give $20/month") and the summary ("$20 a month"),
+// by gift frequency
+
+
+const giftFrequencyUnits = {
+  monthly: {
+    short: "/month",
+    long: " a month"
+  },
+  quarterly: {
+    short: "/quarter",
+    long: " a quarter"
+  },
+  "semi-annual": {
+    short: " every 6 months",
+    long: " every 6 months"
+  },
+  annual: {
+    short: "/year",
+    long: " a year"
+  }
+};
+
+const formatAmount = amount => `$${amount.toLocaleString("en-US", {
+  minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
+  maximumFractionDigits: 2
+})}`; // On the edit screen (the heading above already shows the current amount):
+// - the "Donation Amount" label becomes "Choose your new monthly gift amount"
+// - once a different amount is selected, "Update and save" becomes
+//   "Give $50/month", with "Your current monthly gift of $20 will be changed
+//   to $50 a month." right above it. With the current amount selected,
+//   nothing would change, so the button keeps EN's text and the summary hides
+// The frequency is the gift's own one when known (see giftFrequencies)
+
+
+const clarifyNewAmount = overlay => {
+  const state = overlay.querySelector(".en__hubPledge__state--activeRecurring");
+  const field = state?.querySelector(".en__field--donationAmt");
+  if (!state || !field) return; // EN prefills the field with the gift's current amount when it renders the
+  // edit screen. Read it once, before the donor (or the ask string) changes it
+
+  if (state.dataset.engridCurrentAmount === undefined) {
+    const amount = getSelectedAmount(field);
+    state.dataset.engridCurrentAmount = amount === null ? "" : String(amount);
+  }
+
+  const currentAmount = parseFloat(state.dataset.engridCurrentAmount);
+  const frequency = selectedGiftId && giftFrequencies[selectedGiftId] || giftFrequency;
+  const unit = frequency && giftFrequencyUnits[frequency] || {
+    short: "",
+    long: ""
+  };
+  const label = field.querySelector(":scope > .en__field__label");
+  const labelText = frequency ? `Choose your new ${frequency} gift amount` : "Choose your new gift amount";
+  if (label && label.textContent !== labelText) label.textContent = labelText;
+  const button = state.querySelector(".en__hubPledge__panel--buttons button");
+  if (!button) return; // Keep EN's text once it has one ("Update and save"), to go back to it
+
+  if (!button.dataset.engridLabel) {
+    if (!button.textContent?.trim()) return;
+    button.dataset.engridLabel = button.textContent.trim();
+  }
+
+  const selectedAmount = getSelectedAmount(field);
+  const isChanging = selectedAmount !== null && selectedAmount > 0 && selectedAmount !== currentAmount;
+  const buttonText = isChanging ? `Give ${formatAmount(selectedAmount)}${unit.short}` : button.dataset.engridLabel;
+  if (button.textContent !== buttonText) button.textContent = buttonText; // Summary above the button. A live region, so screen readers hear the new
+  // amount when the selection changes
+
+  const buttonsPanel = button.closest(".en__hubPledge__panel--buttons");
+  if (!buttonsPanel) return;
+  let summary = state.querySelector(".engrid-hub-amount-change");
+
+  if (!summary) {
+    summary = document.createElement("p");
+    summary.className = "engrid-hub-amount-change";
+    summary.setAttribute("aria-live", "polite");
+    buttonsPanel.insertAdjacentElement("beforebegin", summary);
+  }
+
+  const summaryText = isChanging && !isNaN(currentAmount) ? `Your current ${frequency ? `${frequency} ` : ""}gift of ${formatAmount(currentAmount)} will be changed to ${formatAmount(selectedAmount)}${unit.long}.` : "";
+  if (summary.textContent !== summaryText) summary.textContent = summaryText;
+  summary.hidden = !summaryText;
+}; // The button text follows the selected amount
+
+
+const onAmountChange = event => {
+  const target = event.target;
+
+  if (!target?.closest?.(".en__hubPledge__state .en__field--donationAmt")) {
+    return;
+  }
+
+  const overlay = document.querySelector(".en__hubOverlay--pledge .en__hubOverlay__popup");
+  if (overlay) clarifyNewAmount(overlay);
 }; // EN's recurring gift data has no frequency, but the giving history does
 // (recurringFrequency on each transaction). When every active recurring
 // gift has the same frequency, "recurring gift" becomes "monthly gift"
@@ -32227,10 +32805,12 @@ const refreshGiftFrequency = overlay => {
 
 const updateOverlayTitle = overlay => {
   const title = overlay.querySelector(".en__hubOverlay__header h2");
-  if (!title) return;
+  if (!title) return; // EN adds the h2 empty and fills it right after. Only keep the original
+  // title once it has text, or the empty one would be written back for good
 
-  if (title.dataset.engridTitle === undefined) {
-    title.dataset.engridTitle = title.textContent || "";
+  if (!title.dataset.engridTitle) {
+    if (!title.textContent) return;
+    title.dataset.engridTitle = title.textContent;
   }
 
   const isEditing = !!overlay.querySelector(".en__hubPledge__state");
@@ -32244,7 +32824,9 @@ const updateOverlay = () => {
   // Not the "#huboverlay-manage-my-recurring-gift" id: ENgrid builds it from
   // the title, which changes to "monthly" (see applyGiftFrequency)
   const overlay = document.querySelector(".en__hubOverlay--pledge .en__hubOverlay__popup");
-  if (!overlay) return;
+  if (!overlay) return; // Before the ask string, which can change the prefilled current amount
+
+  if (isAutoOpenHub()) clarifyNewAmount(overlay);
   stripGiftCurrency(overlay);
   applyDynamicMonthlyAskString(overlay);
   addOtherCurrencySymbol(overlay);
@@ -32258,8 +32840,13 @@ const updateOverlay = () => {
 };
 
 const supporterHubImprovements = () => {
-  // Remember which gift opens in the edit screen. Capture phase, so it runs
+  if (isAutoOpenHub()) {
+    document.addEventListener("change", onAmountChange);
+    document.addEventListener("input", onAmountChange);
+  } // Remember which gift opens in the edit screen. Capture phase, so it runs
   // before EN swaps the list for the edit screen
+
+
   document.addEventListener("click", event => {
     const item = event.target?.closest(".en__hubPledge__list__item");
 
@@ -32289,6 +32876,8 @@ const supporterHubImprovements = () => {
 
 
  // import { pageHeaderFooter } from "./scripts/page-header-footer";
+
+
 
 
 
@@ -32499,6 +33088,8 @@ const options = {
     });
     new Bridger();
     new GiftHistory();
+    new SupporterHubAutoOpen();
+    new SupporterHubUpgradeTracking();
     new Accessibility();
     new Ecard(); // Supporter Hub customizations
 
