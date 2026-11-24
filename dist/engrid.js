@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, November 24, 2026 @ 12:42:11 ET
+ *  Date: Tuesday, November 24, 2026 @ 12:51:04 ET
  *  By: pedroluan
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.7
@@ -32519,8 +32519,7 @@ const giftFrequencyUnits = {
 const formatAmount = amount => `$${amount.toLocaleString("en-US", {
   minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
   maximumFractionDigits: 2
-})}`; // On the edit screen:
-// - "Your current gift is $15/month." above the amounts
+})}`; // On the edit screen (the heading above already shows the current amount):
 // - the "Donation Amount" label becomes "Choose your new monthly gift amount"
 // - "Update and save" becomes "Update my gift to $20/month" once a different
 //   amount is selected
@@ -32541,20 +32540,6 @@ const clarifyNewAmount = overlay => {
   const currentAmount = parseFloat(state.dataset.engridCurrentAmount);
   const frequency = selectedGiftId && giftFrequencies[selectedGiftId] || giftFrequency;
   const unit = frequency && giftFrequencyUnits[frequency] || "";
-
-  if (!isNaN(currentAmount)) {
-    let current = state.querySelector(".engrid-hub-current-gift");
-
-    if (!current) {
-      current = document.createElement("p");
-      current.className = "engrid-hub-current-gift";
-      field.insertAdjacentElement("beforebegin", current);
-    }
-
-    const text = `Your current gift is ${formatAmount(currentAmount)}${unit}.`;
-    if (current.textContent !== text) current.textContent = text;
-  }
-
   const label = field.querySelector(":scope > .en__field__label");
   const labelText = frequency ? `Choose your new ${frequency} gift amount` : "Choose your new gift amount";
   if (label && label.textContent !== labelText) label.textContent = labelText;

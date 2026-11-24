@@ -199,8 +199,7 @@ const formatAmount = (amount: number) =>
     maximumFractionDigits: 2,
   })}`;
 
-// On the edit screen:
-// - "Your current gift is $15/month." above the amounts
+// On the edit screen (the heading above already shows the current amount):
 // - the "Donation Amount" label becomes "Choose your new monthly gift amount"
 // - "Update and save" becomes "Update my gift to $20/month" once a different
 //   amount is selected
@@ -222,17 +221,6 @@ const clarifyNewAmount = (overlay: Element) => {
   const frequency =
     (selectedGiftId && giftFrequencies[selectedGiftId]) || giftFrequency;
   const unit = (frequency && giftFrequencyUnits[frequency]) || "";
-
-  if (!isNaN(currentAmount)) {
-    let current = state.querySelector<HTMLElement>(".engrid-hub-current-gift");
-    if (!current) {
-      current = document.createElement("p");
-      current.className = "engrid-hub-current-gift";
-      field.insertAdjacentElement("beforebegin", current);
-    }
-    const text = `Your current gift is ${formatAmount(currentAmount)}${unit}.`;
-    if (current.textContent !== text) current.textContent = text;
-  }
 
   const label = field.querySelector<HTMLElement>(":scope > .en__field__label");
   const labelText = frequency
