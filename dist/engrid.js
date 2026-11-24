@@ -17,7 +17,7 @@
  *
  *  ENGRID PAGE TEMPLATE ASSETS
  *
- *  Date: Tuesday, November 24, 2026 @ 12:51:04 ET
+ *  Date: Tuesday, November 24, 2026 @ 13:13:43 ET
  *  By: pedroluan
  *  ENGrid styles: v0.28.3
  *  ENGrid scripts: v0.28.7
@@ -32506,14 +32506,27 @@ const setUpdateCardLink = overlay => {
 // gift amount, not an increase on top of the current one
 
 
-const isAutoOpenHub = () => typeof window.EngridSupporterHubAutoOpen === "string" && window.EngridSupporterHubAutoOpen.trim() !== ""; // Suffix for the amounts, by gift frequency ("$20/month")
+const isAutoOpenHub = () => typeof window.EngridSupporterHubAutoOpen === "string" && window.EngridSupporterHubAutoOpen.trim() !== ""; // Suffix for the button ("Give $20/month") and the summary ("$20 a month"),
+// by gift frequency
 
 
 const giftFrequencyUnits = {
-  monthly: "/month",
-  quarterly: "/quarter",
-  "semi-annual": " every 6 months",
-  annual: "/year"
+  monthly: {
+    short: "/month",
+    long: " a month"
+  },
+  quarterly: {
+    short: "/quarter",
+    long: " a quarter"
+  },
+  "semi-annual": {
+    short: " every 6 months",
+    long: " every 6 months"
+  },
+  annual: {
+    short: "/year",
+    long: " a year"
+  }
 };
 
 const formatAmount = amount => `$${amount.toLocaleString("en-US", {
@@ -32521,8 +32534,10 @@ const formatAmount = amount => `$${amount.toLocaleString("en-US", {
   maximumFractionDigits: 2
 })}`; // On the edit screen (the heading above already shows the current amount):
 // - the "Donation Amount" label becomes "Choose your new monthly gift amount"
-// - "Update and save" becomes "Update my gift to $20/month" once a different
-//   amount is selected
+// - once a different amount is selected, "Update and save" becomes
+//   "Give $50/month", with "Your current monthly gift of $20 will be changed
+//   to $50 a month." right above it. With the current amount selected,
+//   nothing would change, so the button keeps EN's text and the summary hides
 // The frequency is the gift's own one when known (see giftFrequencies)
 
 
@@ -32539,7 +32554,10 @@ const clarifyNewAmount = overlay => {
 
   const currentAmount = parseFloat(state.dataset.engridCurrentAmount);
   const frequency = selectedGiftId && giftFrequencies[selectedGiftId] || giftFrequency;
-  const unit = frequency && giftFrequencyUnits[frequency] || "";
+  const unit = frequency && giftFrequencyUnits[frequency] || {
+    short: "",
+    long: ""
+  };
   const label = field.querySelector(":scope > .en__field__label");
   const labelText = frequency ? `Choose your new ${frequency} gift amount` : "Choose your new gift amount";
   if (label && label.textContent !== labelText) label.textContent = labelText;
@@ -32552,8 +32570,25 @@ const clarifyNewAmount = overlay => {
   }
 
   const selectedAmount = getSelectedAmount(field);
-  const buttonText = selectedAmount !== null && selectedAmount > 0 && selectedAmount !== currentAmount ? `Update my gift to ${formatAmount(selectedAmount)}${unit}` : button.dataset.engridLabel;
-  if (button.textContent !== buttonText) button.textContent = buttonText;
+  const isChanging = selectedAmount !== null && selectedAmount > 0 && selectedAmount !== currentAmount;
+  const buttonText = isChanging ? `Give ${formatAmount(selectedAmount)}${unit.short}` : button.dataset.engridLabel;
+  if (button.textContent !== buttonText) button.textContent = buttonText; // Summary above the button. A live region, so screen readers hear the new
+  // amount when the selection changes
+
+  const buttonsPanel = button.closest(".en__hubPledge__panel--buttons");
+  if (!buttonsPanel) return;
+  let summary = state.querySelector(".engrid-hub-amount-change");
+
+  if (!summary) {
+    summary = document.createElement("p");
+    summary.className = "engrid-hub-amount-change";
+    summary.setAttribute("aria-live", "polite");
+    buttonsPanel.insertAdjacentElement("beforebegin", summary);
+  }
+
+  const summaryText = isChanging && !isNaN(currentAmount) ? `Your current ${frequency ? `${frequency} ` : ""}gift of ${formatAmount(currentAmount)} will be changed to ${formatAmount(selectedAmount)}${unit.long}.` : "";
+  if (summary.textContent !== summaryText) summary.textContent = summaryText;
+  summary.hidden = !summaryText;
 }; // The button text follows the selected amount
 
 

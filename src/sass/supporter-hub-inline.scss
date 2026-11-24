@@ -50,6 +50,13 @@
     display: none;
   }
 
+  // "Your current monthly gift of $20 will be changed to $50 a month." right
+  // above the button (supporter-hub.ts)
+  .engrid-hub-amount-change {
+    margin: 0 0 0.75rem;
+    font-weight: 700;
+  }
+
   .engrid-hub-inline__back {
     display: inline-block;
     margin: 0 0 1rem;
